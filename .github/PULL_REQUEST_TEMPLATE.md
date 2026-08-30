@@ -11,7 +11,7 @@ Fixes # (issue)
 - [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
 - [ ] This change requires a documentation update
 
-## Checklist:
+## Checklist
 
 - [ ] My code follows the style guidelines of this project
 - [ ] I have performed a self-review of my own code
@@ -19,3 +19,4 @@ Fixes # (issue)
 - [ ] I have made corresponding changes to the documentation
 - [ ] My changes generate no new warnings
 - [ ] I have run pre-commit hooks
+- [ ] **(Gate)** I have considered if these changes warrant a new release and prompted the team to cut one if necessary

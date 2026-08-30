@@ -1,0 +1,15 @@
+extends: existence
+message: "Avoid overly verbose phrasing like '%s'. Use simpler alternatives."
+level: error
+ignorecase: true
+tokens:
+  - 'due to the fact that'
+  - 'in order to'
+  - 'at this point in time'
+  - 'with the exception of'
+  - 'in the event that'
+  - 'for the purpose of'
+  - 'with regard to'
+  - 'with respect to'
+  - 'in a timely manner'
+  - 'a large number of'
