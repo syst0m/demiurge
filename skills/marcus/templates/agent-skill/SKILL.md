@@ -1,6 +1,6 @@
 ---
 name: {{AGENT_NAME}}
-description: {{WHAT_IT_DOES}}. Use when {{ACTIVATING_SITUATIONS}}. >>> Rule I-1: name SITUATIONS in the user's vocabulary, not a summary of the agent. This is the only text visible at discovery. >>> Rule I-2: if an adjacent agent exists, say what this one does NOT cover.
+description: {{WHAT_IT_DOES}}. Use when {{ACTIVATING_SITUATIONS}}. >>> Rule I-1: name SITUATIONS in the user's vocabulary. This is the only text visible at discovery. >>> Rule I-2: if an adjacent agent exists, say what this one does NOT cover.
 ---
 
 # {{AGENT_NAME}}

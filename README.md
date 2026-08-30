@@ -1,6 +1,15 @@
-# agent-foundry
+<div align="center">
+  <h1>Demiurge</h1>
+</div>
+
+<div align="center">
+  <img src="assets/demiurge_photo.jpg" width="400" alt="Demiurge Photo">
+</div>
 
 Two agents that build and maintain other agents. Self-contained, with zero external dependencies.
+
+> **[Installation & Setup Guide](docs/INSTALLATION.md)**
+> Inject Marcus and Buckminster into Claude, Gemini, OpenAI, or your local IDE.
 
 | Agent | Role |
 |---|---|
@@ -50,7 +59,7 @@ Every claim in `RESEARCH.md` requires a marker. This dictates Marcus's behavior:
 | `[VENDOR]` | Source sells the solution | Do not encode. Cite conflict if mentioned. |
 | `[EMERGING]` | Real, but untested in production | Add to design notes only. |
 
-This forces agents to anchor on verifiable evidence, not trends.
+This forces agents to anchor on verifiable evidence.
 
 ## Scheduled Research
 

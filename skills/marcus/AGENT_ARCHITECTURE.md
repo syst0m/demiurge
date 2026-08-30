@@ -46,13 +46,13 @@ run. An agent without it repeats its mistakes indefinitely.
 
 ## 2. The four layers
 
-### IDENTITY — activation, not description
+### IDENTITY — activation
 
 `[SETTLED §8]` Agent Skills load by **progressive disclosure**: discovery (name + description only)
 → activation (full instructions) → execution (bundled files on demand).
 
 The `description` is the *only* thing visible at discovery. It must therefore name **the situations
-that should activate the agent**, not summarise what the agent is.
+that should activate the agent**, rather than summarising what the agent is.
 
 - ❌ *"An agent for research."*
 - ✅ *"Use when asked to research X, check what has changed in the field, or verify a claim before
@@ -127,14 +127,14 @@ the field.
 large.
 **Rule V-3.** Every agent doing non-trivial work names a **fresh-context review step**. The reviewer
 must not be the context that produced the work.
-**Rule V-4.** `[SETTLED §4]` Invariants become **hooks**, not prompt lines. Models forget; hooks do
+**Rule V-4.** `[SETTLED §4]` Invariants become **hooks**. Models forget; hooks do
 not.
 **Rule V-5.** `[SETTLED §9]` Agents must not claim improvement without evidence outside their own
 judgement. The perception gap — 19% slower while believing 20% faster — applies to agents too.
 
 ## 3. Topology
 
-`[SETTLED §7]` **Agents contribute intelligence, not actions. Writes stay single-threaded.**
+`[SETTLED §7]` **Agents contribute intelligence instead of direct actions. Writes stay single-threaded.**
 
 ```mermaid
 flowchart TB
@@ -150,7 +150,7 @@ flowchart TB
 ```
 
 **Rule T-1.** Default single-agent. `[CONTESTED §7]` — when multi-agent pays off rests on vendor
-observation, not controlled comparison.
+observation.
 **Rule T-2.** Multi-agent only for read-heavy fan-out. Never concurrent writes.
 **Rule T-3.** Never pair a weak primary with a strong helper — the weak model cannot tell when to
 escalate.
