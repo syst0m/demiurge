@@ -120,7 +120,7 @@ next_review_due: 2026-09-30
 ## 7. Multi-agent
 
 `[SETTLED]` Cognition's 2026 stance:
-> **Agents contribute intelligence, not actions. Writes stay single-threaded.**
+> **Agents contribute intelligence instead of direct actions. Writes stay single-threaded.**
 
 *Works:* Fresh-context reviewer; pairing two frontier models.
 *Fails:* Weak primary with strong helper (weak model can't escalate); parallel writes.
@@ -172,7 +172,7 @@ skill-name/
 
 ## 10. Hype
 
-`[SETTLED]` The following are hype, not established practice:
+`[SETTLED]` The following are unestablished hype:
 
 - Autonomous swarms.
 - Defaulting to multi-agent orchestration.
