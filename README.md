@@ -28,7 +28,7 @@ Buckminster pass rather than going to find it. An ungraded fact would bypass the
 | Path | What |
 |---|---|
 | `research/RESEARCH.md` | **The shared snapshot.** One writable copy. Buckminster maintains it |
-| `skills/marcus/` | `SKILL.md`, `AGENT_ARCHITECTURE.md` (HLD+LLD), `AGENT_DESIGN.md` (human guide), `templates/` |
+| `skills/marcus/` | `SKILL.md`, `AGENT_ARCHITECTURE.md` (HLD+LLD), `docs/AGENT_DESIGN.md` (human guide), `templates/` |
 | `skills/buckminster/` | `SKILL.md` + `references/RESEARCH_METHODOLOGY.md` |
 | `scripts/sync-skills.sh` | Deploys to `~/.claude/skills/`; distributes `RESEARCH.md` into Marcus's references |
 
@@ -45,7 +45,7 @@ overwritten.
 | File | Audience | Regenerated when |
 |---|---|---|
 | `AGENT_ARCHITECTURE.md` | Machine — Marcus generates against it | `RESEARCH.md` version changes |
-| `AGENT_DESIGN.md` + `.pdf` | Human — flowchart, concrete steps, checklist | Same |
+| `docs/AGENT_DESIGN.md` + `.pdf` | Human — flowchart, concrete steps, checklist | Same |
 
 Both carry a `derived_from` header naming the `RESEARCH.md` version they were built against. When
 those diverge, Marcus regenerates and reports what moved — including **which already-generated

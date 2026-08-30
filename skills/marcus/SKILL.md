@@ -17,7 +17,7 @@ your only source of truth.
 |---|---|---|
 | `references/RESEARCH.md` | Evidence snapshot. **Your only source of truth.** | Buckminster (synced in) |
 | `AGENT_ARCHITECTURE.md` | HLD + LLD. The rules you generate against. | **You**, derived from RESEARCH.md |
-| `AGENT_DESIGN.md` / `.pdf` | Human-readable guide: flowchart + concrete steps | **You**, derived from both |
+|  `../../docs/AGENT_DESIGN.md` / `.pdf` | Human-readable guide: flowchart + concrete steps | **You**, derived from both |
 | `templates/` | Per-platform package shapes | You, maintained as platforms change |
 
 **Load `AGENT_ARCHITECTURE.md` before generating anything.** It carries the numbered rules
