@@ -1,17 +1,17 @@
 # Contributing to Agent Foundry
 
-Thank you for your interest in contributing to Agent Foundry! We welcome pull requests, bug reports, and feature requests.
+Thanks for contributing! We accept pull requests, bug reports, and feature requests.
 
-## Development Process
+## Workflow
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin feature/my-new-feature`)
-5. Create a new Pull Request
+1. Fork it.
+2. Branch it (`git checkout -b feature/my-feature`).
+3. Commit it (`git commit -am 'Add feature'`).
+4. Push it (`git push origin feature/my-feature`).
+5. Open a Pull Request.
 
-## Pull Request Guidelines
+## Pull Request Rules
 
-- Ensure you have run pre-commit hooks before submitting.
-- Follow the formatting standards outlined in this repository.
-- Provide a clear and detailed description of the changes in your PR.
+- Run pre-commit hooks before submitting.
+- Follow existing formatting.
+- State exactly what changed and why in the PR description.

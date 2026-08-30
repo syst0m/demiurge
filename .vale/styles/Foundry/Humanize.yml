@@ -1,0 +1,19 @@
+extends: existence
+message: "Avoid typical GenAI filler phrases like '%s'."
+level: error
+ignorecase: true
+tokens:
+  - 'in conclusion'
+  - 'it is important to note'
+  - 'it is worth noting'
+  - 'delve into'
+  - 'rich tapestry'
+  - 'moreover'
+  - 'furthermore'
+  - 'testament to'
+  - 'a testament to'
+  - 'crucial to'
+  - 'essential to remember'
+  - 'by and large'
+  - 'in summary'
+  - 'to summarize'

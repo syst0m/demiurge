@@ -1,0 +1,21 @@
+name: Prose Linting (Vale)
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  prose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Vale
+        uses: errata-ai/vale-action@reviewdog
+        with:
+          vale_flags: "--no-wrap"
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

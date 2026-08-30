@@ -1,17 +1,15 @@
 # agent-foundry
 
-Two agents that build and maintain other agents. Self-contained — no dependency on any other
-project.
+Two agents that build and maintain other agents. Self-contained, with zero external dependencies.
 
-| | Role |
+| Agent | Role |
 |---|---|
-| **Marcus** | Designs and generates agents, and emits them as installable packages for Claude, Claude Code, Gemini, Gemini CLI, AGENTS.md, CLI harnesses or web chat |
-| **Buckminster** | Researches the current state of agentic engineering and proposes graded updates to the evidence Marcus builds from |
+| **Marcus** | Designs and generates agents. Emits them as installable packages (Claude, Gemini, CLI, web chat). |
+| **Buckminster** | Researches agentic engineering. Proposes graded updates to Marcus's knowledge base. |
 
-Named for Marcus Aurelius — who wrote his guidance to himself and then followed it — and
-Buckminster Fuller, for comprehensive anticipatory design science.
+Named for Marcus Aurelius (wrote guidance, then followed it) and Buckminster Fuller (comprehensive anticipatory design science).
 
-## How they relate
+## Architecture
 
 ```
 Buckminster ──writes──> research/RESEARCH.md ──read by──> Marcus ──generates──> agent packages
@@ -19,58 +17,45 @@ Buckminster ──writes──> research/RESEARCH.md ──read by──> Marcus
      └──────────── user signs off on every change ────────────┘
 ```
 
-**They are deliberately one-directional.** Buckminster researches and never designs. Marcus designs
-and never researches — if it needs a fact that is not in `RESEARCH.md`, it says so and asks for a
-Buckminster pass rather than going to find it. An ungraded fact would bypass the whole method.
+**One-directional flow:** Buckminster researches, Marcus designs. If Marcus lacks a fact, it halts and requests a Buckminster research pass. Ungraded facts cannot bypass this loop.
 
-## Layout
+## Directory Layout
 
-| Path | What |
+| Path | Purpose |
 |---|---|
-| `research/RESEARCH.md` | **The shared snapshot.** One writable copy. Buckminster maintains it |
-| `skills/marcus/` | `SKILL.md`, `AGENT_ARCHITECTURE.md` (HLD+LLD), `docs/AGENT_DESIGN.md` (human guide), `templates/` |
-| `skills/buckminster/` | `SKILL.md` + `references/RESEARCH_METHODOLOGY.md` |
-| `scripts/sync-skills.sh` | Deploys to `~/.claude/skills/`; distributes `RESEARCH.md` into Marcus's references |
+| `research/RESEARCH.md` | **The shared snapshot.** Writable only by Buckminster. |
+| `skills/marcus/` | Marcus's source files (`SKILL.md`, `AGENT_ARCHITECTURE.md`, templates). |
+| `skills/buckminster/` | Buckminster's source files (`SKILL.md`, `RESEARCH_METHODOLOGY.md`). |
+| `scripts/sync-skills.sh` | Deploys to `~/.claude/skills/` and distributes `RESEARCH.md`. |
 
-```bash
-./scripts/sync-skills.sh --check    # report drift, write nothing
-./scripts/sync-skills.sh            # apply
-```
+**Rule:** Edit `skills/` directly. Never edit `~/.claude/skills/` (it will be overwritten).
 
-**Edit `skills/` here, never `~/.claude/skills/`** — that is a deployment target and gets
-overwritten.
+## Maintained Documents
 
-## The documents Marcus maintains
-
-| File | Audience | Regenerated when |
+| File | Audience | Trigger |
 |---|---|---|
-| `AGENT_ARCHITECTURE.md` | Machine — Marcus generates against it | `RESEARCH.md` version changes |
-| `docs/AGENT_DESIGN.md` + `.pdf` | Human — flowchart, concrete steps, checklist | Same |
+| `AGENT_ARCHITECTURE.md` | Machine (Marcus's generation spec) | `RESEARCH.md` version bump |
+| `docs/AGENT_DESIGN.md` | Human (Flowcharts, checklists) | `RESEARCH.md` version bump |
 
-Both carry a `derived_from` header naming the `RESEARCH.md` version they were built against. When
-those diverge, Marcus regenerates and reports what moved — including **which already-generated
-agents were built against superseded rules.** It does not silently regenerate them; an agent in
-production was built against a snapshot, and changing the snapshot does not change the agent.
+Marcus tags generated files with a `derived_from` header pointing to the `RESEARCH.md` version. If `RESEARCH.md` changes, Marcus reports the drift but does not silently regenerate old agents. Production agents remain pinned to their snapshot.
 
-## Evidence grading
+## Evidence Grading
 
-Every claim in `RESEARCH.md` carries a marker, and the marker determines what Marcus may do with it:
+Every claim in `RESEARCH.md` requires a marker. This dictates Marcus's behavior:
 
-| | Meaning | Marcus may |
+| Marker | Criteria | Marcus Action |
 |---|---|---|
-| `[SETTLED]` | Multiple independent sources, at least some empirical | Encode as a default |
-| `[CONTESTED]` | Credible sources disagree, or one study | Offer as an option, stating the disagreement |
-| `[VENDOR]` | Originates with a party selling the thing | Not encode; cite only with the conflict named |
-| `[EMERGING]` | Real but untested in practice | Mention in design notes only |
+| `[SETTLED]` | Multiple independent/empirical sources | Encode as default behavior. |
+| `[CONTESTED]` | Conflicting credible sources, or single study | Offer as an option. State the disagreement. |
+| `[VENDOR]` | Source sells the solution | Do not encode. Cite conflict if mentioned. |
+| `[EMERGING]` | Real, but untested in production | Add to design notes only. |
 
-This is the mechanism that keeps generated agents anchored to evidence rather than to whatever was
-fashionable when they were made.
+This forces agents to anchor on verifiable evidence, not trends.
 
-## Scheduled research
+## Scheduled Research
 
-The `agentic-research-sweep` routine runs Buckminster on a schedule. It produces a **diff proposal**
-— new findings, reclassifications, contradictions, retractions, and an explicit statement of what
-was re-checked and still holds — for sign-off. Nothing is written to `RESEARCH.md` without approval,
-because a change there propagates into every agent generated afterwards.
+The `agentic-research-sweep` routine runs Buckminster on a schedule. It generates a **diff proposal** containing new findings, retractions, and verifications.
 
-Manage it with `/schedule`, or via the scheduled-tasks tooling.
+Nothing merges into `RESEARCH.md` without explicit user sign-off, as changes propagate to all subsequently generated agents.
+
+Manage via `/schedule` or scheduled-tasks tooling.
