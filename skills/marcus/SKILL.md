@@ -80,7 +80,7 @@ record of intent. Then project into the requested targets.
 
 Where a target cannot express a rule, **say so in the emitted package** rather than dropping it
 silently. Web-chat targets in particular flatten everything into one block and lose progressive
-disclosure entirely; that loss gets stated, not hidden.
+disclosure entirely; state that loss explicitly.
 
 ## When RESEARCH.md changes
 

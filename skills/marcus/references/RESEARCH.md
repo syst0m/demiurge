@@ -32,7 +32,7 @@ next_review_due: 2026-09-30
 acting as oversight."* `[SETTLED]` that the term and framing exist; `[EMERGING]` that any of its
 practice is codified — it is roughly six months old as a named field.
 
-**The centre of gravity is the harness, not the model.** `[SETTLED]` The deterministic scaffolding
+**The harness is the centre of gravity.** `[SETTLED]` The deterministic scaffolding
 around a model — context management, tool surface, hooks, permissions, sub-agent topology,
 evaluation loop — co-determines outcomes as much as model choice. One benchmark study found the
 harness shifted scores by more than the gap between successive model generations.
@@ -96,7 +96,7 @@ explicitly asks and the scale justifies it.
   N suffices.
 - **Two suites:** *capability* (start near 0%, measure progress) and *regression* (target 100%,
   protect against decay).
-- **`pass^k`, not `pass@1`**, for anything run unattended — the probability all k attempts succeed.
+- **`pass^k` instead of `pass@1`**, for anything run unattended — the probability all k attempts succeed.
 - **Read the transcripts.** Repeatedly identified as what separates real regressions from noise.
 
 **LLM-as-judge biases** `[SETTLED]`: position, verbosity, self-preference, format, calibration
@@ -104,7 +104,7 @@ drift. Mitigations: randomise ordering, judge from a *different* model family, e
 judge an explicit "Unknown" option, calibrate against humans.
 
 **Calibration ceiling** `[SETTLED]`: substring judging agreed with humans at κ ≈ 0.05 (chance); a
-three-LLM ensemble reached κ ≈ 0.43 (moderate). **Moderate is the ceiling, not the floor.**
+three-LLM ensemble reached κ ≈ 0.43 (moderate). **Moderate is the ceiling.**
 
 **Benchmarks are not deployment predictions** `[SETTLED]`: an audit across four tool-calling
 benchmarks found 18.5% evaluator–human misalignment, and 23 repeated runs of one identical setup
@@ -123,7 +123,7 @@ reviewer, 58% severe — precisely because the reviewer lacked the author's cont
 
 `[SETTLED]` **Errors compound superlinearly, concentrated in mutating actions.** Each deviation on a
 *mutating* step reduced success odds by 92–96%; deviations on read-only steps had little effect.
-**Guard writes, not reads.**
+**Guard writes while leaving reads open.**
 
 `[SETTLED]` **Self-correction has a stability threshold.** Across 7 models and 3 datasets, only
 three were non-degrading under repeated self-correction. A "verify first" framing drove one model's
@@ -167,14 +167,14 @@ prompt injection. Publishing requires only a `SKILL.md` and a week-old GitHub ac
 
 `[SETTLED]` The 2026 position, after Cognition publicly reversed and then partially re-reversed:
 
-> **Agents contribute intelligence, not actions. Writes stay single-threaded.**
+> **Agents contribute intelligence instead of direct actions. Writes stay single-threaded.**
 
 Working patterns: a **fresh-context reviewer**; pairing two frontier models. Not working: a weak
 primary with a strong helper (the weak model cannot tell when to escalate); parallel writes to one
 codebase.
 
 `[CONTESTED]` When multi-agent is worth it at all. The position above rests on internal vendor
-observation, not controlled comparison. MAST's "gains often minimal" still stands.
+observation. MAST's "gains often minimal" still stands.
 
 **Marcus rule:** default to single-agent. Generate a multi-agent topology only for read-heavy
 fan-out, and never for concurrent writes.
@@ -202,8 +202,7 @@ skill-name/
 
 Loading is **progressive disclosure** in three stages: discovery (name + description only) →
 activation (full SKILL.md) → execution (bundled files as needed). The `description` is what
-triggers activation, so it must name the *situations* that should activate the skill, not just
-describe the skill.
+triggers activation, so it must name the *situations* that should activate the skill.
 
 **MCP's hidden cost** `[SETTLED]`: every connected server's tool definitions occupy context
 permanently. More servers is not better; each is a standing context tax and a standing security

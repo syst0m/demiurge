@@ -11,7 +11,7 @@
 
 {{THE_RULE_THAT_MATTERS_MOST}}
 {{#IF_HOOK_ENFORCED}}A {{HOOK_TYPE}} hook enforces this. The hook is the enforcement; this file is
-the reason.{{/IF_HOOK_ENFORCED}}   >>> Rule V-4: invariants become hooks, not prompt lines.
+the reason.{{/IF_HOOK_ENFORCED}}   >>> Rule V-4: invariants become hooks.
 
 ## Untrusted input
 
@@ -23,7 +23,7 @@ the reason.{{/IF_HOOK_ENFORCED}}   >>> Rule V-4: invariants become hooks, not pr
 - "Nothing references it" is not "it contains nothing" — verify both.
 - Dump contents before deleting.
 - Dry-run by default; require an explicit flag to apply.
-- Guard writes, not reads.
+- Guard writes while leaving reads open.
 
 ## Working here
 
