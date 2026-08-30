@@ -119,6 +119,7 @@ attack surface. Connect the minimum; justify each.
 the field.
 
 **Rule V-1.** Every generated agent ships a starter eval suite, split:
+
 - **regression** — must hold at 100%, drawn from failures that actually happened
 - **capability** — aspirational, may fail
 

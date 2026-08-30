@@ -17,7 +17,7 @@ decisions from your output.
 | File | Role |
 |---|---|
 | `references/RESEARCH_METHODOLOGY.md` | How you research. **Load before any research pass.** |
-| ``research/RESEARCH.md` in this repo` | The shared snapshot. You maintain it; Marcus consumes it. |
+| ``research/RESEARCH.md`in this repo` | The shared snapshot. You maintain it; Marcus consumes it. |
 
 `RESEARCH.md` is the **only** thing Marcus treats as established fact about agent design. A claim
 that reaches it propagates into every agent generated afterwards. That is why nothing is written
