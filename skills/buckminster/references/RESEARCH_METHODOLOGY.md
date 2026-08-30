@@ -60,6 +60,7 @@ for targeted `search_papers`, WebSearch and primary-source WebFetch. Do not idle
 ### Step 3 — Check how findings were received
 
 For any load-bearing claim, run it through scite:
+
 - **`editorialNotices`** — retracted? corrected? subject to an expression of concern?
 - **Smart Citations** — do citing papers support it, or contrast with it? A heavily-cited paper
   whose citations are largely *contrasting* is a disputed finding, not an established one.
