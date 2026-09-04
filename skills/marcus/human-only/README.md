@@ -8,7 +8,7 @@ quoted by an agent.
 
 | File | What it is |
 |---|---|
-| `skill-factory-brief.html` | *The Skill Factory Brief* — the executive research summary behind this skill's specification. Open it in a browser. Published copy:  |
+| `skill-factory-brief.html` | *The Skill Factory Brief* — the executive research summary behind this skill's specification. Open it in a browser. |
 
 ## The convention
 
