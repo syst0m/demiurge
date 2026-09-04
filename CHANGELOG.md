@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   access needs, with `plan_queries.py` owning relative-date resolution.
 - **`human-only/` convention** - rendered deliverables excluded from model context, enforced by a
   `permissions.deny` rule rather than by convention alone.
+- **`skills/buckminster/evals/evals.json`** - 12 cases. The nine regression cases are drawn from the
+  anti-patterns in `references/RESEARCH_METHODOLOGY.md` §5, which that file records as observed and
+  corrected in practice, so they satisfy G0 as real failures rather than invented ones.
 
 ### Changed
 
