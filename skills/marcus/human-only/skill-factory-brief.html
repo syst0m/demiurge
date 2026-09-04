@@ -638,7 +638,7 @@
 
   <section>
     <h2><span class="num">04</span>What was built, and what it actually does</h2>
-    <p>A working skill, <code>skill-forge</code>, installed at <code>~/.claude/skills/skill-forge/</code>. Four stdlib-only Python gates, a graded evidence file, the specification, and a deterministic regression suite that costs nothing to run.</p>
+    <p>The gates were built as a separate skill, then merged into the existing agent-designer <code>marcus</code>, which had been designing agents against a checklist it performed from memory. Its own rule holds that invariants become hooks because models forget and hooks do not, which made that checklist the failure the rule names. The seven design steps stayed as judgement; the seven gates became their machine-checkable enforcement. Four stdlib-only Python gates, a graded evidence file, the specification, and a deterministic suite that costs nothing to run.</p>
 
     <div class="tablewrap">
       <table>
@@ -658,24 +658,24 @@
     <h3>Verification actually run</h3>
     <div class="checks">
       <div class="check">
-        <div class="k">Regression suite</div>
-        <div class="v">6 / 6</div>
-        <div class="d">Deterministic gate tests, no model calls</div>
+        <div class="k">Gate suite</div>
+        <div class="v">10 / 10</div>
+        <div class="d">Deterministic, no model calls, no cost</div>
       </div>
       <div class="check">
-        <div class="k">G4 on itself</div>
+        <div class="k">G4 across the library</div>
         <div class="v">0 blocking</div>
-        <div class="d">6 suppressions, each with a printed reason</div>
+        <div class="d">All five skills, 0 warnings, 8 reasoned suppressions</div>
       </div>
       <div class="check">
         <div class="k">G6 routing</div>
-        <div class="v">0.182</div>
-        <div class="d">Highest overlap, against <code>marcus</code> &mdash; distinct</div>
+        <div class="v">0.177</div>
+        <div class="d">Highest overlap in the library &mdash; distinct</div>
       </div>
       <div class="check">
         <div class="k">G5 delta</div>
         <div class="v pending">not run</div>
-        <div class="d">Requires paid model calls; the factory has not passed its own founding rule</div>
+        <div class="d">Requires paid model calls. Nothing here has a measured delta over not having it</div>
       </div>
     </div>
 
@@ -684,20 +684,22 @@
     <h3>Findings against the existing library</h3>
     <div class="tablewrap">
       <table>
-        <caption>G4 run across the four already-installed skills. Nothing here was previously measured.</caption>
+        <caption>Every skill installed, before the gates existed and after. None had ever been checked.</caption>
         <thead>
-          <tr><th scope="col">Skill</th><th scope="col">Blocking</th><th scope="col">Warnings</th><th scope="col">Notable</th></tr>
+          <tr><th scope="col">Skill</th><th scope="col">Before</th><th scope="col">After</th><th scope="col">What was actually wrong</th></tr>
         </thead>
         <tbody>
-          <tr><td><code>sample-skill</code></td><td class="num-cell">1</td><td class="num-cell">3</td><td>Injection-shaped fixture text in <code>evals.json</code>; eval schema not in the expected shape, so cases read as zero; no regression suite</td></tr>
-          <tr><td><code>marcus</code></td><td class="num-cell">1</td><td class="num-cell">1</td><td>Injection-shaped fixture text in a bundled template &mdash; benign in intent, indistinguishable from the real thing until flagged</td></tr>
-          <tr><td><code>buckminster</code></td><td class="num-cell">0</td><td class="num-cell">2</td><td>No evals; does not state that tool output is data rather than instructions</td></tr>
-          <tr><td><code>research-connectors</code></td><td class="num-cell">0</td><td class="num-cell">2</td><td>Same two</td></tr>
+          <tr><td><code>sample-skill</code></td><td class="num-cell">1 blocking, 4 warn</td><td class="num-cell">0, 0</td><td>Injection-shaped fixture needing a reasoned suppression; paths that resolved in its source repo and broke once deployed. Its 16-case eval suite was misreported as empty by a validator bug</td></tr>
+          <tr><td><code>marcus</code></td><td class="num-cell">1 blocking, 1 warn</td><td class="num-cell">0, 0</td><td>Injection-shaped fixture in a bundled template &mdash; benign, and indistinguishable from the real thing until flagged</td></tr>
+          <tr><td><code>buckminster</code></td><td class="num-cell">0, 3 warn</td><td class="num-cell">0, 0</td><td>Two dangling paths, one of them the hand-off instruction ending every research pass; no evals, despite its output propagating into every generated agent</td></tr>
+          <tr><td><code>research-connectors</code></td><td class="num-cell">0, 2 warn</td><td class="num-cell">0, 0</td><td>No evals; no statement that connector output is data rather than instructions</td></tr>
+          <tr><td><code>sample-skill</code></td><td class="num-cell">&mdash;</td><td class="num-cell">0, 0</td><td>Built through the gates from the start</td></tr>
         </tbody>
       </table>
     </div>
-    <p>Both blocking findings are benign fixtures. Neither is a vulnerability. Both were invisible before, and each needs an explicit reasoned suppression to clear &mdash; which is the point.</p>
-  </section>
+    <p>The blocking findings were benign test fixtures rather than vulnerabilities. They were invisible beforehand, and each now clears only through a suppression carrying a stated reason that the report prints.</p>
+
+    <p><strong>The validator's own defects were the more useful result.</strong> Running it against real skills exposed two false positives &mdash; a check for &ldquo;tool output is data&rdquo; that matched one phrasing and failed two compliant skills, and an eval reader that understood one schema and reported a 16-case suite as empty. A gate that fails correct work teaches people to ignore it, so both were fixed and covered by regression cases before the review they had corrupted was rewritten.</p>
 
   <section>
     <h2><span class="num">05</span>Honest limits</h2>
@@ -729,7 +731,7 @@
   </section>
 
   <footer>
-    <div>Screened via Consensus (peer-review-filtered and unfiltered) and scite over 210M records, plus platform documentation. Grades and full citations: <code>~/.claude/skills/skill-forge/references/EVIDENCE.md</code>.</div>
+    <div>Screened via Consensus (peer-review-filtered and unfiltered) and scite over 210M records, plus platform documentation. Grades and full citations: <code>skills/marcus/references/EVIDENCE.md</code>.</div>
     <div>Compiled 4 September 2026. Every figure is a hypothesis to re-measure locally, not an assurance.</div>
   </footer>
 
