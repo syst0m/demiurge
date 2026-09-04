@@ -294,6 +294,7 @@ When `RESEARCH.md` changes, Marcus:
 
 Step 5 matters: an agent in production was built against a snapshot, and changing the snapshot does
 not change the agent.
+
 ---
 
 # PART III — Enforcement

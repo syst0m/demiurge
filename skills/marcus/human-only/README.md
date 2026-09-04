@@ -8,7 +8,7 @@ quoted by an agent.
 
 | File | What it is |
 |---|---|
-| `skill-factory-brief.html` | *The Skill Factory Brief* — the executive research summary behind this skill's specification. Open it in a browser. Published copy: https://claude.ai/code/artifact/752fe62d-0fe8-4e5d-8b2f-3d8b1b9231f7 |
+| `skill-factory-brief.html` | *The Skill Factory Brief* — the executive research summary behind this skill's specification. Open it in a browser. Published copy: <https://claude.ai/code/artifact/752fe62d-0fe8-4e5d-8b2f-3d8b1b9231f7> |
 
 ## The convention
 

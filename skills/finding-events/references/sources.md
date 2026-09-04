@@ -98,6 +98,7 @@ platforms.** Searching Eventbrite for "neurodivergent" finds events *about* neur
 events that happen to be suitable. Both are worth returning, and they are different answers.
 
 **Explicitly neurodivergent-led or -friendly:**
+
 - Search `autistic led {city}`, `ADHD social {city}`, `neurodivergent friendly {interest} {city}`
 - Charities and peer-led organisations run regular socials that never reach ticketing platforms
 - Relaxed and sensory-friendly performances: most large venues and cinema chains run these, listed
