@@ -1,0 +1,736 @@
+<title>The Skill Factory Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap">
+
+<style>
+  :root {
+    /* Cool, blue-biased neutrals: an audit document, not a warm editorial page. */
+    --paper:      #F6F7F9;
+    --surface:    #FFFFFF;
+    --surface-2:  #EDF0F4;
+    --ink:        #11161D;
+    --ink-2:      #3D4753;
+    --ink-3:      #6B7686;
+    --rule:       #D7DCE4;
+    --rule-soft:  #E6EAF0;
+
+    --accent:     #145A78;   /* petrol */
+    --accent-2:   #2E86AE;
+
+    /* Evidence grades. Semantic, and deliberately not the accent. */
+    --settled:    #1A6B4F;
+    --contested:  #9A6100;
+    --emerging:   #56479B;
+    --vendor:     #93343A;
+
+    --shadow: 0 1px 2px rgba(17,22,29,.06), 0 8px 24px -16px rgba(17,22,29,.18);
+
+    --measure: 68ch;
+    --step--1: 0.812rem;
+    --step-0:  1rem;
+    --step-1:  1.19rem;
+    --step-2:  1.5rem;
+    --step-3:  2rem;
+    --step-4:  2.75rem;
+
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:     #0E1218;
+      --surface:   #151B23;
+      --surface-2: #1D242E;
+      --ink:       #E6EBF2;
+      --ink-2:     #B4BECC;
+      --ink-3:     #808C9D;
+      --rule:      #2A333F;
+      --rule-soft: #222A35;
+      --accent:    #6FB9D6;
+      --accent-2:  #9AD2E8;
+      --settled:   #57BC93;
+      --contested: #D9A040;
+      --emerging:  #A294E8;
+      --vendor:    #DE8A8E;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper:     #0E1218;
+    --surface:   #151B23;
+    --surface-2: #1D242E;
+    --ink:       #E6EBF2;
+    --ink-2:     #B4BECC;
+    --ink-3:     #808C9D;
+    --rule:      #2A333F;
+    --rule-soft: #222A35;
+    --accent:    #6FB9D6;
+    --accent-2:  #9AD2E8;
+    --settled:   #57BC93;
+    --contested: #D9A040;
+    --emerging:  #A294E8;
+    --vendor:    #DE8A8E;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: var(--step-0);
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 78rem;
+    margin: 0 auto;
+    padding: 0 clamp(1.1rem, 4vw, 3rem) 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3.25rem;
+  }
+
+  h1, h2, h3 {
+    font-family: "IBM Plex Serif", ui-serif, Georgia, serif;
+    text-wrap: balance;
+    margin: 0;
+    line-height: 1.18;
+    letter-spacing: -0.012em;
+  }
+
+  p, li { max-width: var(--measure); }
+  p { margin: 0; }
+
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  a:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent-2);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: var(--step--1);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 500;
+  }
+
+  /* ---- masthead ---- */
+  .masthead {
+    border-bottom: 2px solid var(--ink);
+    padding: clamp(2.5rem, 6vw, 4rem) 0 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+  }
+  .masthead h1 {
+    font-size: clamp(2.1rem, 5.4vw, var(--step-4));
+    font-weight: 600;
+  }
+  .standfirst {
+    font-family: "IBM Plex Serif", serif;
+    font-size: var(--step-1);
+    color: var(--ink-2);
+    max-width: 60ch;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: var(--step--1);
+    color: var(--ink-3);
+  }
+  .meta span strong { color: var(--ink-2); font-weight: 500; }
+
+  section { display: flex; flex-direction: column; gap: 1.4rem; }
+  section > h2 {
+    font-size: var(--step-3);
+    font-weight: 600;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  section > h2 .num {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.85rem;
+    color: var(--accent);
+    vertical-align: 0.55em;
+    margin-right: 0.7rem;
+    font-weight: 500;
+  }
+  h3 { font-size: var(--step-1); font-weight: 600; }
+
+  /* ---- the headline split ---- */
+  .thesis {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 0;
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+  .thesis > div { padding: clamp(1.4rem, 3vw, 2.1rem); display: flex; flex-direction: column; gap: 0.9rem; }
+  .thesis > div + div { border-left: 1px solid var(--rule); background: var(--surface-2); }
+  .thesis h2 { font-size: var(--step-2); border: 0; padding: 0; }
+  .thesis p { font-size: var(--step-0); color: var(--ink-2); }
+
+  .tally { display: flex; flex-direction: column; gap: 0.55rem; margin: 0; padding: 0; list-style: none; }
+  .tally li {
+    display: grid;
+    grid-template-columns: 4.2rem 1fr;
+    gap: 0.9rem;
+    align-items: baseline;
+    font-size: var(--step--1);
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dotted var(--rule);
+  }
+  .tally li:last-child { border-bottom: 0; padding-bottom: 0; }
+  .tally b {
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--ink);
+    font-size: var(--step-0);
+  }
+  .tally span { color: var(--ink-2); }
+
+  /* ---- figure row: these numbers ARE the argument ---- */
+  .figures {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    border-top: 1px solid var(--rule);
+    border-left: 1px solid var(--rule);
+  }
+  .fig {
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 1.15rem 1.25rem;
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .fig .n {
+    font-family: "IBM Plex Mono", monospace;
+    font-variant-numeric: tabular-nums;
+    font-size: 1.72rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+    line-height: 1.1;
+  }
+  .fig .l { font-size: var(--step--1); color: var(--ink-2); }
+  .fig .s { font-size: 0.74rem; color: var(--ink-3); font-family: "IBM Plex Mono", monospace; }
+
+  /* ---- findings, railed by evidence grade ---- */
+  .findings { display: flex; flex-direction: column; gap: 1rem; }
+  .finding {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--grade, var(--ink-3));
+    padding: 1.15rem 1.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .finding.settled   { --grade: var(--settled); }
+  .finding.contested { --grade: var(--contested); }
+  .finding.emerging  { --grade: var(--emerging); }
+  .finding-head { display: flex; flex-wrap: wrap; gap: 0.7rem; align-items: baseline; }
+  .grade {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--grade);
+    border: 1px solid var(--grade);
+    padding: 0.1rem 0.45rem;
+    white-space: nowrap;
+  }
+  .finding h3 { font-size: var(--step-1); }
+  .finding p { color: var(--ink-2); font-size: 0.94rem; }
+  .cite {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.74rem;
+    color: var(--ink-3);
+  }
+  .cite .rev { color: var(--settled); font-weight: 600; }
+  .cite .pre { color: var(--contested); font-weight: 600; }
+
+  /* ---- pipeline ---- */
+  .pipeline {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    overflow-x: auto;
+  }
+  .gate {
+    background: var(--surface);
+    padding: 0.95rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 8.5rem;
+  }
+  .gate .g {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--accent);
+  }
+  .gate .t { font-size: 0.88rem; font-weight: 500; }
+  .gate .o {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--ink-3);
+  }
+  .gate .f { font-size: 0.76rem; color: var(--vendor); margin-top: auto; padding-top: 0.4rem; }
+  .gate.hard { background: var(--surface-2); }
+
+  /* ---- tables ---- */
+  .tablewrap { overflow-x: auto; border: 1px solid var(--rule); background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; min-width: 34rem; }
+  caption {
+    text-align: left;
+    padding: 0.85rem 1.1rem;
+    font-size: var(--step--1);
+    color: var(--ink-3);
+    border-bottom: 1px solid var(--rule);
+    font-family: "IBM Plex Mono", monospace;
+  }
+  th, td { text-align: left; padding: 0.7rem 1.1rem; border-bottom: 1px solid var(--rule-soft); vertical-align: top; }
+  thead th {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 500;
+    border-bottom: 1px solid var(--rule);
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  td strong { font-weight: 600; }
+  td code, p code, li code {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.85em;
+    background: var(--surface-2);
+    padding: 0.08rem 0.32rem;
+    color: var(--ink);
+  }
+  .num-cell { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  /* ---- verification strip ---- */
+  .checks { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); }
+  .check { background: var(--surface); padding: 1rem 1.15rem; display: flex; flex-direction: column; gap: 0.3rem; }
+  .check .k { font-family: "IBM Plex Mono", monospace; font-size: 0.72rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-3); }
+  .check .v { font-family: "IBM Plex Mono", monospace; font-size: 1.05rem; font-weight: 600; color: var(--settled); font-variant-numeric: tabular-nums; }
+  .check .v.pending { color: var(--contested); }
+  .check .d { font-size: 0.8rem; color: var(--ink-2); }
+
+  /* ---- callout ---- */
+  .callout {
+    border: 1px solid var(--ink);
+    background: var(--surface);
+    padding: clamp(1.2rem, 3vw, 1.8rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .callout .rule-title {
+    font-family: "IBM Plex Serif", serif;
+    font-style: italic;
+    font-size: var(--step-2);
+    color: var(--ink);
+  }
+  .callout p { color: var(--ink-2); }
+
+  ul.plain { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  ul.plain li { color: var(--ink-2); }
+  ul.plain li strong { color: var(--ink); }
+
+  /* ---- sources ---- */
+  .sources { display: flex; flex-direction: column; gap: 0.75rem; }
+  .src {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: 1rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid var(--rule-soft);
+    font-size: 0.88rem;
+    max-width: none;
+  }
+  .src .tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding-top: 0.22rem;
+  }
+  .src .tag.reviewed { color: var(--settled); }
+  .src .tag.preprint { color: var(--contested); }
+  .src .tag.docs     { color: var(--accent); }
+  .src .body { color: var(--ink-2); }
+  .src .body em { color: var(--ink); font-style: normal; font-weight: 500; }
+
+  footer {
+    border-top: 2px solid var(--ink);
+    padding-top: 1.2rem;
+    font-size: 0.84rem;
+    color: var(--ink-3);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  @media (max-width: 62rem) {
+    .thesis { grid-template-columns: 1fr; }
+    .thesis > div + div { border-left: 0; border-top: 1px solid var(--rule); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">Research brief &middot; agentic engineering</div>
+    <h1>Building a factory for agent skills</h1>
+    <p class="standfirst">What the literature actually supports about generating skills and harnesses automatically &mdash; and why the honest design is a set of gates that mostly says no.</p>
+    <div class="meta">
+      <span><strong>Compiled</strong> 4 September 2026</span>
+      <span><strong>Sources</strong> 40+ screened, 24 cited</span>
+      <span><strong>Peer-reviewed</strong> 5 of 24</span>
+      <span><strong>Status</strong> prototype built and gate-tested</span>
+    </div>
+  </header>
+
+  <section class="thesis" aria-label="Headline finding">
+    <div>
+      <div class="eyebrow">The finding that reframes the brief</div>
+      <h2>There is almost no peer-reviewed work on generating agent skills</h2>
+      <p>A search restricted to peer-reviewed venues returns nothing on <code>SKILL.md</code>-shaped skills. Every method the field cites &mdash; SkillCAT, Skill-Pro, MSCE, Self-Harness, EvoAgentBench, Harness-Bench &mdash; is arXiv-only, months old, and unreplicated.</p>
+      <p>What <em>is</em> reviewed sits in robotics and industrial automation, and it contributes exactly two transferable ideas: a skill is a <strong>contract</strong> with preconditions and post-effects, and retrieval must score <strong>constraint consistency</strong> rather than text similarity. Both are in the specification.</p>
+      <p>For a regulated setting the practical consequence is blunt: cite preprints as preprints, and treat every performance number below as a hypothesis to be re-measured locally, never as an assurance.</p>
+    </div>
+    <div>
+      <div class="eyebrow">Evidence base, by venue</div>
+      <ul class="tally">
+        <li><b>5</b><span>Peer-reviewed &mdash; ICRA, <em>Robotics&nbsp;&amp;&nbsp;Autonomous Systems</em>, ETFA, ISBDAS, <em>Information Fusion</em>. All robotics or automation.</span></li>
+        <li><b>17</b><span>arXiv preprints, none independently replicated</span></li>
+        <li><b>2</b><span>Vendor platform documentation (format constraints, treated as fact)</span></li>
+        <li><b>0</b><span>Peer-reviewed studies of <code>SKILL.md</code> generation</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">01</span>The four numbers that shaped the design</h2>
+    <p>Each one closed off a design option that would otherwise have looked obvious.</p>
+    <div class="figures">
+      <div class="fig">
+        <div class="n">7,560</div>
+        <div class="l">runs in the only large controlled test of generated skills &mdash; which found <strong>no improvement over no skill at all</strong></div>
+        <div class="s">p ≥ 0.396 · spread 1.2 pp</div>
+      </div>
+      <div class="fig">
+        <div class="n">2.12&times;</div>
+        <div class="l">more likely to carry a vulnerability when a skill bundles executable scripts</div>
+        <div class="s">n = 42,447 published skills</div>
+      </div>
+      <div class="fig">
+        <div class="n">~15,000</div>
+        <div class="l">deployed examples before automated design paid for itself &mdash; and only on two datasets of those tested</div>
+        <div class="s">meta-agent cost study</div>
+      </div>
+      <div class="fig">
+        <div class="n">7&ndash;33%</div>
+        <div class="l">unsafe-action rate across fully scaffolded agents, uncorrelated with their task success</div>
+        <div class="s">success 39&ndash;64% · n = 44 tasks</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">02</span>What the evidence supports</h2>
+    <p>Graded on the convention already used in this environment: <span class="grade settled" style="--grade:var(--settled)">settled</span> encodes as a default, <span class="grade contested" style="--grade:var(--contested)">contested</span> is offered as an option with the disagreement stated, <span class="grade emerging" style="--grade:var(--emerging)">emerging</span> informs design notes only.</p>
+
+    <div class="findings">
+
+      <article class="finding contested">
+        <div class="finding-head">
+          <span class="grade">Contested</span>
+          <h3>One-shot generated skills do not reliably help</h3>
+        </div>
+        <p>Across 56 tasks, 9 model configurations and 3 providers, no generated-skill variant beat plain prompting; every p-value was at least 0.396 and the entire spread was 1.2 percentage points. A token-matched control found full generated skills performed <em>similarly to task-irrelevant text wearing skill formatting</em>. The gain was format, not knowledge.</p>
+        <p class="cite"><span class="pre">preprint</span> · Huang 2026, component ablation across data-science workflows · one domain, one study &mdash; but the only large controlled test that exists</p>
+      </article>
+
+      <article class="finding contested">
+        <div class="finding-head">
+          <span class="grade">Contested</span>
+          <h3>What works is rejection, not generation</h3>
+        </div>
+        <p>Methods that report real gains all add the same thing: contrast successful against failed trajectories on the same task; replay each candidate patch on clones before merging; keep only patches that do not damage outcomes; load only task-relevant sub-skills. SkillCAT reports up to +49.69% over its initial skill on this pattern. Every step these methods add over naive generation is a way of throwing candidates away.</p>
+        <p class="cite"><span class="pre">preprint</span> · SkillCAT, Skill-Pro, MSCE, MIND-Skill &mdash; consistent shape, no independent replication</p>
+      </article>
+
+      <article class="finding contested">
+        <div class="finding-head">
+          <span class="grade">Contested</span>
+          <h3>Curation still beats automation</h3>
+        </div>
+        <p>On a benchmark built specifically to isolate procedural transfer, hand-curated content transferred reliably across model families while <em>no automatic method sustained positive gain in all settings</em>. Separately, meta-agent design studies found that growing the context with every previous design performs <strong>worse than ignoring prior designs entirely</strong>, and that designed agents show low behavioural diversity.</p>
+        <p class="cite"><span class="pre">preprint</span> · EvoAgentBench 2026 · El et&nbsp;al. 2025, <em>Inefficiencies of Meta Agents</em></p>
+      </article>
+
+      <article class="finding settled">
+        <div class="finding-head">
+          <span class="grade">Settled</span>
+          <h3>The harness often outweighs the model</h3>
+        </div>
+        <p>Across 5,194 execution trajectories on 106 sandboxed tasks, completion, efficiency and failure behaviour varied substantially by model&times;harness pairing &mdash; enough to reverse model rankings. The position paper on this argues leaderboard comparisons are incomplete until the harness is disclosed. Any harness decomposes into six runtime responsibilities: <strong>observation, context, control, action, state, verification</strong>.</p>
+        <p class="cite"><span class="pre">preprint</span> · Harness-Bench · <em>Stop Comparing LLM Agents Without Disclosing the Harness</em> · Guo et&nbsp;al. survey</p>
+      </article>
+
+      <article class="finding settled">
+        <div class="finding-head">
+          <span class="grade">Settled</span>
+          <h3>Capability and safety are separate axes</h3>
+        </div>
+        <p>With full scaffolding, agents reached 39&ndash;64% task success and 7&ndash;33% unsafe-action rates. On one harness the top five models sat inside a 10-point band on success while unsafe-action rates spanned 7&ndash;23%, <em>with no consistent ordering between the two</em>. A configuration that raises success and raises unsafe actions has not improved.</p>
+        <p class="cite"><span class="pre">preprint</span> · ClawsBench 2026, 44 tasks across five mock services</p>
+      </article>
+
+      <article class="finding settled">
+        <div class="finding-head">
+          <span class="grade">Settled</span>
+          <h3>Skills are a supply chain, and a leaky one</h3>
+        </div>
+        <p>Two independent scans put the flaw rate at 26.1% of 42,447 skills and 36.8% of 3,984 skills; the exact figure is contested, the magnitude is not. One actor group accounted for 54.1% of confirmed malicious cases. Publishing requires a <code>SKILL.md</code> and a week-old account. Against production agent frameworks, multi-channel attacks succeeded 93.9% of the time on average.</p>
+        <p class="cite"><span class="pre">preprint</span> · Liu et&nbsp;al. via agent-skills survey · Vera-Bench, 1,600 executable safety cases</p>
+      </article>
+
+      <article class="finding settled">
+        <div class="finding-head">
+          <span class="grade">Settled</span>
+          <h3>Deterministic runtime gates work where prompt-level rules do not</h3>
+        </div>
+        <p>A small trigger/predicate/enforcement DSL prevented over 90% of unsafe code-agent executions, all hazardous embodied actions, and 100% of autonomous-vehicle legal violations, at millisecond overhead. Notably, <em>LLM-generated</em> rules reached 95.56% precision but only 70.96% recall &mdash; generated rules supplement hand-written ones; they do not replace them.</p>
+        <p class="cite"><span class="pre">preprint</span> · AgentSpec · VeriGuard · SEVerA (zero constraint violations under logical output contracts)</p>
+      </article>
+
+      <article class="finding emerging">
+        <div class="finding-head">
+          <span class="grade">Emerging</span>
+          <h3>Harnesses can improve themselves under regression gating</h3>
+        </div>
+        <p>A three-stage loop &mdash; mine weaknesses from execution traces, propose diverse but <em>minimal</em> edits each tied to a named failure, accept only after regression testing &mdash; improved held-in and held-out pass rates in all 9 model&times;benchmark combinations tested, by up to 132% relative. Single paper, authors' own benchmark selection. The loop is structurally identical to the skill-side one, which is why one pipeline serves both.</p>
+        <p class="cite"><span class="pre">preprint</span> · Self-Harness 2026 · Terminal-Bench 2.0, SWE-bench Verified, AppWorld</p>
+      </article>
+
+      <article class="finding settled">
+        <div class="finding-head">
+          <span class="grade">Settled</span>
+          <h3>Selection accuracy falls off a cliff as a library grows</h3>
+        </div>
+        <p>Skill selection shows <em>phase transitions</em> rather than gradual decay, and same-capability ambiguity is a documented failure mode with its own benchmark. The reviewed robotics result points the same way: retrieval must score constraint consistency, not text similarity. Writing a good description is necessary and not sufficient.</p>
+        <p class="cite"><span class="rev">peer-reviewed</span> ISBDAS 2026 · <span class="pre">preprint</span> SkillResolve-Bench, <em>Skill Is Not Document</em></p>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">03</span>The specification</h2>
+    <div class="callout">
+      <div class="eyebrow">The one rule</div>
+      <div class="rule-title">Generation is a proposal, never a delivery.</div>
+      <p>Nothing leaves the factory without a measured delta against a baseline that did not have it. This follows directly from the 7,560-run result: a skill that has not measured better than no skill is not a skill, it is a draft. Every gate below is a rejection mechanism, and a factory without them is a formatter.</p>
+    </div>
+
+    <h3>Seven gates, two product lines</h3>
+    <p>Skills and harnesses share one pipeline because the published loops are structurally identical: contrast against failure, propose a minimal edit, validate by replay, accept only on non-regression.</p>
+
+    <div class="pipeline">
+      <div class="gate hard">
+        <div class="g">G0</div><div class="t">Intake</div><div class="o">human</div>
+        <div class="f">No real failure &rarr; stop</div>
+      </div>
+      <div class="gate">
+        <div class="g">G1</div><div class="t">Baseline</div><div class="o">auto</div>
+        <div class="f">No score &rarr; stop</div>
+      </div>
+      <div class="gate">
+        <div class="g">G2</div><div class="t">Contrast</div><div class="o">model</div>
+        <div class="f">One trace &rarr; stop</div>
+      </div>
+      <div class="gate">
+        <div class="g">G3</div><div class="t">Draft</div><div class="o">model</div>
+        <div class="f">No gap &rarr; stop</div>
+      </div>
+      <div class="gate">
+        <div class="g">G4</div><div class="t">Validate</div><div class="o">auto</div>
+        <div class="f">Format / security</div>
+      </div>
+      <div class="gate hard">
+        <div class="g">G5</div><div class="t">Prove</div><div class="o">auto</div>
+        <div class="f">No lift &rarr; reject</div>
+      </div>
+      <div class="gate">
+        <div class="g">G6</div><div class="t">Register</div><div class="o">auto + human</div>
+        <div class="f">Collision &rarr; revision</div>
+      </div>
+    </div>
+
+    <p><strong>G0 is the gate most worth defending.</strong> Three real recorded failures are the entry price. If they do not exist, the correct output is that there is not yet evidence the skill is needed &mdash; a finished piece of work, not a refusal. <strong>G5 is the one that cannot be waived:</strong> no measured delta, no artefact.</p>
+
+    <h3>Harness specification &mdash; all six responsibilities, always declared</h3>
+    <div class="tablewrap">
+      <table>
+        <caption>&ldquo;Not applicable&rdquo; is an acceptable answer; silence is not.</caption>
+        <thead>
+          <tr><th scope="col">Responsibility</th><th scope="col">Question it answers</th><th scope="col">Default applied</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Observation</strong></td><td>What the agent sees each step</td><td>Canonical form; untrusted content fenced and labelled as data</td></tr>
+          <tr><td><strong>Context</strong></td><td>What is kept, compacted, recited</td><td>State externalised to files; goal recited; accumulated knowledge never rewritten wholesale</td></tr>
+          <tr><td><strong>Control</strong></td><td>Who decides the next step, and when to stop</td><td>Explicit step budget and stop condition</td></tr>
+          <tr><td><strong>Action</strong></td><td>Tool surface and its permissions</td><td>Reads open, writes gated; destructive operations dump before deleting</td></tr>
+          <tr><td><strong>State</strong></td><td>What persists across steps and runs</td><td>Append-only files; a scratchpad</td></tr>
+          <tr><td><strong>Verification</strong></td><td>How a step is checked before the next</td><td>Deterministic check where one exists; fresh-context review where none does</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Trust tiers</h3>
+    <div class="tablewrap">
+      <table>
+        <caption>Adapted from the four-tier provenance model proposed in the agent-skills survey &mdash; a proposal, not a standard.</caption>
+        <thead>
+          <tr><th scope="col">Tier</th><th scope="col">Provenance</th><th scope="col">Gates required</th><th scope="col">Default permissions</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="num-cell"><strong>T1</strong></td><td>Written by the user, or factory-built and accepted at G5</td><td class="num-cell">G4 + G5 + G6</td><td>Read; writes confined to the working directory</td></tr>
+          <tr><td class="num-cell"><strong>T2</strong></td><td>Factory-generated, not yet accepted</td><td class="num-cell">G4</td><td>Read only &mdash; must not be installed</td></tr>
+          <tr><td class="num-cell"><strong>T3</strong></td><td>Third party, read in full by the user</td><td class="num-cell">G4 + acknowledgement</td><td>Read only unless granted per skill</td></tr>
+          <tr><td class="num-cell"><strong>T4</strong></td><td>Third party, unread</td><td class="num-cell">&mdash;</td><td><strong>Not installed. No exceptions.</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">04</span>What was built, and what it actually does</h2>
+    <p>A working skill, <code>skill-forge</code>, installed at <code>~/.claude/skills/skill-forge/</code>. Four stdlib-only Python gates, a graded evidence file, the specification, and a deterministic regression suite that costs nothing to run.</p>
+
+    <div class="tablewrap">
+      <table>
+        <caption>Gate implementations &mdash; run them, do not read them.</caption>
+        <thead>
+          <tr><th scope="col">Script</th><th scope="col">Gate</th><th scope="col">What it enforces</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>new_skill.py</code></td><td class="num-cell">G0&ndash;G3</td><td>Refuses to scaffold on fewer than three recorded failures; seeds them as regression cases; warns when deployment volume sits below the design-cost threshold</td></tr>
+          <tr><td><code>validate_skill.py</code></td><td class="num-cell">G4</td><td>Format limits, third-person description with a trigger clause, one-level references, plus a line-level security scan. Suppressions require a stated reason and are always printed</td></tr>
+          <tr><td><code>eval_runner.py</code></td><td class="num-cell">G1 / G5</td><td>Measures baseline and treatment, reports pass<sup>k</sup>, records the model-harness pair, and rejects on zero delta or any regression drop. Spends nothing without <code>--yes</code></td></tr>
+          <tr><td><code>route_check.py</code></td><td class="num-cell">G6</td><td>Trigger-weighted description overlap against the installed library; high overlap means the build is a revision, not a new skill</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Verification actually run</h3>
+    <div class="checks">
+      <div class="check">
+        <div class="k">Regression suite</div>
+        <div class="v">6 / 6</div>
+        <div class="d">Deterministic gate tests, no model calls</div>
+      </div>
+      <div class="check">
+        <div class="k">G4 on itself</div>
+        <div class="v">0 blocking</div>
+        <div class="d">6 suppressions, each with a printed reason</div>
+      </div>
+      <div class="check">
+        <div class="k">G6 routing</div>
+        <div class="v">0.182</div>
+        <div class="d">Highest overlap, against <code>marcus</code> &mdash; distinct</div>
+      </div>
+      <div class="check">
+        <div class="k">G5 delta</div>
+        <div class="v pending">not run</div>
+        <div class="d">Requires paid model calls; the factory has not passed its own founding rule</div>
+      </div>
+    </div>
+
+    <p>Two real defects surfaced during that verification and were fixed: <code>SKILL.md</code> itself was excluded from the security scan &mdash; the single file a malicious skill would most likely use &mdash; and the scanner initially flagged its own pattern definitions, where the tempting fix (exempting itself by filename) would have created exactly the silent blind spot that makes skill supply chains unauditable. Reason-bearing suppressions replaced it.</p>
+
+    <h3>Findings against the existing library</h3>
+    <div class="tablewrap">
+      <table>
+        <caption>G4 run across the four already-installed skills. Nothing here was previously measured.</caption>
+        <thead>
+          <tr><th scope="col">Skill</th><th scope="col">Blocking</th><th scope="col">Warnings</th><th scope="col">Notable</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>sample-skill</code></td><td class="num-cell">1</td><td class="num-cell">3</td><td>Injection-shaped fixture text in <code>evals.json</code>; eval schema not in the expected shape, so cases read as zero; no regression suite</td></tr>
+          <tr><td><code>marcus</code></td><td class="num-cell">1</td><td class="num-cell">1</td><td>Injection-shaped fixture text in a bundled template &mdash; benign in intent, indistinguishable from the real thing until flagged</td></tr>
+          <tr><td><code>buckminster</code></td><td class="num-cell">0</td><td class="num-cell">2</td><td>No evals; does not state that tool output is data rather than instructions</td></tr>
+          <tr><td><code>research-connectors</code></td><td class="num-cell">0</td><td class="num-cell">2</td><td>Same two</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Both blocking findings are benign fixtures. Neither is a vulnerability. Both were invisible before, and each needs an explicit reasoned suppression to clear &mdash; which is the point.</p>
+  </section>
+
+  <section>
+    <h2><span class="num">05</span>Honest limits</h2>
+    <ul class="plain">
+      <li><strong>The factory has not been measured against hand-writing a skill.</strong> Its gates derive from published work; its own end-to-end value is unverified. It is subject to its own G5 and has not passed it.</li>
+      <li><strong>Automated design is uneconomic at small scale.</strong> Below a few thousand uses, hand-writing is cheaper. The factory's real value at low volume is the gates applied to what a person wrote, not the generation.</li>
+      <li><strong>The validator's recall is unmeasured.</strong> It encodes published constraints and two published scans. It will miss things.</li>
+      <li><strong>Judged evaluation has a ceiling.</strong> LLM-judge agreement with humans tops out at moderate, not high; the runner therefore offers an explicit <em>unknown</em> verdict that never counts as a pass, and asks for a judge from a different model family.</li>
+      <li><strong>Nothing here is peer-reviewed on its own subject.</strong> Every performance figure in this brief should be treated as a hypothesis to re-measure locally.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="num">06</span>Sources</h2>
+    <div class="sources">
+      <div class="src"><div class="tag reviewed">Reviewed</div><div class="body">Tziafas et&nbsp;al., <em>Lifelong Robot Library Learning</em> &mdash; ICRA 2024. Skill abstractor distilling experience into a growing library.</div></div>
+      <div class="src"><div class="tag reviewed">Reviewed</div><div class="body">Zhao et&nbsp;al., <em>Agentic Skill Discovery</em> &mdash; Robotics and Autonomous Systems. Skill library from zero, with independent VLM verification.</div></div>
+      <div class="src"><div class="tag reviewed">Reviewed</div><div class="body">Silva et&nbsp;al., <em>Capability-Driven Skill Generation with LLMs</em> &mdash; IEEE ETFA 2025. Capability as contract for a generated implementation.</div></div>
+      <div class="src"><div class="tag reviewed">Reviewed</div><div class="body">Meng et&nbsp;al., <em>Constraint-Consistent Skill Composition</em> &mdash; IEEE ISBDAS 2026. Retrieval scored on constraint consistency, not text similarity.</div></div>
+      <div class="src"><div class="tag reviewed">Reviewed</div><div class="body">Sapkota et&nbsp;al., <em>AI Agents vs. Agentic AI</em> &mdash; Information Fusion 2025. Conceptual taxonomy.</div></div>
+      <div class="src"><div class="tag preprint">Preprint</div><div class="body">Huang, <em>Do LLM-Generated Skills Make Better AI Data Scientists?</em> 2026 &mdash; the 7,560-run ablation.</div></div>
+      <div class="src"><div class="tag preprint">Preprint</div><div class="body"><em>Agent Skills for Large Language Models: Architecture, Acquisition, Security, and the Path Forward</em> &mdash; arXiv 2602.12430. Survey; source of the scan figures and the four-tier trust model.</div></div>
+      <div class="src"><div class="tag preprint">Preprint</div><div class="body">SkillCAT · Skill-Pro · MSCE · MIND-Skill · EvoAgentBench &mdash; contrastive extraction, replay validation, procedural transfer.</div></div>
+      <div class="src"><div class="tag preprint">Preprint</div><div class="body">Harness-Bench · <em>Stop Comparing LLM Agents Without Disclosing the Harness</em> · Guo et&nbsp;al. harness survey · Self-Harness · ClawsBench · <em>Baselines Before Architecture</em>.</div></div>
+      <div class="src"><div class="tag preprint">Preprint</div><div class="body">El et&nbsp;al., <em>Inefficiencies of Meta Agents for Agent Design</em> 2025 · Hu et&nbsp;al., <em>Automated Design of Agentic Systems</em> 2024.</div></div>
+      <div class="src"><div class="tag preprint">Preprint</div><div class="body">AgentSpec · VeriGuard · SEVerA · Vera / Vera-Bench &mdash; runtime enforcement and verified synthesis.</div></div>
+      <div class="src"><div class="tag docs">Platform</div><div class="body">Agent Skills overview and authoring best practices, Claude platform documentation &mdash; the format constraints, treated as fact rather than evidence.</div></div>
+    </div>
+  </section>
+
+  <footer>
+    <div>Screened via Consensus (peer-review-filtered and unfiltered) and scite over 210M records, plus platform documentation. Grades and full citations: <code>~/.claude/skills/skill-forge/references/EVIDENCE.md</code>.</div>
+    <div>Compiled 4 September 2026. Every figure is a hypothesis to re-measure locally, not an assurance.</div>
+  </footer>
+
+</div>
