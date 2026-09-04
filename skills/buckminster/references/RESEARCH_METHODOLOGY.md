@@ -1,9 +1,9 @@
 # RESEARCH_METHODOLOGY.md
 
 How Buckminster researches. Extracted 2026-08-30 from the toolchain available on this account and
-from the patterns that actually worked during the 2026-08-29 agentic-engineering and  passes.
+from the patterns that actually worked during the 2026-08-29 agentic-engineering and AuDHD passes.
 
-This is a *method*. The point of writing it down is that the same method produces
+This is a *method*, not a checklist. The point of writing it down is that the same method produces
 comparable snapshots over time — so version-to-version diffs in `RESEARCH.md` mean something.
 
 ---
@@ -17,7 +17,7 @@ Four, with genuinely different strengths. Using one alone produces a biased snap
 | Connector | Best for | Watch for |
 |---|---|---|
 | **Undermind** | `launch_deep_search` — a multi-agent review taking 2–5 min, producing a ranked list plus a summary. The heaviest instrument available. `search_papers` for iterative exploration; `read_pdfs` for targeted full text | One well-aimed deep search usually covers a whole brief. Check for an existing one before launching another |
-| **scite** | Smart Citations — the actual sentences citing papers wrote, classified supporting/contrasting/mentioning. **`editorialNotices` for retractions and corrections** | The only source here that shows how a finding was *received* in addition to what it claimed |
+| **scite** | Smart Citations — the actual sentences citing papers wrote, classified supporting/contrasting/mentioning. **`editorialNotices` for retractions and corrections** | The only source here that shows how a finding was *received*, not just what it claimed |
 | **PubMed** | Biomedical and life sciences only | Returns nothing useful for CS/AI — do not use it for agentic-engineering work |
 | **Consensus** | General paper search with citation counts | Requires numbered inline citations and reproducing its usage message verbatim |
 
@@ -60,14 +60,13 @@ for targeted `search_papers`, WebSearch and primary-source WebFetch. Do not idle
 ### Step 3 — Check how findings were received
 
 For any load-bearing claim, run it through scite:
-
 - **`editorialNotices`** — retracted? corrected? subject to an expression of concern?
 - **Smart Citations** — do citing papers support it, or contrast with it? A heavily-cited paper
-  whose citations are largely *contrasting* is a disputed finding.
+  whose citations are largely *contrasting* is a disputed finding, not an established one.
 
 ### Step 4 — Grade every claim before writing it down
 
-Confidence markers are assigned at capture time. `RESEARCH.md` uses four:
+Confidence markers are assigned at capture time, not retrofitted. `RESEARCH.md` uses four:
 
 - `[SETTLED]` — multiple independent sources, at least some empirical
 - `[CONTESTED]` — credible sources disagree, or it rests on one study
@@ -142,7 +141,7 @@ kind of accumulated knowledge those findings describe.
 
 ## 5. Anti-patterns
 
-Each of these was observed and corrected in practice.
+Each of these was observed and corrected in practice, not imagined.
 
 **Grep is not a survey.** Absence of evidence from one search method is not evidence of absence. In
 the LifeOS work this produced two near-misses where a component looked unreferenced under one search
@@ -153,7 +152,7 @@ absent from the literature — it is absent from *biomedicine*.
 finding. Averaging them destroys information.
 
 **Do not let a plausible mechanism substitute for evidence.** Something can be mechanistically
-sensible and empirically untested — the routine-versus-novelty tension in the  pass was exactly
+sensible and empirically untested — the routine-versus-novelty tension in the AuDHD pass was exactly
 this: universally repeated, entirely undocumented. Mark it `[CONTESTED]` or leave it out.
 
 **Do not treat a point estimate as meaningful under high heterogeneity.** A pooled figure at
