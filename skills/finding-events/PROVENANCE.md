@@ -4,12 +4,14 @@
 skill: finding-events
 created: 2026-09-04
 generated_by: marcus@2.0.0
-trust_tier: T2                # T2 until G5 passes; T2 is not installed on merit
-gate_reached: G4 (G0 waived by the user, G1/G5 not run)
-baseline_score: null
-treated_score: null
-delta: null
-model_harness_pair: null
+trust_tier: T2                # G5 ran and REJECTED; stays T2
+gate_reached: G5 (rejected), G0 waived by the user
+baseline_score: 0.222         # pass^1, 2 of 9
+treated_score: 0.667          # pass^1, 6 of 9
+delta: +0.444
+regression_suite: 0.50        # must hold at 100%; this is the rejection
+unknown_verdicts: 0
+model_harness_pair: claude-2.1.226 CLI, print mode, skills isolated, MCP disabled, judge same family
 ```
 
 ## G0 — evidence of need, stated honestly
@@ -50,10 +52,38 @@ Stdlib only. No network, no writes, no reads outside its own arguments.
   unparseable phrase, which correctly refuses rather than guessing
 - `eval_runner.py` (G1/G5): **not run.** Requires paid model calls
 
+## G5 — measured, and rejected
+
+Run 2026-09-05. Baseline **22.2%** (2 of 9), treated **66.7%** (6 of 9), delta **+44.4 points**,
+zero UNKNOWN verdicts. Four cases gained, none lost.
+
+**G5 rejected it anyway**, because the regression suite sits at 50% and the rule is 100%. That is
+the gate working. The skill stays **T2** and is not shipped on merit.
+
+Three regression cases fail, and the reasons differ:
+
+- **regression-1 and regression-5 cannot pass in this harness.** Both expect `plan_queries.py` to
+  run, but the treated condition injects only the `SKILL.md` body — bundled scripts and references
+  are absent by design, because that is what the 7,560-run ablation measured. A skill whose value
+  is partly a script is therefore understated here, and an expectation naming that script is
+  structurally unreachable. Either the harness must ship bundled files, or those expectations must
+  not name them.
+- **regression-2 is unexplained.** Its transcript searches all three source layers, opens organiser
+  pages, states assumptions and marks results `verified` — it reads as a pass. The judge disagreed
+  and its reason was discarded, which is why judge reasons are now retained.
+
+**These cases were mislabelled at authoring.** A regression case is drawn from a failure that
+happened and was fixed; a 100% rule makes sense only for those. These encode desired behaviour
+never yet achieved, which is the definition of a capability case, and this file said as much when
+it was written. Reclassifying them *after* watching them fail would be gaming the gate, so they
+stay where they are and the rejection stands. That call is the user's.
+
 ## What has not been verified
 
-- **No measured delta.** Trust tier stays **T2**. The skill has not been shown to beat a plain agent
-  with web search, and that comparison is the point of G5.
+- **One sample per condition, k=1.** The runner reports `pass^k` and this was run at k=1 on 9 cases,
+  so one flipped case is 11 points. The direction is consistent and the margin is four cases, but
+  this is not a stable estimate.
+- **The judge is the same model family as the runner**, so self-preference bias is uncontrolled.
 - **The claim worth testing is precision after vetting, not recall.** A plain agent finds plenty of
   events. Whether the vetting step makes the presented shortlist meaningfully more reliable is
   unmeasured.
