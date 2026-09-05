@@ -33,6 +33,7 @@ import datetime as dt
 import json
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -108,6 +109,24 @@ def build_isolation_settings(skills_dir: Path, allow: list[str]) -> Path:
     return Path(handle.name)
 
 
+def stage_skill_root(skill_dir: Path) -> Path:
+    """Copy the skill under test (minus evals/) into a scratch cwd for the treated run.
+
+    The treated prompt injects the SKILL.md body, which names bundled files by their
+    relative path (e.g. "scripts/plan_queries.py") - without this, nothing at that path
+    actually exists for the nested agent's Bash tool, so a skill whose value is partly a
+    script is understated. evals/ is excluded: it holds expected_behavior/expected_output,
+    and leaking the grading rubric into the treated agent's own readable directory would
+    invalidate the measurement it's being judged on. Isolation is unaffected - this never
+    touches skillOverrides, it only gives the nested run a cwd containing this one skill's
+    real files.
+    """
+    stage_root = Path(tempfile.mkdtemp(prefix="eval-stage-"))
+    dest = stage_root / skill_dir.name
+    shutil.copytree(skill_dir, dest, ignore=shutil.ignore_patterns("evals"))
+    return dest
+
+
 # A run that never happened must not be scored. These are the shapes the CLI returns
 # when the account is rate-limited, logged out, or refusing before the task starts:
 # short, exit code 0, non-empty, and therefore indistinguishable from an answer to a
@@ -136,7 +155,8 @@ def looks_like_infra_stub(transcript: str) -> str | None:
     return None
 
 
-def run(command_template: str, prompt: str, settings: Path | None = None) -> tuple[str, bool]:
+def run(command_template: str, prompt: str, settings: Path | None = None,
+        cwd: Path | None = None) -> tuple[str, bool]:
     if settings is not None and "{settings}" in command_template:
         command_template = command_template.replace("{settings}", str(settings))
     command = [part.replace("{prompt}", prompt)
@@ -145,7 +165,7 @@ def run(command_template: str, prompt: str, settings: Path | None = None) -> tup
         # stdin closed explicitly: the nested CLI waits on stdin for a few seconds
         # otherwise, which across a few hundred calls is dead time, and can hang.
         result = subprocess.run(command, capture_output=True, text=True,
-                                stdin=subprocess.DEVNULL,
+                                stdin=subprocess.DEVNULL, cwd=cwd,
                                 timeout=TIMEOUT_SECONDS, check=False)
     except FileNotFoundError:
         return f"[runner not found: {command[0]}]", False
@@ -257,41 +277,49 @@ def main() -> int:
         print(f"  isolation: {len(json.loads(settings.read_text())['skillOverrides'])} "
               f"installed skill(s) hidden from the runner")
 
+    # Only the treated run needs its own files - the nested agent's Bash tool has no
+    # scripts/references at the relative paths the injected SKILL.md prose names unless
+    # something puts them there. Staged into a scratch cwd, never into skill_dir itself.
+    stage_dir = None if args.baseline else stage_skill_root(skill_dir)
     body = "" if args.baseline else skill_body(skill_dir)
     results = []
     transcripts: list[dict] = []
     aborted: tuple[str | None, str] | None = None
-    for case in cases:
-        if aborted:
-            break
-        query = case.get("query", "")
-        prompt = query if args.baseline else (
-            f"Apply the following skill to the request that follows it.\n\n"
-            f"<skill>\n{body}\n</skill>\n\nRequest: {query}")
-        attempts = []
-        for attempt in range(args.k):
-            transcript, ok = run(args.runner, prompt, settings)
-            if reason := looks_like_infra_stub(transcript):
-                aborted = (case.get("id"), reason)
+    try:
+        for case in cases:
+            if aborted:
                 break
-            if ok:
-                verdict, why = judge(args.judge, case, transcript, settings)
-            else:
-                verdict, why = "FAIL", "runner exited non-zero"
-            attempts.append(verdict)
-            transcripts.append({"case": case.get("id"), "attempt": attempt + 1,
-                                "verdict": verdict, "judge_reason": why,
-                                "prompt": prompt, "transcript": transcript})
-            print(f"  {case.get('id', '?'):<24} attempt {attempt + 1}/{args.k}: "
-                  f"{verdict}{('  - ' + why) if why else ''}")
-        results.append({
-            "id": case.get("id"),
-            "suite": case.get("suite", "capability"),
-            "attempts": attempts,
-            "pass_pow_k": all(v == "PASS" for v in attempts),
-            "any_pass": any(v == "PASS" for v in attempts),
-            "unknown": attempts.count("UNKNOWN"),
-        })
+            query = case.get("query", "")
+            prompt = query if args.baseline else (
+                f"Apply the following skill to the request that follows it.\n\n"
+                f"<skill>\n{body}\n</skill>\n\nRequest: {query}")
+            attempts = []
+            for attempt in range(args.k):
+                transcript, ok = run(args.runner, prompt, settings, cwd=stage_dir)
+                if reason := looks_like_infra_stub(transcript):
+                    aborted = (case.get("id"), reason)
+                    break
+                if ok:
+                    verdict, why = judge(args.judge, case, transcript, settings)
+                else:
+                    verdict, why = "FAIL", "runner exited non-zero"
+                attempts.append(verdict)
+                transcripts.append({"case": case.get("id"), "attempt": attempt + 1,
+                                    "verdict": verdict, "judge_reason": why,
+                                    "prompt": prompt, "transcript": transcript})
+                print(f"  {case.get('id', '?'):<24} attempt {attempt + 1}/{args.k}: "
+                      f"{verdict}{('  - ' + why) if why else ''}")
+            results.append({
+                "id": case.get("id"),
+                "suite": case.get("suite", "capability"),
+                "attempts": attempts,
+                "pass_pow_k": all(v == "PASS" for v in attempts),
+                "any_pass": any(v == "PASS" for v in attempts),
+                "unknown": attempts.count("UNKNOWN"),
+            })
+    finally:
+        if stage_dir is not None:
+            shutil.rmtree(stage_dir.parent, ignore_errors=True)
 
     if aborted:
         case_id, reason = aborted
