@@ -1,8 +1,8 @@
 # AGENT_DESIGN.md — how to build an agent
 
 ```yaml
-version: 1.0.0
-derived_from: RESEARCH.md v1.0.0 · AGENT_ARCHITECTURE.md v1.0.0
+version: 1.1.0
+derived_from: RESEARCH.md v1.1.0 · AGENT_ARCHITECTURE.md v1.1.0
 audience: human
 maintained_by: marcus
 ```
@@ -124,7 +124,7 @@ manage under 50%. The only thing that works is architectural — split the sessi
 content and private data never share a context, and let only your own summary cross the boundary,
 never raw text.
 
-Any *two* of the three is fine. This is a constraint on topology.
+Any *two* of the three is fine. This is a constraint on topology. **Additionally, strictly manage identities (treat agents as Non-Human Identities) and isolate execution environments via sandboxing to contain damage.**
 
 ### 3. Decide what it may change
 
@@ -194,6 +194,8 @@ work, and a suite you actually run beats a comprehensive one you don't.
 
 Every agent that reads external content gets an injection case, whatever else is in the suite.
 
+**Trajectory-grounded evaluation is essential.** Because agents operate over multiple steps, security evaluations must cover the full trajectory to catch long-horizon attacks and compromised skills. Use agent-specific benchmarks (e.g., MLE-bench) for long-horizon capabilities.
+
 ### 7. Turn invariants into hooks
 
 If something must happen every time, do not write it as a prompt line — models forget. Express it as
@@ -224,10 +226,12 @@ because the reader assumes it is there.
 - [ ] Every reference has a "load before:" trigger
 - [ ] Accumulated knowledge is append-only, and says so inside the file
 - [ ] Eval suite exists, split regression / capability, drawn from real failures
+- [ ] Trajectory-grounded security evaluations for long-horizon attacks included
 - [ ] A fresh-context review step is named
 - [ ] Invariants are hooks where the platform allows
 - [ ] Topology justified — single agent unless read-heavy fan-out
-- [ ] No third-party dependency the user has not read
+- [ ] No third-party dependency the user has not read (even those without explicit code payloads)
+- [ ] Sandboxing and strict identity credentialing enforced
 
 ---
 

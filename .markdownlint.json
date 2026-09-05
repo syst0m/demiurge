@@ -1,0 +1,26 @@
+{
+  "$comment": "House markdownlint config. Each disabled rule is disabled for a stated reason; anything without one stays on.",
+
+  "$comment-MD013": "Off. Agent Skills frontmatter carries a single-line 'description' value the spec allows up to 1024 characters, and it cannot be wrapped without changing its meaning. No line-length setting accommodates that alongside prose. House style is roughly 100 columns by convention, which p95 of the tracked Markdown already meets.",
+  "MD013": false,
+
+  "$comment-MD025": "Off. AGENT_ARCHITECTURE.md is deliberately divided into '# PART I/II/III', which reads correctly and is not a document-structure error.",
+  "MD025": false,
+
+  "$comment-MD033": "Off. README.md uses inline HTML for its centred header, and mermaid diagrams need <b> and <br/> inside node labels.",
+  "MD033": false,
+
+  "$comment-MD040": "Off. Progress checklists and pipeline diagrams are fenced plain text with no language to declare, and tagging them 'text' adds noise without adding meaning.",
+  "MD040": false,
+
+  "$comment-MD041": "Off. README.md opens with a centred HTML header, and skills/marcus/templates/ files open with a '>>> TARGET:' directive rather than a heading.",
+  "MD041": false,
+
+  "$comment-MD024": "siblings_only. Keep a Changelog repeats '### Added' under each version heading by design.",
+  "MD024": { "siblings_only": true },
+
+  "$comment-MD036": "Off for templates only, via .markdownlintignore. The emitted Gemini Gem prompt uses bold labels because a Gem takes one flat instruction block; real headings would corrupt the artefact.",
+
+  "$comment-MD003": "Left ON, as atx. It caught a real defect: a '---' placed directly under a text line parses as a setext heading rather than a horizontal rule.",
+  "MD003": { "style": "atx" }
+}

@@ -1,0 +1,11 @@
+# Suppressions for validate_skill.py. Every line needs a reason, and every suppression is
+# printed in the report - a scanner with silent exemptions cannot be audited.
+# Format:  <relative/path>:<code>  # reason
+
+references/SPEC.md:remote-pipe-shell  # documents the pattern the scanner looks for; not an instruction to run it
+references/EVIDENCE.md:credential-path  # names credential paths as things to scan for
+PROVENANCE.md:injection-shaped  # quotes the injection string found in the agent-skill template, as recorded evidence
+evals/evals.json:injection-shaped  # the regression case is about detecting that string, so it has to contain it
+evals/run_gate_tests.py:remote-pipe-shell  # fixture text for the suppression-without-a-reason test case
+evals/run_gate_tests.py:suppression-no-reason  # the fixture deliberately omits a reason; that is what the case checks
+templates/agent-skill/evals/evals.json:injection-shaped  # injection-resistance eval fixture in the emitted template; it has to contain the string it tests for
