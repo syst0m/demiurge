@@ -31,6 +31,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import re
 import shlex
 import subprocess
 import sys
@@ -107,6 +108,34 @@ def build_isolation_settings(skills_dir: Path, allow: list[str]) -> Path:
     return Path(handle.name)
 
 
+# A run that never happened must not be scored. These are the shapes the CLI returns
+# when the account is rate-limited, logged out, or refusing before the task starts:
+# short, exit code 0, non-empty, and therefore indistinguishable from an answer to a
+# judge. Observed 2026-09-05: six of nine cases returned "You've hit your session
+# limit - resets 10:30am" as 63-byte transcripts, were graded FAIL, and produced a G5
+# rejection at -11.1% that described the account's billing state rather than the skill.
+INFRA_STUB = re.compile(
+    r"(?i)(hit your (session|usage|rate) limit"
+    r"|resets \d{1,2}[:.]\d{2}\s*(am|pm)"
+    r"|rate.?limit(ed|; )"
+    r"|not logged in|please run /login"
+    r"|invalid api key|authentication_error"
+    r"|overloaded_error|529|service unavailable)")
+STUB_MAX_CHARS = 400   # a real agent answer to these tasks is never this short
+
+
+def looks_like_infra_stub(transcript: str) -> str | None:
+    """Return a reason if this transcript is an infrastructure failure, else None."""
+    stripped = transcript.strip()
+    if not stripped:
+        return "empty transcript"
+    if match := INFRA_STUB.search(stripped):
+        return f"runner returned {match.group(0)!r}"
+    if len(stripped) <= STUB_MAX_CHARS and stripped.startswith("["):
+        return f"runner returned a harness error: {stripped[:120]}"
+    return None
+
+
 def run(command_template: str, prompt: str, settings: Path | None = None) -> tuple[str, bool]:
     if settings is not None and "{settings}" in command_template:
         command_template = command_template.replace("{settings}", str(settings))
@@ -126,19 +155,31 @@ def run(command_template: str, prompt: str, settings: Path | None = None) -> tup
     return output.strip(), result.returncode == 0
 
 
-def judge(judge_template: str, case: dict, transcript: str, settings: Path | None = None) -> str:
-    expected = case.get("expected_behavior") or ["(none recorded)"]
+def judge(judge_template: str, case: dict, transcript: str,
+          settings: Path | None = None) -> tuple[str, str]:
+    """Return (verdict, reason).
+
+    The judge is asked for one line of reasoning and the first version of this
+    function threw it away, keeping only the verdict - the same defect as
+    discarding transcripts. A FAIL you cannot argue with is a FAIL you cannot act
+    on, and the G5 -> G2 loop depends on knowing which expectation was missed.
+    """
+    expected = case.get("expected_behavior") or case.get("expected_output") or ["(none recorded)"]
+    if isinstance(expected, str):
+        expected = [expected]
     prompt = JUDGE_PROMPT.format(
-        query=case.get("query", ""),
+        query=case.get("query", "") or case.get("prompt", ""),
         expected="\n".join(f"- {e}" for e in expected),
         transcript=transcript[:12000],
     )
-    verdict, _ = run(judge_template, prompt, settings)
-    first = verdict.strip().split("\n", 1)[0].strip().upper()
+    raw, _ = run(judge_template, prompt, settings)
+    lines = [ln.strip() for ln in raw.strip().split("\n") if ln.strip()]
+    first = (lines[0] if lines else "").upper()
+    reason = lines[1] if len(lines) > 1 else ""
     for token in ("PASS", "FAIL", "UNKNOWN"):
         if first.startswith(token):
-            return token
-    return "UNKNOWN"
+            return token, reason
+    return "UNKNOWN", reason or raw.strip()[:200]
 
 
 def main() -> int:
@@ -219,7 +260,10 @@ def main() -> int:
     body = "" if args.baseline else skill_body(skill_dir)
     results = []
     transcripts: list[dict] = []
+    aborted: tuple[str | None, str] | None = None
     for case in cases:
+        if aborted:
+            break
         query = case.get("query", "")
         prompt = query if args.baseline else (
             f"Apply the following skill to the request that follows it.\n\n"
@@ -227,11 +271,19 @@ def main() -> int:
         attempts = []
         for attempt in range(args.k):
             transcript, ok = run(args.runner, prompt, settings)
-            verdict = judge(args.judge, case, transcript, settings) if ok else "FAIL"
+            if reason := looks_like_infra_stub(transcript):
+                aborted = (case.get("id"), reason)
+                break
+            if ok:
+                verdict, why = judge(args.judge, case, transcript, settings)
+            else:
+                verdict, why = "FAIL", "runner exited non-zero"
             attempts.append(verdict)
             transcripts.append({"case": case.get("id"), "attempt": attempt + 1,
-                                "verdict": verdict, "prompt": prompt, "transcript": transcript})
-            print(f"  {case.get('id', '?'):<24} attempt {attempt + 1}/{args.k}: {verdict}")
+                                "verdict": verdict, "judge_reason": why,
+                                "prompt": prompt, "transcript": transcript})
+            print(f"  {case.get('id', '?'):<24} attempt {attempt + 1}/{args.k}: "
+                  f"{verdict}{('  - ' + why) if why else ''}")
         results.append({
             "id": case.get("id"),
             "suite": case.get("suite", "capability"),
@@ -240,6 +292,14 @@ def main() -> int:
             "any_pass": any(v == "PASS" for v in attempts),
             "unknown": attempts.count("UNKNOWN"),
         })
+
+    if aborted:
+        case_id, reason = aborted
+        print(f"ABORTED on case {case_id}: {reason}", file=sys.stderr)
+        print("This is an infrastructure failure, not a task failure, and scoring it would"
+              " describe the account rather than the skill. Nothing was written. Re-run when"
+              " the runner is healthy.", file=sys.stderr)
+        return 2
 
     def rate(rows, suite=None):
         rows = [r for r in rows if suite is None or r["suite"] == suite]

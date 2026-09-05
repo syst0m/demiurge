@@ -171,9 +171,18 @@ def main() -> int:
         # --no-isolate skips the isolation guard so the run reaches the baseline check;
         # without it this case exits 2 for the wrong reason and passes by accident.
         # A treated run is not a baseline, so --i-know is not required here.
-        # The default `claude` runner is absent in the test environment, so each case
-        # fails fast and nothing is spent.
-        code, out = run([str(SCRIPTS / "eval_runner.py"), str(scaffolded), "--yes", "--no-isolate"])
+        # A fake runner that emits a long, plausible answer: the absent default `claude`
+        # returns a harness stub, which the infrastructure-stub guard now aborts on, so
+        # this case would exit 2 for that reason and pass without testing its claim.
+        # Nothing is spent - the fake runner is a local python one-liner.
+        # A script file rather than an inline -c: eval_runner splits the template with
+        # shlex(posix=False), which retains quote characters, so a quoted -c argument
+        # reaches Python as a string literal and prints nothing.
+        fake = root / "fake_runner.py"
+        fake.write_text("print('x' * 600)", encoding="utf-8")
+        fake_runner = f"{sys.executable} {fake} {{prompt}}"
+        code, out = run([str(SCRIPTS / "eval_runner.py"), str(scaffolded), "--yes",
+                         "--no-isolate", "--runner", fake_runner, "--judge", fake_runner])
         results.append(("regression-5 G5 refuses without a baseline",
                         code == 2 and "no baseline recorded" in out.lower(),
                         f"exit={code}"))
@@ -242,6 +251,21 @@ def main() -> int:
                          "--baseline", "--yes", "--runner", "claude -p {prompt}"])
         results.append(("regression-10 runner without {settings} refused",
                         code == 2 and "{settings} placeholder" in out,
+                        f"exit={code}"))
+
+        # regression-11: an infrastructure stub must abort the run, never be scored.
+        # On 2026-09-05 six of nine cases returned "You've hit your session limit" as
+        # 63-byte transcripts. They were graded FAIL and produced a G5 rejection at
+        # -11.1% that described the account's billing state rather than the skill.
+        stub = root / "stub_runner.py"
+        stub.write_text("print('You have hit your session limit - resets 10:30am')",
+                        encoding="utf-8")
+        stub_runner = f"{sys.executable} {stub} {{prompt}} {{settings}}"
+        code, out = run([str(SCRIPTS / "eval_runner.py"), str(scaffolded),
+                         "--baseline", "--yes", "--runner", stub_runner])
+        results.append(("regression-11 infrastructure stub aborts the run",
+                        code == 2 and "ABORTED" in out
+                        and not (scaffolded / "evals" / "results-baseline.json").exists(),
                         f"exit={code}"))
 
     print("marcus deterministic gate suite")
