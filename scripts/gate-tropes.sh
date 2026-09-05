@@ -1,23 +1,43 @@
-# Eradicating Negative Parallelism
+#!/usr/bin/env bash
+# Scan Markdown for negative parallelism - the "it is not X, it is Y" construction
+# and its variants. Based on woerndl/unsloppify and tropes.fyi.
+#
+# Usage:
+#   scripts/gate-tropes.sh                 scan every tracked .md file
+#   scripts/gate-tropes.sh FILE [FILE...]  scan the named files (how pre-commit calls it)
+#
+# Exit 0 clean, 1 if any trope is found.
+#
+# This file previously held a chat transcript describing the scanner rather than
+# the scanner. The working copy had been installed straight into .git/hooks/,
+# where it was unversioned and would be displaced by `pre-commit install`. It now
+# lives here and runs as a local hook, so it survives that and reaches CI.
 
-I have completed the implementation plan to eliminate AI tropes and negative parallelism from the Demiurge project and its associated agents.
+set -euo pipefail
 
-## What was changed?
+TROPE_REGEX="(it is|it's) not .+(,|;|—|-) it( is|'s) |not because .+, but because|(the question|the problem) is not .+\. (the question|the problem) is |isn't just .+(,|;|—|-) it( is|'s) |(is|are) not just .+(,|;|—|-) (it is|it's|they are|they're)"
 
-1. **Automated Gating with Vale and Bash**
-   - Created `.vale.ini` configuring a new `Humanize` style for Markdown files.
-   - Created `styles/Humanize/NegativeParallelism.yml`, a strict Vale rule detecting variations of the "It's not X, it's Y" trope.
-   - Created `scripts/gate-tropes.sh`, a bash scanner that uses `grep` to fail any pipeline if negative parallelism is detected in Markdown files.
+echo "Scanning for AI tropes (negative parallelism)..."
 
-2. **Marcus & Buckminster Instructions**
-   - Updated `skills/marcus/SKILL.md` to explicitly forbid negative parallelism, filler transitions, and manufactured drama under its "Non-negotiables".
-   - Updated `skills/buckminster/SKILL.md` to enforce direct framing and plain English in its "Core discipline".
+if [ "$#" -gt 0 ]; then
+    files=("$@")
+else
+    # Standalone or CI: every Markdown file Git knows about, so vendored and
+    # ignored trees are skipped without needing a prune list.
+    mapfile -t files < <(git ls-files '*.md')
+fi
 
-3. **Demiurge Agent Architecture Docs**
-   - Added a new `Tone and Prose (Anti-Sloppiness)` section to `docs/AGENT_DESIGN.md` explicitly detailing the failure modes highlighted by the research (e.g. `unsloppify` and `tropes.fyi`) to serve as an ongoing manual and philosophical standard.
+if [ "${#files[@]}" -eq 0 ]; then
+    echo "No Markdown files to scan."
+    exit 0
+fi
 
-## Next Steps
+if grep -HniE "$TROPE_REGEX" "${files[@]}"; then
+    echo ""
+    echo "Error: negative parallelism detected in the lines above."
+    echo "Rewrite them with plain constructions. State the thing you mean and stop."
+    exit 1
+fi
 
-- If you have CI/CD running, add `bash scripts/gate-tropes.sh` to your pipeline.
-- Or, you can add it as a Git pre-commit hook by copying it to `.git/hooks/pre-commit`.
-- Agents generating text using Marcus and Buckminster will now avoid this construction naturally, and your tests will enforce it if they slip!
+echo "No AI tropes detected."
+exit 0

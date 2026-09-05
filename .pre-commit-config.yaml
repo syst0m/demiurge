@@ -15,3 +15,13 @@ repos:
     rev: v3.4.1
     hooks:
       - id: vale
+
+  # Versioned here rather than living only in .git/hooks/, where it was
+  # unversioned, invisible to CI, and would be displaced by `pre-commit install`.
+  - repo: local
+    hooks:
+      - id: gate-tropes
+        name: Scan for negative parallelism
+        entry: scripts/gate-tropes.sh
+        language: script
+        types: [markdown]

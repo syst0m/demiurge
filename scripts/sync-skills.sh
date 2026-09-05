@@ -56,8 +56,23 @@ for skill_dir in "$REPO_SKILLS"/*/; do
     fi
 
     if ! $CHECK_ONLY; then
+        # Eval outputs are measurements of a deployed version, written by
+        # eval_runner.py into the skill's own evals/ directory. The rm -rf below
+        # deletes them, which is how a completed G1 baseline and its transcripts
+        # were destroyed on 2026-09-05 by a sync run for an unrelated reason.
+        # Preserve them across the replace; the repo copy never carries them.
+        preserved=$(mktemp -d)
+        if [ -d "$TARGET/$name/evals" ]; then
+            find "$TARGET/$name/evals" -maxdepth 1 -type f                 \( -name 'results-*.json' -o -name 'transcripts-*.json' \)                 -exec cp {} "$preserved/" \; 2>/dev/null || true
+        fi
         rm -rf "${TARGET:?}/$name"
         cp -r "$skill_dir" "$TARGET/$name"
+        if [ -n "$(ls -A "$preserved" 2>/dev/null)" ]; then
+            mkdir -p "$TARGET/$name/evals"
+            cp "$preserved"/* "$TARGET/$name/evals/" 2>/dev/null || true
+            echo "PRESERVE $name eval outputs ($(ls -1 "$preserved" | wc -l) file(s))"
+        fi
+        rm -rf "$preserved"
         echo "SYNCED   $name"
     fi
 done
