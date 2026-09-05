@@ -97,6 +97,7 @@ def build_isolation_settings(skills_dir: Path, allow: list[str]) -> Path:
     settings = {
         "skillOverrides": {p.name: "off" for p in sorted(skills_dir.iterdir()) if p.is_dir()},
         "disableBundledSkills": True,
+        "disableClaudeAiConnectors": True,
         "permissions": {"allow": allow, "defaultMode": "default"},
     }
     handle = tempfile.NamedTemporaryFile("w", suffix="-eval-settings.json",
@@ -145,7 +146,10 @@ def main() -> int:
     parser.add_argument("skill_dir", type=Path)
     parser.add_argument("--baseline", action="store_true", help="G1 - measure without the skill")
     parser.add_argument("--k", type=int, default=1, help="attempts per case; reports pass^k")
-    parser.add_argument("--runner", default=DEFAULT_RUNNER)
+    parser.add_argument("--runner", default=DEFAULT_RUNNER,
+                        help="pass --strict-mcp-config in this template: connected MCP servers "
+                             "otherwise load in the nested run and stall on permission prompts, "
+                             "which scores as a task failure that has nothing to do with the skill")
     parser.add_argument("--judge", default=DEFAULT_JUDGE)
     parser.add_argument("--judge-model", default="",
                         help="note recorded in the report; use a different family from the runner")
