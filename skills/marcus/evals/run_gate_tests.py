@@ -168,7 +168,12 @@ def main() -> int:
                         f"exit={code}"))
 
         # regression-5: G5 cannot fire without a recorded baseline.
-        code, out = run([str(SCRIPTS / "eval_runner.py"), str(scaffolded), "--yes"])
+        # --no-isolate skips the isolation guard so the run reaches the baseline check;
+        # without it this case exits 2 for the wrong reason and passes by accident.
+        # A treated run is not a baseline, so --i-know is not required here.
+        # The default `claude` runner is absent in the test environment, so each case
+        # fails fast and nothing is spent.
+        code, out = run([str(SCRIPTS / "eval_runner.py"), str(scaffolded), "--yes", "--no-isolate"])
         results.append(("regression-5 G5 refuses without a baseline",
                         code == 2 and "no baseline recorded" in out.lower(),
                         f"exit={code}"))
@@ -220,6 +225,23 @@ def main() -> int:
         code, out = run([str(SCRIPTS / "validate_skill.py"), str(fixture)])
         results.append(("regression-8 dangling backticked path flagged",
                         "dangling-path" in out and "resources/missing.md" in out,
+                        f"exit={code}"))
+
+        # regression-9 and -10 come from the first real G5 attempt on 2026-09-04. A nested
+        # agent inherits the user's installed skill library, so the "baseline without the
+        # skill" ran WITH the skill under test, hit a permission prompt it could not answer
+        # in print mode, and recorded 0.0% with 5 of 9 verdicts UNKNOWN. That number would
+        # have made any treated score look like a win.
+        code, out = run([str(SCRIPTS / "eval_runner.py"), str(scaffolded),
+                         "--baseline", "--yes", "--no-isolate"])
+        results.append(("regression-9 un-isolated baseline refused",
+                        code == 2 and "no-isolate on a baseline" in out,
+                        f"exit={code}"))
+
+        code, out = run([str(SCRIPTS / "eval_runner.py"), str(scaffolded),
+                         "--baseline", "--yes", "--runner", "claude -p {prompt}"])
+        results.append(("regression-10 runner without {settings} refused",
+                        code == 2 and "{settings} placeholder" in out,
                         f"exit={code}"))
 
     print("marcus deterministic gate suite")
