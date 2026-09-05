@@ -6,6 +6,13 @@ on:
   pull_request:
     branches: [ "main" ]
 
+# gitleaks-action lists the PR's commits, which the default token cannot do in this
+# repo. Without these it fails with 403 'Resource not accessible by integration',
+# which reads as a leak and is not one.
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   secret-scanning:
     runs-on: ubuntu-latest
