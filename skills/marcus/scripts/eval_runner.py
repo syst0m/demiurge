@@ -155,19 +155,31 @@ def run(command_template: str, prompt: str, settings: Path | None = None) -> tup
     return output.strip(), result.returncode == 0
 
 
-def judge(judge_template: str, case: dict, transcript: str, settings: Path | None = None) -> str:
-    expected = case.get("expected_behavior") or ["(none recorded)"]
+def judge(judge_template: str, case: dict, transcript: str,
+          settings: Path | None = None) -> tuple[str, str]:
+    """Return (verdict, reason).
+
+    The judge is asked for one line of reasoning and the first version of this
+    function threw it away, keeping only the verdict - the same defect as
+    discarding transcripts. A FAIL you cannot argue with is a FAIL you cannot act
+    on, and the G5 -> G2 loop depends on knowing which expectation was missed.
+    """
+    expected = case.get("expected_behavior") or case.get("expected_output") or ["(none recorded)"]
+    if isinstance(expected, str):
+        expected = [expected]
     prompt = JUDGE_PROMPT.format(
-        query=case.get("query", ""),
+        query=case.get("query", "") or case.get("prompt", ""),
         expected="\n".join(f"- {e}" for e in expected),
         transcript=transcript[:12000],
     )
-    verdict, _ = run(judge_template, prompt, settings)
-    first = verdict.strip().split("\n", 1)[0].strip().upper()
+    raw, _ = run(judge_template, prompt, settings)
+    lines = [ln.strip() for ln in raw.strip().split("\n") if ln.strip()]
+    first = (lines[0] if lines else "").upper()
+    reason = lines[1] if len(lines) > 1 else ""
     for token in ("PASS", "FAIL", "UNKNOWN"):
         if first.startswith(token):
-            return token
-    return "UNKNOWN"
+            return token, reason
+    return "UNKNOWN", reason or raw.strip()[:200]
 
 
 def main() -> int:
@@ -262,11 +274,16 @@ def main() -> int:
             if reason := looks_like_infra_stub(transcript):
                 aborted = (case.get("id"), reason)
                 break
-            verdict = judge(args.judge, case, transcript, settings) if ok else "FAIL"
+            if ok:
+                verdict, why = judge(args.judge, case, transcript, settings)
+            else:
+                verdict, why = "FAIL", "runner exited non-zero"
             attempts.append(verdict)
             transcripts.append({"case": case.get("id"), "attempt": attempt + 1,
-                                "verdict": verdict, "prompt": prompt, "transcript": transcript})
-            print(f"  {case.get('id', '?'):<24} attempt {attempt + 1}/{args.k}: {verdict}")
+                                "verdict": verdict, "judge_reason": why,
+                                "prompt": prompt, "transcript": transcript})
+            print(f"  {case.get('id', '?'):<24} attempt {attempt + 1}/{args.k}: "
+                  f"{verdict}{('  - ' + why) if why else ''}")
         results.append({
             "id": case.get("id"),
             "suite": case.get("suite", "capability"),
