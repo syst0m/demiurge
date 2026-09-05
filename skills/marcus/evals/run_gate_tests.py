@@ -268,6 +268,31 @@ def main() -> int:
                         and not (scaffolded / "evals" / "results-baseline.json").exists(),
                         f"exit={code}"))
 
+        # regression-12: the treated run stages the skill's own scripts/references into the
+        # nested agent's cwd. Without this, the injected SKILL.md prose can name a bundled
+        # script by relative path (e.g. "scripts/plan_queries.py") and nothing at that path
+        # actually exists for the nested agent to run - understating a skill whose value is
+        # partly a script. Drawn from the finding-events G5 rejection on 2026-09-05, where
+        # regression-1 and regression-5 expected plan_queries.py to run and structurally could
+        # not, because only the SKILL.md body was ever injected.
+        (scaffolded / "scripts" / "marker.txt").write_text("STAGED-OK", encoding="utf-8")
+        cwd_check = root / "cwd_check.py"
+        cwd_check.write_text(
+            "import pathlib\n"
+            "p = pathlib.Path('scripts/marker.txt')\n"
+            "print(p.read_text() if p.exists() else 'MISSING')\n",
+            encoding="utf-8")
+        cwd_check_runner = f"{sys.executable} {cwd_check} {{prompt}}"
+        code, out = run([str(SCRIPTS / "eval_runner.py"), str(scaffolded), "--yes",
+                         "--no-isolate", "--runner", cwd_check_runner,
+                         "--judge", cwd_check_runner])
+        transcript_path = scaffolded / "evals" / "transcripts-treated.json"
+        staged = (transcript_path.is_file()
+                  and "STAGED-OK" in transcript_path.read_text(encoding="utf-8"))
+        results.append(("regression-12 treated run stages bundled scripts into its cwd",
+                        staged,
+                        f"exit={code}"))
+
     print("marcus deterministic gate suite")
     print("-" * 72)
     for name, passed, note in results:
