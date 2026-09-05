@@ -34,6 +34,7 @@ import json
 import shlex
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 DEFAULT_RUNNER = "claude -p {prompt}"
@@ -78,11 +79,43 @@ def skill_body(skill_dir: Path) -> str:
     return text.strip()
 
 
-def run(command_template: str, prompt: str) -> tuple[str, bool]:
+def build_isolation_settings(skills_dir: Path, allow: list[str]) -> Path:
+    """Write a settings file that hides every installed skill from the runner.
+
+    Without this the baseline is not a baseline. A nested agent inherits the
+    user's whole skill library, so "run without the skill" silently runs *with*
+    it - including the skill under test - and the comparison measures the skill
+    against itself. Observed 2026-09-04: a finding-events baseline scored 0.0%
+    with 5 of 9 verdicts UNKNOWN because every run loaded finding-events, tried
+    to execute its script, hit a permission prompt it could not answer in print
+    mode, and returned a stub.
+
+    Both phases run isolated. The treated phase receives the skill by having its
+    body injected into the prompt, which is the thing being measured; the
+    installed copy would confound it.
+    """
+    settings = {
+        "skillOverrides": {p.name: "off" for p in sorted(skills_dir.iterdir()) if p.is_dir()},
+        "disableBundledSkills": True,
+        "permissions": {"allow": allow, "defaultMode": "default"},
+    }
+    handle = tempfile.NamedTemporaryFile("w", suffix="-eval-settings.json",
+                                         delete=False, encoding="utf-8")
+    json.dump(settings, handle, indent=2)
+    handle.close()
+    return Path(handle.name)
+
+
+def run(command_template: str, prompt: str, settings: Path | None = None) -> tuple[str, bool]:
+    if settings is not None and "{settings}" in command_template:
+        command_template = command_template.replace("{settings}", str(settings))
     command = [part.replace("{prompt}", prompt)
                for part in shlex.split(command_template, posix=False)]
     try:
+        # stdin closed explicitly: the nested CLI waits on stdin for a few seconds
+        # otherwise, which across a few hundred calls is dead time, and can hang.
         result = subprocess.run(command, capture_output=True, text=True,
+                                stdin=subprocess.DEVNULL,
                                 timeout=TIMEOUT_SECONDS, check=False)
     except FileNotFoundError:
         return f"[runner not found: {command[0]}]", False
@@ -92,14 +125,14 @@ def run(command_template: str, prompt: str) -> tuple[str, bool]:
     return output.strip(), result.returncode == 0
 
 
-def judge(judge_template: str, case: dict, transcript: str) -> str:
+def judge(judge_template: str, case: dict, transcript: str, settings: Path | None = None) -> str:
     expected = case.get("expected_behavior") or ["(none recorded)"]
     prompt = JUDGE_PROMPT.format(
         query=case.get("query", ""),
         expected="\n".join(f"- {e}" for e in expected),
         transcript=transcript[:12000],
     )
-    verdict, _ = run(judge_template, prompt)
+    verdict, _ = run(judge_template, prompt, settings)
     first = verdict.strip().split("\n", 1)[0].strip().upper()
     for token in ("PASS", "FAIL", "UNKNOWN"):
         if first.startswith(token):
@@ -117,6 +150,16 @@ def main() -> int:
     parser.add_argument("--judge-model", default="",
                         help="note recorded in the report; use a different family from the runner")
     parser.add_argument("--yes", action="store_true", help="confirm spending real model calls")
+    parser.add_argument("--skills-dir", type=Path, default=Path("~/.claude/skills"),
+                        help="library whose skills are hidden from the runner")
+    parser.add_argument("--allow", action="append",
+                        default=["WebSearch", "WebFetch", "Read", "Glob", "Grep", "Bash(python:*)"],
+                        help="tools the runner may use without prompting; repeatable")
+    parser.add_argument("--no-isolate", action="store_true",
+                        help="do NOT hide installed skills. A baseline run this way is not a "
+                             "baseline and will be refused unless --i-know is also given")
+    parser.add_argument("--i-know", action="store_true",
+                        help="acknowledge that --no-isolate invalidates the comparison")
     args = parser.parse_args()
 
     skill_dir = args.skill_dir.expanduser().resolve()
@@ -146,8 +189,32 @@ def main() -> int:
         print("\nDry run. Nothing was spent. Re-run with --yes to execute.")
         return 1
 
+    if args.no_isolate and args.baseline and not args.i_know:
+        print("\nREFUSED: --no-isolate on a baseline run.", file=sys.stderr)
+        print("A nested agent inherits the installed skill library, so the baseline"
+              " would run with the very skill it is meant to lack, and any delta"
+              " measured against it is meaningless. Drop --no-isolate, or pass"
+              " --i-know to record it anyway.", file=sys.stderr)
+        return 2
+
+    settings = None
+    if not args.no_isolate:
+        skills_dir = args.skills_dir.expanduser().resolve()
+        if not skills_dir.is_dir():
+            print(f"error: --skills-dir {skills_dir} is not a directory", file=sys.stderr)
+            return 2
+        settings = build_isolation_settings(skills_dir, args.allow)
+        if "{settings}" not in args.runner:
+            print("\nREFUSED: the runner command has no {settings} placeholder.", file=sys.stderr)
+            print(f"Isolation needs it, e.g.  --runner '<claude> -p {{prompt}} --settings {{settings}}'",
+                  file=sys.stderr)
+            return 2
+        print(f"  isolation: {len(json.loads(settings.read_text())['skillOverrides'])} "
+              f"installed skill(s) hidden from the runner")
+
     body = "" if args.baseline else skill_body(skill_dir)
     results = []
+    transcripts: list[dict] = []
     for case in cases:
         query = case.get("query", "")
         prompt = query if args.baseline else (
@@ -155,9 +222,11 @@ def main() -> int:
             f"<skill>\n{body}\n</skill>\n\nRequest: {query}")
         attempts = []
         for attempt in range(args.k):
-            transcript, ok = run(args.runner, prompt)
-            verdict = judge(args.judge, case, transcript) if ok else "FAIL"
+            transcript, ok = run(args.runner, prompt, settings)
+            verdict = judge(args.judge, case, transcript, settings) if ok else "FAIL"
             attempts.append(verdict)
+            transcripts.append({"case": case.get("id"), "attempt": attempt + 1,
+                                "verdict": verdict, "prompt": prompt, "transcript": transcript})
             print(f"  {case.get('id', '?'):<24} attempt {attempt + 1}/{args.k}: {verdict}")
         results.append({
             "id": case.get("id"),
@@ -179,6 +248,7 @@ def main() -> int:
         "date": dt.datetime.now().isoformat(timespec="seconds"),
         "k": args.k,
         "model_harness_pair": {"runner": args.runner, "judge": args.judge_model or "unrecorded"},
+        "skills_isolated": not args.no_isolate,
         "pass_pow_k_overall": rate(results),
         "pass_pow_k_regression": rate(results, "regression"),
         "pass_pow_k_capability": rate(results, "capability"),
@@ -189,11 +259,19 @@ def main() -> int:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
 
+    # Retained because "read the transcripts" is the practice that separates a real
+    # regression from noise, and the first version of this runner kept only verdicts.
+    # That made a 0.0% baseline with 5 UNKNOWN verdicts impossible to diagnose without
+    # re-running it, which is how a broken measurement nearly became a recorded number.
+    tr_path = skill_dir / "evals" / f"transcripts-{mode}.json"
+    tr_path.write_text(json.dumps(transcripts, indent=2) + "\n", encoding="utf-8")
+
     print("-" * 72)
     print(f"overall pass^{args.k}: {report['pass_pow_k_overall']:.1%}"
           f"   regression: {report['pass_pow_k_regression']}"
           f"   unknown verdicts: {report['unknown_verdicts']}")
     print(f"written to {out_path.as_posix()}")
+    print(f"transcripts in {tr_path.as_posix()} - read them before believing the number")
 
     if args.baseline:
         print("\nG1 recorded. This is the number everything is measured against.")
@@ -207,6 +285,11 @@ def main() -> int:
         return 2
 
     baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
+    if baseline.get("skills_isolated") is not True:
+        print("\nG5 CANNOT FIRE: the recorded baseline was not skill-isolated, so it ran"
+              " with the installed library and is not a baseline. Re-run G1 without"
+              " --no-isolate.", file=sys.stderr)
+        return 2
     before = baseline.get("pass_pow_k_overall") or 0.0
     after = report["pass_pow_k_overall"] or 0.0
     delta = after - before
