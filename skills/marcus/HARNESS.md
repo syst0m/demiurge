@@ -99,6 +99,11 @@ improved.
 
 - **G5 has never been run on Marcus himself.** The harness enforces a rule its owner has not
   satisfied. Recorded in `PROVENANCE.md`; not hidden.
+- **G5 was unrunnable until 2026-09-05.** A nested agent inherits the installed skill library,
+  so every baseline silently ran with the skill under test. The runner now generates a
+  settings file hiding every installed skill, passed through a `{settings}` placeholder it
+  refuses to run without, and it retains transcripts so a suspect number can be diagnosed
+  rather than re-run.
 - **Deny rules cover Claude's file tools and the Bash file commands Claude Code recognises** —
   `cat`, `head`, `tail`, `sed` — not arbitrary subprocesses. `validate_skill.py` still scans
   `human-only/` deliberately: *not loaded into model context* and *not scanned by a script* are

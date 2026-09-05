@@ -61,6 +61,12 @@ target skill directory. `eval_runner.py` is the only one that spends anything an
 ## What has not been verified
 
 - **G5 has never been run on Marcus.** The harness enforces a rule its owner has not satisfied.
+- **Until 2026-09-05, G5 could not have worked at all.** The first real attempt showed that a
+  nested agent inherits the installed skill library, so the baseline ran *with* the skill it
+  was meant to lack; the runner also discarded transcripts, so the resulting 0.0% with 5 of 9
+  UNKNOWN verdicts could not be diagnosed without reproducing a case by hand. Fixed with
+  skill isolation, transcript retention and three refusal guards. The lesson worth keeping is
+  that the gate reported a number rather than an error, and a number is what gets believed.
 - **The merge has not been measured against the pre-merge Marcus.** No baseline exists for
   "designing an agent", so the claim that gated Marcus is better than checklist Marcus is
   reasoning, not evidence.
