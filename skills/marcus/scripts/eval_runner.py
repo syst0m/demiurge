@@ -31,6 +31,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import re
 import shlex
 import subprocess
 import sys
@@ -105,6 +106,34 @@ def build_isolation_settings(skills_dir: Path, allow: list[str]) -> Path:
     json.dump(settings, handle, indent=2)
     handle.close()
     return Path(handle.name)
+
+
+# A run that never happened must not be scored. These are the shapes the CLI returns
+# when the account is rate-limited, logged out, or refusing before the task starts:
+# short, exit code 0, non-empty, and therefore indistinguishable from an answer to a
+# judge. Observed 2026-09-05: six of nine cases returned "You've hit your session
+# limit - resets 10:30am" as 63-byte transcripts, were graded FAIL, and produced a G5
+# rejection at -11.1% that described the account's billing state rather than the skill.
+INFRA_STUB = re.compile(
+    r"(?i)(hit your (session|usage|rate) limit"
+    r"|resets \d{1,2}[:.]\d{2}\s*(am|pm)"
+    r"|rate.?limit(ed|; )"
+    r"|not logged in|please run /login"
+    r"|invalid api key|authentication_error"
+    r"|overloaded_error|529|service unavailable)")
+STUB_MAX_CHARS = 400   # a real agent answer to these tasks is never this short
+
+
+def looks_like_infra_stub(transcript: str) -> str | None:
+    """Return a reason if this transcript is an infrastructure failure, else None."""
+    stripped = transcript.strip()
+    if not stripped:
+        return "empty transcript"
+    if match := INFRA_STUB.search(stripped):
+        return f"runner returned {match.group(0)!r}"
+    if len(stripped) <= STUB_MAX_CHARS and stripped.startswith("["):
+        return f"runner returned a harness error: {stripped[:120]}"
+    return None
 
 
 def run(command_template: str, prompt: str, settings: Path | None = None) -> tuple[str, bool]:
@@ -219,7 +248,10 @@ def main() -> int:
     body = "" if args.baseline else skill_body(skill_dir)
     results = []
     transcripts: list[dict] = []
+    aborted: tuple[str | None, str] | None = None
     for case in cases:
+        if aborted:
+            break
         query = case.get("query", "")
         prompt = query if args.baseline else (
             f"Apply the following skill to the request that follows it.\n\n"
@@ -227,6 +259,9 @@ def main() -> int:
         attempts = []
         for attempt in range(args.k):
             transcript, ok = run(args.runner, prompt, settings)
+            if reason := looks_like_infra_stub(transcript):
+                aborted = (case.get("id"), reason)
+                break
             verdict = judge(args.judge, case, transcript, settings) if ok else "FAIL"
             attempts.append(verdict)
             transcripts.append({"case": case.get("id"), "attempt": attempt + 1,
@@ -240,6 +275,14 @@ def main() -> int:
             "any_pass": any(v == "PASS" for v in attempts),
             "unknown": attempts.count("UNKNOWN"),
         })
+
+    if aborted:
+        case_id, reason = aborted
+        print(f"ABORTED on case {case_id}: {reason}", file=sys.stderr)
+        print("This is an infrastructure failure, not a task failure, and scoring it would"
+              " describe the account rather than the skill. Nothing was written. Re-run when"
+              " the runner is healthy.", file=sys.stderr)
+        return 2
 
     def rate(rows, suite=None):
         rows = [r for r in rows if suite is None or r["suite"] == suite]
