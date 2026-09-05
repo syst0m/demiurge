@@ -1,0 +1,4 @@
+# Emitted artefact templates, not repo documentation. They are prompt bodies for other
+# platforms - a Gemini Gem takes one flat instruction block, so bold pseudo-headings and
+# a ">>> TARGET:" first line are correct there and would be wrong to "fix".
+skills/marcus/templates/

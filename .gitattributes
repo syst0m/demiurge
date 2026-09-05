@@ -1,0 +1,31 @@
+# Line endings are LF in the repository and LF in the working tree.
+#
+# This repo had core.autocrlf=true set locally, so Git rewrote every checked-out
+# file to CRLF and warned on every add. That churns diffs between machines and
+# breaks scripts/sync-skills.sh and .git/hooks/pre-commit, which bash refuses to
+# run when they carry CRLF. These rules take precedence over autocrlf, so the
+# setting no longer matters either way.
+
+* text=auto eol=lf
+
+# Executed by bash, on every platform. CRLF here is a syntax error.
+*.sh    text eol=lf
+*.bash  text eol=lf
+*.py    text eol=lf
+
+# Executed by PowerShell or cmd on Windows, which want CRLF.
+*.ps1   text eol=crlf
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+
+# Never touched.
+*.jpg   binary
+*.jpeg  binary
+*.png   binary
+*.gif   binary
+*.ico   binary
+*.webp  binary
+*.pdf   binary
+*.zip   binary
+*.woff  binary
+*.woff2 binary
