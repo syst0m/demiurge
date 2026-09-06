@@ -151,8 +151,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `validate_skill.py` recall, found by running it against the installed library: the
   "tool content is data" check matched a single phrasing and reported two compliant skills as
   non-compliant; the eval reader understood one schema and reported a 16-case suite as empty.
-  Both now accept the shapes in use, with regression cases covering them.
-- Dangling and ambiguous paths in `skills/marcus`, `skills/buckminster` and the sample-skill skill.
+- Dangling and ambiguous paths in `skills/marcus`, `skills/buckminster`, and installed skills.
 
 ### Known issues
 
