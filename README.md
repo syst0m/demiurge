@@ -47,15 +47,17 @@ Agent Packages <──emits & proves── Marcus ──checks gates (G0-G6) <�
 | [Research Methodology](skills/buckminster/references/RESEARCH_METHODOLOGY.md) | Tri-source verification protocols, search disciplines, and evidence grading. |
 | [Empirical Knowledge Base](research/RESEARCH.md) | Canonical empirical research: benchmarks, failure modes, and primitives. |
 | [Agent Architecture Spec](skills/marcus/AGENT_ARCHITECTURE.md) | Progressive disclosure specifications and mechanical gate enforcement (G0–G6). |
-| [Executive Research Brief](skills/marcus/human-only/demiurge-brief.html) | Standalone visual briefing: empirical literature, four-tier trust model, and verification taxonomy. |
+| [Executive Research Brief](skills/marcus/human-only/demiurge-brief.md) | Standalone briefing: empirical literature, four-tier trust model, and verification taxonomy ([Markdown](skills/marcus/human-only/demiurge-brief.md) · [Interactive HTML](https://htmlpreview.github.io/?https://github.com/syst0m/demiurge/blob/main/skills/marcus/human-only/demiurge-brief.html)). |
 
 ### Executive Research Brief
 
-[The Demiurge Brief](skills/marcus/human-only/demiurge-brief.html) is a standalone visual report compiling the empirical literature behind automated skill and harness synthesis. Open it directly in a browser.
+The Demiurge Brief synthesizes empirical literature behind automated skill and harness synthesis:
+
+- **[Read on GitHub (Markdown)](skills/marcus/human-only/demiurge-brief.md)**: Natively rendered directly within GitHub.
+- **[Interactive Visual Dashboard (HTML)](https://htmlpreview.github.io/?https://github.com/syst0m/demiurge/blob/main/skills/marcus/human-only/demiurge-brief.html)**: Formatted with custom typography, dark/light themes, and responsive layouts.
+- **[Local Source HTML](skills/marcus/human-only/demiurge-brief.html)**: Standalone HTML file for local offline viewing.
 
 <!-- BEGIN DEMIURGE BRIEF GIST -->
-> **Executive Brief Gist (Auto-generated from [demiurge-brief.html](skills/marcus/human-only/demiurge-brief.html)):**
->
 > #### Four Empirical Constants That Shaped the Design
 >
 > - **7,560**: runs in the only large controlled test of generated skills — which found no improvement over no skill at all

@@ -21,6 +21,7 @@ DEFAULT_TARGETS = [
     "docs/AGENT_DESIGN.md",
     "docs/INSTALLATION.md",
     "README.md",
+    "skills/marcus/human-only/demiurge-brief.md",
     ".agents/rules/artifact-generation.md",
     ".agents/rules/release-management.md",
 ]

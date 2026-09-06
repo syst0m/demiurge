@@ -8,7 +8,8 @@ quoted by an agent.
 
 | File | What it is |
 |---|---|
-| `demiurge-brief.html` | *The Demiurge Executive Brief* — the executive research summary behind this skill's specification. Open it in a browser. |
+| `demiurge-brief.md` | *The Demiurge Executive Brief* — native GitHub-rendered Markdown report compiling the empirical findings. |
+| `demiurge-brief.html` | *The Demiurge Executive Brief (Interactive)* — standalone interactive HTML report with custom typography, dark mode, and responsive layout. |
 
 ## The convention
 
