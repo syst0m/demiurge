@@ -1,13 +1,6 @@
 <div align="center">
   <h1>Demiurge</h1>
   <p><b>Two autonomous agents in an empirical feedback loop. One researches; one designs.</b></p>
-  <p>
-    <a href="docs/DOCUMENTATION.md"><b>Master Documentation</b></a> •
-    <a href="docs/INSTALLATION.md"><b>Installation Guide</b></a> •
-    <a href="docs/OPERATING_GUIDE.md"><b>Operating Guide</b></a> •
-    <a href="docs/AGENT_DESIGN.md"><b>Design Manual</b></a> •
-    <a href="docs/BENCHMARKS.md"><b>Benchmarks</b></a>
-  </p>
 </div>
 
 <div align="center">
@@ -38,29 +31,22 @@ Agent Packages <──emits & proves── Marcus ──checks gates (G0-G6) <�
 - **Strict One-Way Flow:** Buckminster researches; Marcus designs. Marcus never synthesizes an agent from claims absent from `research/RESEARCH.md`.
 - **Human-in-the-Loop Governance:** Nothing merges into `research/RESEARCH.md` without operator approval.
 - **Empirical Grounding:** Marcus ignores any claim absent from `research/RESEARCH.md`.
-- **Deterministic Superiority over Prompts:** Invariants run as deterministic OS processes and automated gate harnesses:
-  - **Negative Parallelism Defense:** Checked across pre-commit and Vale to eliminate rhetorical antithesis tropes across all documentation.
-  - **Superfluous Comment Scanner:** `scripts/scan_superfluous.py` prevents chat transcripts, migration war stories, and session diaries from polluting code comments.
-  - **Strict Reference Verification:** `scripts/check_links.py --strict` ensures all citations resolve to active markdown artifacts or external URIs.
-
-For concrete LLD implementations (harnesses, gates, hooks, evals) and execution commands, see [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md).
+- **Deterministic Superiority over Prompts:** Invariants run as automated OS processes and gate harnesses, enforcing negative parallelism bans (Vale), comment hygiene ([scripts/scan_superfluous.py](scripts/scan_superfluous.py)), and strict link verification ([scripts/check_links.py](scripts/check_links.py)).
 
 ---
 
-## Core Documentation
+## Documentation
 
-Complete architectural details, Low-Level Design (LLD), and mechanical specifications are in [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md).
-
-| Document | Audience | Scope |
-|---|---|---|
-| [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md) | All | Top-Level Design (TLD), Low-Level Design (LLD), and full system specification. |
-| [docs/INSTALLATION.md](docs/INSTALLATION.md) | Developer | Deployment to Claude Code, Antigravity, Gemini CLI, and custom harnesses. |
-| [docs/OPERATING_GUIDE.md](docs/OPERATING_GUIDE.md) | Operator | Operational workflows, prompt examples, caveats, gotchas, and best practices. |
-| [docs/AGENT_DESIGN.md](docs/AGENT_DESIGN.md) | Architect | Human companion guide: structural layers, decision trees, and checklists. |
-| [skills/buckminster/references/RESEARCH_METHODOLOGY.md](skills/buckminster/references/RESEARCH_METHODOLOGY.md) | Researcher | Tri-source verification protocols, search disciplines, and evidence grading. |
-| [research/RESEARCH.md](research/RESEARCH.md) | Both Agents | Canonical empirical knowledge base: benchmarks, failure modes, and standards. |
-| [skills/marcus/AGENT_ARCHITECTURE.md](skills/marcus/AGENT_ARCHITECTURE.md) | Marcus | Machine specification for progressive disclosure and mechanical gate enforcement. |
-| [docs/BENCHMARKS.md](docs/BENCHMARKS.md) | Evaluator | Independent industry benchmarking (SWE-bench, GAIA, Tau-bench) and metrics. |
+| Guide | Scope & Focus |
+|---|---|
+| [Master Documentation](docs/DOCUMENTATION.md) | Top-Level Design (TLD), Low-Level Design (LLD), and full system specification. |
+| [Installation Guide](docs/INSTALLATION.md) | Deployment to Claude Code, Antigravity, Gemini CLI, and custom harnesses. |
+| [Operating Guide](docs/OPERATING_GUIDE.md) | Operational workflows, prompt templates, 7 gotchas, and best practices. |
+| [Design Manual](docs/AGENT_DESIGN.md) | Human companion guide: structural layers, decision trees, and checklists. |
+| [Benchmarks Guide](docs/BENCHMARKS.md) | Independent evaluation (SWE-bench, GAIA, Tau-bench) and metrics engine. |
+| [Research Methodology](skills/buckminster/references/RESEARCH_METHODOLOGY.md) | Tri-source verification protocols, search disciplines, and evidence grading. |
+| [Empirical Knowledge Base](research/RESEARCH.md) | Canonical empirical research: benchmarks, failure modes, and primitives. |
+| [Agent Architecture Spec](skills/marcus/AGENT_ARCHITECTURE.md) | Progressive disclosure specifications and mechanical gate enforcement (G0–G6). |
 
 ---
 
