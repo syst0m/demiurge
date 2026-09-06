@@ -7,8 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-09-06
+
 ### Added
 
+- **`research/RESEARCH.md`** - bumped to v1.2.0 (snapshot date: 2026-09-06). Added Section 10
+  Primitive Taxonomy covering Rules, Skills, Harnesses, Lifecycle Hooks, Plugins, Subagents,
+  and Custom Agents. Added benchmark updates (FrontierCode, SWE-CI, benchmark integrity crisis),
+  worktree safety failure modes & deletion prevention, STORM state management, Agent Plugins 1.0,
+  and MCP stateless spec update. Synchronised to `skills/marcus/references/RESEARCH.md`.
 - **Gates for Marcus.** Seven deterministic gates (G0-G6) now check the seven design steps, as
   rules G-1 to G-10 in a new `PART III - Enforcement` section of `AGENT_ARCHITECTURE.md`.
 - **`skills/marcus/scripts/`** - four stdlib-only Python gates: `validate_skill.py` (format and
@@ -25,8 +32,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`skills/marcus/HARNESS.md`** - Marcus's own harness, declared across the six runtime
   responsibilities.
 - **`skills/marcus/PROVENANCE.md`** - origin, trust tier, and what has not been verified.
-- **`skills/sample-skill/`** - new skill that finds and vets events by place, date, interest and
-  access needs, with `plan_queries.py` owning relative-date resolution.
 - **`human-only/` convention** - rendered deliverables excluded from model context, enforced by a
   `permissions.deny` rule rather than by convention alone.
 - **`skills/buckminster/evals/evals.json`** - 12 cases. The nine regression cases are drawn from the
