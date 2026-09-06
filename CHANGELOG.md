@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-09-06
+
+### Added
+
+- **Cross-Platform Anti-Trope Scanner:** Added `scripts/gate_tropes.py` as a cross-platform Python implementation of the negative parallelism gate, resolving Windows execution barriers in pre-commit and CI.
+- **Tri-Source Verification Discipline:** Enforced mandatory tri-source verification in Buckminster (`skills/buckminster/SKILL.md` and `references/RESEARCH_METHODOLOGY.md`) requiring all findings proposed for `RESEARCH.md` to be supported by ≥3 independent verified resources, with peer-reviewed literature prioritized and vendor sources capped at 1 of 3.
+- **Mandatory Concrete Hyperlinks:** Required all research findings to carry explicit clickable markdown URLs, DOIs, or arXiv links; prohibited vague domain-level mentions.
+- **Ungrounded Claim Gate (G0 & G3):** Updated Marcus's gate definitions (`skills/marcus/references/SPEC.md` and `skills/marcus/AGENT_ARCHITECTURE.md`) with mechanical rejection for any research finding imported into knowledge tiers lacking 3 hyperlinked verified sources (Rule K-6, Rule G-11).
+
+### Changed
+
+- **Standardized `.agents/rules/` Primitives:** Aligned `artifact-generation.md` and `release-management.md` with Section 10 Primitive Specification, including standardized YAML frontmatter (`always_on: true`, cross-platform mappings) and hierarchical headings (`# Context & Trigger`, `## Rules & Directives`, `## Enforcement & Verification`).
+- **Grounded `RESEARCH.md v1.2.0`:** Updated findings across Section 1 (Binding Constraint Thesis), Section 2 (Context Length Degradation), Section 4 (SWE-bench Solution Leakage & Test Quality), Section 6 (Skill Security Flaws & 2.12× Multiplier), and Section 9 (The Productivity-Reliability Paradox & 91% Review Bottleneck) with concrete DOIs and peer-reviewed citations. Synchronized to `skills/marcus/references/RESEARCH.md`.
+
 ## [0.1.3] - 2026-09-06
 
 ### Added

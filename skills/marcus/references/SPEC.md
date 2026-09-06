@@ -79,6 +79,7 @@ Required before proceeding:
 2. **What "correct" looks like**, checkable by someone who was not there.
 3. **Data touched** and **write surface** (what it can mutate).
 4. **Deployment volume estimate** — feeds the economics warning above.
+5. **Tri-source grounded research**: Any research claim or knowledge finding imported into `RESEARCH.md` or proposed for an agent knowledge tier that lacks at least 3 independent hyperlinked verified sources (or where vendor sources exceed 1 of 3) is mechanically rejected at intake.
 
 If the user cannot produce three real instances, the honest output is: *"There is not yet enough
 evidence that this skill is needed. Come back after it fails three times."* That is a legitimate
@@ -113,6 +114,7 @@ Write the minimum that addresses the measured gap.
 - Each skill is a **contract** — preconditions, post-effects, applicability boundary, verification
   rule. This is the one idea with peer-reviewed support (EVIDENCE §0, §2).
 - Progressive disclosure: SKILL.md is a table of contents; detail goes to `references/`, one level deep.
+- **Ungrounded claims rejected**: Any research claim or knowledge finding destined for `RESEARCH.md` or an agent knowledge tier (`SKILL.md`, `references/`) that lacks 3 independent hyperlinked verified sources is mechanically rejected. No claim reaches the draft without tri-source grounding.
 
 ### G4 — Validate (auto) — `scripts/validate_skill.py`
 
@@ -255,6 +257,7 @@ The factory says no, and says which finding it is applying:
 | **Unjustified scripts** | Bundled executables without a recorded reason | §5 |
 | **Untrusted import** | T4 dependency | §5 |
 | **Unsafe gain** | Success up, unsafe-action rate up | §4 |
+| **Ungrounded claim** | Research claim or knowledge finding lacking 3 hyperlinked verified sources | §1, §7 (Tri-source rule) |
 
 ---
 
@@ -281,3 +284,4 @@ The factory says no, and says which finding it is applying:
 | Format limits enforced by script | §7 |
 | Minimum three evals; two suites | §7 |
 | Human-in-the-loop acceptance | §2 (EvoAgentBench) |
+| Tri-source verified citations (≥3 hyperlinked sources) before knowledge tier import | §1, §7 — ungrounded claims propagate catastrophic hallucinations |
