@@ -28,10 +28,9 @@ Buckminster ──proposes diff──> Operator Sign-Off ──merges──> res
 Agent Packages <──emits & proves── Marcus ──checks gates (G0-G6) <────┘
 ```
 
-- **Strict One-Way Flow:** Buckminster researches; Marcus designs. Marcus never synthesizes an agent from claims absent from `research/RESEARCH.md`.
-- **Human-in-the-Loop Governance:** Nothing merges into `research/RESEARCH.md` without operator approval.
-- **Empirical Grounding:** Marcus ignores any claim absent from `research/RESEARCH.md`.
-- **Deterministic Superiority over Prompts:** Invariants run as automated OS processes and gate harnesses, enforcing negative parallelism bans (Vale), comment hygiene ([scripts/scan_superfluous.py](scripts/scan_superfluous.py)), and strict link verification ([scripts/check_links.py](scripts/check_links.py)).
+- **Strict One-Way Flow:** Buckminster researches; Marcus designs. Marcus ignores claims unlisted in `research/RESEARCH.md`.
+- **Human Governance:** Knowledge base updates require explicit operator approval.
+- **Deterministic Gates:** Invariants execute via OS processes: Vale for trope elimination, [scripts/scan_superfluous.py](scripts/scan_superfluous.py) for comment hygiene, and [scripts/check_links.py](scripts/check_links.py) for reference integrity.
 
 ---
 
@@ -68,37 +67,34 @@ Agent Packages <──emits & proves── Marcus ──checks gates (G0-G6) <�
 
 ## Evidence & Empirical Discipline
 
-Demiurge rejects prompt folklore, marketing claims, and unmeasured assumptions. Every architectural decision, rule, and skill generation pipeline is grounded in verifiable empirical data:
+Architectural decisions anchor exclusively in verifiable empirical data:
 
-1. **Tri-Source Verification (Rule K-6):** Every finding proposed for `research/RESEARCH.md` requires a minimum of three independent, hyperlinked citations. Peer-reviewed scientific literature is prioritized over open specifications; vendor reports are capped at one of the three.
-2. **Strict Grounding Gate (G0 & G3):** Marcus mechanically rejects any design proposal or skill synthesis whose claims lack verified entries in `research/RESEARCH.md`.
-3. **Evidence Confidence Taxonomy:** Claims in `research/RESEARCH.md` carry explicit confidence markers that dictate how Marcus acts upon them:
+- **Tri-Source Verification (Rule K-6):** Findings require three independent citations; peer-reviewed research prioritized; vendor citations capped at one.
+- **Strict Grounding Gates (G0 & G3):** Marcus blocks skill synthesis absent validated entries in `research/RESEARCH.md`.
+- **Confidence Taxonomy:**
 
-| Marker | Empirical Standard | Marcus Action & Architectural Enforcement |
+| Marker | Standard | Architectural Action |
 |---|---|---|
-| `[SETTLED]` | Replicated empirical data or adopted open standards. | Enforce as mandatory default architecture and deterministic gate policy. |
-| `[CONTESTED]` | Conflicting empirical results or single un-replicated study. | Expose to operator as an explicit configurable trade-off; no silent defaults. |
-| `[VENDOR]` | Originates from an entity commercially selling the solution. | Exclude from defaults; declare commercial conflict and require operator opt-in. |
-| `[EMERGING]` | Mechanistically sound; lacks longitudinal production testing. | Document in architectural research notes; exclude from gating enforcement. |
+| `[SETTLED]` | Replicated empirical data or open standards. | Mandatory default architecture; deterministic gate policy. |
+| `[CONTESTED]` | Conflicting data or single un-replicated study. | Configurable operator trade-off; requires explicit selection. |
+| `[VENDOR]` | Produced by commercial vendor. | Opt-in requirement; flagged commercial interest. |
+| `[EMERGING]` | Mechanistically sound; unverified in production. | Documented in research notes; excluded from gating. |
 
 ---
 
 ## Independent Benchmarking & Validation
 
-Demiurge measures its architectural efficacy against bare foundation models using standard industry benchmarks. Framework overhead is justified only when delivering a positive resolution lift ($\Delta > 0$) alongside lower net execution cost.
+Demiurge validates framework utility against bare foundation models. Architectural overhead requires positive resolution lift ($\Delta > 0$) and reduced unit cost. Specifications reside in [docs/BENCHMARKS.md](docs/BENCHMARKS.md).
 
-Complete benchmarking architecture, multi-benchmark roadmaps, telemetry formulas, and execution guides are documented in [docs/BENCHMARKS.md](docs/BENCHMARKS.md).
+### Latest Benchmark: SWE-bench Lite (`v0.2.0-swebench-001`)
 
-### Latest Benchmark Performance (`v0.2.0-swebench-001`)
+Evaluated on [SWE-bench Lite](https://www.swebench.com/) (Arm A: Bare Model vs. Arm B: Demiurge) using `claude-3-5-sonnet-20241022`:
 
-Evaluated on [SWE-bench Lite](https://www.swebench.com/) comparing **Arm A (Bare Model)** against **Arm B (Demiurge Architecture)** using `claude-3-5-sonnet-20241022`:
-
-| Metric | Bare Foundation Model | Demiurge Architecture | Net Lift / Delta |
+| Metric | Bare Foundation Model | Demiurge Architecture | Delta ($\Delta$) |
 |---|---|---|---|
-| **Task Resolution Rate** | 40.00% (2 / 5) | **80.00% (4 / 5)** | **+40.00% ($\Delta$)** |
+| **Task Resolution Rate** | 40.00% (2 / 5) | **80.00% (4 / 5)** | **+40.00%** |
 | **Prompt-Cache Hit Ratio** | 20.00% | **82.00%** | **+62.00%** |
-| **Mean Turns to Solution** | 7.80 turns | **7.40 turns** | **-0.40 turns** |
+| **Mean Turns to Solution** | 7.80 | **7.40** | **-0.40** |
 | **Cost per Resolved Task** | $0.2050 | **$0.0533** | **-74.00%** |
 
-- **Summary of Findings:** Demiurge achieved an 80% pass rate (+40% lift) by enforcing Marcus's local failure reproduction and pre-submission write gating. Anchoring static rules at `.agents/rules/` yielded an 82% prompt-cache hit ratio, cutting the cost per resolved task by 74%.
-- **Detailed Reports:** See the [SWE-bench v0.2.0 Summary Report](docs/reports/swebench_v020_summary.md) for full telemetry breakdowns.
+Gate enforcement and test reproduction drove the 80% resolution rate (+40% lift). Anchoring static rules at `.agents/rules/` achieved an 82% cache hit ratio, cutting cost per fix by 74%. Telemetry details are in the [SWE-bench v0.2.0 Summary Report](docs/reports/swebench_v020_summary.md).
