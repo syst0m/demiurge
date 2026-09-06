@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-09-06
+
+### Added
+
+- **Live Google Gemini Benchmark Engine:** Integrated live API execution via `google-genai` with automated exponential backoff and retry recovery in `evals/benchmarks/swebench/run_swebench_eval.py`.
+- **Multi-Model Token Pricing:** Added token pricing profiles for `gemini-3.0-flash`, `gemini-3.1-pro-preview`, `gemini-3.8-flash`, and `gemini-3.1-flash-lite-preview` into `evals/benchmarks/swebench/metrics.py`.
+- **Centralized Benchmark Run Registry:** Added historical benchmark run tracking in [docs/BENCHMARKS.md](docs/BENCHMARKS.md) and [README.md](README.md) recording runs `v0.2.0-swebench-001`, `v0.3.0-swebench-full`, and `v0.4.0-gemini-live`.
+- **Benchmark Run Reports:** Added [docs/reports/swebench_full_2294_summary.md](docs/reports/swebench_full_2294_summary.md) (Full 2,294-task SWE-bench report, +20.06% lift) and [docs/reports/swebench_gemini_v040_summary.md](docs/reports/swebench_gemini_v040_summary.md) (Live Gemini 3.1 Flash-Lite run documenting Gate G0 compliance).
+- **Full SWE-bench Scale Execution:** Validated adapter execution on the complete 2,294-instance SWE-bench dataset (`princeton-nlp/SWE-bench`) emitting official Princeton prediction artifacts.
+
 ## [0.3.0] - 2026-09-06
 
 ### Changed

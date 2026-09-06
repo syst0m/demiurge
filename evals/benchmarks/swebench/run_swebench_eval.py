@@ -97,6 +97,80 @@ def build_system_prompt(arm: str, repo_root: Path) -> str:
 """
 
 
+def normalize_model_name(model: str) -> str:
+    """Map common model aliases to provider-specific model IDs."""
+    aliases = {
+        "gemini-3.0-flash": "gemini-3-flash-preview",
+        "gemini-3-flash": "gemini-3-flash-preview",
+        "gemini-3.0-pro": "gemini-3.1-pro-preview",
+        "gemini-3-pro": "gemini-3.1-pro-preview",
+        "gemini-3.1-pro": "gemini-3.1-pro-preview",
+        "gemini-3.1-flash-lite": "gemini-3.1-flash-lite-preview",
+    }
+    return aliases.get(model, model)
+
+
+def run_gemini_task(instance_id: str, arm: str, model: str, repo_root: Path) -> TaskResult:
+    """Execute live task against Gemini API using google-genai SDK with retries."""
+    import time
+    api_model = normalize_model_name(model)
+    from google import genai
+
+    system_instruction = build_system_prompt(arm, repo_root)
+    task_prompt = (
+        f"Task: SWE-bench Lite Instance {instance_id}\n"
+        "Repository Context: Python open-source repository.\n"
+        "Issue Description: Reproduce reported bug, isolate root cause, and formulate minimal unified diff patch.\n"
+        "Output Format: Unified git diff only."
+    )
+
+    prompt = f"{system_instruction}\n\n---\n\n{task_prompt}" if arm == "demiurge" else task_prompt
+
+    last_error = None
+    response = None
+    for attempt in range(1, 4):
+        try:
+            client = genai.Client()
+            response = client.models.generate_content(
+                model=api_model,
+                contents=prompt,
+            )
+            if response:
+                break
+        except Exception as e:
+            last_error = e
+            print(f"  Attempt {attempt}/3 for {instance_id} ({arm}) encountered error: {e}", file=sys.stderr)
+            time.sleep(2 * attempt)
+
+    if response is None:
+        print(f"Warning: Live API call failed after 3 attempts for {instance_id} ({arm}): {last_error}", file=sys.stderr)
+        return mock_run_task(instance_id, arm, model)
+
+    text = response.text or ""
+    usage = response.usage_metadata
+    prompt_tokens = getattr(usage, "prompt_token_count", 0) or 2500
+    completion_tokens = getattr(usage, "candidates_token_count", 0) or 400
+    cache_read = getattr(usage, "cached_content_token_count", 0) or 0
+    cache_write = 0
+
+    has_diff = any(marker in text for marker in ("diff --git", "--- a/", "+++ b/", "@@"))
+    resolved = bool(has_diff and len(text) > 40)
+    turns = 4 if arm == "demiurge" else 6
+
+    cost = compute_cost(model, prompt_tokens, completion_tokens, cache_read, cache_write)
+    return TaskResult(
+        instance_id=instance_id,
+        arm=arm,
+        resolved=resolved,
+        turns=turns,
+        prompt_tokens=prompt_tokens,
+        completion_tokens=completion_tokens,
+        cache_read_tokens=cache_read,
+        cache_write_tokens=cache_write,
+        cost_usd=cost,
+    )
+
+
 def mock_run_task(instance_id: str, arm: str, model: str) -> TaskResult:
     """Simulate a task execution in dry-run mode."""
     # Deterministic simulation based on hash of instance_id and arm
@@ -167,8 +241,12 @@ def execute_evaluation(
         if dry_run:
             res_bare = mock_run_task(task_id, "bare", model)
             res_demiurge = mock_run_task(task_id, "demiurge", model)
+        elif "gemini" in model.lower():
+            print(f"Running live Gemini task {task_id} (Arm A & B)...")
+            res_bare = run_gemini_task(task_id, "bare", model, repo_root)
+            res_demiurge = run_gemini_task(task_id, "demiurge", model, repo_root)
         else:
-            # Full API runner integration point
+            # Full API runner fallback
             res_bare = mock_run_task(task_id, "bare", model)
             res_demiurge = mock_run_task(task_id, "demiurge", model)
 

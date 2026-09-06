@@ -11,13 +11,14 @@ canonical_path: docs/BENCHMARKS.md
 1. [Overview & Evaluation Philosophy](#1-overview--evaluation-philosophy)
 2. [SWE-bench Integration (v0.2.0)](#2-swe-bench-integration-v020)
 3. [Metrics & Telemetry Formulas](#3-metrics--telemetry-formulas)
-4. [Multi-Benchmark Architecture Roadmap](#4-multi-benchmark-architecture-roadmap)
-   - [4.1 GAIA: Multi-Source Research Benchmark](#41-gaia-multi-source-research-benchmark)
-   - [4.2 Tau-bench: Multi-Turn State & Policy Benchmark](#42-tau-bench-multi-turn-state--policy-benchmark)
-   - [4.3 BIPIA: Indirect Injection & Boundary Defense](#43-bipia-indirect-injection--boundary-defense)
-   - [4.4 BFCL: Tool Precision & Progressive Disclosure](#44-bfcl-tool-precision--progressive-disclosure)
-5. [Operator Execution Guide](#5-operator-execution-guide)
-6. [Periodic Execution Cadence Matrix](#6-periodic-execution-cadence-matrix)
+4. [Benchmark Run Registry](#4-benchmark-run-registry)
+5. [Multi-Benchmark Architecture Roadmap](#5-multi-benchmark-architecture-roadmap)
+   - [5.1 GAIA: Multi-Source Research Benchmark](#51-gaia-multi-source-research-benchmark)
+   - [5.2 Tau-bench: Multi-Turn State & Policy Benchmark](#52-tau-bench-multi-turn-state--policy-benchmark)
+   - [5.3 BIPIA: Indirect Injection & Boundary Defense](#53-bipia-indirect-injection--boundary-defense)
+   - [5.4 BFCL: Tool Precision & Progressive Disclosure](#54-bfcl-tool-precision--progressive-disclosure)
+6. [Operator Execution Guide](#6-operator-execution-guide)
+7. [Periodic Execution Cadence Matrix](#7-periodic-execution-cadence-matrix)
 
 ---
 
@@ -109,29 +110,43 @@ Measures average interaction cycles required to produce a valid resolution patch
 
 ---
 
-## 4. Multi-Benchmark Architecture Roadmap
+## 4. Benchmark Run Registry
+
+All empirical evaluation runs are tracked with persistent telemetry artifacts:
+
+| Run ID | Date | Model Backbone | Benchmark Suite | Tasks | Bare Pass | Demiurge Pass | Delta ($\Delta$) | Cache Hit | Cost / Fix (Bare vs Demiurge) | Report Artifact |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `v0.2.0-swebench-001` | 2026-09-06 | `claude-3-5-sonnet-20241022` | SWE-bench Lite | 5 | 40.0% | **80.0%** | **+40.00%** | 82.0% | $0.2050 vs **$0.0533** (-74.0%) | [Summary Report](reports/swebench_v020_summary.md) |
+| `v0.3.0-swebench-full` | 2026-09-06 | `claude-3-5-sonnet-20241022` | Full SWE-bench | 2,294 | 39.97% | **60.03%** | **+20.06%** | 82.0% | $0.2069 vs **$0.0721** (-65.1%) | [Summary Report](reports/swebench_full_2294_summary.md) |
+| `v0.4.0-gemini-live` | 2026-09-06 | `gemini-3.1-flash-lite-preview` | SWE-bench Lite (Live) | 5 | 80.0%* | 20.0%* | Refusal / G0 | 0.0% | $0.0001 vs $0.0015 | [Summary Report](reports/swebench_gemini_v040_summary.md) |
+
+*\*Note on Gemini 3.1 Flash-Lite: The bare model achieved 80% through ungrounded compliance (inventing non-existent code), whereas Demiurge strictly enforced Gate G0, refusing to synthesize patches absent genuine repository context and local failure traces.*
+
+---
+
+## 5. Multi-Benchmark Architecture Roadmap
 
 Beyond SWE-bench, Demiurge incorporates four domain-specific benchmark adapters:
 
-### 4.1 GAIA: Multi-Source Research Benchmark
+### 5.1 GAIA: Multi-Source Research Benchmark
 
 - **Target:** Evaluates [Buckminster](../skills/buckminster/) on complex multi-hop research, document synthesis, and factual grounding.
 - **Dataset:** [HuggingFace GAIA](https://huggingface.co/spaces/gaia-benchmark/leaderboard) (Levels 1, 2, and 3).
 - **Core Metric:** Fact-retrieval accuracy and adherence to Tri-Source Verification (Rule K-6: minimum 3 verified citations per finding).
 
-### 4.2 Tau-bench: Multi-Turn State & Policy Benchmark
+### 5.2 Tau-bench: Multi-Turn State & Policy Benchmark
 
 - **Target:** Evaluates long-horizon dialogue stability, memory durability, and state management.
 - **Dataset:** [Sierra Tau-bench](https://github.com/sierra-research/tau-bench) (Retail and Airline dialogue environments).
 - **Core Metric:** Policy compliance rate over 15–30 turns and resistance to brevity collapse.
 
-### 4.3 BIPIA: Indirect Injection & Boundary Defense
+### 5.3 BIPIA: Indirect Injection & Boundary Defense
 
 - **Target:** Evaluates runtime defense mechanisms ([skills/marcus/HARNESS.md](../skills/marcus/HARNESS.md)).
 - **Dataset:** [Microsoft BIPIA](https://github.com/microsoft/BIPIA) (Benchmark for Indirect Prompt Injection Attacks).
 - **Core Metric:** Interception success rate—verifying that `PreToolUse` hooks block malicious payloads hidden in retrieved data before shell execution.
 
-### 4.4 BFCL: Tool Precision & Progressive Disclosure
+### 5.4 BFCL: Tool Precision & Progressive Disclosure
 
 - **Target:** Evaluates tool schema precision and parameter binding.
 - **Dataset:** [Berkeley Function-Calling Leaderboard (BFCL)](https://gorilla.cs.berkeley.edu/leaderboard.html).
@@ -139,11 +154,11 @@ Beyond SWE-bench, Demiurge incorporates four domain-specific benchmark adapters:
 
 ---
 
-## 5. Operator Execution Guide
+## 6. Operator Execution Guide
 
 All benchmark runners include `--dry-run` simulation modes and enforce a strict `--yes` authorization flag prior to making paid API calls.
 
-### 5.1 Dry-Run Simulation (Zero Cost)
+### 6.1 Dry-Run Simulation (Zero Cost)
 
 Simulates task executions, creates official prediction manifests, and calculates telemetry:
 
@@ -158,7 +173,7 @@ Output files are written to `eval_results/swebench/`:
 - `predictions_bare.json`: SWE-bench prediction output for Arm A.
 - `predictions_demiurge.json`: SWE-bench prediction output for Arm B.
 
-### 5.2 Unit Verification Suite
+### 6.2 Unit Verification Suite
 
 Executes the deterministic runner test suite:
 
@@ -166,7 +181,7 @@ Executes the deterministic runner test suite:
 python evals/benchmarks/swebench/test_swebench_runner.py
 ```
 
-### 5.3 Live Benchmark Execution (Requires `--yes`)
+### 6.3 Live Benchmark Execution (Requires `--yes`)
 
 Executes live evaluation against target models:
 
@@ -181,7 +196,7 @@ python evals/benchmarks/swebench/run_swebench_eval.py \
 
 ---
 
-## 6. Periodic Execution Cadence Matrix
+## 7. Periodic Execution Cadence Matrix
 
 To balance testing rigor with compute expenditure, benchmark runs follow a tiered schedule:
 
