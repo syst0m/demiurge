@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-09-06
+
+### Fixed
+
+- **Absolute Local Path Sanitization:** Replaced all occurrences of absolute user filesystem paths with canonical repository-relative paths across `skills/marcus/SKILL.md`, `skills/marcus/AGENT_ARCHITECTURE.md`, `skills/marcus/human-only/skill-factory-brief.html`, and `skills/buckminster/SKILL.md`.
+- **Git History Purge:** Rewrote repository commit history to eliminate all historical occurrences of local path structures across all previous commit diffs and commit messages.
+
 ## [0.4.1] - 2026-09-06
 
 ### Fixed
