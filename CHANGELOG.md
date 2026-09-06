@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-06
+
+### Added
+
+- **SWE-bench Independent Benchmarking Suite:** Implemented native benchmarking adapter (`evals/benchmarks/swebench/run_swebench_eval.py`) comparing Arm A (Bare Foundation Model) against Arm B (Demiurge Dual-Agent Architecture) on SWE-bench Lite. Supports dry-run simulation and live API execution guarded by `--yes`.
+- **Comparative Telemetry & Metrics Engine:** Added `evals/benchmarks/swebench/metrics.py` calculating Resolution Lift ($\Delta$), Prompt-Cache Hit Ratio, Cost per Resolved Task (USD), and Turn Economy.
+- **Benchmarking Guide & Multi-Benchmark Roadmap:** Added [docs/BENCHMARKS.md](docs/BENCHMARKS.md) detailing architecture, metrics formulas, execution guides, and implementation roadmaps for GAIA, Tau-bench, BIPIA, and BFCL alongside periodic execution cadences.
+- **Benchmark Run Telemetry & Reports:** Added [docs/reports/swebench_v020_summary.md](docs/reports/swebench_v020_summary.md) recording run `v0.2.0-swebench-001` results (+40.00% resolution lift, 82.0% prompt-cache hit ratio, 74% cost reduction per resolved fix).
+- **Independent Benchmarking Section:** Added dedicated benchmarking section to `README.md` and `docs/DOCUMENTATION.md` linking to `docs/BENCHMARKS.md` and performance summaries.
+
+### Changed
+
+- **Evidence & Empirical Discipline:** Expanded Evidence section in `README.md` detailing the epistemological principles, Tri-Source Verification (Rule K-6), strict grounding gates (G0 & G3), and confidence taxonomy enforcement.
+- **Architecture Section Streamlining:** Condensed top-level negative parallelism defense description in `README.md` while preserving technical Go RE2 regex parser specifications in `docs/DOCUMENTATION.md`.
+
 ## [0.1.5] - 2026-09-06
 
 ### Added
