@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-06
+
+### Changed
+
+- **README Streamlining:** Condensed the main `README.md` by consolidating deterministic gate specifications into a single declarative sentence.
+- **Unified Documentation Index:** Merged top header navigation and Core Documentation into a compact 2-column guide table preserving all canonical documentation references.
+- **Redundancy Reduction:** Eliminated duplicate Low-Level Design (LLD) reference sentences across the introduction and architectural overview.
+
 ## [0.2.0] - 2026-09-06
 
 ### Added
