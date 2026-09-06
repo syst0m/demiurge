@@ -85,14 +85,14 @@ Build progress:
 **G0 is the gate most worth defending.** It is Step 1's question 5 — *what has gone wrong before?* —
 turned into an entry price. If the user cannot produce three real instances where this failed or was
 tediously re-explained, the correct output is: *"There is not yet enough evidence that this skill is
-needed — come back after it fails three times."* That is a finished piece of work, not a refusal.
+needed — come back after it fails three times."* That is a complete and valid piece of work.
 
 **G2 is where quality comes from.** Contrast successful against failed trajectories on the same
 task, and name for each candidate instruction the outcome difference it explains. Drop every
 candidate with no named difference, however sensible it reads — plausibility is precisely what the
 7,560-run study shows to be worthless.
 
-**G4 replaced the self-audit checklist.** Rule V-4 says invariants become hooks, not prompt lines,
+**G4 replaced the self-audit checklist.** Rule V-4 says invariants become hooks,
 because models forget and hooks do not. The checklist in `AGENT_ARCHITECTURE.md` §6 was a prompt
 line. It is now `scripts/validate_skill.py`. Run it; do not perform it from memory.
 

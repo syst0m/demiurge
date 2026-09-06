@@ -1,70 +1,89 @@
 <div align="center">
   <h1>Demiurge</h1>
+  <p><b>Two autonomous agents in an empirical feedback loop. One researches; one designs.</b></p>
+  <p>
+    <a href="docs/DOCUMENTATION.md"><b>Master Documentation</b></a> •
+    <a href="docs/INSTALLATION.md"><b>Installation Guide</b></a> •
+    <a href="docs/OPERATING_GUIDE.md"><b>Operating Guide</b></a> •
+    <a href="docs/AGENT_DESIGN.md"><b>Design Manual</b></a>
+  </p>
 </div>
 
 <div align="center">
   <img src="assets/demiurge_photo.jpg" width="400" alt="Demiurge Photo">
 </div>
 
-Two agents that build and maintain other agents. Self-contained, with zero external dependencies.
+Demiurge isolates empirical research from agent synthesis. Self-contained, dependency-free, and anchored on deterministic quality gates.
 
-> **[Installation & Setup Guide](docs/INSTALLATION.md)**
-> Inject Marcus and Buckminster into Claude, Gemini, OpenAI, or your local IDE.
-
-| Agent | Role |
-|---|---|
-| **Marcus** | Designs and generates agents. Emits them as installable packages (Claude, Gemini, CLI, web chat). |
-| **Buckminster** | Researches agentic engineering. Proposes graded updates to Marcus's knowledge base. |
+| Agent | Responsibility | Core Principle |
+|---|---|---|
+| **Marcus** | Designs, scaffolds, audits, and proves agent skills. | Refuses to ship any agent without measured evidence. |
+| **Buckminster** | Researches agentic engineering and standards. | Every claim requires 3 verified, hyperlinked sources. |
 
 Named for Marcus Aurelius (wrote guidance, then followed it) and Buckminster Fuller (comprehensive anticipatory design science).
+
+---
 
 ## Architecture
 
 ```
-Buckminster ──writes──> research/RESEARCH.md ──read by──> Marcus ──generates──> agent packages
-     ▲                                                        │
-     └──────────── user signs off on every change ────────────┘
+Buckminster ──proposes diff──> Operator Sign-Off ──merges──> research/RESEARCH.md
+                                                                      │
+                                                                   read by
+                                                                      │
+Agent Packages <──emits & proves── Marcus ──checks gates (G0-G6) <────┘
 ```
 
-**One-directional flow:** Buckminster researches, Marcus designs. If Marcus lacks a fact, it halts and requests a Buckminster research pass. Ungraded facts cannot bypass this loop.
+- **Strict One-Way Flow:** Buckminster researches; Marcus designs. Marcus never synthesizes an agent from claims absent from `research/RESEARCH.md`.
+- **Human-in-the-Loop Governance:** Nothing merges into `research/RESEARCH.md` without operator approval.
+- **Empirical Grounding:** Marcus ignores any claim absent from `research/RESEARCH.md`.
+- **Deterministic Superiority over Prompts:** Invariants run as deterministic OS processes and automated gate harnesses:
+  - **Negative Parallelism & Trope Defense:** Checked across pre-commit (`scripts/gate_tropes.py`, `scripts/gate-tropes.sh`) and Vale (`.vale/styles/Foundry/NegativeParallelism.yml`). Vale uses Go RE2 without lookaround or backreferences; it concatenates `raw` entries sequentially, requiring all alternate forms in a single unified regex. Catches front-negated and tail-negated patterns across markdown.
+  - **Superfluous Comment Scanner:** `scripts/scan_superfluous.py` prevents chat transcripts, migration war stories, and session diaries from polluting code comments.
+  - **Strict Reference Verification:** `scripts/check_links.py --strict` ensures all citations resolve to active markdown artifacts or external URIs.
 
-## Directory Layout
+---
 
-| Path | Purpose |
-|---|---|
-| `research/RESEARCH.md` | **The shared snapshot.** Writable only by Buckminster. |
-| `skills/marcus/` | Marcus's source files (`SKILL.md`, `AGENT_ARCHITECTURE.md`, templates). |
-| `skills/buckminster/` | Buckminster's source files (`SKILL.md`, `RESEARCH_METHODOLOGY.md`). |
-| `scripts/sync-skills.sh` | Deploys to `~/.claude/skills/` and distributes `RESEARCH.md`. |
+## Core Documentation
 
-**Rule:** Edit `skills/` directly. Never edit `~/.claude/skills/` (it will be overwritten).
+Complete architectural details, Low-Level Design (LLD), and mechanical specifications are in [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md).
 
-## Maintained Documents
-
-| File | Audience | Trigger |
+| Document | Audience | Scope |
 |---|---|---|
-| `AGENT_ARCHITECTURE.md` | Machine (Marcus's generation spec) | `RESEARCH.md` version bump |
-| `docs/AGENT_DESIGN.md` | Human (Flowcharts, checklists) | `RESEARCH.md` version bump |
+| [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md) | All | Top-Level Design (TLD), Low-Level Design (LLD), and full system specification. |
+| [docs/INSTALLATION.md](docs/INSTALLATION.md) | Developer | Deployment to Claude Code, Antigravity, Gemini CLI, and custom harnesses. |
+| [docs/OPERATING_GUIDE.md](docs/OPERATING_GUIDE.md) | Operator | Operational workflows, prompt examples, caveats, gotchas, and best practices. |
+| [docs/AGENT_DESIGN.md](docs/AGENT_DESIGN.md) | Architect | Human companion guide: structural layers, decision trees, and checklists. |
+| [skills/buckminster/references/RESEARCH_METHODOLOGY.md](skills/buckminster/references/RESEARCH_METHODOLOGY.md) | Researcher | Tri-source verification protocols, search disciplines, and evidence grading. |
+| [research/RESEARCH.md](research/RESEARCH.md) | Both Agents | Canonical empirical knowledge base: benchmarks, failure modes, and standards. |
+| [skills/marcus/AGENT_ARCHITECTURE.md](skills/marcus/AGENT_ARCHITECTURE.md) | Marcus | Machine specification for progressive disclosure and mechanical gate enforcement. |
 
-Marcus tags generated files with a `derived_from` header pointing to the `RESEARCH.md` version. If `RESEARCH.md` changes, Marcus reports the drift but does not silently regenerate old agents. Production agents remain pinned to their snapshot.
+---
+
+## Repository Layout
+
+| Path | Contents |
+|---|---|
+| `.agents/` | Canonical workspace configuration and path-scoped rules (`.agents/rules/`). |
+| `assets/` | Project diagrams, media, and visual assets. |
+| `docs/` | System documentation: Master Documentation, Installation, Operations, and Design. |
+| `research/` | Master empirical knowledge base (`RESEARCH.md`) maintained via reviewed proposals. |
+| `scripts/` | Deterministic verification harnesses, security linters, link checkers, and sync tools. |
+| `skills/` | Source definitions for Marcus (`skills/marcus/`) and Buckminster (`skills/buckminster/`). |
+
+*Note: Edit files in `skills/` directly. Never edit deployed skill directories manually.*
+
+---
 
 ## Evidence Grading
 
-Every claim in `RESEARCH.md` requires a marker. This dictates Marcus's behavior:
+Claims in `research/RESEARCH.md` require explicit confidence markers:
 
-| Marker | Criteria | Marcus Action |
+| Marker | Standard | Marcus Action |
 |---|---|---|
-| `[SETTLED]` | Multiple independent/empirical sources | Encode as default behavior. |
-| `[CONTESTED]` | Conflicting credible sources, or single study | Offer as an option. State the disagreement. |
-| `[VENDOR]` | Source sells the solution | Do not encode. Cite conflict if mentioned. |
-| `[EMERGING]` | Real, but untested in production | Add to design notes only. |
+| `[SETTLED]` | Replicated empirical data or adopted open standards. | Enforce as default architecture and gate policy. |
+| `[CONTESTED]` | Conflicting empirical results or single un-replicated study. | Expose to operator as a configurable option. |
+| `[VENDOR]` | Originates from an entity commercially selling the solution. | Exclude from defaults; declare commercial conflict. |
+| `[EMERGING]` | Mechanistically sound; lacks longitudinal production testing. | Document in design notes only; exclude from gates. |
 
-This forces agents to anchor on verifiable evidence.
-
-## Scheduled Research
-
-The `agentic-research-sweep` routine runs Buckminster on a schedule. It generates a **diff proposal** containing new findings, retractions, and verifications.
-
-Nothing merges into `RESEARCH.md` without explicit user sign-off, as changes propagate to all subsequently generated agents.
-
-Manage via `/schedule` or scheduled-tasks tooling.
+For concrete LLD implementations (harnesses, gates, hooks, evals) and execution commands, see [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md).

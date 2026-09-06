@@ -8,13 +8,13 @@ Run it; do not read it.
 Exit codes:
     0  distinct enough to register
     1  moderate overlap - the description must name a distinguishing situation
-    2  high overlap - this is a revision of an existing skill, not a new one
+    2  high overlap - this build is a revision of an existing skill
 
 Why this gate exists: selection accuracy does not decay smoothly as a library grows, it
 falls off a cliff, and same-capability ambiguity is the documented failure mode. Scoring
 weights the *trigger* clause above the *what it does* clause, because the trigger is what a
 request is actually matched against - the reviewed result here is that retrieval must score
-constraint consistency, not text similarity. See references/EVIDENCE.md section 6.
+constraint consistency. See references/EVIDENCE.md section 6.
 Stdlib only.
 """
 
@@ -152,7 +152,7 @@ def main() -> int:
         print("-" * 72)
         if verdict == "revision":
             print(f"G6 FAILED. Overlap {top[0]:.3f} with '{top[1]}' is above {args.threshold}.")
-            print("This is a revision of that skill, not a new one. Edit it instead, or make the")
+            print("This build is a revision of that skill. Edit it instead, or make the")
             print("two descriptions name genuinely different situations.")
         elif verdict == "needs-distinguishing":
             print(f"G6 WARNING. Overlap {top[0]:.3f} with '{top[1]}'.")
