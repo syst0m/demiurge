@@ -221,15 +221,36 @@ Workspace context files in `.agents/rules/` adhere to Section 10 Primitive stand
 
 ### 5.4 Mechanical Quality Gates (G0–G6)
 
+Demiurge structures deterministic enforcement into three mechanical tiers, eliminating reliance on probabilistic prompt instructions:
+
+#### Tier 1: Skill Synthesis & Provenance Gates (G0–G6)
+
 Enforced in `skills/marcus/references/SPEC.md` and executed via deterministic scripts:
 
-- **Gate G0 (Intake):** Requires $\ge 3$ documented failure traces. Rejects ungrounded proposals.
-- **Gate G1 (Baseline):** Executes untreated baseline task runs before skill synthesis.
+- **Gate G0 (Intake):** Automated scaffold check (`skills/marcus/scripts/new_skill.py`) refusing synthesis without $\ge 3$ documented failure traces or ungrounded research claims.
+- **Gate G1 (Baseline):** Executes untreated baseline task runs before skill synthesis via `skills/marcus/scripts/eval_runner.py`.
 - **Gate G2 (Contrast):** Isolates capability differentiators by contrasting successful and failed trajectories on identical tasks.
-- **Gate G3 (Draft):** Verifies the draft directly targets the identified capability delta.
-- **Gate G4 (Validation):** Executes `validate_skill.py` checking line-level security, AST patterns, path styling, and progressive disclosure limits.
-- **Gate G5 (Proof):** Executes `eval_runner.py`. Demands $\Delta > 0$ on capability cases and 100% pass on regression cases.
+- **Gate G3 (Draft / Grounding):** Verifies the draft directly targets the capability delta and cites verified entries in `research/RESEARCH.md`.
+- **Gate G4 (Validation):** Executes `validate_skill.py` checking line bounds ($\le 500$ lines), AST security patterns, negative parallelism tropes, and superfluous comments.
+- **Gate G5 (Proof / Eval Gate):** Executes `eval_runner.py` demanding $\Delta > 0$ on capability cases and 100% pass on regression cases (`skills/marcus/evals/evals.json`).
 - **Gate G6 (Registration):** Executes `route_check.py` to ensure description embeddings do not collide with existing library entries.
+
+#### Tier 2: Repository & Pre-Commit OS Gates
+
+Deterministic tools running across git commits and CI pipelines:
+
+- **Negative Parallelism Defense:** `scripts/gate_tropes.py` and Vale RE2 engine (`.vale/styles/Foundry/NegativeParallelism.yml`) eliminating rhetorical antithesis tropes across markdown documentation.
+- **Superfluous Comment Scanner:** `scripts/scan_superfluous.py` preventing chat transcripts, migration war stories, and session diaries from polluting code comments.
+- **Strict Reference Verification:** `scripts/check_links.py --strict` ensuring 100% hyperlink resolution across all canonical documentation targets.
+- **AST Security & PII Linter:** Semgrep security gate (`.semgrep/rules.yaml`) scanning code and YAML configs.
+- **Format & Syntax Linters:** `markdownlint`, `check-yaml`, `end-of-file-fixer`, and `trim-trailing-whitespace`.
+
+#### Tier 3: Benchmark & Evaluation Regression Gates
+
+Deterministic harnesses validating system performance and safety:
+
+- **Harness & Telemetry Tests:** `evals/benchmarks/swebench/test_swebench_runner.py` verifying SWE-bench evaluation harnesses, metrics calculations, mock outputs, and error handling.
+- **Safety Overrides:** `promptfooconfig.yaml` verifying adversarial resistance and refusal to bypass gates G0–G6.
 
 ### 5.5 Lifecycle Hooks & Boundary Interception
 
