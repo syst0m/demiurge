@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.5] - 2026-09-06
+
+### Added
+
+- **Master System Documentation:** Added [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md) providing a comprehensive Top-Level Design (TLD) Mermaid architecture, Core Documentation Index, Repository Layout, Low-Level Design (LLD) concrete implementations (Harness, Provenance, Rules, Gates G0–G6, Lifecycle Hooks, Evals, Skills), and consolidated Verification Harness execution.
+- **Marcus & Buckminster Operating Guide:** Added [docs/OPERATING_GUIDE.md](docs/OPERATING_GUIDE.md) detailing interactive prompt templates, execution workflows, seven operational gotchas (prompt-cache thrashing, lethal trifecta, worktree locks, negative parallelism), and five architectural best practices.
+- **Deterministic Reference & Link Checker:** Added `scripts/check_links.py` as a permanent verification harness enforcing 100% hyperlink resolution across 12 canonical markdown targets with `--strict` support.
+- **Permanent Superfluous Comment Scanner:** Added `scripts/scan_superfluous.py` to deterministically detect chat transcripts, migration war stories, session diaries, and prompt artifacts in code comments and prose. Integrated into Marcus's Gate G4 validator (`skills/marcus/scripts/validate_skill.py`) and pre-commit.
+
+### Changed
+
+- **Tail-Negated Trope Detection Upgrade:** Enhanced negative parallelism regexes across `scripts/gate_tropes.py`, `scripts/gate-tropes.sh`, and `.vale/styles/Foundry/NegativeParallelism.yml` to catch both front-negated and tail-negated antithesis constructions. Purged tail-negated tropes repository-wide.
+- **Architecture Section & Harness Documentation:** Updated `README.md` and `docs/DOCUMENTATION.md` to document the dual-layer trope gate architecture and Vale Go RE2 single-concatenated `raw` pattern requirement.
+- **Comment Sanitization:** Purged conversational meta-commentary, incident narratives, and unversioned migration notes from `.pre-commit-config.yaml`, `scripts/sync-skills.sh`, and `skills/marcus/scripts/eval_runner.py`.
+- **Environment & Scratch Hygiene:** Hardened `.gitignore` to prevent `scratch/`, virtual environments, test caches, and OS/editor metadata from being tracked.
+
 ## [0.1.4] - 2026-09-06
 
 ### Added
@@ -83,9 +99,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Known issues
 
-- `scripts/gate-tropes.sh` and `styles/Humanize/NegativeParallelism.yml` contain a chat transcript
-  describing the intended rule rather than the rule itself, so neither runs. The active Vale
-  configuration is `.vale.ini` -> `.vale/styles/Foundry/`, which is unaffected.
+- `scripts/gate-tropes.sh` and `styles/Humanize/NegativeParallelism.yml` contained
+  unexecutable draft text instead of the operational scanner, which prevented execution.
+  The active Vale configuration is `.vale.ini` -> `.vale/styles/Foundry/`, which is unaffected.
 - Gate G5 has never been run on Marcus. The harness enforces a rule its owner has not satisfied.
 
 ## [0.1.1] - 2026-08-30

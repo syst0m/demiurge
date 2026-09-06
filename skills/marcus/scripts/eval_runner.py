@@ -84,13 +84,9 @@ def skill_body(skill_dir: Path) -> str:
 def build_isolation_settings(skills_dir: Path, allow: list[str]) -> Path:
     """Write a settings file that hides every installed skill from the runner.
 
-    Without this the baseline is not a baseline. A nested agent inherits the
-    user's whole skill library, so "run without the skill" silently runs *with*
-    it - including the skill under test - and the comparison measures the skill
-    against itself. Observed 2026-09-04: a finding-events baseline scored 0.0%
-    with 5 of 9 verdicts UNKNOWN because every run loaded finding-events, tried
-    to execute its script, hit a permission prompt it could not answer in print
-    mode, and returned a stub.
+    Without this, baseline measurements become contaminated. A nested agent inherits the
+    user's whole skill library, so running without the skill would silently execute with
+    installed definitions and confound the baseline measurement.
 
     Both phases run isolated. The treated phase receives the skill by having its
     body injected into the prompt, which is the thing being measured; the
@@ -127,12 +123,8 @@ def stage_skill_root(skill_dir: Path) -> Path:
     return dest
 
 
-# A run that never happened must not be scored. These are the shapes the CLI returns
-# when the account is rate-limited, logged out, or refusing before the task starts:
-# short, exit code 0, non-empty, and therefore indistinguishable from an answer to a
-# judge. Observed 2026-09-05: six of nine cases returned "You've hit your session
-# limit - resets 10:30am" as 63-byte transcripts, were graded FAIL, and produced a G5
-# rejection at -11.1% that described the account's billing state rather than the skill.
+# A run that never executed must not be scored. Detects CLI abort / infrastructure stubs
+# when an account is rate-limited, unauthenticated, or overloaded.
 INFRA_STUB = re.compile(
     r"(?i)(hit your (session|usage|rate) limit"
     r"|resets \d{1,2}[:.]\d{2}\s*(am|pm)"
@@ -324,8 +316,8 @@ def main() -> int:
     if aborted:
         case_id, reason = aborted
         print(f"ABORTED on case {case_id}: {reason}", file=sys.stderr)
-        print("This is an infrastructure failure, not a task failure, and scoring it would"
-              " describe the account rather than the skill. Nothing was written. Re-run when"
+        print("This is an infrastructure failure; scoring it would"
+              " describe the account instead of the skill. Nothing was written. Re-run when"
               " the runner is healthy.", file=sys.stderr)
         return 2
 
@@ -379,7 +371,7 @@ def main() -> int:
     baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
     if baseline.get("skills_isolated") is not True:
         print("\nG5 CANNOT FIRE: the recorded baseline was not skill-isolated, so it ran"
-              " with the installed library and is not a baseline. Re-run G1 without"
+              " with the installed library and is invalid. Re-run G1 without"
               " --no-isolate.", file=sys.stderr)
         return 2
     before = baseline.get("pass_pow_k_overall") or 0.0

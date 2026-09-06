@@ -24,7 +24,7 @@ import sys
 from dataclasses import dataclass, asdict
 from pathlib import Path
 
-# --- Published limits. Each is a documented constraint, not a preference. -------------
+# --- Published limits. Each is a documented constraint. -------------------------------
 NAME_MAX = 64
 DESCRIPTION_MAX = 1024
 BODY_MAX_LINES = 500          # documented threshold for optimal performance
@@ -57,8 +57,8 @@ HIGH_RISK = [
     (r"base64[^\n]*(-d|--decode)[^\n]*\|\s*(ba)?sh", "encoded-exec", "decodes and executes"),
     (r"b64decode\s*\([^)]*\)\s*\)?\s*(?=.*\b(exec|eval)\b)", "encoded-exec", "decodes then evaluates"),
     (r"\b(exec|eval)\s*\(\s*(requests|urllib|urlopen|fetch)", "remote-exec", "evaluates fetched content"),
-    (r"(id_rsa|\.ssh/|\.aws/credentials|\.npmrc|\.netrc)", "credential-path", "touches a credential path"),  # forge:allow credential-path - this is the pattern definition, not a use
-    (r"(?i)\b(AWS_SECRET|API_KEY|PRIVATE_KEY|BEGIN RSA PRIVATE)", "secret-literal", "references a secret"),  # forge:allow secret-literal - this is the pattern definition, not a use
+    (r"(id_rsa|\.ssh/|\.aws/credentials|\.npmrc|\.netrc)", "credential-path", "touches a credential path"),  # forge:allow credential-path - pattern definition regex
+    (r"(?i)\b(AWS_SECRET|API_KEY|PRIVATE_KEY|BEGIN RSA PRIVATE)", "secret-literal", "references a secret"),  # forge:allow secret-literal - pattern definition regex
 ]
 
 MEDIUM_RISK = [
@@ -76,6 +76,17 @@ INJECTION_SHAPED = [
     (r"(?i)disregard (the )?(system prompt|your instructions)", "injection-shaped"),
     (r"(?i)you are now (a|an|in) ", "injection-shaped"),
     (r"(?i)\bdo not (tell|inform|mention to) the user\b", "injection-shaped"),
+]
+
+# Conversational meta-commentary, session transcripts, and diary entries
+# have no place in agent skills; comments record code invariants, not session history.
+SUPERFLUOUS = [
+    (r"(?i)\b(chat\s+transcript|previously\s+held\s+a\s+chat|transcript\s+describing)\b",
+     "superfluous-transcript", "chat transcript reference in comments or prose"),  # forge:allow superfluous-transcript - pattern definition regex
+    (r"(?i)\b(working\s+copy\s+had\s+been\s+installed|unversioned\s+and\s+would\s+be\s+displaced|displaced\s+by\s+`?pre-commit)\b",
+     "superfluous-war-story", "historical migration narrative in comment"),  # forge:allow superfluous-war-story - pattern definition regex
+    (r"(?i)\b(session\s+diary|diary\s+note|\d{4}-\d{2}-\d{2}\s+(incident|debugging\s+session|war\s+story))\b",
+     "superfluous-diary", "session diary or developer war story in comment"),  # forge:allow superfluous-diary - pattern definition regex
 ]
 
 TIME_SENSITIVE = re.compile(
@@ -289,6 +300,7 @@ def scan_file(path: Path, rel: str, executable: bool,
     checks: list[tuple[str, str, str, str]] = (
         [(p, c, w, BLOCKING) for p, c, w in HIGH_RISK]
         + [(p, c, w, WARNING) for p, c, w in MEDIUM_RISK]
+        + [(p, c, w, WARNING) for p, c, w in SUPERFLUOUS]
         + ([] if executable else
            [(p, c, "text is shaped like a prompt injection", BLOCKING) for p, c in INJECTION_SHAPED])
     )
