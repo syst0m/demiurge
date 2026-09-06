@@ -48,10 +48,13 @@ SUPERFLUOUS_PATTERNS: List[Tuple[str, str, Pattern[str]]] = [
     ),
     (
         "session-diary",
-        "Session diary or date-stamped developer war story in comment",
+        "Session diary, date-stamped developer war story, or point-in-time observation",
         re.compile(
             r"\b(?:session\s+diary|war\s+story|diary\s+note"
-            r"|\d{4}-\d{2}-\d{2}\s+(?:incident|debugging\s+session|war\s+story|we\s+lost\s+evals))\b",
+            r"|(?:Observed|as\s+of|Until|The)\s+\d{4}-\d{2}(?:-\d{2})?"
+            r"|\d{4}-\d{2}-\d{2}\s+(?:incident|debugging\s+session|war\s+story|we\s+lost\s+evals|pass)"
+            r"|(?:in\s+)?the\s+\d{4}-\d{2}(?:-\d{2})?\s+pass"
+            r"|not\s+independently\s+traced\s+in\s+the\s+\d{4}-\d{2}\s+pass)\b",
             re.IGNORECASE,
         ),
     ),

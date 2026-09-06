@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-09-06
+
+### Fixed
+
+- **Purged Point-in-Time Commentary:** Removed chronological development timestamps, dated research pass notes, and point-in-time observation narratives across `skills/marcus/PROVENANCE.md`, `skills/buckminster/references/RESEARCH_METHODOLOGY.md`, and `skills/buckminster/evals/evals.json`.
+- **Epistemic Grade Alignment:** Corrected contradictory `[SETTLED]` tag on untraced vendor estimates in `research/RESEARCH.md` and `skills/marcus/references/RESEARCH.md`, formalizing reclassification to `[VENDOR]` with affirmative technical specifications.
+- **Negative Parallelism Elimination:** Converted eval test criteria and research methodology directives from negative parallelism (`rather than`, `instead of`) into positive declarative assertions.
+- **Hardened Superfluous Commentary Scanner:** Upgraded `scripts/scan_superfluous.py` to deterministically flag date-stamped observation entries (`Observed YYYY-MM-DD`, `as of YYYY-MM-DD`, `Until YYYY-MM-DD`, and historical pass narratives) across all repository assets.
+- **Regression Suite Path & Count Alignment:** Updated `PROVENANCE.md` regression suite path to repo-qualified `skills/marcus/evals/run_gate_tests.py` and reflected the full 14/14 passing test count.
+
 ## [0.4.0] - 2026-09-06
 
 ### Added
