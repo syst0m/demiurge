@@ -1,4 +1,4 @@
-name: Secret Scanning
+name: Security & Secret Scanning
 
 on:
   push:
@@ -26,3 +26,17 @@ jobs:
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  semgrep-scanning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Semgrep SAST & Agent Policy Scan
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/python
+            .semgrep/agent-security.yml

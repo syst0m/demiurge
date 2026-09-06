@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-09-06
+
+### Added
+
+- **Multi-layer security scanning scaffolding:**
+  - Local pre-commit hook (`scripts/scan_security_and_pii.py`) enforcing zero-dependency secret detection, PII/user-path scrubbing, and agent safety rules.
+  - Semgrep SAST & Agent Policy suite (`.semgrep/agent-security.yml`) checking for unconstrained shell calls, safety gate overrides, and environment leaks.
+  - Integrated Semgrep into GitHub Actions CI pipeline (`.github/workflows/security.yml`).
+  - Automated Promptfoo adversarial red-teaming configuration (`promptfooconfig.yaml`) and scheduled CI workflow (`.github/workflows/agent-redteam.yml`) testing against OWASP LLM Top 10 vulnerabilities (prompt injection, excessive agency, goal hijacking, and RBAC).
+
 ## [0.1.2] - 2026-09-06
 
 ### Added
