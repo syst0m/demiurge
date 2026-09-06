@@ -156,6 +156,8 @@ The repository is organized to isolate research, skills, tools, and rules:
 | `scripts/` | Deterministic verification harnesses, security linters, link checkers, and sync tools. |
 | `skills/` | Source code and manifests for [Marcus](../skills/marcus/) and [Buckminster](../skills/buckminster/). |
 
+*Note: Edit files in `skills/` directly. Never edit deployed skill directories manually.*
+
 ---
 
 ## 5. Low-Level Design (LLD) Architecture

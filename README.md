@@ -49,22 +49,6 @@ Agent Packages <──emits & proves── Marcus ──checks gates (G0-G6) <�
 
 ---
 
-## Repository Layout
-
-| Path | Contents |
-|---|---|
-| `.agents/` | Canonical workspace configuration and path-scoped rules (`.agents/rules/`). |
-| `assets/` | Project diagrams, media, and visual assets. |
-| `docs/` | System documentation: Master Documentation, Installation, Operations, and Design. |
-| `evals/` | Deterministic gate regression tests and independent industry benchmark adapters. |
-| `research/` | Master empirical knowledge base (`RESEARCH.md`) maintained via reviewed proposals. |
-| `scripts/` | Deterministic verification harnesses, security linters, link checkers, and sync tools. |
-| `skills/` | Source definitions for Marcus (`skills/marcus/`) and Buckminster (`skills/buckminster/`). |
-
-*Note: Edit files in `skills/` directly. Never edit deployed skill directories manually.*
-
----
-
 ## Evidence & Empirical Discipline
 
 Architectural decisions anchor exclusively in verifiable empirical data:
