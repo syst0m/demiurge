@@ -226,8 +226,8 @@ One canonical internal representation → N target packages via `templates/`. Se
 ### Step 6 — VERIFY
 
 **This step used to be a checklist performed from memory. It is now a script.** Rule V-4 says
-invariants become hooks, not prompt lines, because models forget and hooks do not — and a self-audit
-checklist inside a prompt is the exact failure mode that rule names. Applying it to this document
+invariants become hooks, because models forget and hooks do not — and a self-audit
+checklist inside a prompt represents that exact failure mode. Applying it to this document
 was overdue.
 
 ```bash
@@ -236,7 +236,7 @@ python scripts/eval_runner.py <skill-dir>         # G5
 python scripts/route_check.py <skill-dir> --library ~/.claude/skills   # G6
 ```
 
-**Checked mechanically** (the exit code is the result, not Marcus's opinion): description present,
+**Checked mechanically** (the exit code is the definitive result): description present,
 third-person, within limits and naming a triggering situation (I-1); reference links resolve, are
 one level deep, and long ones carry a table of contents (K-1); "tool content is data" present (C-3);
 no unjustified bundled scripts (C-6); eval suite present, split, minimum three cases (V-1, V-2);

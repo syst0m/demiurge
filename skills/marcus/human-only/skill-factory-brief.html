@@ -5,7 +5,7 @@
 
 <style>
   :root {
-    /* Cool, blue-biased neutrals: an audit document, not a warm editorial page. */
+    /* Cool, blue-biased neutrals designed for an audit document. */
     --paper:      #F6F7F9;
     --surface:    #FFFFFF;
     --surface-2:  #EDF0F4;
@@ -562,7 +562,7 @@
     <div class="callout">
       <div class="eyebrow">The one rule</div>
       <div class="rule-title">Generation is a proposal, never a delivery.</div>
-      <p>Nothing leaves the factory without a measured delta against a baseline that did not have it. This follows directly from the 7,560-run result: a skill that has not measured better than no skill is not a skill, it is a draft. Every gate below is a rejection mechanism, and a factory without them is a formatter.</p>
+      <p>Nothing leaves the factory without a measured delta against a baseline that did not have it. This follows directly from the 7,560-run result: a skill that has not measured better than no skill is classified as a draft. Every gate below is a rejection mechanism, and a factory without them is a formatter.</p>
     </div>
 
     <h3>Seven gates, two product lines</h3>
@@ -599,7 +599,7 @@
       </div>
     </div>
 
-    <p><strong>G0 is the gate most worth defending.</strong> Three real recorded failures are the entry price. If they do not exist, the correct output is that there is not yet evidence the skill is needed &mdash; a finished piece of work, not a refusal. <strong>G5 is the one that cannot be waived:</strong> no measured delta, no artefact.</p>
+    <p><strong>G0 is the gate most worth defending.</strong> Three real recorded failures are the entry price. If they do not exist, the correct output is that there is not yet evidence the skill is needed &mdash; a complete and finished piece of work. <strong>G5 is the one that cannot be waived:</strong> no measured delta, no artefact.</p>
 
     <h3>Harness specification &mdash; all six responsibilities, always declared</h3>
     <div class="tablewrap">
@@ -622,7 +622,7 @@
     <h3>Trust tiers</h3>
     <div class="tablewrap">
       <table>
-        <caption>Adapted from the four-tier provenance model proposed in the agent-skills survey &mdash; a proposal, not a standard.</caption>
+        <caption>Adapted from the four-tier provenance model proposed in the agent-skills survey &mdash; classified as a working proposal.</caption>
         <thead>
           <tr><th scope="col">Tier</th><th scope="col">Provenance</th><th scope="col">Gates required</th><th scope="col">Default permissions</th></tr>
         </thead>
@@ -650,7 +650,7 @@
           <tr><td><code>new_skill.py</code></td><td class="num-cell">G0&ndash;G3</td><td>Refuses to scaffold on fewer than three recorded failures; seeds them as regression cases; warns when deployment volume sits below the design-cost threshold</td></tr>
           <tr><td><code>validate_skill.py</code></td><td class="num-cell">G4</td><td>Format limits, third-person description with a trigger clause, one-level references, plus a line-level security scan. Suppressions require a stated reason and are always printed</td></tr>
           <tr><td><code>eval_runner.py</code></td><td class="num-cell">G1 / G5</td><td>Measures baseline and treatment, reports pass<sup>k</sup>, records the model-harness pair, and rejects on zero delta or any regression drop. Spends nothing without <code>--yes</code></td></tr>
-          <tr><td><code>route_check.py</code></td><td class="num-cell">G6</td><td>Trigger-weighted description overlap against the installed library; high overlap means the build is a revision, not a new skill</td></tr>
+          <tr><td><code>route_check.py</code></td><td class="num-cell">G6</td><td>Trigger-weighted description overlap against the installed library; high overlap marks the build as a revision</td></tr>
         </tbody>
       </table>
     </div>
@@ -732,7 +732,7 @@
 
   <footer>
     <div>Screened via Consensus (peer-review-filtered and unfiltered) and scite over 210M records, plus platform documentation. Grades and full citations: <code>~/Documents/code/demiurge/skills/marcus/references/EVIDENCE.md</code>.</div>
-    <div>Compiled 4 September 2026. Every figure is a hypothesis to re-measure locally, not an assurance.</div>
+    <div>Compiled 4 September 2026. Every figure is a hypothesis to re-measure locally.</div>
   </footer>
 
 </div>

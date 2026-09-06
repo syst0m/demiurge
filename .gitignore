@@ -1,6 +1,31 @@
 node_modules/
 *.log
 
-# Python bytecode from running the gate scripts in place
+# Scratch and temporary testing directories
+scratch/
+
+# Python bytecode, environments, and caches
 __pycache__/
 *.pyc
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+venv/
+.venv/
+env/
+
+# Editor and OS artifacts
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak
+*.swp
+*~
+
+# Local environment variables
+.env
+.env.local

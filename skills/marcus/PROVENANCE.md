@@ -27,8 +27,8 @@ checklist inside a prompt is precisely the failure that rule names. It is now
 
 ## G0 — evidence of need, stated honestly
 
-The merge was directed by the user, not derived from three recorded failures. **By its own G0 rule
-this build would be refused.** Stating that rather than hiding it, since the same rule governs
+The merge was directed by the user, independent of three recorded failures. **By its own G0 rule
+this build would be refused.** Stating that transparently, since the same rule governs
 everything Marcus produces.
 
 Real failure evidence gathered while building, which is not the same as the user's three failures:
@@ -68,8 +68,8 @@ target skill directory. `eval_runner.py` is the only one that spends anything an
   skill isolation, transcript retention and three refusal guards. The lesson worth keeping is
   that the gate reported a number rather than an error, and a number is what gets believed.
 - **The merge has not been measured against the pre-merge Marcus.** No baseline exists for
-  "designing an agent", so the claim that gated Marcus is better than checklist Marcus is
-  reasoning, not evidence.
+  "designing an agent", so the claim that gated Marcus outperforms checklist Marcus remains
+  an analytical hypothesis.
 - The validator's **recall is unmeasured**. It encodes published constraints and two published
   scans. It will miss things.
 - `route_check.py` scores bag-of-words cosine with a weighted trigger clause — a cheap proxy for a

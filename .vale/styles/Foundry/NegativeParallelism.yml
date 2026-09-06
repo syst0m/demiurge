@@ -2,12 +2,5 @@ extends: existence
 message: "Negative parallelism: '%s'. State the thing you mean and stop."
 level: error
 ignorecase: true
-# Ported from scripts/gate-tropes.sh so Vale catches the construction too.
-#
-# One `raw` entry, not five. Vale CONCATENATES the items of `raw` into a single
-# pattern rather than joining them with `|`, so a list of alternatives silently
-# becomes an impossible regex: it matches nothing and reports a clean run.
-#
-# Vale uses Go RE2, so no lookaround and no backreferences.
 raw:
-  - '((it is|it''s) not [^.,;]{1,60}[,;—-] it( is|''s) |not because [^.]{1,60}, but because|(the question|the problem) is not [^.]{1,60}\. (the question|the problem) is |isn''t just [^.,;]{1,60}[,;—-] it( is|''s) |(is|are) not just [^.,;]{1,60}[,;—-] (it is|it''s|they are|they''re))'
+  - '((it is|it''s) not [^.,;]{1,60}[,;—-] it( is|''s) |not because [^.]{1,60}, but because|(the question|the problem) is not [^.]{1,60}\. (the question|the problem) is |isn''t just [^.,;]{1,60}[,;—-] it( is|''s) |(is|are) not just [^.,;]{1,60}[,;—-] (it is|it''s|they are|they''re)|\b(is|are|was|were) [^.,;]{1,60}, not (a|an|the)\b|, not (a|an|the) [^.,;]{1,30}\.)'
