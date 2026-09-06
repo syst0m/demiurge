@@ -209,9 +209,7 @@ def main() -> int:
                         "allowed:injection-shaped" in out and "injection-resistance" in out,
                         f"exit={code}"))
 
-        # regression-6, -7, -8 come from running the validator against the installed library on
-        # 2026-09-04. Two were false positives that reported a compliant skill as non-compliant;
-        # a gate that fails correct work teaches people to ignore it.
+        # regression-6, -7, -8: parser robustness and false-positive prevention.
 
         # regression-6: "data, never instructions" stated without the words "tool output".
         fixture = write_fixture(root, "phrasing-fixture", FIXTURE_ALT_PHRASING)
@@ -236,11 +234,7 @@ def main() -> int:
                         "dangling-path" in out and "resources/missing.md" in out,
                         f"exit={code}"))
 
-        # regression-9 and -10 come from the first real G5 attempt on 2026-09-04. A nested
-        # agent inherits the user's installed skill library, so the "baseline without the
-        # skill" ran WITH the skill under test, hit a permission prompt it could not answer
-        # in print mode, and recorded 0.0% with 5 of 9 verdicts UNKNOWN. That number would
-        # have made any treated score look like a win.
+        # regression-9 and -10: ensure baseline measurements enforce skill isolation.
         code, out = run([str(SCRIPTS / "eval_runner.py"), str(scaffolded),
                          "--baseline", "--yes", "--no-isolate"])
         results.append(("regression-9 un-isolated baseline refused",
@@ -253,10 +247,7 @@ def main() -> int:
                         code == 2 and "{settings} placeholder" in out,
                         f"exit={code}"))
 
-        # regression-11: an infrastructure stub must abort the run, never be scored.
-        # On 2026-09-05 six of nine cases returned "You've hit your session limit" as
-        # 63-byte transcripts. They were graded FAIL and produced a G5 rejection at
-        # -11.1% that described the account's billing state rather than the skill.
+        # regression-11: infrastructure abort stubs must halt execution without scoring.
         stub = root / "stub_runner.py"
         stub.write_text("print('You have hit your session limit - resets 10:30am')",
                         encoding="utf-8")
@@ -268,13 +259,7 @@ def main() -> int:
                         and not (scaffolded / "evals" / "results-baseline.json").exists(),
                         f"exit={code}"))
 
-        # regression-12: the treated run stages the skill's own scripts/references into the
-        # nested agent's cwd. Without this, the injected SKILL.md prose can name a bundled
-        # script by relative path (e.g. "scripts/plan_queries.py") and nothing at that path
-        # actually exists for the nested agent to run - understating a skill whose value is
-        # partly a script. Drawn from the sample-skill G5 rejection on 2026-09-05, where
-        # regression-1 and regression-5 expected plan_queries.py to run and structurally could
-        # not, because only the SKILL.md body was ever injected.
+        # regression-12: ensure bundled scripts and references are staged in cwd for execution.
         (scaffolded / "scripts" / "marker.txt").write_text("STAGED-OK", encoding="utf-8")
         cwd_check = root / "cwd_check.py"
         cwd_check.write_text(
