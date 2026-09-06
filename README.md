@@ -46,6 +46,29 @@ Agent Packages <──emits & proves── Marcus ──checks gates (G0-G6) <�
 | [Research Methodology](skills/buckminster/references/RESEARCH_METHODOLOGY.md) | Tri-source verification protocols, search disciplines, and evidence grading. |
 | [Empirical Knowledge Base](research/RESEARCH.md) | Canonical empirical research: benchmarks, failure modes, and primitives. |
 | [Agent Architecture Spec](skills/marcus/AGENT_ARCHITECTURE.md) | Progressive disclosure specifications and mechanical gate enforcement (G0–G6). |
+| [Executive Research Brief](skills/marcus/human-only/demiurge-brief.html) | Standalone visual briefing: empirical literature, four-tier trust model, and verification taxonomy. |
+
+### Executive Research Brief
+
+[The Demiurge Brief](skills/marcus/human-only/demiurge-brief.html) is a standalone visual report compiling the empirical literature behind automated skill and harness synthesis. Open it directly in a browser.
+
+<!-- BEGIN DEMIURGE BRIEF GIST -->
+> **Executive Brief Gist (Auto-generated from [demiurge-brief.html](skills/marcus/human-only/demiurge-brief.html)):**
+>
+> #### Four Empirical Constants That Shaped the Design
+>
+> - **7,560**: runs in the only large controlled test of generated skills — which found no improvement over no skill at all
+> - **2.12×**: more likely to carry a vulnerability when a skill bundles executable scripts
+> - **~15,000**: deployed examples before automated design paid for itself — and only on two datasets of those tested
+> - **7–33%**: unsafe-action rate across fully scaffolded agents, uncorrelated with their task success
+>
+> #### Core Architectural Takeaways
+>
+> - **Rejection Outweighs Generation:** Methods that achieve real performance lift (e.g., SkillCAT +49.7%) succeed by ruthlessly discarding candidates through contrastive test replay, not through speculative prompt generation.
+> - **The Harness Dominates the Model:** Model×harness pairing varies completion and efficiency dramatically across execution trajectories—enough to invert raw model leaderboard rankings.
+> - **Capability and Safety Are Orthogonal:** Unsafe-action rates (7–33%) do not track task success rates (39–64%). Scaling capability without mechanical write-gates amplifies vulnerability.
+> - **Four-Tier Trust Model ($T_0$ to $T_3$):** Strict mechanical progression from untrusted intake to isolated baseline contrast before any skill or harness is accepted.
+<!-- END DEMIURGE BRIEF GIST -->
 
 ---
 

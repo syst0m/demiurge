@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.4] - 2026-09-06
+
+### Added
+
+- **Executive Research Brief Integration:** Renamed the visual research briefing to `demiurge-brief.html` in `skills/marcus/human-only/`, integrated it into the documentation directory, and added an Executive Research Brief overview section in [README.md](README.md).
+- **Automated Brief Gist Synchronizer:** Created `scripts/sync_brief_summary.py` to automatically extract headline empirical constants and architectural takeaways from `demiurge-brief.html` into `README.md`.
+
+### Fixed
+
+- **Privacy Sanitization & History Purge:** Removed all references to private skills across test fixtures, tables, and changelogs, and purged all historical occurrences across past commits.
+
 ## [0.4.3] - 2026-09-06
 
 ### Changed
@@ -18,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Absolute Local Path Sanitization:** Replaced all occurrences of absolute user filesystem paths with canonical repository-relative paths across `skills/marcus/SKILL.md`, `skills/marcus/AGENT_ARCHITECTURE.md`, `skills/marcus/human-only/skill-factory-brief.html`, and `skills/buckminster/SKILL.md`.
+- **Absolute Local Path Sanitization:** Replaced all occurrences of absolute user filesystem paths with canonical repository-relative paths across `skills/marcus/SKILL.md`, `skills/marcus/AGENT_ARCHITECTURE.md`, `skills/marcus/human-only/demiurge-brief.html`, and `skills/buckminster/SKILL.md`.
 - **Git History Purge:** Rewrote repository commit history to eliminate all historical occurrences of local path structures across all previous commit diffs and commit messages.
 
 ## [0.4.1] - 2026-09-06
