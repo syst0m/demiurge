@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.6] - 2026-09-06
+
+### Added
+
+- **Graphical Dashboard Preview:** Upgraded `scripts/sync_brief_summary.py` to auto-generate a comprehensive Mermaid flowchart diagram in [README.md](README.md) displaying the dashboard's key empirical constants, graded evidence base, mechanical gate pipeline, and verification metrics.
+
+### Changed
+
+- **Executive Research Brief Streamlining:** Simplified the Executive Research Brief section in [README.md](README.md) to link directly to the rendered [Visual Dashboard](https://htmlpreview.github.io/?https://github.com/syst0m/demiurge/blob/main/skills/marcus/human-only/demiurge-brief.html) without auxiliary theme or layout narrative.
+
 ## [0.4.5] - 2026-09-06
 
 ### Added
