@@ -1,9 +1,6 @@
 # RESEARCH_METHODOLOGY.md
 
-How Buckminster researches. Extracted 2026-08-30 from the toolchain available on this account and
-from the patterns that actually worked during the 2026-08-29 agentic-engineering passes.
-
-This is a *method*, not a checklist. The point of writing it down is that the same method produces
+This is a method. The point of writing it down is that the same method produces
 comparable snapshots over time — so version-to-version diffs in `RESEARCH.md` mean something.
 
 ---
@@ -59,7 +56,7 @@ explicitly.
 
 > Bad: *"Find evidence that agent memory improves performance."*
 > Good: *"What does the evidence say about whether persistent agent memory improves performance,
-> including any findings that it does not?"*
+including any findings that it does not?"*
 
 This is not pedantry. The 2026-08-29 pass found that memory scaffolds *hurt* long-horizon
 performance across ten models — a result that a confirmation-shaped brief would have buried.
@@ -75,11 +72,11 @@ For any load-bearing claim, run it through scite:
 
 - **`editorialNotices`** — retracted? corrected? subject to an expression of concern?
 - **Smart Citations** — do citing papers support it, or contrast with it? A heavily-cited paper
-  whose citations are largely *contrasting* is a disputed finding, not an established one.
+  whose citations are largely *contrasting* is classified as a disputed finding.
 
 ### Step 4 — Grade every claim before writing it down
 
-Confidence markers are assigned at capture time, not retrofitted. `RESEARCH.md` uses four:
+Confidence markers are assigned at capture time. `RESEARCH.md` uses four:
 
 - `[SETTLED]` — supported by at least 3 independent, verified resources, with all 3 confirming the finding (empirical backing)
 - `[CONTESTED]` — credible sources disagree, or it rests on fewer than 3 independent studies
@@ -167,7 +164,7 @@ kind of accumulated knowledge those findings describe.
 
 ## 5. Anti-patterns
 
-Each of these was observed and corrected in practice, not imagined.
+Each of these was observed and corrected directly in practice.
 
 **Grep is not a survey.** Absence of evidence from one search method is not evidence of absence. In
 prior work this produced two near-misses where a component looked unreferenced under one search

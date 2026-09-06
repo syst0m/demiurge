@@ -7,15 +7,11 @@
 #   scripts/gate-tropes.sh FILE [FILE...]  scan the named files (how pre-commit calls it)
 #
 # Exit 0 clean, 1 if any trope is found.
-#
-# This file previously held a chat transcript describing the scanner rather than
-# the scanner. The working copy had been installed straight into .git/hooks/,
-# where it was unversioned and would be displaced by `pre-commit install`. It now
-# lives here and runs as a local hook, so it survives that and reaches CI.
+# Runs as a local pre-commit hook and in CI workflows.
 
 set -euo pipefail
 
-TROPE_REGEX="(it is|it's) not .+(,|;|—|-) it( is|'s) |not because .+, but because|(the question|the problem) is not .+\. (the question|the problem) is |isn't just .+(,|;|—|-) it( is|'s) |(is|are) not just .+(,|;|—|-) (it is|it's|they are|they're)"
+TROPE_REGEX="(it is|it's) not .+(,|;|—|-) it( is|'s) |not because .+, but because|(the question|the problem) is not .+\. (the question|the problem) is |isn't just .+(,|;|—|-) it( is|'s) |(is|are) not just .+(,|;|—|-) (it is|it's|they are|they're)|\b(is|are|was|were) [^.,;]{1,60}, not (a|an|the)\b|, not (a|an|the) [^.,;]{1,30}\."
 
 echo "Scanning for AI tropes (negative parallelism)..."
 

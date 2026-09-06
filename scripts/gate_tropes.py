@@ -15,7 +15,9 @@ TROPE_PATTERN = re.compile(
     r"|not because .+, but because"
     r"|(?:the question|the problem) is not .+\. (?:the question|the problem) is "
     r"|isn't just .+(?:,|;|—|-) it(?: is|'s) "
-    r"|(?:is|are) not just .+(?:,|;|—|-) (?:it is|it's|they are|they're)",
+    r"|(?:is|are) not just .+(?:,|;|—|-) (?:it is|it's|they are|they're)"
+    r"|\b(?:is|are|was|were)\s+[^.,;]{1,60},\s*not\s+(?:a|an|the)\b"
+    r"|,\s*not\s+(?:a|an|the)\s+[^.,;]{1,30}\.",
     re.IGNORECASE,
 )
 
