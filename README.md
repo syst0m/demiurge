@@ -30,7 +30,7 @@ Agent Packages <──emits & proves── Marcus ──checks gates (G0-G6) <�
 
 - **Strict One-Way Flow:** Buckminster researches; Marcus designs. Marcus ignores claims unlisted in `research/RESEARCH.md`.
 - **Human Governance:** Knowledge base updates require explicit operator approval.
-- **Tiered Deterministic Gates:** Invariants execute via OS processes across three mechanical tiers: Marcus's G0–G6 synthesis gates, repository pre-commit linters ([scripts/gate_tropes.py](scripts/gate_tropes.py), [scripts/scan_superfluous.py](scripts/scan_superfluous.py), [scripts/check_links.py](scripts/check_links.py)), and benchmark regression harnesses.
+- **Tiered Deterministic Gates:** Invariants execute via automated operating system processes across three mechanical tiers: agent synthesis validation gates, repository-level pre-commit linters, and empirical benchmark regression harnesses.
 
 ---
 

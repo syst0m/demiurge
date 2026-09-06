@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.3] - 2026-09-06
+
+### Changed
+
+- **Repository Layout Consolidation:** Consolidated the repository layout documentation and operational guidelines into [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md) (§4), streamlining [README.md](README.md).
+- **High-Level Gate Architecture Overview:** Simplified the Tiered Deterministic Gates description in [README.md](README.md) to present a clean conceptual explanation across the three mechanical tiers without script-level clutter.
+
 ## [0.4.2] - 2026-09-06
 
 ### Fixed
