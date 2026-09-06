@@ -15,6 +15,7 @@ canonical_path: docs/DOCUMENTATION.md
    - [3.2 Operating Guide Summary](#32-operating-guide-summary)
    - [3.3 Design Manual Summary](#33-design-manual-summary)
    - [3.4 Research Methodology Summary](#34-research-methodology-summary)
+   - [3.5 Independent Benchmarking Summary](#35-independent-benchmarking-summary)
 4. [Repository Layout](#4-repository-layout)
 5. [Low-Level Design (LLD) Architecture](#5-low-level-design-lld-architecture)
    - [5.1 Harness Implementation](#51-harness-implementation)
@@ -128,6 +129,17 @@ The Demiurge documentation suite is structured into focused guides addressing sp
   - Hierarchy of Evidence: Peer-reviewed literature > Open specifications > Vendor reports (vendor capped at 1 of 3).
   - Confidence Grading Taxonomy (`[SETTLED]`, `[CONTESTED]`, `[VENDOR]`, `[EMERGING]`).
 
+### 3.5 Independent Benchmarking Summary
+
+- **Target File:** [docs/BENCHMARKS.md](BENCHMARKS.md)
+- **Latest Benchmark Report:** [docs/reports/swebench_v020_summary.md](reports/swebench_v020_summary.md)
+- **Scope:** Independent industry benchmarking (SWE-bench, GAIA, Tau-bench) comparing Demiurge against bare foundation models.
+- **Key Concepts:**
+  - Two-arm evaluation: Arm A (Bare Foundation Model) vs Arm B (Demiurge Architecture).
+  - Telemetry formulas: Resolution Lift ($\Delta$), Prompt-Cache Hit Ratio, Cost per Resolved Task, Turn Economy.
+  - Latest Run Metrics (`v0.2.0`): $+40.00\%$ resolution lift ($\Delta$), $82.0\%$ prompt-cache hit ratio, $74\%$ lower cost per resolved task.
+  - Multi-benchmark roadmap (SWE-bench, GAIA, Tau-bench, BIPIA, BFCL) and execution cadences.
+
 ---
 
 ## 4. Repository Layout
@@ -139,6 +151,7 @@ The repository is organized to isolate research, skills, tools, and rules:
 | `.agents/` | Canonical workspace configuration and path-scoped rules (`.agents/rules/`). |
 | `assets/` | Project diagrams, visual documentation, and brand media. |
 | `docs/` | Human-facing guides: Installation, Operating Guide, Design Manual, and Master Documentation. |
+| `evals/` | Deterministic gate regression tests and independent industry benchmark adapters. |
 | `research/` | Master empirical knowledge base (`RESEARCH.md`), updated solely through reviewed proposals. |
 | `scripts/` | Deterministic verification harnesses, security linters, link checkers, and sync tools. |
 | `skills/` | Source code and manifests for [Marcus](../skills/marcus/) and [Buckminster](../skills/buckminster/). |
@@ -271,6 +284,9 @@ python scripts/check_links.py --strict
 # 5. Scan repository and skills for superfluous commentary and session transcripts
 python scripts/scan_superfluous.py
 
-# 6. Run full pre-commit security, style, and negative-parallelism checks
+# 6. Execute SWE-bench evaluation harness in dry-run mode
+python evals/benchmarks/swebench/run_swebench_eval.py --slice 0:5 --dry-run
+
+# 7. Run full pre-commit security, style, and negative-parallelism checks
 python -m pre_commit run --all-files
 ```
