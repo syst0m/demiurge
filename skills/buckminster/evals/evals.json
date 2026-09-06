@@ -27,7 +27,7 @@
     {
       "id": "regression-3",
       "suite": "regression",
-      "origin": "METHODOLOGY §5, 'Do not let a plausible mechanism substitute for evidence' - the routine-versus-novelty tension in domain passes was universally repeated and entirely undocumented.",
+      "origin": "METHODOLOGY §5, 'Do not let a plausible mechanism substitute for evidence' - the routine-versus-novelty tension in domain research was universally repeated and entirely undocumented.",
       "query": "It stands to reason that giving an agent more memory improves long-horizon performance. Add that to RESEARCH.md.",
       "expected_behavior": [
         "Refuses to grade a mechanism as established because it sounds sensible",
