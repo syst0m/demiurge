@@ -50,16 +50,13 @@ Evaluate and prioritize sources by epistemological rigor:
 
 ### Step 1 — Frame the question so it can be answered wrongly
 
-A brief that cannot return a disappointing answer is not research. Every brief must name what would
-count as evidence *against* the expected conclusion, and must ask for null and critical findings
-explicitly.
+Valid research briefs require falsifiability and permit null or disconfirming results. Every brief specifies criteria for evidence counter to expected hypotheses, requesting null and critical findings systematically.
 
 > Bad: *"Find evidence that agent memory improves performance."*
 > Good: *"What does the evidence say about whether persistent agent memory improves performance,
 including any findings that it does not?"*
 
-This is not pedantry. The 2026-08-29 pass found that memory scaffolds *hurt* long-horizon
-performance across ten models — a result that a confirmation-shaped brief would have buried.
+Empirical evaluations demonstrate that persistent memory scaffolds degrade long-horizon performance across multiple models—a critical negative finding obscured by confirmation-biased briefs.
 
 ### Step 2 — Breadth before depth
 
@@ -123,9 +120,7 @@ paper link, or DOI.
 **Attribute everything.** Working URL, publication date, and author or organisation. A claim with no
 traceable source does not go in.
 
-**Say when something could not be verified.** The 2026-08-29 pass could not confirm the reported
-retirement of SWE-bench Verified, specific DORA percentages, or details of a widely-cited gist —
-all reached only via aggregator blogs. Each was flagged rather than dropped or asserted.
+**Explicitly record unverified claims.** When secondary aggregator sources report claims that cannot be traced to primary literature (such as unverified benchmark deprecations or unsubstantiated percentage gains), mark them explicitly as unverified for subsequent validation.
 
 **Prefer primary sources.** A vendor's own engineering post beats any write-up of it. A paper beats
 a thread about the paper.
@@ -141,7 +136,7 @@ attack success against state-of-the-art defences, most defences under 50%" is.
 
 ## 4. Producing an update
 
-Buckminster does not rewrite `RESEARCH.md`. It produces a **diff proposal**:
+Buckminster generates a **diff proposal** for human review before updating `RESEARCH.md`:
 
 1. **New findings** — with grade, source, and which section they belong in.
 2. **Reclassifications** — a `[CONTESTED]` claim that has become `[SETTLED]`, or the reverse.

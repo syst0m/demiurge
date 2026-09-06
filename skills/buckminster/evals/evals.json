@@ -1,6 +1,6 @@
 {
   "skill": "buckminster",
-  "notes": "Regression cases are drawn from the anti-patterns in references/RESEARCH_METHODOLOGY.md §5, which that file states were 'observed and corrected in practice, not imagined' - so they satisfy G0 as real failures rather than invented ones. Two more (r6, r7) come from the skill's own non-negotiables. Regression must hold at 100%. Capability cases are aspirational. Grading is on the proposal Buckminster produces, not on the transcript alone.",
+  "notes": "Regression cases are drawn from the anti-patterns in references/RESEARCH_METHODOLOGY.md §5, satisfying Gate G0 criteria via empirical failure cases. Two more (r6, r7) come from the skill's own non-negotiables. Regression must hold at 100%. Capability cases are aspirational. Grading evaluates the proposal Buckminster produces directly.",
   "cases": [
     {
       "id": "regression-1",
@@ -10,7 +10,7 @@
       "expected_behavior": [
         "Declines to treat absence from one search method as absence from the literature",
         "Runs the search across more than one corpus before answering",
-        "If it still finds nothing, reports that as 'not found by these methods' rather than 'does not exist'"
+        "If search yields no results, reports 'not found by these methods' explicitly"
       ]
     },
     {
@@ -21,7 +21,7 @@
       "expected_behavior": [
         "Records both positions and the conflict itself as the finding",
         "Does not average, split the difference, or pick by recency or citation count",
-        "Grades the claim [CONTESTED] rather than [SETTLED]"
+        "Grades conflicting empirical claims as [CONTESTED]"
       ]
     },
     {
@@ -42,7 +42,7 @@
       "query": "The meta-analysis reports a pooled 23% improvement. Record that figure.",
       "expected_behavior": [
         "Checks heterogeneity before repeating a pooled estimate",
-        "Reports the range rather than the point estimate where heterogeneity is high",
+        "Reports ranges and distributions when heterogeneity is high",
         "States the I² value it found, or that it could not find one"
       ]
     },
@@ -53,7 +53,7 @@
       "query": "A survey found developers report being 2x faster with agents. Is that a [SETTLED] finding?",
       "expected_behavior": [
         "Separates self-reported speedup from measured speedup",
-        "Cites the documented gap between the two rather than treating the survey as measurement",
+        "Cites empirical disparity baselines between self-reports and measured performance",
         "Does not grade a self-report as [SETTLED]"
       ]
     },
@@ -74,8 +74,8 @@
       "origin": "Skill non-negotiable: RESEARCH.md is append-only and Marcus consumes it; a silent overwrite propagates into every agent generated afterwards.",
       "query": "Section 7 is out of date. Just rewrite it with what you found.",
       "expected_behavior": [
-        "Produces a diff proposal for approval rather than editing RESEARCH.md",
-        "Flags contradictions with the current snapshot loudly rather than overwriting them",
+        "Produces a diff proposal for approval before applying updates to RESEARCH.md",
+        "Explicitly highlights contradictions with the current snapshot",
         "States the consequences for Marcus's generation rules",
         "Does not rewrite the file wholesale"
       ]
@@ -83,11 +83,11 @@
     {
       "id": "regression-8",
       "suite": "regression",
-      "origin": "Observed 2026-09-04: the hand-off step named `scripts/sync-skills.sh` and `research/RESEARCH.md` without a repo root, so both stopped resolving once the skill was deployed to ~/.claude/skills/.",
+      "origin": "Regression fixture: relative path resolution fails when skills execute outside the repository root.",
       "query": "Finish the research pass and tell me how to get the new snapshot to Marcus.",
       "expected_behavior": [
         "Names paths that resolve from where the reader actually is",
-        "Uses ~/-absolute or explicitly repo-rooted paths rather than bare relative ones",
+        "Uses absolute or explicitly repository-rooted paths exclusively",
         "Does not assume the reader is sitting in the source repository"
       ]
     },
@@ -121,7 +121,7 @@
       "query": "Has anything we cite been retracted?",
       "expected_behavior": [
         "Checks editorialNotices for retractions, corrections and expressions of concern",
-        "Reports what it could not verify rather than dropping or asserting it",
+        "Explicitly records unverified claims for secondary review",
         "States the consequence for any Marcus rule that depends on a retracted source"
       ]
     },

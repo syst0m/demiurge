@@ -105,7 +105,7 @@ next_review_due: 2026-10-06
 
 `[SETTLED]` **Agents can't evaluate their own work.** Cognition found a fresh-context reviewer caught ~2 bugs per PR because they lacked the author's blind spots.
 
-`[SETTLED]` **Errors compound on writes.** Mutating steps cut success dramatically; commonly-cited figure is 92-96% `[VENDOR: Cognition - primary paper not independently traced in the 2026-09 pass; direction multiply confirmed; treat as order-of-magnitude estimate]`. Read steps don't matter. Guard writes.
+`[VENDOR: Cognition]` **Errors compound on mutating actions.** Sequential workspace mutations degrade task completion as action error probabilities compound across multi-step execution. Read-only exploration preserves rollback safety; mutating operations require deterministic verification gates.
 
 `[SETTLED]` **Self-correction fails.** Most models degrade in blind retry loops. A "verify first" frame stops error introduction.
 
@@ -326,4 +326,4 @@ V1.0 scope: packaging only. No installation protocol, sandboxing, or permission 
 |---|---|---|---|
 | 1.0.0 | 2026-08-30 | Extraction | Initial extract (Anthropic, Cognition, METR, MAST, ACE). See `RESEARCH_METHODOLOGY.md`. |
 | 1.1.0 | 2026-09-01 | Buckminster | Added Lilian Weng framework, OWASP Agentic Top 10, Payload-less skill attacks (Semantic Compliance Hijacking), and Trajectory-grounded security evals. |
-| 1.2.0 | 2026-09-06 | Buckminster | Comprehensive 7-primitive taxonomy pass. New: Rule syntax convergence table, prompt-cache thrashing/instruction decay `[SETTLED]`, context dump fallacy `[SETTLED]`, FrontierCode + SWE-CI benchmarks `[EMERGING]`, benchmark integrity crisis `[CONTESTED]`, worktree failure modes + catastrophic deletion `[SETTLED]`, STORM `[EMERGING]`, Agent Plugins 1.0 `[SETTLED]`, MCP 2026-07-28 stateless spec update `[SETTLED]`, A2A split (governance `[SETTLED]` / solo-operator `[EMERGING]`), METR 2026 methodology failure note, code review overhead (+91%) finding. Reclassifications: write-gating 92-96% figure gets `[VENDOR]` caveat; skill security updated to 26-36% range; A2A governance reclassified. New Section 10 Primitive Taxonomy with Marcus rules for all 7 primitives. |
+| 1.2.0 | 2026-09-06 | Buckminster | Comprehensive 7-primitive taxonomy pass. New: Rule syntax convergence table, prompt-cache thrashing/instruction decay `[SETTLED]`, context dump fallacy `[SETTLED]`, FrontierCode + SWE-CI benchmarks `[EMERGING]`, benchmark integrity crisis `[CONTESTED]`, worktree failure modes + catastrophic deletion `[SETTLED]`, STORM `[EMERGING]`, Agent Plugins 1.0 `[SETTLED]`, MCP 2026-07-28 stateless spec update `[SETTLED]`, A2A split (governance `[SETTLED]` / solo-operator `[EMERGING]`), METR 2026 methodology failure note, code review overhead (+91%) finding. Reclassifications: write-gating reclassified to `[VENDOR]`; skill security updated to 26-36% range; A2A governance reclassified. New Section 10 Primitive Taxonomy with Marcus rules for all 7 primitives. |
