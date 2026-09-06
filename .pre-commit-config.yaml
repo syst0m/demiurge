@@ -29,6 +29,6 @@ repos:
       # unversioned, invisible to CI, and would be displaced by `pre-commit install`.
       - id: gate-tropes
         name: Scan for negative parallelism
-        entry: scripts/gate-tropes.sh
-        language: script
+        entry: python scripts/gate_tropes.py
+        language: system
         types: [markdown]

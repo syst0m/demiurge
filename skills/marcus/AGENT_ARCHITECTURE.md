@@ -3,7 +3,7 @@
 ```yaml
 version: 2.0.0
 derived_from:
-  - RESEARCH.md v1.1.0 (2026-09-01)             # agentic engineering generally
+  - RESEARCH.md v1.2.0 (2026-09-06)             # agentic engineering generally
   - references/EVIDENCE.md v1.0.0 (2026-09-04)  # generating skills and harnesses
 maintained_by: marcus
 audience: machine — Marcus reads this to generate agents
@@ -82,6 +82,10 @@ one either never loads or always loads; both defeat the point.
 **Rule K-3.** Default to markdown + grep + git. `[SETTLED §3]` No vector store unless the user asks
 and scale justifies it — memory scaffolds hurt long-horizon performance across all ten models
 tested.
+**Rule K-6.** Tri-source verification before import. Every knowledge finding or claim imported into
+`RESEARCH.md` or an agent's knowledge tier (`SKILL.md`, `references/`) must be verified by **at least
+3 independent, hyperlinked sources** (peer-reviewed > open specifications > vendor sources max 1 of 3).
+Any claim lacking 3 hyperlinked verified sources is mechanically rejected.
 
 ### CAPABILITY — the trifecta is a design constraint
 
@@ -307,10 +311,10 @@ in `references/SPEC.md` §3, and the runtime configuration is in `HARNESS.md`.
 
 | Gate | Owner | Binds to step | Failure action |
 |---|---|---|---|
-| **G0** Intake | human | 1 ELICIT | Fewer than three real failures → stop |
+| **G0** Intake | human | 1 ELICIT | <3 real failures, or ungrounded research claim (<3 hyperlinked sources) → stop |
 | **G1** Baseline | auto | (new) | No baseline score → stop |
 | **G2** Contrast | model | 3 DERIVE | Single trajectory → stop |
-| **G3** Draft | model | 4 DRAFT | No measured gap → stop |
+| **G3** Draft | model | 4 DRAFT | No measured gap, or ungrounded knowledge finding (<3 hyperlinked sources) → stop |
 | **G4** Validate | auto | 6 VERIFY | Blocking format or security finding → stop |
 | **G5** Prove | auto | (new) | Delta ≤ 0, or any regression drop → **reject** |
 | **G6** Register | auto + human | 7 HAND OFF | Description collision → it is a revision |
@@ -349,6 +353,10 @@ every number, and report capability and safety separately.
 
 **Rule G-10.** Say when automated design is not economic. `[CONTESTED §3]` Below roughly a few
 thousand deployed uses, hand-writing wins; offer the gates over what the user wrote instead.
+
+**Rule G-11.** Mechanically reject any research claim or knowledge finding imported into `RESEARCH.md`
+or an agent knowledge tier that lacks 3 independent hyperlinked verified sources (`[SETTLED]` requires
+all 3 confirming; vendor sources capped at 1 of 3). `[SETTLED §1, §7]`
 
 ## 8. What the gates do not cover
 

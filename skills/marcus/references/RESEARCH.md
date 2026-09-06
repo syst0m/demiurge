@@ -29,7 +29,7 @@ next_review_due: 2026-10-06
 
 **Agentic Frameworks.** `[SETTLED]` The foundational framework decomposes autonomous agents into four core components: Planning (task decomposition, self-reflection), Memory (short-term/in-context, long-term/vector), Tool Use, and Action. 'Harness Engineering' focuses on the feedback loops (workflows, evolutionary search) that allow systems to recursively improve (Lilian Weng).
 
-**The harness matters more than the model.** `[SETTLED]` Scaffolding (context, tools, routing) drives outcomes. One study showed harness tweaks shifted scores more than model generational leaps.
+**The harness matters more than the model (Binding Constraint Thesis).** `[SETTLED]` Scaffolding (context, tools, routing) drives outcomes. Harness configuration is often a stronger determinant of agent performance than the underlying model (altering Pass@1 by up to 27.4 to 54.3 percentage points, e.g. 19.1% to 73.4% on identical models; [Claw-SWE-Bench](https://doi.org/10.48550/arxiv.2606.12344), [Stop Comparing LLM Agents Without Disclosing the Harness](https://consensus.app/papers/details/43f4d82302df51dfa305fc7c9545c823/?utm_source=unknown), [Don't Blame the Large Language Model](https://consensus.app/papers/details/f4b46f0c169756078f5c8de629846665/?utm_source=unknown)).
 
 ---
 
@@ -49,9 +49,9 @@ next_review_due: 2026-10-06
 
 `[CONTESTED]` **Keep failures or prune them?** Manus keeps them to avoid repeating errors. Anthropic prunes them to reduce noise. Likely task-dependent.
 
-`[SETTLED]` **Prompt-cache thrashing.** Volatile data (todo lists, timestamps, dynamic configs) placed inside the stable cached prefix forces full context re-processing on every mutation. Keep volatile task data at the END of context, not in rules files or the system prompt prefix. *Solo-operator finding; fresh-subagent-per-task patterns are immune.* Source: Claude Code engineering blog (2026), multiple independent practitioner reports.
+`[SETTLED]` **Prompt-cache thrashing.** Volatile data (todo lists, timestamps, dynamic configs) placed inside the stable cached prefix forces full context re-processing on every mutation. Keep volatile task data at the END of context, not in rules files or the system prompt prefix. *Solo-operator finding; fresh-subagent-per-task patterns are immune.* Source: [Claude Code Architecture Documentation](https://docs.anthropic.com/claude-code/rules) `[VENDOR]`, [AAIF Agent Configuration Specification](https://aaif.io/specs/workspace-rules), [Cursor Rules Specification](https://docs.cursor.com/context/rules-for-ai) `[VENDOR]`.
 
-`[SETTLED]` **Instruction decay (context rot).** Adherence to early-session instructions degrades measurably after ~45-60 minutes on long agentic tasks (models revert to disallowed defaults). Workaround: session chunking every 30-45 minutes; stable instructions at top of cacheable prefix. *Solo-operator finding.*
+`[SETTLED]` **Context Length Degradation & Positional Bias.** Adherence to instructions and reasoning capability degrade measurably as input length increases (13.9%–85% drop across models even with perfect retrieval; [Context Length Alone Hurts LLM Performance](https://consensus.app/papers/details/1aecfc3c99265aeab55fa1d25acf1135/?utm_source=unknown)). This is driven by intrinsic U-shaped attention bias ([Found in the Middle](https://consensus.app/papers/details/694c246f6c4750f893e1b08a0ad3f62e/?utm_source=unknown), [Lost in the Middle at Birth](https://consensus.app/papers/details/bac6172df89c5adbbc84945f9a05cb52/?utm_source=unknown)). Workaround: session chunking every 30-45 minutes; progressive disclosure; stable instructions at top of cacheable prefix.
 
 `[SETTLED]` **Self-rewritten memory degrades.** Replacing memory causes brevity bias (losing detail) and context collapse (eroding to platitudes). Use structured, append-only updates. (+10.6% on benchmarks).
 *Marcus Rule:* Agents accumulating state must use append-only files. Never regenerate wholesale.
@@ -92,11 +92,11 @@ next_review_due: 2026-10-06
 
 *Marcus Rule:* Every agent ships with a starter eval suite (capability/regression) based on real failures.
 
-**Benchmark integrity crisis** `[CONTESTED]`: ~63% of SWE-bench 'solved' cases may involve retrieval from repository history or shortcut-taking rather than genuine reasoning (Cursor — vendor source; not independently confirmed; direction credible, magnitude suspect). The field has responded with stricter benchmarks.
+**Benchmark integrity crisis** `[SETTLED]`: Popular benchmarks exhibit critical data quality flaws: 32.67% of resolved instances in SWE-bench involve solution leakage and 31.08% rely on weak test cases incapable of confirming patch correctness ([SWE-Bench+](https://consensus.app/papers/details/a2fde21b76f5544c9edca661a2b6e868/?utm_source=unknown), [SWE-rebench](https://consensus.app/papers/details/84224bee0b8e5a0794a3b69ae7f3e1c1/?utm_source=unknown), [Cursor SWE-bench Leakage Investigation](https://www.cursor.com/blog/swe-bench-leakage) `[VENDOR]`).
 
 **New benchmarks** `[EMERGING]`:
 
-- **FrontierCode** (Cognition, mid-2026): 150 tasks from 36 repos, curated by 20+ expert maintainers (40+ hours/task), graded on 3,000+ rubrics (behavioural correctness, regression safety, scope discipline, polish). Asks "would a maintainer merge this?" not "does it pass tests?". Current SOTA scores 30-50%. `[VENDOR]` for exact scores.
+- **FrontierCode** ([Cognition](https://www.cognition.ai/blog/frontier-code), mid-2026): 150 tasks from 36 repos, curated by 20+ expert maintainers (40+ hours/task), graded on 3,000+ rubrics (behavioural correctness, regression safety, scope discipline, polish). Asks "would a maintainer merge this?" not "does it pass tests?". Current SOTA scores 30-50%. `[VENDOR]` for exact scores.
 - **SWE-CI** (Sun Yat-sen U. / Alibaba, 2026): evaluates agents on codebases evolving over 233-day, 71-commit real histories. Tests long-horizon maintenance, not one-shot bug fixing.
 
 ---
@@ -117,11 +117,12 @@ next_review_due: 2026-10-06
 
 ## 6. Security
 
-`[SETTLED]` **Prompt injection is unsolved.** >85% success against SOTA defenses. Prompt-level fixes fail. Use architectural fixes (isolated capabilities, split data/prompt channels).
+`[SETTLED]` **Prompt injection is unsolved.** >85% success against SOTA defenses. Prompt-level fixes fail. Use architectural fixes (isolated capabilities, split data/prompt channels; [Prompt Injection Attacks on Agentic Coding Assistants](https://consensus.app/papers/details/b0771d1e67385e0bb6331098ea1ab770/?utm_source=unknown), [InjecAgent](https://consensus.app/papers/details/1f22a6682586514aaa8f32ad3e8a9fb5/?utm_source=unknown)).
 
 `[SETTLED]` **The Lethal Trifecta:** Private data + untrusted content + exfiltration vector. Any two are safe. All three guarantee an exploit.
 
-`[SETTLED]` **Skills = supply chain.** 36.8% of published skills have flaws; 91% of malicious payloads use prompt injection.
+`[SETTLED]` **Skills = supply chain.** 26.1% of published skills contain security flaws; skills bundling executable scripts are **2.12× more likely to contain vulnerabilities** (OR=2.12, p < 0.001; [Agent Skills in the Wild](https://doi.org/10.48550/arxiv.2601.10338)). Skill file injections reach up to 80% attack success ([Skill-Inject](https://consensus.app/papers/details/8a295e8d6d1f5769b75fd915ee2400ce/?utm_source=unknown)). Deterministic tool-call boundary enforcement via runtime hooks and sandboxing is required ([ClawGuard](https://consensus.app/papers/details/54dcdfd7a523538ba9ee6f638ad5023b/?utm_source=unknown), [AgentForge](https://consensus.app/papers/details/a745a1c7313b56d8a9bc4b145486b0c3/?utm_source=unknown)).
+
 `[SETTLED]` **Payload-less Skill Attacks:** Semantic Compliance Hijacking (SCH) uses natural language compliance rules to manipulate agents into executing unauthorized code, bypassing traditional AST signature scanners (up to 77% success rate). Agent safety depends on how skills are interpreted, not just model alignment.
 
 `[SETTLED]` **OWASP Top 10 for Agentic Applications** establishes defense-in-depth: strict identity/credential management (treat agents as Non-Human Identities - NHIs), execution isolation (sandboxing), and runtime anomaly detection over agent behaviors (not just outputs).
@@ -190,7 +191,7 @@ skill-name/
 - METR (2025): Devs were 19% slower but *felt* 20% faster.
 - METR (2026): Redesigned RCT data compromised by selection effects (developers refused control groups as AI tools became standard). Weak signal — likely some improvement over 2025 baseline but unconfirmed. Not "straddles zero" — study was methodologically incomplete.
 - Codebases see +18% static warnings and +39% cognitive complexity.
-- AI-generated PRs take up to **91% longer to review** in some studies — a downstream bottleneck that absorbs task-level speed gains (population: teams, not solo operators).
+- **The Productivity-Reliability Paradox** `[SETTLED]`: AI-assisted code generation increases PR volume by 98% but expands code review latency by **91%**, flattening net throughput without automated verification gates and specification discipline ([The Productivity-Reliability Paradox](https://consensus.app/papers/details/fc9e0099b4ec5c54a8648ec26372d59a/?utm_source=unknown), [The Impact of AI Coding Assistants: Longitudinal Study](https://consensus.app/papers/details/bbf4a1d27e2c54f9b296dec6401ce09e/?utm_source=unknown), [Impact of LLM-Assistants on Developer Productivity](https://consensus.app/papers/details/7446bc1934b256a1a9f1b979f41ad494/?utm_source=unknown)).
 - Industry longitudinal data (mid-2026): actual system-level throughput gains of **5-15%** for most organisations, vs. vendor claims of 30-50%+.
 
 `[SETTLED]` **The perception gap.** The illusion of speed is real for both humans and agents.
