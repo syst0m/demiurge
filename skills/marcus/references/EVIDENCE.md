@@ -36,7 +36,7 @@ artefact:
 | ICRA 2024 | Tziafas et al., *Lifelong Robot Library Learning* | Growing a robot manipulation skill library; a skill abstractor distils experience into library entries |
 | *Robotics and Autonomous Systems* | Zhao et al., *Agentic Skill Discovery* | LLM proposes tasks, RL learns policies, a separate VLM verifies — skill library from zero |
 | IEEE ETFA 2025 | Silva et al., *Capability-Driven Skill Generation with LLMs* | Capability-as-contract, RAG over the user's own libraries, generates conforming implementations |
-| IEEE ISBDAS 2026 | Meng et al., *Constraint-Consistent Skill Composition* | Skills carry preconditions/post-effects; retrieval scored on constraint consistency, not text similarity |
+| IEEE ISBDAS 2026 | Meng et al., *Constraint-Consistent Skill Composition* | Skills carry preconditions/post-effects; retrieval scored on constraint consistency |
 | *Information Fusion* 2025 | Sapkota et al. | Conceptual taxonomy separating AI Agents from Agentic AI |
 
 Everything specific to `SKILL.md`-shaped skills — SkillCAT, Skill-Pro, MSCE, MIND-Skill, SkillOS,
@@ -48,7 +48,7 @@ Self-Harness, EvoAgentBench, Harness-Bench, the agent-skills survey (arXiv 2602.
 1. Cite preprints as preprints. Never launder an arXiv number into "research shows".
 2. Two transferable ideas *are* reviewed, and both come from the robotics side: a skill is a
    **contract** (preconditions, post-effects, interface) — ETFA/ISBDAS — and retrieval must score
-   **constraint consistency**, not text similarity — ISBDAS. Both are in the spec.
+   **constraint consistency** (ISBDAS). Both are in the spec.
 3. The field's own evidence standard is low. Measure locally; do not import benchmark numbers.
 
 ---
@@ -66,13 +66,13 @@ ablation on this question:
 - **No variant beat No-Skill prompting.** All p ≥ 0.396. Total spread across every variant: **1.2 pp**.
 - Component ablation found no single part carrying the value either.
 - The token-matched control is the damning part: full generated skills performed **similarly to
-  task-irrelevant content in skill format**. The gain was formatting, not knowledge.
+  task-irrelevant content in skill format**. The measured gain derived from formatting alone.
 
 Graded `[CONTESTED]` because it is one study, in one domain, on one-shot generation — but it is the
 only large controlled test that exists, and it points one way.
 
 **The factory's founding rule follows from it:** *generation is a proposal, never a delivery.* A
-skill that has not measured better than no skill is not a skill; it is a draft. Gate **G5** exists
+skill that has not measured better than no skill is classified as a draft. Gate **G5** exists
 entirely because of this finding.
 
 ---
@@ -85,9 +85,9 @@ entirely because of this finding.
 |---|---|---|
 | **Contrast success against failure** on the *same* task, several trajectories each, to isolate what explains the outcome difference | SkillCAT (arXiv 2606.13317) | up to **+49.69%** over the initial skill |
 | **Replay each candidate patch** on clones of its source task; keep only patches that do not damage outcomes; merge hierarchically | SkillCAT | — |
-| **Gate on verification, not plausibility** — a PPO-style gate over semantically generated candidates | Skill-Pro | superior reuse rates under heavy memory compression |
+| **Gate on verification** — a PPO-style gate over semantically generated candidates prioritizing verification over plausibility | Skill-Pro | superior reuse rates under heavy memory compression |
 | **Attach applicability boundaries, verification rules and reliability estimates** to each skill; keep evidence links back to the trace | MSCE | outperforms skill- and memory-augmented baselines |
-| **Route to task-relevant sub-skills** rather than loading the whole corpus | SkillCAT (TTE) | — |
+| **Route to task-relevant sub-skills** selectively based on task context | SkillCAT (TTE) | — |
 
 The shared shape: *many trajectories → contrastive extraction → replay validation → selective merge
 → conditional loading*. Every step these methods add over naive generation is a **rejection
@@ -97,8 +97,7 @@ mechanism**. That is the difference between them and the Huang result.
 3 backbones) reports that hand-curated ability content **transfers reliably across model families**,
 while **"no current automatic method sustains positive gain in all settings."**
 
-**Encoded as:** the factory is a human-in-the-loop assembly line with automated gates, not an
-autonomous skill generator. It proposes; a person accepts.
+**Encoded as:** the factory operates as a human-in-the-loop assembly line with automated gates. It proposes; a person accepts.
 
 ---
 
@@ -108,7 +107,7 @@ autonomous skill generator. It proposes; a person accepts.
 ADAS / Meta-Agent-Search family:
 
 - **Growing the context with every previous design performs *worse* than ignoring prior designs
-  entirely.** An evolutionary approach — a selected archive, not an accumulated transcript — beats both.
+  entirely.** An evolutionary approach — maintaining a selected archive — beats an accumulated transcript.
 - Designed agents show **low behavioural diversity**, so the usual "generate many, then ensemble"
   escape is weaker than assumed.
 - **Cost.** Design-plus-deploy beat human-designed agents on only **two datasets**, and only past
@@ -155,7 +154,7 @@ every final harness improved held-in *and* held-out pass rates, up to **+132% re
 
 Single paper, no replication, authors' own benchmark selection → `[EMERGING]`. But the loop is
 structurally identical to the skill line's contrast → propose → replay-validate. **One pipeline, two
-product lines** is an evidence-supported design, not a convenience.
+product lines** is an evidence-supported architectural design.
 
 `[EMERGING]` Harness choice changes the agent's *beliefs*, not only its score — blocked actions,
 compressed repairs and selective verification can preserve terminal success while altering the beliefs
@@ -218,14 +217,14 @@ generated skill inherits write permissions by default.
   maintenance must be proactive.
 
 **Encoded as:** gate **G6** checks a new description for collision against the installed library and
-fails on excessive overlap. A skill that cannot be distinguished from an existing one is a *revision*
-of that skill, not a new skill.
+fails on excessive overlap. A skill that cannot be distinguished from an existing one is classified as a *revision*
+of that skill.
 
 ---
 
-## 7. Format constraints (the platform, not the literature)
+## 7. Platform format constraints
 
-`[SETTLED]` from the Claude platform docs; these are validator rules, not opinions.
+`[SETTLED]` from the Claude platform docs; these are mandatory validator rules.
 
 - `name`: ≤64 chars, lowercase/digits/hyphens only, no XML tags, must not contain `anthropic` or `claude`.
 - `description`: non-empty, ≤1024 chars, no XML tags, **third person**, states *what* and *when*.
@@ -236,7 +235,7 @@ of that skill, not a new skill.
 - Loading is three-tier: discovery (name + description) → activation (SKILL.md) → execution (bundled files).
 - MCP tools referenced as `ServerName:tool_name`.
 - Degrees of freedom matched to fragility: high (prose) / medium (parameterised script) / low (exact command).
-- Scripts are executed, not read — their source never enters context, only their output.
+- Scripts are executed directly; their source never enters context, only their output.
 
 `[SETTLED]` **Eval-driven development is the documented method**: identify gaps by running *without*
 the skill, build ≥3 evaluations, establish a baseline, write minimal instructions, iterate. Test
