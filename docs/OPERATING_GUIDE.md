@@ -89,10 +89,10 @@ Cross-reference empirical benchmarks and return a graded finding.
 
 **Execution Behavior:**
 
-1. Searches empirical databases (`scite`, `Consensus`, arXiv).
+1. Searches empirical databases (`scite`, `Consensus`, arXiv) when connectors are configured, or degrades to web search and open archives.
 2. Filters out commercial sales collateral.
 3. Evaluates replication status (e.g., finding that vector memory degrades long-horizon tasks across models).
-4. Generates a markdown diff with explicit citations and confidence tags.
+4. Generates a markdown diff with explicit citations and confidence tags (see [Installation Guide](INSTALLATION.md#5-optional-tooling-research-connectors-for-buckminster) for connector details).
 
 #### Example 2: Scheduled Research Sweep Proposal
 

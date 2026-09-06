@@ -82,3 +82,38 @@ Antigravity is natively integrated with the Gemini ecosystem.
 1. Open the Demiurge workspace.
 2. For **Cline**: Cline automatically reads `.clinerules` or instructions in the workspace. You can set the workspace instructions to point to the `skills/` directory.
 3. For **Copilot**: Mention `@workspace` and explicitly ask it to "Act as Marcus by reading skills/marcus/SKILL.md".
+
+---
+
+## 5. Optional Tooling: Research Connectors (For Buckminster)
+
+Demiurge decouples synthesis from empirical research:
+
+- **Marcus** (agent design, generation, and gate validation) is **fully offline and deterministic**. It executes via Python 3 standard library scripts and local reference documentation without external network access or tool dependencies.
+- **Buckminster** surveys academic and empirical literature to propose updates to `research/RESEARCH.md`.
+
+Fresh clones operate out-of-the-box without external connectors. Connecting scholarly Model Context Protocol (MCP) integrations improves research quality, verification depth, and retraction screening.
+
+### Coverage Breakdown
+
+| Connector | Empirical Coverage | Key Strength |
+|---|---|---|
+| [Undermind](https://undermind.ai) | 200M+ academic papers | Multi-agent systematic literature exploration, ranked evidence synthesis, and full-text PDF retrieval |
+| [scite](https://scite.ai/mcp) | 210M+ records, 1.2B+ citations | Smart Citations indicating whether claims are supported, contrasted, or mentioned; surfaces `editorialNotices` for retractions and errata |
+| [Consensus](https://consensus.app) | 220M+ peer-reviewed papers | Structured search across PubMed, Semantic Scholar, and arXiv; consensus ratios and study design filters |
+| [PubMed](https://pubmed.ncbi.nlm.nih.gov) | 36M+ biomedical citations | Direct NCBI access; useful for specialized life-sciences agent architectures (filtered out for CS/AI engineering) |
+
+### Dependency Status and Fallback Behavior
+
+- **Non-Breaking Dependency**: Missing connectors will not break Demiurge, Marcus, or repository test suites.
+- **Graceful Degradation**: When connectors are unavailable in an agent runtime, Buckminster falls back to standard web search engines and open-access archives (arXiv, IETF, vendor engineering portals).
+- **Audit Requirement**: When connectors are absent, Buckminster explicitly notes in diff proposals that citation reception and retraction notices could not be validated via Smart Citations. Findings without reception verification cannot be promoted to `[SETTLED]`.
+
+### Official Connector Documentation
+
+Refer to the official vendor documentation for setup instructions on your preferred agent platform:
+
+- [Undermind MCP Documentation](https://mcp.undermind.ai)
+- [scite MCP Documentation](https://scite.ai/mcp)
+- [Consensus MCP Documentation](https://mcp.consensus.app)
+- [Claude PubMed MCP Service](https://pubmed.mcp.claude.com)
