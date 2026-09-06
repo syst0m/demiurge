@@ -29,6 +29,18 @@ connected account.
 - **WebSearch** — current state, adoption numbers, "what happened since". US-only results.
 - **WebFetch** — primary sources. Prefer the vendor's own engineering blog over any summary of it.
 
+### Evidence hierarchy (Peer-Review Priority)
+
+Evaluate and prioritize sources by epistemological rigor:
+
+1. **First Tier (Highest Priority): Peer-reviewed academic literature and meta-analyses.** Queried
+   via scholarly connectors (`scite`, `Consensus`, `PubMed` where appropriate). Provides empirical
+   methodology, peer scrutiny, and citation context.
+2. **Second Tier: Published technical RFCs and open specifications.** AAIF, Linux Foundation, IETF,
+   W3C standards.
+3. **Third Tier: Vendor engineering documentation or empirical benchmark reports.** Must be
+   explicitly labeled `[VENDOR]` and **cannot constitute more than 1 of the 3 required sources**.
+
 ### What is deliberately not used
 
 - **arXiv scraping** — the scholarly connectors already index it, with citation context attached.
@@ -69,10 +81,17 @@ For any load-bearing claim, run it through scite:
 
 Confidence markers are assigned at capture time, not retrofitted. `RESEARCH.md` uses four:
 
-- `[SETTLED]` — multiple independent sources, at least some empirical
-- `[CONTESTED]` — credible sources disagree, or it rests on one study
-- `[VENDOR]` — the claim originates with a party selling the thing
+- `[SETTLED]` — supported by at least 3 independent, verified resources, with all 3 confirming the finding (empirical backing)
+- `[CONTESTED]` — credible sources disagree, or it rests on fewer than 3 independent studies
+- `[VENDOR]` — the claim originates with a party selling the thing (capped at max 1 of the 3 required sources)
 - `[EMERGING]` — real but too new to have been tested in practice
+
+**Mandatory Tri-Source Verification Rule:**
+
+- Every claim proposed for `RESEARCH.md` must be supported by **at least 3 independent, verified resources**.
+- A claim cannot be graded `[SETTLED]` unless all 3 independent sources confirm the finding. If sources disagree, grade `[CONTESTED]` and state the conflict.
+- Claims resting on 1 or 2 sources cannot be marked `[SETTLED]`. If unverified across 3 independent sources, flag explicitly or reject.
+- Vendor sources (`[VENDOR]`) cannot constitute more than 1 of the 3 required sources.
 
 **The `[VENDOR]` marker is not optional.** Memory-system benchmarks, harness efficiency claims and
 framework adoption numbers are routinely published by the party selling them, frequently scored by
@@ -97,6 +116,12 @@ and it is the part that decays fastest between snapshots.
 ---
 
 ## 3. Standards for the output
+
+**Mandatory Concrete Reference Links.** Every cited finding must include clickable markdown
+hyperlinks (`[Source Name](https://...)`, `[Paper Title](https://doi.org/...)`, or arXiv URLs).
+Vague domain-level mentions (e.g. *"Claude engineering blog 2026, scalably.io"* or *"arxiv.org
+(2026)"*) are strictly disallowed. Every citation must resolve to an explicit primary source URL,
+paper link, or DOI.
 
 **Attribute everything.** Working URL, publication date, and author or organisation. A claim with no
 traceable source does not go in.
