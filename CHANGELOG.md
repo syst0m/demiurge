@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.5] - 2026-09-06
+
+### Added
+
+- **Native Markdown Executive Brief:** Added `skills/marcus/human-only/demiurge-brief.md` providing a native GitHub-rendered edition of the executive research briefing with full typography, tabular data, and verification results.
+- **Interactive Brief Preview Link:** Linked rendered HTML view via `htmlpreview.github.io` in [README.md](README.md) and [skills/marcus/human-only/README.md](skills/marcus/human-only/README.md) for direct browser dashboard access without requiring local file downloads.
+- **Optional Scholarly Connectors Documentation:** Documented optional Model Context Protocol (MCP) literature search tooling ([Undermind](https://undermind.ai), [scite](https://scite.ai/mcp), [Consensus](https://consensus.app), [PubMed](https://pubmed.ncbi.nlm.nih.gov)) in [docs/INSTALLATION.md](docs/INSTALLATION.md) (§5), [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md), and [docs/OPERATING_GUIDE.md](docs/OPERATING_GUIDE.md).
+- **Graceful Research Degradation:** Added fallback execution rules to `skills/buckminster/SKILL.md` and `skills/buckminster/references/RESEARCH_METHODOLOGY.md` allowing Buckminster to operate on fresh clones without connectors by degrading to web search and explicitly disclosing unverified citation reception.
+
+### Changed
+
+- **README Brief Gist Streamlining:** Removed auto-generated attribution boilerplate from [README.md](README.md) and updated `scripts/sync_brief_summary.py` to maintain a clean quote format.
+- **Link Target Expansion:** Added `skills/marcus/human-only/demiurge-brief.md` to `scripts/check_links.py` targets (now verifying 113/113 links).
+
 ## [0.4.4] - 2026-09-06
 
 ### Added
