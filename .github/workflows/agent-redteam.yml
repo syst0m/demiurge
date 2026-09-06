@@ -1,0 +1,30 @@
+name: Agent Red-Teaming & Security Eval
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # Nightly at 2:00 AM UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  redteam:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Promptfoo Security Evaluation
+        uses: promptfoo/promptfoo-action@v1
+        with:
+          type: 'eval'
+          config: 'promptfooconfig.yaml'
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true

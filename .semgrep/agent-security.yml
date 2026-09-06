@@ -1,0 +1,26 @@
+rules:
+  - id: unvalidated-subprocess-shell-true
+    patterns:
+      - pattern-either:
+          - pattern: subprocess.$METHOD(..., shell=True, ...)
+    message: "Avoid calling subprocess with shell=True in agent harnesses and gates. This introduces command injection risks from untrusted agent tool outputs."
+    languages: [python]
+    severity: ERROR
+
+  - id: unconstrained-eval-override
+    patterns:
+      - pattern: |
+          def $FUNC(...):
+            ...
+            return True
+      - pattern-regex: "(?i)(pass_all|skip_gates|bypass_g5|trust_unverified)"
+    message: "Potential safety gate bypass detected. Gate results must be measured and derived deterministically."
+    languages: [python]
+    severity: WARNING
+
+  - id: full-environment-leak-to-subprocess
+    patterns:
+      - pattern: subprocess.$METHOD(..., env=os.environ, ...)
+    message: "Passing the entire ambient os.environ exposes ambient secrets and API keys to child tool subprocesses. Isolate environment variables to a defined allow-list."
+    languages: [python]
+    severity: WARNING

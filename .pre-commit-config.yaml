@@ -16,10 +16,17 @@ repos:
     hooks:
       - id: vale
 
-  # Versioned here rather than living only in .git/hooks/, where it was
-  # unversioned, invisible to CI, and would be displaced by `pre-commit install`.
+  # Local deterministic security, PII, and agent safety scan
   - repo: local
     hooks:
+      - id: scan-security-pii
+        name: Scan for secrets, PII, and agent safety
+        entry: python scripts/scan_security_and_pii.py
+        language: system
+        pass_filenames: true
+
+      # Versioned here rather than living only in .git/hooks/, where it was
+      # unversioned, invisible to CI, and would be displaced by `pre-commit install`.
       - id: gate-tropes
         name: Scan for negative parallelism
         entry: scripts/gate-tropes.sh
