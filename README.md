@@ -42,6 +42,8 @@ Agent Packages <──emits & proves── Marcus ──checks gates (G0-G6) <�
   - **Superfluous Comment Scanner:** `scripts/scan_superfluous.py` prevents chat transcripts, migration war stories, and session diaries from polluting code comments.
   - **Strict Reference Verification:** `scripts/check_links.py --strict` ensures all citations resolve to active markdown artifacts or external URIs.
 
+For concrete LLD implementations (harnesses, gates, hooks, evals) and execution commands, see [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md).
+
 ---
 
 ## Core Documentation
@@ -85,5 +87,3 @@ Claims in `research/RESEARCH.md` require explicit confidence markers:
 | `[CONTESTED]` | Conflicting empirical results or single un-replicated study. | Expose to operator as a configurable option. |
 | `[VENDOR]` | Originates from an entity commercially selling the solution. | Exclude from defaults; declare commercial conflict. |
 | `[EMERGING]` | Mechanistically sound; lacks longitudinal production testing. | Document in design notes only; exclude from gates. |
-
-For concrete LLD implementations (harnesses, gates, hooks, evals) and execution commands, see [docs/DOCUMENTATION.md](docs/DOCUMENTATION.md).
