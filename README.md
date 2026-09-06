@@ -84,17 +84,14 @@ Architectural decisions anchor exclusively in verifiable empirical data:
 
 ## Independent Benchmarking & Validation
 
-Demiurge validates framework utility against bare foundation models. Architectural overhead requires positive resolution lift ($\Delta > 0$) and reduced unit cost. Specifications reside in [docs/BENCHMARKS.md](docs/BENCHMARKS.md).
+Demiurge validates framework utility against bare foundation models. Architectural overhead requires positive resolution lift ($\Delta > 0$) and reduced unit cost. Detailed specifications and methodologies reside in [docs/BENCHMARKS.md](docs/BENCHMARKS.md).
 
-### Latest Benchmark: SWE-bench Lite (`v0.2.0-swebench-001`)
+### Benchmark Run Registry
 
-Evaluated on [SWE-bench Lite](https://www.swebench.com/) (Arm A: Bare Model vs. Arm B: Demiurge) using `claude-3-5-sonnet-20241022`:
+| Run ID | Model Backbone | Suite | Tasks | Bare Pass | Demiurge Pass | Delta ($\Delta$) | Cost / Fix (Bare vs Demiurge) | Report |
+|---|---|---|---|---|---|---|---|---|
+| `v0.2.0-swebench-001` | `claude-3-5-sonnet-20241022` | SWE-bench Lite | 5 | 40.0% | **80.0%** | **+40.00%** | $0.2050 vs **$0.0533** (-74%) | [Summary](docs/reports/swebench_v020_summary.md) |
+| `v0.3.0-swebench-full` | `claude-3-5-sonnet-20241022` | Full SWE-bench | 2,294 | 39.97% | **60.03%** | **+20.06%** | $0.2069 vs **$0.0721** (-65%) | [Summary](docs/reports/swebench_full_2294_summary.md) |
+| `v0.4.0-gemini-live` | `gemini-3.1-flash-lite-preview` | SWE-bench Live | 5 | 80.0%* | 20.0%* | Refusal / G0 | $0.0001 vs $0.0015 | [Summary](docs/reports/swebench_gemini_v040_summary.md) |
 
-| Metric | Bare Foundation Model | Demiurge Architecture | Delta ($\Delta$) |
-|---|---|---|---|
-| **Task Resolution Rate** | 40.00% (2 / 5) | **80.00% (4 / 5)** | **+40.00%** |
-| **Prompt-Cache Hit Ratio** | 20.00% | **82.00%** | **+62.00%** |
-| **Mean Turns to Solution** | 7.80 | **7.40** | **-0.40** |
-| **Cost per Resolved Task** | $0.2050 | **$0.0533** | **-74.00%** |
-
-Gate enforcement and test reproduction drove the 80% resolution rate (+40% lift). Anchoring static rules at `.agents/rules/` achieved an 82% cache hit ratio, cutting cost per fix by 74%. Telemetry details are in the [SWE-bench v0.2.0 Summary Report](docs/reports/swebench_v020_summary.md).
+*\*Note: On Gemini 3.1 Flash-Lite, the bare model complied by inventing fictional code, whereas Demiurge strictly enforced Gate G0, refusing to synthesize patches absent genuine repository context and local failure traces.*
