@@ -3,6 +3,7 @@ node_modules/
 
 # Scratch and temporary testing directories
 scratch/
+eval_results/
 
 # Python bytecode, environments, and caches
 __pycache__/
