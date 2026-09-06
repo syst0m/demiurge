@@ -29,6 +29,48 @@ PRICING_PER_MILLION = {
         "cache_write": 2.50,
         "cache_read": 1.25,
     },
+    "gemini-3-flash-preview": {
+        "input": 0.15,
+        "output": 0.60,
+        "cache_write": 0.15,
+        "cache_read": 0.0375,
+    },
+    "gemini-3.0-flash": {
+        "input": 0.15,
+        "output": 0.60,
+        "cache_write": 0.15,
+        "cache_read": 0.0375,
+    },
+    "gemini-3.1-pro-preview": {
+        "input": 1.25,
+        "output": 5.00,
+        "cache_write": 1.25,
+        "cache_read": 0.3125,
+    },
+    "gemini-3.0-pro": {
+        "input": 1.25,
+        "output": 5.00,
+        "cache_write": 1.25,
+        "cache_read": 0.3125,
+    },
+    "gemini-3.8-flash": {
+        "input": 0.15,
+        "output": 0.60,
+        "cache_write": 0.15,
+        "cache_read": 0.0375,
+    },
+    "gemini-3.1-flash-lite-preview": {
+        "input": 0.075,
+        "output": 0.30,
+        "cache_write": 0.075,
+        "cache_read": 0.01875,
+    },
+    "gemini-3.1-flash-lite": {
+        "input": 0.075,
+        "output": 0.30,
+        "cache_write": 0.075,
+        "cache_read": 0.01875,
+    },
 }
 
 
