@@ -36,9 +36,8 @@ def generate_gist_markdown(html_content: str) -> str:
 
     lines = [
         START_MARKER,
-        "> **Executive Brief Gist (Auto-generated from [demiurge-brief.html](skills/marcus/human-only/demiurge-brief.html)):**",
-        ">",
     ]
+
 
     if clean_figs:
         lines.append("> #### Four Empirical Constants That Shaped the Design")
