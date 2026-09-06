@@ -9,17 +9,26 @@ comparable snapshots over time — so version-to-version diffs in `RESEARCH.md` 
 
 ### Scholarly connectors
 
-Four, with genuinely different strengths. Using one alone produces a biased snapshot.
+Four specialized connectors provide empirical coverage. Using one alone produces a biased snapshot.
 
-| Connector | Best for | Watch for |
-|---|---|---|
-| **Undermind** | `launch_deep_search` — a multi-agent review taking 2–5 min, producing a ranked list plus a summary. The heaviest instrument available. `search_papers` for iterative exploration; `read_pdfs` for targeted full text | One well-aimed deep search usually covers a whole brief. Check for an existing one before launching another |
-| **scite** | Smart Citations — the actual sentences citing papers wrote, classified supporting/contrasting/mentioning. **`editorialNotices` for retractions and corrections** | The only source here that shows how a finding was *received*, not just what it claimed |
-| **PubMed** | Biomedical and life sciences only | Returns nothing useful for CS/AI — do not use it for agentic-engineering work |
-| **Consensus** | General paper search with citation counts | Requires numbered inline citations and reproducing its usage message verbatim |
+| Connector | Best for | Documentation | Watch for |
+|---|---|---|---|
+| **Undermind** | `launch_deep_search` — a multi-agent review taking 2–5 min, producing a ranked list plus a summary. `search_papers` for exploration; `read_pdfs` for targeted full text | [Undermind Docs](https://undermind.ai) | One well-aimed deep search usually covers a whole brief. Call `get_orientation()` before any other Undermind tool |
+| **scite** | Smart Citations — the actual sentences citing papers wrote, classified supporting/contrasting/mentioning. **`editorialNotices` for retractions and corrections** | [scite Docs](https://scite.ai/mcp) | The only source here that shows how a finding was *received*, not just what it claimed |
+| **Consensus** | General paper search with citation counts across 220M+ papers | [Consensus Docs](https://consensus.app) | Requires numbered inline citations and reproducing its usage message verbatim |
+| **PubMed** | Biomedical and life sciences only | [PubMed Central](https://pubmed.ncbi.nlm.nih.gov) | Returns nothing useful for CS/AI — do not use it for agentic-engineering work |
 
-**Call `get_orientation()` before any other Undermind tool.** It is required, and it names the
-connected account.
+#### Connector Availability and Fresh Clone Fallbacks
+
+Scholarly connectors are optional instruments. Fresh clones of Demiurge and Marcus operate with zero external tool dependencies.
+
+If an operator environment lacks scholarly connectors:
+
+1. **Avoid tool-call faults**: Do not attempt to invoke missing MCP tools.
+2. **Degrade gracefully**: Rely on `WebSearch`, open-access repository lookups (arXiv, Semantic Scholar, IACR, ACM DL abstracts), standards bodies (IETF, W3C), and direct vendor engineering blogs.
+3. **Disclose unverified reception**: Explicitly state in the diff proposal:
+   > *"Scholarly connectors (scite, Undermind, Consensus) were unavailable in this environment. Citation reception (retraction checks and supporting vs contrasting sentiment) could not be verified via Smart Citations."*
+4. **Conservative grading**: Findings whose reception cannot be verified via Smart Citations must not be marked `[SETTLED]`. Mark them `[CONTESTED]` or `[EMERGING]` until verified with scholarly connectors.
 
 ### Web
 
@@ -60,16 +69,20 @@ Empirical evaluations demonstrate that persistent memory scaffolds degrade long-
 
 ### Step 2 — Breadth before depth
 
-Launch the Undermind deep search first (it runs asynchronously for minutes), then use that window
-for targeted `search_papers`, WebSearch and primary-source WebFetch. Do not idle waiting for it.
+If Undermind is connected, launch the deep search first (it runs asynchronously for minutes), then use
+that window for targeted `search_papers`, WebSearch and primary-source WebFetch. Do not idle waiting for
+it. If Undermind is absent, proceed directly with web search engines and open-access repositories.
 
 ### Step 3 — Check how findings were received
 
-For any load-bearing claim, run it through scite:
+For any load-bearing claim, run it through scite if available:
 
 - **`editorialNotices`** — retracted? corrected? subject to an expression of concern?
 - **Smart Citations** — do citing papers support it, or contrast with it? A heavily-cited paper
   whose citations are largely *contrasting* is classified as a disputed finding.
+
+If scite is absent, record explicitly that reception analysis and retraction status could not be
+empirically validated.
 
 ### Step 4 — Grade every claim before writing it down
 

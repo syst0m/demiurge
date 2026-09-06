@@ -67,15 +67,19 @@ finding that only holds at team scale must say so.
 
 1. **Load `references/RESEARCH_METHODOLOGY.md`.** It carries the toolchain, the six-step method, and
    the anti-patterns — each of which was observed directly in practice.
-2. **Launch the Undermind deep search first** (`get_orientation()` before any other Undermind call).
-   It runs 2–5 minutes asynchronously; use that window for targeted searches and primary-source
-   fetches rather than idling.
-3. **Check reception and citation context** — scite `editorialNotices` for retractions, and Smart
-   Citations for whether citing work supports or contrasts the finding.
+2. **Launch deep exploration.** If Undermind is connected, call `get_orientation()` then launch a
+   deep search (runs 2–5 minutes asynchronously; use that window for targeted searches rather than
+   idling). If Undermind is absent, proceed directly with targeted web searches and open-access archives.
+3. **Check reception and citation context.** If scite is connected, check `editorialNotices` for
+   retractions and Smart Citations for whether citing work supports or contrasts the finding. If scite
+   is absent, explicitly document that reception could not be validated via Smart Citations.
 4. **Apply Tri-Source Verification & Evidence Hierarchy.** Ensure ≥3 independent sources with
    concrete hyperlinks.
 5. **Grade as you capture.**
 6. **Produce a diff proposal, never a rewrite** (below).
+
+**Connector Availability & Graceful Degradation:**
+The four scholarly connectors ([Undermind](https://undermind.ai), [scite](https://scite.ai/mcp), [Consensus](https://consensus.app), [PubMed](https://pubmed.ncbi.nlm.nih.gov)) are optional high-fidelity instruments. When running on a fresh clone without connectors, do not attempt to invoke missing MCP tools; degrade gracefully to standard web search and open-access repositories, explicitly noting unverified reception status in your diff proposal.
 
 ## Output: a diff proposal
 

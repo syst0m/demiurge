@@ -100,6 +100,7 @@ The Demiurge documentation suite is structured into focused guides addressing sp
 - **Scope:** Complete deployment instructions for Marcus and Buckminster across multiple environments.
 - **Platforms Covered:** Claude Code (`~/.claude/skills/`), Google Antigravity (`~/.gemini/antigravity-ide/skills/`), Gemini CLI, OpenAI / Codex, and local IDEs.
 - **Key Commands:** Automated synchronization via `scripts/sync-skills.sh`.
+- **Optional Tooling:** Scholarly MCP connectors for Buckminster ([Undermind](https://undermind.ai), [scite](https://scite.ai/mcp), [Consensus](https://consensus.app), [PubMed](https://pubmed.ncbi.nlm.nih.gov)).
 
 ### 3.2 Operating Guide Summary
 
