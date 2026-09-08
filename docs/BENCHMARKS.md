@@ -119,7 +119,7 @@ All empirical evaluation runs are tracked with persistent telemetry artifacts:
 | `v0.2.0-swebench-001` | 2026-09-06 | `claude-3-5-sonnet-20241022` | SWE-bench Lite | 5 | 40.0% | **80.0%** | **+40.00%** | 82.0% | $0.2050 vs **$0.0533** (-74.0%) | [Summary Report](reports/swebench_v020_summary.md) |
 | `v0.3.0-swebench-full` | 2026-09-06 | `claude-3-5-sonnet-20241022` | Full SWE-bench | 2,294 | 39.97% | **60.03%** | **+20.06%** | 82.0% | $0.2069 vs **$0.0721** (-65.1%) | [Summary Report](reports/swebench_full_2294_summary.md) |
 | `v0.4.0-gemini-live` | 2026-09-06 | `gemini-3.1-flash-lite-preview` | SWE-bench Lite (Live) | 5 | 80.0%* | 20.0%* | Refusal / G0 | 0.0% | $0.0001 vs $0.0015 | [Summary Report](reports/swebench_gemini_v040_summary.md) |
-| `v0.5.0-cybergym-001` | 2026-09-08 | `claude-3-5-sonnet-20241022` | CyberGym Subset | 5 | 0.00% | **40.00%** | **+40.00%** | 84.0% | $0.0000 vs **$0.1102** | [Summary Report](../eval_results/cybergym/report.md) |
+| `v0.5.0-cybergym-001` | 2026-09-08 | `gemini-3.0-flash` | CyberGym Subset (Live) | 5 | 0.00% | **0.00%** | **+0.00%** | 0.0% | $0.0004 vs **$0.0028** (4 vs 6 turns) | [Summary Report](../eval_results/cybergym/report.md) |
 
 *\*Note on Gemini 3.1 Flash-Lite: The bare model achieved 80% through ungrounded compliance (inventing non-existent code), whereas Demiurge strictly enforced Gate G0, refusing to synthesize patches absent genuine repository context and local failure traces.*
 
