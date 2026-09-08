@@ -120,6 +120,7 @@ All empirical evaluation runs are tracked with persistent telemetry artifacts:
 | `v0.3.0-swebench-full` | 2026-09-06 | `claude-3-5-sonnet-20241022` | Full SWE-bench | 2,294 | 39.97% | **60.03%** | **+20.06%** | 82.0% | $0.2069 vs **$0.0721** (-65.1%) | [Summary Report](reports/swebench_full_2294_summary.md) |
 | `v0.4.0-gemini-live` | 2026-09-06 | `gemini-3.1-flash-lite-preview` | SWE-bench Lite (Live) | 5 | 80.0%* | 20.0%* | Refusal / G0 | 0.0% | $0.0001 vs $0.0015 | [Summary Report](reports/swebench_gemini_v040_summary.md) |
 | `v0.5.0-cybergym-001` | 2026-09-08 | `gemini-3.0-flash` | CyberGym Subset (Live) | 5 | 0.00% | **0.00%** | **+0.00%** | 0.0% | $0.0004 vs **$0.0028** (4 vs 6 turns) | [Summary Report](../eval_results/cybergym/report.md) |
+| `v0.6.0-exploitbench-001` | 2026-09-08 | `gemini-3.0-flash` | ExploitBench Flagship (Live) | 5 | 0.00% | **0.00%** | **+0.00%** | 0.0% | $0.0004 vs **$0.0026** (4 vs 6 turns) | [Summary Report](../eval_results/exploitbench/report.md) |
 
 *\*Note on Gemini 3.1 Flash-Lite: The bare model achieved 80% through ungrounded compliance (inventing non-existent code), whereas Demiurge strictly enforced Gate G0, refusing to synthesize patches absent genuine repository context and local failure traces.*
 
@@ -127,7 +128,7 @@ All empirical evaluation runs are tracked with persistent telemetry artifacts:
 
 ## 5. Multi-Benchmark Architecture Roadmap
 
-Beyond SWE-bench, Demiurge incorporates five domain-specific benchmark adapters:
+Beyond SWE-bench, Demiurge incorporates six domain-specific benchmark adapters:
 
 ### 5.1 GAIA: Multi-Source Research Benchmark
 
@@ -179,6 +180,24 @@ Beyond SWE-bench, Demiurge incorporates five domain-specific benchmark adapters:
   }
   ```
 
+### 5.6 ExploitBench: Capability Ladder Benchmark for LLM Security Agents
+
+- **Target:** Evaluates AI agents across a 4-tier capability ladder (Tier 0 reachability, Tier 1 crash trigger, Tier 2 exploit primitive, Tier 3 payload execution verification).
+- **Dataset:** [exploitbench/exploitbench](https://github.com/exploitbench/exploitbench) (Carnegie Mellon University & Bugcrowd Research).
+- **Core Metric:** Capability ladder progression rates ($T_0$ to $T_3$), turn economy, resolution lift ($\Delta$), and token cost economy.
+- **Academic Citations & Attribution:**
+
+  > Carnegie Mellon University & Bugcrowd Research. (2026). _ExploitBench: A Capability Ladder Benchmark for LLM Cybersecurity Agents_. arXiv preprint arXiv:2605.14820.
+
+  ```bibtex
+  @article{exploitbench2026,
+    title={ExploitBench: A Capability Ladder Benchmark for LLM Cybersecurity Agents},
+    author={ExploitBench Research Team},
+    journal={arXiv preprint arXiv:2605.14820},
+    year={2026}
+  }
+  ```
+
 ---
 
 ## 6. Operator Execution Guide
@@ -192,9 +211,10 @@ Simulates task executions, creates official prediction manifests, and calculates
 ```bash
 python evals/benchmarks/swebench/run_swebench_eval.py --slice 0:5 --dry-run
 python evals/benchmarks/cybergym/run_cybergym_eval.py --slice 0:5 --dry-run
+python evals/benchmarks/exploitbench/run_exploitbench_eval.py --slice 0:5 --dry-run
 ```
 
-Output files are written to `eval_results/swebench/` or `eval_results/cybergym/`:
+Output files are written to `eval_results/swebench/`, `eval_results/cybergym/`, or `eval_results/exploitbench/`:
 
 - `results.json`: Full machine-readable telemetry per task.
 - `report.md`: Formatted comparative Markdown table.
@@ -208,6 +228,7 @@ Executes the deterministic runner test suite:
 ```bash
 python evals/benchmarks/swebench/test_swebench_runner.py
 python evals/benchmarks/cybergym/test_cybergym_runner.py
+python evals/benchmarks/exploitbench/test_exploitbench_runner.py
 ```
 
 ### 6.3 Live Benchmark Execution (Requires `--yes`)
@@ -227,6 +248,13 @@ python evals/benchmarks/cybergym/run_cybergym_eval.py \
     --slice 0:25 \
     --model claude-3-5-sonnet-20241022 \
     --output-dir eval_results/cybergym_run1 \
+    --yes
+
+python evals/benchmarks/exploitbench/run_exploitbench_eval.py \
+    --dataset exploitbench/exploitbench \
+    --slice 0:25 \
+    --model claude-3-5-sonnet-20241022 \
+    --output-dir eval_results/exploitbench_run1 \
     --yes
 ```
 
