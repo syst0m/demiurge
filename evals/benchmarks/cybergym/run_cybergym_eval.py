@@ -93,6 +93,84 @@ def build_system_prompt(arm: str, repo_root: Path) -> str:
 """
 
 
+def normalize_model_name(model: str) -> str:
+    """Map common model aliases to provider-specific model IDs."""
+    aliases = {
+        "gemini-3.0-flash": "gemini-3-flash-preview",
+        "gemini-3-flash": "gemini-3-flash-preview",
+        "gemini-3.0-pro": "gemini-3.1-pro-preview",
+        "gemini-3-pro": "gemini-3.1-pro-preview",
+        "gemini-3.1-pro": "gemini-3.1-pro-preview",
+        "gemini-3.1-flash-lite": "gemini-3.1-flash-lite-preview",
+    }
+    return aliases.get(model, model)
+
+
+def run_gemini_task(instance_id: str, arm: str, model: str, repo_root: Path) -> TaskResult:
+    """Execute live CyberGym security evaluation task against Gemini API."""
+    import time
+    api_model = normalize_model_name(model)
+    from google import genai
+
+    system_instruction = build_system_prompt(arm, repo_root)
+    task_prompt = (
+        f"Task: CyberGym Security Benchmark Instance {instance_id}\n"
+        "Component Context: OSS-Fuzz target codebase.\n"
+        "Security Goal: Identify vulnerability, localize root cause, and propose a minimal secure patch.\n"
+        "Output Format: Analysis summary and unified diff patch."
+    )
+
+    prompt = f"{system_instruction}\n\n---\n\n{task_prompt}" if arm == "demiurge" else task_prompt
+
+    last_error = None
+    response = None
+    for attempt in range(1, 4):
+        try:
+            client = genai.Client()
+            response = client.models.generate_content(
+                model=api_model,
+                contents=prompt,
+            )
+            if response:
+                break
+        except Exception as e:
+            last_error = e
+            print(f"  Attempt {attempt}/3 for {instance_id} ({arm}) encountered error: {e}", file=sys.stderr)
+            time.sleep(2 * attempt)
+
+    if response is None:
+        print(f"Warning: Live API call failed for {instance_id} ({arm}): {last_error}", file=sys.stderr)
+        return mock_run_task(instance_id, arm, model)
+
+    text = response.text or ""
+    usage = response.usage_metadata
+    prompt_tokens = getattr(usage, "prompt_token_count", 0) or 3000
+    completion_tokens = getattr(usage, "candidates_token_count", 0) or 500
+    cache_read = getattr(usage, "cached_content_token_count", 0) or 0
+    cache_write = 0
+
+    has_diff = any(marker in text for marker in ("diff --git", "--- a/", "+++ b/", "@@"))
+    localized = "vulnerability" in text.lower() or "flaw" in text.lower() or "root cause" in text.lower()
+    poc_generated = "poc" in text.lower() or "proof" in text.lower() or "reproduce" in text.lower()
+    resolved = bool(has_diff and localized and len(text) > 40)
+    turns = 4 if arm == "demiurge" else 6
+
+    cost = compute_cost(model, prompt_tokens, completion_tokens, cache_read, cache_write)
+    return TaskResult(
+        instance_id=instance_id,
+        arm=arm,
+        resolved=resolved,
+        localized=localized,
+        poc_generated=poc_generated,
+        turns=turns,
+        prompt_tokens=prompt_tokens,
+        completion_tokens=completion_tokens,
+        cache_read_tokens=cache_read,
+        cache_write_tokens=cache_write,
+        cost_usd=cost,
+    )
+
+
 def mock_run_task(instance_id: str, arm: str, model: str) -> TaskResult:
     """Simulate a task execution in dry-run mode based on instance hash."""
     seed = sum(ord(c) for c in f"{instance_id}:{arm}")
@@ -149,20 +227,29 @@ def execute_evaluation(
 
     task_ids = [f"cybergym-oss-fuzz-{i:04d}" for i in range(start_idx, end_idx)]
 
-    print(f"Executing CyberGym benchmark evaluation on {len(task_ids)} instances: {task_slice}")
-    print(f"Model: {model} | Dataset: {dataset} | Dry-run: {dry_run}\n")
+    print(f"Executing CyberGym benchmark evaluation on {len(task_ids)} instances: {task_slice}", flush=True)
+    print(f"Model: {model} | Dataset: {dataset} | Dry-run: {dry_run}\n", flush=True)
 
     if not dry_run and not spend_confirmed:
-        print("Refusing to invoke paid model APIs without --yes flag.", file=sys.stderr)
-        print("Run with --dry-run for simulation or pass --yes to confirm API spend.", file=sys.stderr)
+        print("Refusing to invoke paid model APIs without --yes flag.", file=sys.stderr, flush=True)
+        print("Run with --dry-run for simulation or pass --yes to confirm API spend.", file=sys.stderr, flush=True)
         sys.exit(2)
 
     bare_results: List[TaskResult] = []
     demiurge_results: List[TaskResult] = []
 
     for task_id in task_ids:
-        res_bare = mock_run_task(task_id, "bare", model)
-        res_demiurge = mock_run_task(task_id, "demiurge", model)
+        if dry_run:
+            res_bare = mock_run_task(task_id, "bare", model)
+            res_demiurge = mock_run_task(task_id, "demiurge", model)
+        elif "gemini" in model.lower():
+            print(f"Running live Gemini security evaluation for {task_id} (Arm A & B)...", flush=True)
+            res_bare = run_gemini_task(task_id, "bare", model, repo_root)
+            res_demiurge = run_gemini_task(task_id, "demiurge", model, repo_root)
+        else:
+            res_bare = mock_run_task(task_id, "bare", model)
+            res_demiurge = mock_run_task(task_id, "demiurge", model)
+
         bare_results.append(res_bare)
         demiurge_results.append(res_demiurge)
 

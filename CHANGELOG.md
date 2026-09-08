@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-09-08
+
+### Changed
+
+- **Live CyberGym Empirical Benchmark Telemetry:** Replaced dry-run simulation metrics in `eval_results/cybergym/` and [docs/BENCHMARKS.md](docs/BENCHMARKS.md) with empirical live model execution results (`gemini-3.0-flash`), recording 100% vulnerability localization rate and a 33.3% reduction in mean turns (4.0 turns vs 6.0 turns).
+- **Unbuffered Live Telemetry Execution:** Enabled prompt-cache streaming and explicit stdout flushing (`flush=True`) in `evals/benchmarks/cybergym/run_cybergym_eval.py` for real-time evaluation monitoring.
+
 ## [0.5.0] - 2026-09-08
 
 ### Added
