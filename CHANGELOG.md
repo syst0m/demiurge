@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-09-08
+
+### Added
+
+- **Permanent Benchmark Synchronization Rule:** Added `.agents/rules/benchmark-sync.md` to permanently enforce updating `README.md` and `docs/BENCHMARKS.md` benchmark run registries whenever new benchmark evaluations are executed.
+- **Top-Level README Telemetry Sync:** Synchronized `README.md` Benchmark Run Registry with live CyberGym (`v0.5.0-cybergym-001`) and ExploitBench (`v0.6.0-exploitbench-001`) evaluation results.
+
 ## [0.6.0] - 2026-09-08
 
 ### Added

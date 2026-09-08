@@ -25,6 +25,7 @@ DEFAULT_TARGETS = [
     "skills/marcus/human-only/demiurge-brief.md",
     ".agents/rules/artifact-generation.md",
     ".agents/rules/release-management.md",
+    ".agents/rules/benchmark-sync.md",
 ]
 
 MD_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
