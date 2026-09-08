@@ -127,5 +127,7 @@ Demiurge validates framework utility against bare foundation models. Architectur
 | `v0.2.0-swebench-001` | `claude-3-5-sonnet-20241022` | SWE-bench Lite | 5 | 40.0% | **80.0%** | **+40.00%** | $0.2050 vs **$0.0533** (-74%) | [Summary](docs/reports/swebench_v020_summary.md) |
 | `v0.3.0-swebench-full` | `claude-3-5-sonnet-20241022` | Full SWE-bench | 2,294 | 39.97% | **60.03%** | **+20.06%** | $0.2069 vs **$0.0721** (-65%) | [Summary](docs/reports/swebench_full_2294_summary.md) |
 | `v0.4.0-gemini-live` | `gemini-3.1-flash-lite-preview` | SWE-bench Live | 5 | 80.0%* | 20.0%* | Refusal / G0 | $0.0001 vs $0.0015 | [Summary](docs/reports/swebench_gemini_v040_summary.md) |
+| `v0.5.0-cybergym-001` | `gemini-3.0-flash` | CyberGym Subset | 5 | 0.00% | **0.00%** | **+0.00%** | $0.0004 vs **$0.0028** (4 vs 6 turns) | [Summary](eval_results/cybergym/report.md) |
+| `v0.6.0-exploitbench-001` | `gemini-3.0-flash` | ExploitBench Flagship | 5 | 0.00% | **0.00%** | **+0.00%** | $0.0004 vs **$0.0026** (4 vs 6 turns) | [Summary](eval_results/exploitbench/report.md) |
 
 *\*Note: On Gemini 3.1 Flash-Lite, the bare model complied by inventing fictional code, whereas Demiurge strictly enforced Gate G0, refusing to synthesize patches absent genuine repository context and local failure traces.*
