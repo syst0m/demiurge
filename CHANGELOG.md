@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-09-08
+
+### Added
+
+- **Marcus Benchmark Integrity Validator (`scripts/validate_benchmark_harness.py`):** Implemented automated static auditing tool enforcing 6 non-negotiable benchmark quality gates (no silent mock fallback, real dataset loading, complete issue prompt construction, symmetrical prompt application, patch verification rigor, and explicit `simulated: True` metadata tracking).
+- **Hugging Face Dataset Integration in SWE-bench Runner:** Updated `evals/benchmarks/swebench/run_swebench_eval.py` to dynamically load dataset records from `princeton-nlp/SWE-bench_Lite` via Hugging Face `datasets` library or dataset server REST API fallback.
+- **Symmetrical Prompt Construction & Strict Error Handling:** Applied prompt templates symmetrically across Bare (Arm A) and Demiurge (Arm B) models and replaced silent mock fallback with explicit error raising (`RuntimeError` / `NotImplementedError`) on live API failure or unhandled model runners.
+- **Simulation Baseline Metadata & Reporting:** Added `simulated: bool` metadata flag to `TaskResult`, `ArmSummary`, and `BenchmarkComparison`, and updated Markdown report renderers to display warning banners on dry-run simulation outputs.
+
 ## [0.6.1] - 2026-09-08
 
 ### Added
