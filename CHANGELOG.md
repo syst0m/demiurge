@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-09-08
+
+### Added
+
+- **ExploitBench Capability Ladder Integration:** Integrated [ExploitBench](https://github.com/exploitbench/exploitbench) (Carnegie Mellon University & Bugcrowd Research) into `evals/benchmarks/exploitbench/` to evaluate autonomous AI security agents across 4 structured capability tiers (Tier 0 reachability, Tier 1 crash trigger, Tier 2 exploit primitive, Tier 3 payload execution verification).
+- **ExploitBench Capability Ladder Engine:** Created `evals/benchmarks/exploitbench/metrics.py` and `run_exploitbench_eval.py` supporting capability ladder progression tracking ($T_0$ to $T_3$), resolution lift ($\Delta$), turn economy, and token pricing models.
+- **Deterministic ExploitBench Test Harness:** Created `evals/benchmarks/exploitbench/test_exploitbench_runner.py` providing unit tests for capability ladder summaries, prompt formatting, and telemetry reporting.
+- **Flagship Live Benchmark Empirical Telemetry:** Executed live flagship API benchmark evaluation (`gemini-3.0-flash`), recording 80% vulnerable code reachability ($T_0$), 80% crash trigger ($T_1$), 100% exploit primitive formulation ($T_2$), and a 33.3% reduction in mean turns (4.0 vs 6.0 turns).
+- **Academic Citation Protocol:** Embedded official citations and BibTeX entries for ExploitBench (*CMU & Bugcrowd, 2026*) in [docs/BENCHMARKS.md](docs/BENCHMARKS.md) and telemetry reports.
+
 ## [0.5.1] - 2026-09-08
 
 ### Changed
