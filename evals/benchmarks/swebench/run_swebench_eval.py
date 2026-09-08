@@ -211,7 +211,8 @@ def run_gemini_task(instance: Dict[str, Any], arm: str, model: str, repo_root: P
 
     last_error = None
     response = None
-    for attempt in range(1, 4):
+    max_attempts = 5
+    for attempt in range(1, max_attempts + 1):
         try:
             client = genai.Client()
             response = client.models.generate_content(
@@ -222,12 +223,18 @@ def run_gemini_task(instance: Dict[str, Any], arm: str, model: str, repo_root: P
                 break
         except Exception as e:
             last_error = e
-            print(f"  Attempt {attempt}/3 for {instance_id} ({arm}) encountered error: {e}", file=sys.stderr)
-            time.sleep(2 * attempt)
+            err_str = str(e)
+            print(f"  Attempt {attempt}/{max_attempts} for {instance_id} ({arm}) encountered error: {e}", file=sys.stderr)
+            if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str:
+                wait_time = 30 * attempt
+                print(f"  [Rate Limit / 429] Waiting {wait_time}s before retry...", file=sys.stderr)
+                time.sleep(wait_time)
+            else:
+                time.sleep(5 * attempt)
 
     if response is None:
         raise RuntimeError(
-            f"Live API execution failed after 3 attempts for instance '{instance_id}' (Arm: {arm}, Model: {model}): {last_error}"
+            f"Live API execution failed after {max_attempts} attempts for instance '{instance_id}' (Arm: {arm}, Model: {model}): {last_error}"
         )
 
     text = response.text or ""

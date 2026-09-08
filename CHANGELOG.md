@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-09-08
+
+### Added
+
+- **Empirical Live SWE-bench Benchmark Telemetry (`v0.7.0-swebench-live`):** Executed real live API benchmark evaluation against `gemini-3.1-flash-lite-preview` loading real dataset instances from `princeton-nlp/SWE-bench_Lite` (`astropy__astropy-12907` and `astropy__astropy-14182`), recording 100% resolution parity and a 33.3% reduction in mean turns (4.0 vs 6.0 turns).
+
 ## [0.7.0] - 2026-09-08
 
 ### Added
