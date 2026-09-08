@@ -20,6 +20,7 @@ DEFAULT_TARGETS = [
     "docs/OPERATING_GUIDE.md",
     "docs/AGENT_DESIGN.md",
     "docs/INSTALLATION.md",
+    "docs/BENCHMARKS.md",
     "README.md",
     "skills/marcus/human-only/demiurge-brief.md",
     ".agents/rules/artifact-generation.md",

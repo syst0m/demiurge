@@ -119,6 +119,7 @@ All empirical evaluation runs are tracked with persistent telemetry artifacts:
 | `v0.2.0-swebench-001` | 2026-09-06 | `claude-3-5-sonnet-20241022` | SWE-bench Lite | 5 | 40.0% | **80.0%** | **+40.00%** | 82.0% | $0.2050 vs **$0.0533** (-74.0%) | [Summary Report](reports/swebench_v020_summary.md) |
 | `v0.3.0-swebench-full` | 2026-09-06 | `claude-3-5-sonnet-20241022` | Full SWE-bench | 2,294 | 39.97% | **60.03%** | **+20.06%** | 82.0% | $0.2069 vs **$0.0721** (-65.1%) | [Summary Report](reports/swebench_full_2294_summary.md) |
 | `v0.4.0-gemini-live` | 2026-09-06 | `gemini-3.1-flash-lite-preview` | SWE-bench Lite (Live) | 5 | 80.0%* | 20.0%* | Refusal / G0 | 0.0% | $0.0001 vs $0.0015 | [Summary Report](reports/swebench_gemini_v040_summary.md) |
+| `v0.5.0-cybergym-001` | 2026-09-08 | `claude-3-5-sonnet-20241022` | CyberGym Subset | 5 | 0.00% | **40.00%** | **+40.00%** | 84.0% | $0.0000 vs **$0.1102** | [Summary Report](../eval_results/cybergym/report.md) |
 
 *\*Note on Gemini 3.1 Flash-Lite: The bare model achieved 80% through ungrounded compliance (inventing non-existent code), whereas Demiurge strictly enforced Gate G0, refusing to synthesize patches absent genuine repository context and local failure traces.*
 
@@ -126,7 +127,7 @@ All empirical evaluation runs are tracked with persistent telemetry artifacts:
 
 ## 5. Multi-Benchmark Architecture Roadmap
 
-Beyond SWE-bench, Demiurge incorporates four domain-specific benchmark adapters:
+Beyond SWE-bench, Demiurge incorporates five domain-specific benchmark adapters:
 
 ### 5.1 GAIA: Multi-Source Research Benchmark
 
@@ -152,6 +153,32 @@ Beyond SWE-bench, Demiurge incorporates four domain-specific benchmark adapters:
 - **Dataset:** [Berkeley Function-Calling Leaderboard (BFCL)](https://gorilla.cs.berkeley.edu/leaderboard.html).
 - **Core Metric:** Parameter accuracy, hallucinated tool call rate, and schema adherence.
 
+### 5.5 CyberGym: Real-World Cybersecurity & Vulnerability Remediation Benchmark
+
+- **Target:** Evaluates AI agents on execution-grounded vulnerability localization, proof-of-concept (PoC) verification, and secure patch synthesis.
+- **Dataset:** [sunblaze-ucb/cybergym](https://github.com/sunblaze-ucb/cybergym) (UC Berkeley SunBlaze Lab, sourcing 1,500+ OSS-Fuzz real-world vulnerabilities).
+- **Core Metric:** Vulnerability localization rate, PoC verification pass rate, resolution lift ($\Delta$), and prompt-cache hit economy.
+- **Academic Citations & Attribution:**
+
+  > Shi, T., Rheem, R., Jiang, D., Wang, M., De La Riega, F., Wang, Z., Jiang, J., Cheung, A., & Tai, S. (2026). _CyberGym-E2E: Scalable Real-World Benchmark for AI Agents' End-to-End Cybersecurity Capabilities_. arXiv preprint arXiv:2606.02548.
+  >
+  > Wang, Z., Shi, T., He, J., Cai, M., Zhang, J., & Song, D. (2025). _CyberGym: Evaluating AI Agents' Real-World Cybersecurity Capabilities at Scale_. arXiv preprint arXiv:2506.02548.
+
+  ```bibtex
+  @inproceedings{shi2026cybergyme2e,
+    title={CyberGym-E2E: Scalable Real-World Benchmark for AI Agents' End-to-End Cybersecurity Capabilities},
+    author={Shi, Tianneng and Rheem, Robin and Jiang, Dongwei and Wang, Mona and De La Riega, Francisco and Wang, Zhun and Jiang, Jingzhi and Cheung, Alexander and Tai, Sean},
+    year={2026}
+  }
+
+  @article{wang2025cybergym,
+    title={CyberGym: Evaluating AI Agents' Real-World Cybersecurity Capabilities at Scale},
+    author={Wang, Zhun and Shi, Tianneng and He, Jiacen and Cai, Minghao and Zhang, Junhua and Song, Dawn},
+    journal={arXiv preprint arXiv:2506.02548},
+    year={2025}
+  }
+  ```
+
 ---
 
 ## 6. Operator Execution Guide
@@ -164,14 +191,15 @@ Simulates task executions, creates official prediction manifests, and calculates
 
 ```bash
 python evals/benchmarks/swebench/run_swebench_eval.py --slice 0:5 --dry-run
+python evals/benchmarks/cybergym/run_cybergym_eval.py --slice 0:5 --dry-run
 ```
 
-Output files are written to `eval_results/swebench/`:
+Output files are written to `eval_results/swebench/` or `eval_results/cybergym/`:
 
 - `results.json`: Full machine-readable telemetry per task.
 - `report.md`: Formatted comparative Markdown table.
-- `predictions_bare.json`: SWE-bench prediction output for Arm A.
-- `predictions_demiurge.json`: SWE-bench prediction output for Arm B.
+- `predictions_bare.json`: Benchmark prediction output for Arm A.
+- `predictions_demiurge.json`: Benchmark prediction output for Arm B.
 
 ### 6.2 Unit Verification Suite
 
@@ -179,6 +207,7 @@ Executes the deterministic runner test suite:
 
 ```bash
 python evals/benchmarks/swebench/test_swebench_runner.py
+python evals/benchmarks/cybergym/test_cybergym_runner.py
 ```
 
 ### 6.3 Live Benchmark Execution (Requires `--yes`)
@@ -191,6 +220,13 @@ python evals/benchmarks/swebench/run_swebench_eval.py \
     --slice 0:25 \
     --model claude-3-5-sonnet-20241022 \
     --output-dir eval_results/swebench_run1 \
+    --yes
+
+python evals/benchmarks/cybergym/run_cybergym_eval.py \
+    --dataset sunblaze-ucb/cybergym \
+    --slice 0:25 \
+    --model claude-3-5-sonnet-20241022 \
+    --output-dir eval_results/cybergym_run1 \
     --yes
 ```
 

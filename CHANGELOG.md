@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-09-08
+
+### Added
+
+- **CyberGym Benchmark Integration:** Integrated the [CyberGym](https://github.com/sunblaze-ucb/cybergym) cybersecurity evaluation suite into `evals/benchmarks/cybergym/` to measure autonomous AI agent performance in execution-grounded vulnerability localization, proof-of-concept (PoC) verification, and secure patch synthesis.
+- **CyberGym Telemetry Engine:** Created `evals/benchmarks/cybergym/metrics.py` and `run_cybergym_eval.py` supporting comparative resolution lift ($\Delta$), vulnerability localization rates, prompt-cache hit ratio, turn economy, and cost tracking.
+- **Deterministic CyberGym Test Harness:** Created `evals/benchmarks/cybergym/test_cybergym_runner.py` providing deterministic unit verification for telemetry computation, system prompt formatting, dry-run simulation, and output artifact rendering.
+- **Academic Citation Protocol:** Documented official citations and BibTeX entries for *CyberGym (Wang et al., 2025)* and *CyberGym-E2E (Shi et al., 2026)* in [docs/BENCHMARKS.md](docs/BENCHMARKS.md) and embedded citation rendering in telemetry reports.
+- **CyberGym Telemetry & Predictions:** Generated baseline vs. Demiurge evaluation telemetry reports and prediction artifacts in `eval_results/cybergym/`.
+
 ## [0.4.6] - 2026-09-06
 
 ### Added
