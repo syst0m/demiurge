@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-09-09
+
+### Added
+
+- **Datacurve DeepSWE Benchmark Integration:** Integrated the [DeepSWE](https://deepswe.datacurve.ai/run) long-horizon software engineering benchmark into `evals/benchmarks/deepswe/` measuring autonomous coding agents on original tasks with Harbor/Pier specifications across a 113-task corpus.
+- **DeepSWE Telemetry Engine & Corpus Sampler:** Created `evals/benchmarks/deepswe/metrics.py` and `run_deepswe_eval.py` supporting deterministic seed-based random task sampling (`--n-tasks` and `--sample-seed`), resolution lift ($\Delta$), turn economy, token pricing, and prompt-cache efficiency tracking.
+- **Deterministic DeepSWE Test Harness:** Created `evals/benchmarks/deepswe/test_deepswe_runner.py` providing unit tests for telemetry calculation, prompt construction, task sampling, dry-run simulation, and report rendering.
+- **Marcus Quality Gate Compliance:** Verified `evals/benchmarks/deepswe/run_deepswe_eval.py` against all 6 Marcus Benchmark Quality Gates using `scripts/validate_benchmark_harness.py`.
+- **Benchmark Registry Synchronization:** Updated `docs/BENCHMARKS.md` and `README.md` benchmark run registries with `v0.8.0-deepswe-001` telemetry results.
+
 ## [0.7.1] - 2026-09-08
 
 ### Added
