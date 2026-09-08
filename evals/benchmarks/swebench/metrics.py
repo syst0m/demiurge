@@ -85,6 +85,7 @@ class TaskResult:
     cache_read_tokens: int
     cache_write_tokens: int
     cost_usd: float
+    simulated: bool = False
     error: Optional[str] = None
 
 
@@ -98,6 +99,7 @@ class ArmSummary:
     total_cost_usd: float
     cost_per_resolved_task: float
     cache_hit_ratio: float
+    simulated: bool = False
 
 
 @dataclass
@@ -109,6 +111,7 @@ class BenchmarkComparison:
     resolution_delta: float
     cost_delta_percentage: float
     cache_savings_percentage: float
+    simulated: bool = False
 
 
 def compute_cost(
@@ -145,6 +148,7 @@ def summarize_arm(arm_name: str, results: List[TaskResult]) -> ArmSummary:
             total_cost_usd=0.0,
             cost_per_resolved_task=0.0,
             cache_hit_ratio=0.0,
+            simulated=False,
         )
 
     total = len(results)
@@ -153,6 +157,7 @@ def summarize_arm(arm_name: str, results: List[TaskResult]) -> ArmSummary:
     total_cost = sum(r.cost_usd for r in results)
     total_prompt = sum(r.prompt_tokens for r in results)
     total_cache_read = sum(r.cache_read_tokens for r in results)
+    is_simulated = any(r.simulated for r in results)
 
     pass_rate = resolved / total if total > 0 else 0.0
     mean_turns = total_turns / total if total > 0 else 0.0
@@ -168,6 +173,7 @@ def summarize_arm(arm_name: str, results: List[TaskResult]) -> ArmSummary:
         total_cost_usd=round(total_cost, 4),
         cost_per_resolved_task=round(cost_per_resolved, 4),
         cache_hit_ratio=round(cache_hit_ratio, 4),
+        simulated=is_simulated,
     )
 
 
@@ -194,6 +200,7 @@ def compare_arms(
         cost_delta = 0.0
 
     savings = round((demiurge.cache_hit_ratio - bare.cache_hit_ratio) * 100.0, 2)
+    is_simulated = bare.simulated or demiurge.simulated
 
     return BenchmarkComparison(
         model=model,
@@ -203,16 +210,26 @@ def compare_arms(
         resolution_delta=delta,
         cost_delta_percentage=cost_delta,
         cache_savings_percentage=savings,
+        simulated=is_simulated,
     )
 
 
 def render_markdown_report(comparison: BenchmarkComparison) -> str:
     """Render a GitHub-flavored Markdown comparison table."""
     delta_symbol = "+" if comparison.resolution_delta > 0 else ""
+    simulated_banner = ""
+    if comparison.simulated:
+        simulated_banner = (
+            "> [!WARNING]\n"
+            "> **SIMULATION BASELINE**: This run was generated using `--dry-run` simulation mode.\n"
+            "> Token counts, turn counts, and resolution outcomes are synthetic mock estimates and DO NOT represent live API benchmark results.\n\n"
+        )
+
     return f"""# SWE-bench Comparative Evaluation Report
 
-- **Model Backbone:** `{comparison.model}`
+{simulated_banner}- **Model Backbone:** `{comparison.model}`
 - **Dataset:** `{comparison.dataset}`
+- **Execution Mode:** `{'Simulated (Dry-Run)' if comparison.simulated else 'Live Benchmark'}`
 - **Resolution Lift ($\\Delta$):** `{delta_symbol}{comparison.resolution_delta * 100:.2f}%`
 
 | Metric | Bare Foundation Model | Demiurge Architecture | Delta |
