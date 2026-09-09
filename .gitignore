@@ -3,7 +3,11 @@ node_modules/
 
 # Scratch and temporary testing directories
 scratch/
-eval_results/
+eval_results/**/*.json
+!eval_results/**/report.md
+
+
+
 
 # Python bytecode, environments, and caches
 __pycache__/
