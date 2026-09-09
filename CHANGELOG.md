@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-09-09
+
+### Fixed
+
+- **Tracked Benchmark Telemetry Reports:** Updated `.gitignore` to unignore and track markdown evaluation reports (`!eval_results/**/report.md`) while keeping raw JSON execution traces excluded.
+- **GitHub Benchmark Links:** Resolved 404 File Not Found issues for GitHub blob links pointing to benchmark telemetry reports across ExploitBench (`eval_results/exploitbench/report.md`), CyberGym (`eval_results/cybergym/report.md`), DeepSWE (`eval_results/deepswe/report.md`), and SWE-bench (`eval_results/swebench/report.md`).
+
 ## [0.8.0] - 2026-09-09
 
 ### Added
