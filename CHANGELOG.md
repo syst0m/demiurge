@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-09-11
+
+### Added
+
+- **Self-Harness Specification (`docs/SELF_HARNESS.md`):** Formalized an opt-in evaluation and proposal loop for diagnosing runtime failures, proposing minimal harness interventions, and verifying candidates against strict acceptance criteria.
+- **Diagnostic Engine (`scripts/self_harness/diagnose_failures.py`):** Automated failure clustering across execution traces with bottleneck classification (context blowout, tool thrash, format drift, error blindness, epistemic overreach).
+- **Intervention Proposal Engine (`scripts/self_harness/propose_candidate.py`):** Synthesizes candidate interventions targeted at dominant failure modes while respecting Marcus architecture rules and size budgets.
+- **Candidate Materialization (`scripts/self_harness/materialize_candidate.py`):** Isolates proposed interventions in ephemeral Git worktrees/branches for clean A/B benchmark evaluation.
+- **Multi-Arm Statistical Acceptance Gate (`scripts/self_harness/acceptance_gate.py`):** Enforces strict holdout split validation ($\Delta \ge 0$, no regression on solved cases, and cost/turn budget adherence) before any candidate proposal can be accepted.
+- **Self-Harness Loop Orchestrator (`scripts/self_harness/run_self_harness_loop.py`):** Coordinates diagnose $\to$ propose $\to$ materialize $\to$ evaluate $\to$ gate workflow end-to-end.
+- **Determinism & Static Audit Rigor:** Implemented `splits.py`, `validate_self_harness_scripts.py`, and a 19-test suite (`test_self_harness.py`) enforcing complete integrity and format standards.
+
 ## [0.8.1] - 2026-09-09
 
 ### Fixed
