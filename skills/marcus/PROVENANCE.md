@@ -34,9 +34,17 @@ Marcus incorporates failure cases identified during skill evaluation:
 
 ## Script Architecture
 
-The four scripts implement the quality gates: G4 (`validate_skill.py`), G5 (`eval_runner.py`), G6 (`route_check.py`), and the G0–G3 scaffold (`new_skill.py`), alongside `evals/run_gate_tests.py` for Marcus's regression suite. Each performs a deterministic check independent of model judgment.
+The five scripts implement the quality gates and self-update loop: G4 (`validate_skill.py`), G5 (`eval_runner.py`), G6 (`route_check.py`), the G0–G3 scaffold (`new_skill.py`), and self-update/drift audit (`update_marcus.py`), alongside `evals/run_gate_tests.py` for Marcus's regression suite. Each performs a deterministic check independent of model judgment.
 
 All scripts use standard-library Python 3: zero network access, zero package installation, and zero writes outside target directories. `eval_runner.py` requires `--yes` prior to API execution.
+
+## 2026-09-11 — Fast Commands & Self-Update Subcommand
+
+Added explicit fast commands and self-update mechanism:
+
+- Subcommand `/marcus update`: Automates rule drift checks, snapshot diffing, and reference sync via `scripts/update_marcus.py`.
+- Interactive slash subcommands: `/marcus generate`, `/marcus audit`, `/marcus update`, `/marcus --simulate`, and `/marcus --help`.
+- Gate G4 re-validated (0 blocking, 0 warnings); gate regression suite maintained at 14/14 passing.
 
 ## Open Validation Scope
 

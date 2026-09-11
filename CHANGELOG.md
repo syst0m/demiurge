@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-09-11
+
+### Added
+
+- **Marcus Self-Update Subcommand (`/marcus update`):** Added a dedicated subcommand and mechanical script (`skills/marcus/scripts/update_marcus.py`) for automated drift checks, rule diffing across confidence markers (`[SETTLED]`, `[CONTESTED]`, etc.), reference synchronization, and architecture regeneration against upstream `research/RESEARCH.md`.
+- **Direct Chat Subcommand Suite:** Formally documented interactive slash subcommands in `skills/marcus/SKILL.md`:
+  - `/marcus generate <name>` for live 7-gate skill creation.
+  - `/marcus audit <path-or-url>` for third-party security scans and Trust Tier assignment.
+  - `/marcus update` for self-update against research advances.
+  - `/marcus --help` for instant G0 intake, harness responsibilities, and command syntax printout.
+  - `/marcus --simulate <task>` / `/marcus --dry-run` for in-memory prototyping without disk writes or token spend.
+- **Marcus Gate Regression Integrity:** Maintained 100% pass rate (14/14 passing) on `evals/run_gate_tests.py` and zero blocking findings on G4 `validate_skill.py`.
+
 ## [0.9.0] - 2026-09-11
 
 ### Added
