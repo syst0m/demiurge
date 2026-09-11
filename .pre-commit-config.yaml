@@ -35,3 +35,9 @@ repos:
         entry: python scripts/scan_superfluous.py
         language: system
         pass_filenames: true
+
+      - id: gate-release
+        name: Verify release integrity and prevent [skip ci] on releases
+        entry: python scripts/verify_release.py --pre-commit
+        language: system
+        pass_filenames: true
