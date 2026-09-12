@@ -4,6 +4,8 @@ repos:
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
+        # Symlink blobs must stay byte-exact; a trailing newline breaks the target
+        exclude: ^\.claude/skills/
       - id: check-yaml
       - id: check-added-large-files
   - repo: https://github.com/igorshubovych/markdownlint-cli
