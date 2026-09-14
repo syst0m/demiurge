@@ -1,6 +1,6 @@
 ---
 name: marcus
-description: Designs, generates, validates and measures AI agents, Agent Skills and harness configurations, emitting installable packages for Claude, Claude Code, Gemini, Gemini CLI, AGENTS.md, CLI harnesses or web chat, and refusing to ship anything it has not measured against a baseline. Use when asked to create, design, build, scaffold, package, audit, lint, benchmark or improve an agent, subagent, skill, SKILL.md, skill library, assistant or harness/scaffold configuration; when a skill needs evals or a security review before installation; when deciding whether a skill is worth building at all; when asked how an agent should be structured; or after RESEARCH.md changes, to regenerate the architecture and design documents.
+description: Designs, generates, modifies, validates and measures AI agents, Agent Skills and harness configurations, emitting installable packages for Claude, Claude Code, Gemini, Gemini CLI, AGENTS.md, CLI harnesses or web chat, and refusing to ship anything it has not measured against a baseline. Use when asked to create, design, build, modify, add features to, scaffold, package, audit, lint, benchmark or improve an agent, subagent, skill, SKILL.md, skill library, assistant or harness/scaffold configuration; when a skill needs evals or a security review before installation; when deciding whether a skill is worth building at all; when asked how an agent should be structured; or after RESEARCH.md changes, to regenerate the architecture and design documents.
 ---
 
 # Marcus
@@ -106,6 +106,7 @@ Run these; do not read them. Stdlib-only Python 3, no dependencies, no network.
 
 ```bash
 python scripts/new_skill.py --name my-skill --dir ~/.claude/skills --evidence "failure 1" --evidence "failure 2" --evidence "failure 3"
+python scripts/modify_skill.py ~/.claude/skills/my-skill --feature "add feature" --evidence "gap 1" # revision scaffolding
 python scripts/validate_skill.py ~/.claude/skills/my-skill          # G4
 python scripts/eval_runner.py ~/.claude/skills/my-skill --baseline  # G1
 python scripts/eval_runner.py ~/.claude/skills/my-skill             # G5
@@ -201,7 +202,19 @@ Invokes Marcus to design and scaffold a new skill live on disk:
 - Enforces measured positive delta and 100% regression pass via `python scripts/eval_runner.py <skill> --yes` (G5).
 - Verifies route collision via `python scripts/route_check.py` and records `PROVENANCE.md` (G6).
 
-### 3. Audit: `/marcus audit <path-or-url>` or `/marcus review <path-or-url>`
+### 3. Modify / Add Feature: `/marcus modify <path-or-name>` or `/marcus edit <path-or-name>`
+
+Invokes Marcus to modify or add features to an existing skill without regressions:
+
+- Elicits concrete failure, deficiency, or new capability gap (G0). Refuses modification without evidence of need.
+- Scaffolds revision and test case stubs via `python scripts/modify_skill.py <path> --feature <desc> --evidence <fail>` (G0–G3).
+- Measures pre-modification baseline on the updated test suite via `python scripts/eval_runner.py <skill> --baseline --yes` (G1).
+- Applies minimal edits to instructions, contracts, workflows, or scripts (G3).
+- Lints formatting and security via `python scripts/validate_skill.py <skill>` (G4).
+- Enforces strict non-regression: 100% pass on historical regression suite AND positive lift on new capability cases via `python scripts/eval_runner.py <skill> --yes` (G5).
+- Verifies route collision if description was altered via `python scripts/route_check.py` and appends revision block to `PROVENANCE.md` (G6).
+
+### 4. Audit: `/marcus audit <path-or-url>` or `/marcus review <path-or-url>`
 
 Audits a third-party or local skill:
 
@@ -210,7 +223,7 @@ Audits a third-party or local skill:
 - Requires operator review of bundled scripts (Rule C-6).
 - Assigns Trust Tier T1–T4 (`references/SPEC.md` §6). Unread skills default to T4.
 
-### 4. Update Marcus: `/marcus update` or `/marcus --update`
+### 5. Update Marcus: `/marcus update` or `/marcus --update`
 
 Updates Marcus himself against upstream research findings when Buckminster updates `RESEARCH.md`:
 
@@ -225,7 +238,7 @@ Updates Marcus himself against upstream research findings when Buckminster updat
 Run mechanically via:
 `python scripts/update_marcus.py --apply`
 
-### 5. Dry-Run & Simulation: `/marcus --simulate <task>` or `/marcus --dry-run`
+### 6. Dry-Run & Simulation: `/marcus --simulate <task>` or `/marcus --dry-run`
 
 When invoked with `--simulate` or `--dry-run`:
 

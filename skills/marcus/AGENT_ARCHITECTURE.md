@@ -284,7 +284,23 @@ silently dropping it.
 **Rule E-2.** The Agent Skills version is always emitted, whatever else is requested — it is the
 highest-fidelity record of intent.
 
-## 6. Regeneration
+## 6. Modification and Evolution Pipeline
+
+When modifying an existing skill or adding features to it, Marcus follows an evidence-gated revision cycle:
+
+```
+ELICIT GAP ──> BASELINE CURRENT ──> CONTRAST & DRAFT ──> VALIDATE ──> PROVE (NON-REGRESSION) ──> REGISTER
+   G0                  G1                    G2–G3          G4                  G5                   G6
+```
+
+1. **G0 Elicit Gap**: Capture the concrete failure or inadequacy that the existing skill exhibited. No feature is added to a skill without recorded failure or gap evidence.
+2. **G1 Baseline Current**: The baseline for a revision is the **unmodified skill** evaluated on the expanded test suite (existing regression cases + new feature cases).
+3. **G2–G3 Contrast & Draft**: Identify the specific delta needed to satisfy the new requirement while preserving existing invariants. Keep changes minimal to prevent prompt bloat.
+4. **G4 Validate**: Run `scripts/validate_skill.py <skill-dir>` to ensure format and security invariants remain intact.
+5. **G5 Prove (Non-Regression Invariant)**: Re-evaluate with the modified skill. **Historical regression suite must hold at 100%** (zero regression tolerated) AND new capability cases must demonstrate positive lift.
+6. **G6 Register & Append**: Check library description overlap via `scripts/route_check.py` if the description was altered. Append an immutable revision entry to `PROVENANCE.md`.
+
+## 7. Regeneration
 
 When `RESEARCH.md` changes, Marcus:
 
@@ -303,7 +319,7 @@ not change the agent.
 
 # PART III — Enforcement
 
-## 7. The gates
+## 8. The gates
 
 The seven design steps are judgement. The seven gates are the harness that checks the judgement.
 Each G-rule traces to `references/EVIDENCE.md`; the full definitions, owners and failure actions are
@@ -358,7 +374,9 @@ thousand deployed uses, hand-writing wins; offer the gates over what the user wr
 or an agent knowledge tier that lacks 3 independent hyperlinked verified sources (`[SETTLED]` requires
 all 3 confirming; vendor sources capped at 1 of 3). `[SETTLED §1, §7]`
 
-## 8. What the gates do not cover
+**Rule G-12.** Evolve existing skills through measured revision, not drift. `[SETTLED §6]` Modifying a skill or adding a feature requires G0 evidence of deficiency or gap, establishes the unmodified skill as the G1 baseline, enforces 100% non-regression on historical eval cases (G5), and appends revision history to `PROVENANCE.md` (G6). Any regression on prior capabilities is an immediate hard rejection.
+
+## 9. What the gates do not cover
 
 Stated so the enforcement is not mistaken for a guarantee:
 

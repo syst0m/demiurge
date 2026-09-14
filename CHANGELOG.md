@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-09-14
+
+### Added
+
+- **Marcus Modify / Add-Feature Pipeline (`/marcus modify`):** Added a dedicated subcommand and mechanical script (`skills/marcus/scripts/modify_skill.py`) for revising an existing skill under an evidence-gated cycle: elicit the gap (G0), baseline the unmodified skill (G1), draft minimal deltas (G2–G3), validate (G4), enforce 100% non-regression plus positive lift on new cases (G5), and append an immutable entry to `PROVENANCE.md` (G6).
+- **Rule G-12 (Measured Revision):** Codified in `skills/marcus/AGENT_ARCHITECTURE.md` and `skills/marcus/references/SPEC.md` — a skill may not be edited or extended without recorded gap evidence, a pre-revision baseline, and a 100% historical regression pass.
+- **Hook Reach Documented (`docs/AGENT_DESIGN.md` §7):** Clarified that Claude Code's and Antigravity's `Stop` event can block the chat response itself, not only tool calls and file writes, with the exact per-platform blocking schema.
+- **Marcus Gate Regression Integrity:** Extended `evals/run_gate_tests.py` to 17/17 passing, adding three cases (`regression-13`–`regression-15`) covering `modify_skill.py` refusal without evidence, refusal on a missing target, and successful revision + provenance append.
+
 ## [0.10.0] - 2026-09-11
 
 ### Added
