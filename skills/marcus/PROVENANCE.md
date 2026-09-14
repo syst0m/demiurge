@@ -46,6 +46,14 @@ Added explicit fast commands and self-update mechanism:
 - Interactive slash subcommands: `/marcus generate`, `/marcus audit`, `/marcus update`, `/marcus --simulate`, and `/marcus --help`.
 - Gate G4 re-validated (0 blocking, 0 warnings); gate regression suite maintained at 14/14 passing.
 
+## 2026-09-14 — Modify / Add-Feature Pipeline (Rule G-12)
+
+Added a measured revision cycle for editing existing skills, closing the gap where prior gates covered only creation (G0–G6 for new skills) and left in-place edits unmeasured:
+
+- Subcommand `/marcus modify` (alias `/marcus edit`): Scaffolds a revision via `scripts/modify_skill.py`, which refuses without recorded gap evidence (G0) and refuses when the target skill does not exist.
+- Rule G-12: Requires a pre-revision baseline (G1), a minimal draft (G2–G3), format/security validation (G4), 100% non-regression plus positive lift on new cases (G5), and an appended `PROVENANCE.md` entry (G6) — codified in `AGENT_ARCHITECTURE.md` and `references/SPEC.md`.
+- Gate regression suite extended to 17/17 passing (`regression-13` through `regression-15`), covering refusal without evidence, refusal on a missing target, and a successful revision that appends both a provenance entry and a new eval case.
+
 ## Open Validation Scope
 
 - **Self-Referential Gate G5 Evaluation:** End-to-end G5 execution on Marcus's full skill factory workflow requires isolated execution environments to prevent nested agents from inheriting the installed skill library.
@@ -56,7 +64,7 @@ Added explicit fast commands and self-update mechanism:
 
 ## Deterministic Suite
 
-Execute local regression tests: `python skills/marcus/evals/run_gate_tests.py` (14/14 passing). Regression test cases are derived from the four findings above and maintain 100% pass rates.
+Execute local regression tests: `python skills/marcus/evals/run_gate_tests.py` (17/17 passing). Regression test cases are derived from the findings above and maintain 100% pass rates.
 
 ## Trifecta Position
 

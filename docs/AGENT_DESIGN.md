@@ -204,6 +204,14 @@ a hook, a pre-commit check, a lint rule, or a test.
 The distinction that matters: **hooks fail closed, prompts fail silently.** A guard that never fires
 and a guard that is broken look identical from outside unless it fails loudly.
 
+**This reaches the chat response itself, not only tool calls and file writes.** Claude Code's and
+Antigravity's `Stop` event fires exactly when a turn is about to end, before its text reaches the
+user, and both platforms can block it (Claude Code: exit code 2, or top-level
+`{"decision": "block", "reason": "..."}`; Antigravity: `{"decision": "continue", "reason": "..."}`
+to stdout) and feed a reason back that forces a revision. A rule about *how the assistant writes*,
+not just what it edits or runs, can be a mechanical hook too — see `AGENT_ARCHITECTURE.md` Rule
+V-4 and `references/EVIDENCE.md` §9 for the exact per-platform schemas.
+
 ### 8. Emit, then say what was lost
 
 Not every platform can express every rule. The Agent Skills format can; a pasteable web-chat prompt
@@ -213,6 +221,18 @@ cannot express references, hooks, tool restriction or evals at all.
 record of what you actually designed. Then project into the requested targets, and **state in each
 package what that target cannot express.** A silently dropped rule is worse than an absent one,
 because the reader assumes it is there.
+
+### 9. Modifying and adding features to existing agents
+
+Agents rot over time if edited casually. Adding prompt text without evidence causes context bloat and silent regressions.
+
+When revising an existing skill or adding a feature:
+
+- **Elicit the gap (G0)**: Demand at least one real failure or user gap where the current skill failed. Never add instructions for hypothetical scenarios.
+- **Baseline the unmodified agent (G1)**: Run the expanded evaluation suite on the unmodified agent first to establish the true pre-revision score.
+- **Draft minimal deltas (G3)**: Make surgical edits to instructions, references, or bundled scripts.
+- **Enforce strict non-regression (G5)**: The historical regression suite must hold at **100%**. Any drop on prior cases is a hard reject. New capability cases must demonstrate a positive delta.
+- **Append provenance (G6)**: Keep an immutable record of every revision in `PROVENANCE.md`. Never wipe prior origin history.
 
 ---
 

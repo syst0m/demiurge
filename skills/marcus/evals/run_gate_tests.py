@@ -15,6 +15,7 @@ Exit codes:
 from __future__ import annotations
 
 import argparse
+import json
 import subprocess
 import sys
 import tempfile
@@ -276,6 +277,31 @@ def main() -> int:
                   and "STAGED-OK" in transcript_path.read_text(encoding="utf-8"))
         results.append(("regression-12 treated run stages bundled scripts into its cwd",
                         staged,
+                        f"exit={code}"))
+
+        # regression-13: modify_skill refuses without evidence of gap/deficiency
+        code, out = run([str(SCRIPTS / "modify_skill.py"), str(scaffolded),
+                         "--feature", "add export"])
+        results.append(("regression-13 modify_skill refuses without evidence",
+                        code == 2 and "recorded failure" in out.lower(),
+                        f"exit={code}"))
+
+        # regression-14: modify_skill refuses if target skill does not exist
+        code, out = run([str(SCRIPTS / "modify_skill.py"), str(root / "nonexistent-skill"),
+                         "--feature", "add export", "--evidence", "it failed"])
+        results.append(("regression-14 modify_skill refuses missing target",
+                        code == 2 and "not found" in out.lower(),
+                        f"exit={code}"))
+
+        # regression-15: modify_skill successfully appends revision to provenance and evals
+        code, out = run([str(SCRIPTS / "modify_skill.py"), str(scaffolded),
+                         "--feature", "export-feature",
+                         "--evidence", "failed to export json format"])
+        prov_text = (scaffolded / "PROVENANCE.md").read_text(encoding="utf-8")
+        evals_json = json.loads((scaffolded / "evals" / "evals.json").read_text(encoding="utf-8"))
+        has_new_case = any(c.get("feature") == "export-feature" for c in evals_json.get("cases", []))
+        results.append(("regression-15 modify_skill appends revision and cases",
+                        code == 0 and "## Revision 1: export-feature" in prov_text and has_new_case,
                         f"exit={code}"))
 
     print("marcus deterministic gate suite")
