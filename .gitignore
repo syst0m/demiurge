@@ -34,3 +34,6 @@ Thumbs.db
 # Local environment variables
 .env
 .env.local
+
+# Claude Code personal settings - never committed (may reference private repos)
+.claude/settings.local.json
