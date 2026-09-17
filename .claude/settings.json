@@ -1,0 +1,6 @@
+{
+  "extraKnownMarketplaces": {
+    "agent-skills": { "source": { "source": "github", "repo": "syst0m/agent-skills" } }
+  },
+  "enabledPlugins": { "agent-skills@agent-skills": true }
+}
