@@ -54,6 +54,15 @@ Added a measured revision cycle for editing existing skills, closing the gap whe
 - Rule G-12: Requires a pre-revision baseline (G1), a minimal draft (G2–G3), format/security validation (G4), 100% non-regression plus positive lift on new cases (G5), and an appended `PROVENANCE.md` entry (G6) — codified in `AGENT_ARCHITECTURE.md` and `references/SPEC.md`.
 - Gate regression suite extended to 17/17 passing (`regression-13` through `regression-15`), covering refusal without evidence, refusal on a missing target, and a successful revision that appends both a provenance entry and a new eval case.
 
+## 2026-09-25 — Interactive UI & Demiurge Controls Integration
+
+Added native Antigravity interactive UI modalities (`ask_question` and Markdown Artifact boards) tailored specifically for Demiurge repository controls:
+
+- `skills/marcus/config.default.yaml`: Configurable defaults for Demiurge controls, including research drift checks against `research/RESEARCH.md`, pre-commit mechanical linters (`gate_tropes.py`, `scan_security_and_pii.py`, `scan_superfluous.py`), benchmark registry tracking, and release management prompts.
+- `skills/marcus/scripts/resolve_config.py`: Deterministic config resolution supporting project-level overrides in `.agents/skills.config.yaml` or `.agents/config.yaml` without forks.
+- Subcommand `/marcus interactive` (alias `/marcus ui`): Launches an interactive intake modal and emits a visual pipeline board artifact (`demiurge_build_board.md`).
+- Gate G4 re-validated (0 blocking, 0 warnings); gate regression suite maintained at 17/17 passing.
+
 ## Open Validation Scope
 
 - **Self-Referential Gate G5 Evaluation:** End-to-end G5 execution on Marcus's full skill factory workflow requires isolated execution environments to prevent nested agents from inheriting the installed skill library.

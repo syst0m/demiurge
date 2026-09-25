@@ -69,6 +69,19 @@ ELICIT ──> CLASSIFY ──> DERIVE ──> DRAFT ──> EMIT ──> VERIFY
   G0          G1                     G2       G3       G4  G5      G6
 ```
 
+### Interactive UI Workflow & Pipeline Board
+
+Marcus operates with native Antigravity UI modalities (`ask_question` and Markdown Artifacts) tailored specifically for Demiurge controls:
+
+1. **Config Resolution:** Run `python scripts/resolve_config.py marcus --project-root . --json` before running the pipeline to load Demiurge-specific controls (`interactive_ui`, `artifact_pipeline_board`, `default_eval_tier`, `strict_regression_gate`, `enforce_research_sync`, `enforce_tropes_gate`, `enforce_security_pii_gate`, `sync_benchmark_registry`, `prompt_release_on_completion`).
+2. **G0 Interactive Intake Modal:** When `interactive_ui` is enabled, launch an interactive `ask_question` modal to solicit the 3 real failure traces, correctness criteria, and harness responsibilities rather than rejecting blindly.
+3. **Demiurge Pipeline Board Artifact (`demiurge_build_board.md`):** Generate a live visual board rendering the 7 design gates (G0–G6) alongside Demiurge repo gates (Research Sync, Tropes & Safety Scan, Benchmark Registry, Release Gate) with Mermaid diagrams, baseline-vs-eval metrics, and pre-commit scan logs.
+4. **Demiurge Pre-Commit & Research Gates:**
+   - Research Sync: Checks drift between `derived_from` and `~/Documents/code/demiurge/research/RESEARCH.md`.
+   - Tropes Gate: `python scripts/gate_tropes.py` scans generated text for negative parallelism and GenAI clichés.
+   - Security & PII Scan: `python scripts/scan_security_and_pii.py` checks safety and secrets.
+   - Release Gate: Prompts operator to cut a new release and validates with `python scripts/verify_release.py --pre-commit`.
+
 Copy this checklist and work it:
 
 ```
@@ -83,9 +96,13 @@ Build progress:
 ```
 
 **G0 is the gate most worth defending.** It is Step 1's question 5 — *what has gone wrong before?* —
-turned into an entry price. If the user cannot produce three real instances where this failed or was
-tediously re-explained, the correct output is: *"There is not yet enough evidence that this skill is
-needed — come back after it fails three times."* That is a complete and valid piece of work.
+turned into an entry price. If the user cannot immediately produce three real instances, use `ask_question`
+to offer four paths:
+
+- "Input 3 real failure traces directly (write-in)"
+- "Run interactive failure elicitation interview (3 focused prompts)"
+- "Simulate 3 synthetic failure traces for a dry-run draft (/marcus --simulate)"
+- "Halt: not yet enough evidence that this skill is needed"
 
 **G2 is where quality comes from.** Contrast successful against failed trajectories on the same
 task, and name for each candidate instruction the outcome difference it explains. Drop every
@@ -105,6 +122,7 @@ Full gate definitions, owners and failure actions: `references/SPEC.md` §3.
 Run these; do not read them. Stdlib-only Python 3, no dependencies, no network.
 
 ```bash
+python scripts/resolve_config.py marcus --project-root .             # Demiurge config loader
 python scripts/new_skill.py --name my-skill --dir ~/.claude/skills --evidence "failure 1" --evidence "failure 2" --evidence "failure 3"
 python scripts/modify_skill.py ~/.claude/skills/my-skill --feature "add feature" --evidence "gap 1" # revision scaffolding
 python scripts/validate_skill.py ~/.claude/skills/my-skill          # G4
@@ -249,3 +267,11 @@ When invoked with `--simulate` or `--dry-run`:
    - Mechanical enforcement hook (e.g., git hook or environment validator)
    - Simulated G1 vs G5 regression eval table
 4. Label all simulated outputs explicitly as: `[SIMULATION — NOT MEASURED]`.
+
+### 7. Interactive UI & Intake: `/marcus interactive` or `/marcus ui`
+
+Launches the interactive Demiurge intake and control dashboard:
+
+1. Resolves configuration overrides via `scripts/resolve_config.py`.
+2. Launches `ask_question` modal for selecting task (New Skill, Modify Skill, Audit Third-Party, Research Sync, Run Gate Tests, or Release Check).
+3. Emits or updates the visual pipeline board artifact (`demiurge_build_board.md`).

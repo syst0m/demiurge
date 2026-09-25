@@ -1,0 +1,42 @@
+# Default configuration for marcus skill in demiurge.
+# Project overrides can be set in .agents/skills.config.yaml or skills.config.yaml under 'marcus'.
+
+# Enable interactive modal UI dialogs (using Antigravity ask_question) for intake, triage, and audits
+interactive_ui: true
+
+# Generate a visual Markdown Artifact board (demiurge_build_board.md) tracking the 7-gate pipeline
+artifact_pipeline_board: true
+
+# Evaluation tier for running baselines (G1) and validation evals (G5):
+# tier_fast: fast deterministic check and local regression suite
+# tier_deep: full model evaluation matrix with statistical confidence intervals
+# simulated: in-memory simulation without spending API tokens
+default_eval_tier: tier_fast
+
+# Enforce strict 100% pass on historical regression evals at Gate G5
+strict_regression_gate: true
+
+# Demiurge Empirical Research & Upstream Drift Sync:
+# Automatically check drift between derived_from in AGENT_ARCHITECTURE.md and research/RESEARCH.md
+enforce_research_sync: true
+
+# Demiurge Pre-commit Mechanical Quality Gates:
+# Enforce negative parallelism & GenAI cliché checks (scripts/gate_tropes.py)
+enforce_tropes_gate: true
+
+# Enforce local deterministic security, PII, and agent safety scan (scripts/scan_security_and_pii.py)
+enforce_security_pii_gate: true
+
+# Enforce scan for superfluous commentary and session transcripts (scripts/scan_superfluous.py)
+enforce_superfluous_gate: true
+
+# Benchmark Run Registry:
+# Prompt or synchronize docs/BENCHMARKS.md and README.md when benchmark evaluations are conducted
+sync_benchmark_registry: false
+
+# Release Management:
+# Prompt user to cut a new release on significant features, major refactors, or new skills
+prompt_release_on_completion: true
+
+# Maximum clarification rounds during G0 interactive elicitation
+max_intake_rounds: 3

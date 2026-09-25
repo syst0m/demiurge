@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-09-25
+
+### Added
+
+- **Marcus Interactive UI & Demiurge Control Integration:** Added native Antigravity interactive modalities (`ask_question` and Markdown Artifact boards) tailored specifically for Demiurge repository controls.
+- **Configurable Control Schema (`skills/marcus/config.default.yaml`):** Provides repository-level default controls for Marcus in Demiurge, including research drift checks against `research/RESEARCH.md`, pre-commit mechanical linters (`gate_tropes.py`, `scan_security_and_pii.py`, `scan_superfluous.py`), benchmark registry tracking, and release management prompts.
+- **Deterministic Config Resolver (`skills/marcus/scripts/resolve_config.py`):** Enables zero-fork project overrides by reading `.agents/skills.config.yaml`, `.agents/config.yaml`, or `skills.config.yaml`.
+- **Direct Subcommand `/marcus interactive`:** Added fast command and interactive elicitation branch in `skills/marcus/SKILL.md` to run guided intake modals and live visual pipeline boards (`demiurge_build_board.md`).
+- **Marcus Gate Regression Integrity:** Maintained 100% pass rate (17/17 passing) on `evals/run_gate_tests.py` and zero blocking findings on G4 `validate_skill.py`.
+
 ## [0.11.0] - 2026-09-14
 
 ### Added
