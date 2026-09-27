@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Repo Checks Workflow (`.github/workflows/checks.yml`):** Runs unit tests, the Marcus gate regression suite, G4 validation of Buckminster, the link check, research distribution drift, the Marcus sync check and the superfluous-comment scan on every pull request and push to `main`, plus `pre-commit` with Vale skipped. Dev tooling is pinned in `requirements-dev.txt`.
+- **Unit-Test Runner (`scripts/run_unit_tests.py`):** Finds `test_*.py` under `scripts/`, `evals/` and `skills/`, runs each file in its own interpreter, and exits 1 on any failure or 2 when no file matches the filters.
+- **Sync Guards (`scripts/sync-skills.sh`):** `--check` and `--repo-only` are accepted in any order and any other argument exits 2. `--repo-only` runs only the `research/RESEARCH.md` distribution. The apply loop prints each resolved target, refuses a target with uncommitted git changes (exit 3) and preserves `evals/last_run.json`. Covered by `scripts/test_sync_skills.py`.
+- **Marcus Gate Regression Integrity:** Added `regression-16` for the bare-list `suites["regression"]` case in `modify_skill.py` (18/18 passing).
+
+### Changed
+
+- **RESEARCH.md v1.2.1:** Renumbered Primitive Taxonomy to Section 11, fixed a typo and aligned the `[SETTLED]` legend with `RESEARCH_METHODOLOGY.md`. No grades changed. The Marcus reference copy and `AGENT_ARCHITECTURE.md` `derived_from` track 1.2.1.
+- **Single `[SETTLED]` Definition:** `skills/buckminster/references/RESEARCH_METHODOLOGY.md` Step 4 is the canonical definition, including the reception check. `skills/buckminster/SKILL.md` and `docs/OPERATING_GUIDE.md` link to it.
+
+### Fixed
+
+- **Deployed Marcus Drift:** Ported the bare-list `suites["regression"]` fix in `skills/marcus/scripts/modify_skill.py` from the deployed copy and recorded it in `PROVENANCE.md`.
+- **`update_marcus.py` Reporting:** Parses the `n/m passing` summary from `run_gate_tests.py` and fails when it cannot. Counts marker variants above the change log only, skipping `[VENDOR]` source tags after links. `--apply` exits 1 while `AGENT_ARCHITECTURE.md` `derived_from` still drifts. Covered by `scripts/test_update_marcus.py`.
+
 ## [0.12.0] - 2026-09-25
 
 ### Added
