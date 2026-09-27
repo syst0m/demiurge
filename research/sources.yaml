@@ -1,7 +1,7 @@
 schema: demiurge.sources.v1
 meta:
   enforced: false
-  enforce_after: null
+  enforce_after: '2026-11-08'
 claims:
   disc.agentic-eng:
     section: 1
@@ -11,16 +11,20 @@ claims:
     grades:
     - scope: a framing
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     - scope: a codified practice
       asserted: EMERGING
-      cap: null
-      cap_evidence: null
+      cap: EMERGING
+      cap_evidence: SETTLED
       unverified: false
-      cap_reasons: []
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -34,10 +38,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources:
     - id: s1
       url: null
@@ -66,10 +72,16 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: CONTESTED
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - aggregator_unresolved
+      - lt3_independent
+      - lt2_primary
+      - independence_unset
+      - reception_unchecked
+      - unretrieved_source
     sources:
     - id: s1
       url: https://doi.org/10.48550/arxiv.2606.12344
@@ -128,10 +140,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates:
     - ca.context-forking
@@ -146,10 +160,12 @@ claims:
     grades:
     - scope: null
       asserted: CONTESTED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources:
     - id: s1
       url: null
@@ -193,10 +209,13 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: CONTESTED
+      cap_evidence: CONTESTED
+      unverified: true
+      cap_reasons:
+      - vendor_gt1
+      - lt2_primary
+      - unretrieved_source
     sources:
     - id: s1
       url: https://docs.anthropic.com/claude-code/rules
@@ -255,10 +274,13 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - aggregator_unresolved
+      - lt2_primary
     sources:
     - id: s1
       url: https://consensus.app/papers/details/1aecfc3c99265aeab55fa1d25acf1135/?utm_source=unknown
@@ -317,10 +339,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources:
     - id: s1
       url: null
@@ -349,10 +373,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources:
     - id: s1
       url: null
@@ -381,10 +407,12 @@ claims:
     grades:
     - scope: null
       asserted: CONTESTED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -398,10 +426,12 @@ claims:
     grades:
     - scope: null
       asserted: VENDOR
-      cap: null
-      cap_evidence: null
+      cap: EMERGING
+      cap_evidence: SETTLED
       unverified: false
-      cap_reasons: []
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -415,10 +445,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -432,10 +464,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -449,10 +483,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -466,10 +502,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -483,10 +521,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -500,10 +540,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -517,10 +559,14 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: CONTESTED
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - aggregator_unresolved
+      - lt3_independent
+      - lt2_primary
+      - unretrieved_source
     sources:
     - id: s1
       url: https://consensus.app/papers/details/a2fde21b76f5544c9edca661a2b6e868/?utm_source=unknown
@@ -579,10 +625,12 @@ claims:
     grades:
     - scope: null
       asserted: EMERGING
-      cap: null
-      cap_evidence: null
+      cap: EMERGING
+      cap_evidence: SETTLED
       unverified: false
-      cap_reasons: []
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates:
     - harness.new-benchmarks
@@ -597,10 +645,14 @@ claims:
     grades:
     - scope: exact scores
       asserted: VENDOR
-      cap: null
-      cap_evidence: null
+      cap: VENDOR
+      cap_evidence: VENDOR
       unverified: false
-      cap_reasons: []
+      cap_reasons:
+      - vendor_only
+      - lt3_independent
+      - lt2_primary
+      - unretrieved_source
     sources:
     - id: s1
       url: https://www.cognition.ai/blog/frontier-code
@@ -629,10 +681,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources:
     - id: s1
       url: null
@@ -661,10 +715,12 @@ claims:
     grades:
     - scope: null
       asserted: VENDOR
-      cap: null
-      cap_evidence: null
+      cap: EMERGING
+      cap_evidence: SETTLED
       unverified: false
-      cap_reasons: []
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -678,10 +734,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -695,10 +753,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -712,10 +772,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources:
     - id: s1
       url: null
@@ -744,10 +806,13 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - aggregator_unresolved
+      - lt2_primary
     sources:
     - id: s1
       url: https://consensus.app/papers/details/b0771d1e67385e0bb6331098ea1ab770/?utm_source=unknown
@@ -791,10 +856,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -808,10 +875,16 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: CONTESTED
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - aggregator_unresolved
+      - lt3_independent
+      - lt2_primary
+      - independence_unset
+      - reception_unchecked
+      - unretrieved_source
     sources:
     - id: s1
       url: https://doi.org/10.48550/arxiv.2601.10338
@@ -885,10 +958,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -902,10 +977,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -919,10 +996,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -936,10 +1015,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources:
     - id: s1
       url: null
@@ -968,10 +1049,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates:
     - sub.worktree
@@ -986,10 +1069,12 @@ claims:
     grades:
     - scope: null
       asserted: EMERGING
-      cap: null
-      cap_evidence: null
+      cap: EMERGING
+      cap_evidence: SETTLED
       unverified: false
-      cap_reasons: []
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates:
     - sub.storm
@@ -1004,10 +1089,12 @@ claims:
     grades:
     - scope: null
       asserted: CONTESTED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources:
     - id: s1
       url: null
@@ -1036,10 +1123,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -1053,10 +1142,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -1070,16 +1161,20 @@ claims:
     grades:
     - scope: packaging spec
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     - scope: adoption
       asserted: EMERGING
-      cap: null
-      cap_evidence: null
+      cap: EMERGING
+      cap_evidence: SETTLED
       unverified: false
-      cap_reasons: []
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates:
     - plugins.spec
@@ -1094,10 +1189,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -1111,10 +1208,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -1128,10 +1227,12 @@ claims:
     grades:
     - scope: null
       asserted: EMERGING
-      cap: null
-      cap_evidence: null
+      cap: EMERGING
+      cap_evidence: SETTLED
       unverified: false
-      cap_reasons: []
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -1145,10 +1246,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -1162,10 +1265,12 @@ claims:
     grades:
     - scope: null
       asserted: CONTESTED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources:
     - id: s1
       url: null
@@ -1209,10 +1314,13 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - aggregator_unresolved
+      - lt2_primary
     sources:
     - id: s1
       url: https://consensus.app/papers/details/fc9e0099b4ec5c54a8648ec26372d59a/?utm_source=unknown
@@ -1271,10 +1379,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -1305,10 +1415,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -1322,10 +1434,12 @@ claims:
     grades:
     - scope: whether other platforms will adopt it
       asserted: EMERGING
-      cap: null
-      cap_evidence: null
+      cap: EMERGING
+      cap_evidence: SETTLED
       unverified: false
-      cap_reasons: []
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -1339,10 +1453,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -1356,10 +1472,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -1373,10 +1491,12 @@ claims:
     grades:
     - scope: null
       asserted: CONTESTED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -1390,10 +1510,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -1407,10 +1529,12 @@ claims:
     grades:
     - scope: null
       asserted: EMERGING
-      cap: null
-      cap_evidence: null
+      cap: EMERGING
+      cap_evidence: SETTLED
       unverified: false
-      cap_reasons: []
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates:
     - eval.new-benchmarks
@@ -1425,10 +1549,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -1442,10 +1568,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -1459,10 +1587,12 @@ claims:
     grades:
     - scope: null
       asserted: EMERGING
-      cap: null
-      cap_evidence: null
+      cap: EMERGING
+      cap_evidence: SETTLED
       unverified: false
-      cap_reasons: []
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -1476,16 +1606,20 @@ claims:
     grades:
     - scope: governance
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     - scope: adoption
       asserted: EMERGING
-      cap: null
-      cap_evidence: null
+      cap: EMERGING
+      cap_evidence: SETTLED
       unverified: false
-      cap_reasons: []
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates:
     - proto.plugins
@@ -1500,10 +1634,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates:
     - ma.worktree-failures
@@ -1518,10 +1654,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -1535,10 +1673,12 @@ claims:
     grades:
     - scope: null
       asserted: EMERGING
-      cap: null
-      cap_evidence: null
+      cap: EMERGING
+      cap_evidence: SETTLED
       unverified: false
-      cap_reasons: []
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates:
     - ma.storm
@@ -1553,10 +1693,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -1570,10 +1712,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
@@ -1587,10 +1731,12 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: null
-      cap_evidence: null
-      unverified: false
-      cap_reasons: []
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates:
     - ctx.practices-table
@@ -1605,10 +1751,12 @@ claims:
     grades:
     - scope: null
       asserted: EMERGING
-      cap: null
-      cap_evidence: null
+      cap: EMERGING
+      cap_evidence: SETTLED
       unverified: false
-      cap_reasons: []
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
     sources: []
     duplicates: []
     last_verified: null
