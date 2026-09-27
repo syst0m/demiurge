@@ -11,6 +11,7 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -74,6 +75,7 @@ class TestSyncSkills(unittest.TestCase):
             "PATH": os.environ.get("PATH", ""),
             "GIT_CEILING_DIRECTORIES": str(self.tmp),
             "GIT_CONFIG_NOSYSTEM": "1",
+            "PYTHON": sys.executable,
         }
         for key in ("SYSTEMROOT", "TEMP", "TMP", "COMSPEC"):
             if key in os.environ:
@@ -120,6 +122,36 @@ class TestSyncSkills(unittest.TestCase):
             (self.root / "skills" / "marcus" / "references" / "RESEARCH.md").read_text(encoding="utf-8"),
             "# Research\n",
         )
+
+    def stub_grade_cap(self, exit_code: int) -> Path:
+        """A grade_cap.py stand-in that records its arguments and exits with exit_code."""
+        research_scripts = self.root / "scripts" / "research"
+        research_scripts.mkdir()
+        record = self.tmp / "grade_cap_args.txt"
+        (research_scripts / "grade_cap.py").write_text(
+            "import sys\n"
+            f"open({str(record)!r}, 'w', encoding='utf-8').write(' '.join(sys.argv[1:]))\n"
+            "print('grade_cap stub says', sys.argv[1])\n"
+            f"sys.exit({exit_code})\n",
+            encoding="utf-8",
+        )
+        return record
+
+    def test_repo_only_runs_grade_cap_check(self):
+        record = self.stub_grade_cap(0)
+        result = self.run_sync("--check", "--repo-only")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("CHECKED  grade_cap: grade_cap stub says --check", result.stdout)
+        self.assertTrue(record.read_text(encoding="utf-8").startswith("--check --repo "))
+
+    def test_grade_cap_failure_exits_1(self):
+        self.stub_grade_cap(1)
+        for args in (("--check", "--repo-only"), ("--repo-only",)):
+            with self.subTest(args=args):
+                result = self.run_sync(*args)
+                self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                self.assertIn("FAIL     grade_cap --check", result.stdout)
+                self.assertFalse((self.home / ".claude").exists())
 
     def test_unknown_argument_exits_2(self):
         for args in (("--chek",), ("--check", "--bogus"), ("apply",)):

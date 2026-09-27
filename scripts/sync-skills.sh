@@ -9,8 +9,9 @@
 # Usage:  ./scripts/sync-skills.sh [--check] [--repo-only]
 #   (no flags)   apply: distribute RESEARCH.md, then deploy every skill
 #   --check      report drift, write nothing (exit 1 if drift)
-#   --repo-only  touch only the in-repo RESEARCH.md distribution, never the deploy target
-# Exit codes: 0 ok, 1 drift (--check), 2 usage error, 3 refused (dirty target)
+#   --repo-only  touch only the in-repo RESEARCH.md distribution, never the deploy target,
+#                and run scripts/research/grade_cap.py --check (a failure exits 1)
+# Exit codes: 0 ok, 1 drift (--check) or grade_cap failure, 2 usage error, 3 refused (dirty target)
 
 set -euo pipefail
 
@@ -53,6 +54,27 @@ if [ -f "$RESEARCH_SRC" ] && [ -d "$(dirname "$MARCUS_REF")" ]; then
             cp "$RESEARCH_SRC" "$MARCUS_REF"
             echo "DISTRIB  research/RESEARCH.md -> marcus/references/"
         fi
+    fi
+fi
+
+# Grades in RESEARCH.md must match research/sources.yaml, and Marcus's compiled
+# claims.json must match both. grade_cap.py --check writes nothing.
+GRADE_CAP="$ROOT/scripts/research/grade_cap.py"
+grade_cap_failed=false
+if $REPO_ONLY && [ -f "$GRADE_CAP" ]; then
+    PY="${PYTHON:-}"
+    if [ -z "$PY" ]; then
+        PY=$(command -v python || command -v python3 || true)
+    fi
+    if [ -z "$PY" ]; then
+        echo "FAIL     grade_cap --check: python not found (set PYTHON)"
+        grade_cap_failed=true
+    elif grade_out=$("$PY" "$GRADE_CAP" --check --repo "$ROOT" 2>&1); then
+        echo "CHECKED  grade_cap: $(printf '%s\n' "$grade_out" | tail -n 1)"
+    else
+        printf '%s\n' "$grade_out" | sed 's/^/         /'
+        echo "FAIL     grade_cap --check (fix research/, then run grade_cap.py --write)"
+        grade_cap_failed=true
     fi
 fi
 
@@ -101,6 +123,10 @@ for skill_dir in "$REPO_SKILLS"/*/; do
         echo "SYNCED   $name"
     fi
 done
+
+if $grade_cap_failed; then
+    exit 1
+fi
 
 if $CHECK_ONLY && [ "$drift" -ne 0 ]; then
     echo ""
