@@ -8,7 +8,9 @@ stub gate suite, so no test touches the real Marcus skill.
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
+import json
 import shutil
 import subprocess
 import sys
@@ -40,6 +42,30 @@ derived_from:
 """
 
 
+SOURCES_TEXT = """schema: demiurge.sources.v1
+meta:
+  enforced: false
+claims: {}
+"""
+
+COUNTS = {"SETTLED": 3, "CONTESTED": 1, "EMERGING": 2, "VENDOR": 1, "UNVERIFIED": 4}
+
+
+def compiled_claims(research: bytes, sources: bytes) -> str:
+    """A claims.json whose hashes match the given RESEARCH.md and sources.yaml bytes."""
+    data = {
+        "schema": "demiurge.claims.compiled.v1",
+        "research_version": "1.2.1",
+        "sources_sha256": hashlib.sha256(sources).hexdigest(),
+        "research_sha256": hashlib.sha256(research).hexdigest(),
+        "enforced": False,
+        "claims": [{"id": "ctx.one"}, {"id": "ctx.two"}],
+        "rules": [],
+        "counts": COUNTS,
+    }
+    return json.dumps(data, indent=2) + "\n"
+
+
 class TempRepo:
     """A minimal repo tree: research/, skills/marcus/{scripts,references,evals}."""
 
@@ -51,8 +77,13 @@ class TempRepo:
         (marcus / "references").mkdir(parents=True)
         (marcus / "evals").mkdir(parents=True)
         shutil.copy2(SCRIPT, marcus / "scripts" / "update_marcus.py")
-        (root / "research" / "RESEARCH.md").write_text(RESEARCH_TEXT, encoding="utf-8")
-        (marcus / "references" / "RESEARCH.md").write_text(RESEARCH_TEXT, encoding="utf-8")
+        (root / "research" / "RESEARCH.md").write_bytes(RESEARCH_TEXT.encode("utf-8"))
+        (root / "research" / "sources.yaml").write_bytes(SOURCES_TEXT.encode("utf-8"))
+        (marcus / "references" / "RESEARCH.md").write_bytes(RESEARCH_TEXT.encode("utf-8"))
+        self.claims_json = marcus / "references" / "claims.json"
+        self.claims_json.write_bytes(
+            compiled_claims(RESEARCH_TEXT.encode("utf-8"), SOURCES_TEXT.encode("utf-8")).encode("utf-8")
+        )
         (marcus / "AGENT_ARCHITECTURE.md").write_text(ARCH_TEXT.format(version=arch_version), encoding="utf-8")
         (marcus / "evals" / "run_gate_tests.py").write_text(
             f"import sys\nsys.stdout.write({gate_stdout!r})\n", encoding="utf-8"
@@ -130,6 +161,51 @@ class TestApplyExitCode(unittest.TestCase):
         self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
         self.assertIn("RESULT:", proc.stdout)
         self.assertIn("Edit it by hand.", proc.stdout)
+
+
+class TestClaimsJson(unittest.TestCase):
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.tmp = Path(self._tmp.name)
+
+    def test_counts_from_claims_json(self):
+        repo = TempRepo(self.tmp)
+        proc = repo.run("--check")
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertIn(
+            "CLAIMS: 2 claims from claims.json (SETTLED 3, CONTESTED 1, EMERGING 2, VENDOR 1, UNVERIFIED 4).",
+            proc.stdout,
+        )
+        self.assertIn("SYNCED: claims.json hashes match", proc.stdout)
+        self.assertNotIn("DRIFT", proc.stdout)
+
+    def test_claims_json_stale_is_drift(self):
+        repo = TempRepo(self.tmp)
+        (self.tmp / "research" / "sources.yaml").write_bytes(SOURCES_TEXT.replace("false", "true").encode("utf-8"))
+        proc = repo.run("--check")
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertIn("DRIFT: claims.json sources_sha256 does not match sources.yaml", proc.stdout)
+        self.assertNotIn("research_sha256 does not match", proc.stdout)
+        apply = repo.run("--apply")
+        self.assertEqual(apply.returncode, 1, apply.stdout + apply.stderr)
+        self.assertIn("Regrade with grade_cap.py --write.", apply.stdout)
+
+    def test_research_edit_is_drift(self):
+        repo = TempRepo(self.tmp)
+        edited = (RESEARCH_TEXT + "`[EMERGING]` Another rule.\n").encode("utf-8")
+        (self.tmp / "research" / "RESEARCH.md").write_bytes(edited)
+        (self.tmp / "skills" / "marcus" / "references" / "RESEARCH.md").write_bytes(edited)
+        proc = repo.run("--check")
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertIn("DRIFT: claims.json research_sha256 does not match RESEARCH.md", proc.stdout)
+
+    def test_missing_claims_json_is_drift(self):
+        repo = TempRepo(self.tmp)
+        repo.claims_json.unlink()
+        proc = repo.run("--check")
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertIn("DRIFT: claims.json is missing", proc.stdout)
 
 
 if __name__ == "__main__":

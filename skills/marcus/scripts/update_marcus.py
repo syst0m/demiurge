@@ -5,7 +5,9 @@ Enforces:
 1. Version and content synchronization between research/RESEARCH.md and skills/marcus/references/RESEARCH.md.
 2. Alignment between derived_from in AGENT_ARCHITECTURE.md and RESEARCH.md version.
 3. Rule diff inspection across confidence markers ([SETTLED], [CONTESTED], [VENDOR], [EMERGING]).
-4. Execution of Marcus's deterministic gate test suite (run_gate_tests.py) and validator (validate_skill.py).
+4. Grade counts from references/claims.json, whose research_sha256 and sources_sha256 must match
+   research/RESEARCH.md and research/sources.yaml (a mismatch is DRIFT; rerun grade_cap.py --write).
+5. Execution of Marcus's deterministic gate test suite (run_gate_tests.py) and validator (validate_skill.py).
 
 Usage:
     python skills/marcus/scripts/update_marcus.py --check   # Report drift (exit 1 if drift)
@@ -15,12 +17,14 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 import re
 import shutil
 import subprocess
 import sys
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 RESEARCH_VERSION_PATTERN = re.compile(r"^version:\s*(?P<version>[\d\.]+)", re.MULTILINE)
 SNAPSHOT_DATE_PATTERN = re.compile(r"^snapshot_date:\s*(?P<date>[\d-]+)", re.MULTILINE)
@@ -31,6 +35,10 @@ MARKER_PATTERN = re.compile(r"`?\[(SETTLED|CONTESTED|VENDOR|EMERGING)(?::[^\]]*)
 LINK_SUFFIX_PATTERN = re.compile(r"\]\([^)\s]*\)\s*$")
 CHANGELOG_HEADING_PATTERN = re.compile(r"^## Change log", re.MULTILINE)
 GATE_SUMMARY_PATTERN = re.compile(r"^(\d+)/(\d+) passing", re.MULTILINE)
+
+GRADE_COUNT_KEYS = ["SETTLED", "CONTESTED", "EMERGING", "VENDOR", "UNVERIFIED"]
+HASHED_INPUTS = (("research_sha256", "RESEARCH.md"), ("sources_sha256", "sources.yaml"))
+REGRADE_HINT = "run python scripts/research/grade_cap.py --write"
 
 
 def extract_metadata(text: str) -> Tuple[Optional[str], Optional[str]]:
@@ -55,6 +63,38 @@ def count_markers(text: str) -> Dict[str, int]:
             continue
         counts[f"[{name}]"] += 1
     return counts
+
+
+def load_claims(path: Path) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
+    """Read the compiled claims.json; return (data, None) or (None, reason)."""
+    if not path.is_file():
+        return None, f"{path.name} is missing"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+        return None, f"{path.name} is unreadable ({exc})"
+    if not isinstance(data, dict) or not isinstance(data.get("counts"), dict):
+        return None, f"{path.name} has no counts object"
+    return data, None
+
+
+def claims_counts(claims: Dict[str, Any]) -> Dict[str, int]:
+    """Effective grade counts (plus UNVERIFIED) as compiled by grade_cap.py."""
+    counts = claims.get("counts") or {}
+    return {key: int(counts.get(key, 0)) for key in GRADE_COUNT_KEYS}
+
+
+def claims_hash_drift(claims: Dict[str, Any], research: Path, sources: Path) -> List[str]:
+    """Name each hashed input whose bytes no longer match the hash stored in claims.json."""
+    stale = []
+    for (key, label), path in zip(HASHED_INPUTS, (research, sources)):
+        if not path.is_file():
+            stale.append(f"{label} is missing")
+            continue
+        actual = hashlib.sha256(path.read_bytes()).hexdigest()
+        if claims.get(key) != actual:
+            stale.append(f"{key} does not match {label}")
+    return stale
 
 
 def parse_gate_summary(stdout: str) -> Optional[Tuple[int, int]]:
@@ -84,6 +124,8 @@ def main() -> int:
     repo_root = Path(args.repo_root).resolve() if args.repo_root else marcus_dir.parent.parent
 
     canonical_research = repo_root / "research" / "RESEARCH.md"
+    canonical_sources = repo_root / "research" / "sources.yaml"
+    claims_file = marcus_dir / "references" / "claims.json"
     reference_research = marcus_dir / "references" / "RESEARCH.md"
     architecture_file = marcus_dir / "AGENT_ARCHITECTURE.md"
     gate_tests = marcus_dir / "evals" / "run_gate_tests.py"
@@ -102,6 +144,7 @@ def main() -> int:
 
     drift_detected = False
     arch_drift = False
+    claims_drift = False
 
     # 1. Compare canonical research against Marcus's reference copy
     if not reference_research.exists():
@@ -150,7 +193,26 @@ def main() -> int:
             drift_detected = True
             arch_drift = True
 
-    # 3. Deterministic regression suite (run_gate_tests.py)
+    # 3. Grade counts and freshness of the compiled claims.json
+    claims, claims_error = load_claims(claims_file)
+    if claims is None:
+        print(f"DRIFT: {claims_error}; {REGRADE_HINT}.")
+        drift_detected = True
+        claims_drift = True
+    else:
+        counts = claims_counts(claims)
+        summary = ", ".join(f"{key} {counts[key]}" for key in GRADE_COUNT_KEYS)
+        print(f"CLAIMS: {len(claims.get('claims') or [])} claims from {claims_file.name} ({summary}).")
+        stale = claims_hash_drift(claims, canonical_research, canonical_sources)
+        if stale:
+            for reason in stale:
+                print(f"DRIFT: {claims_file.name} {reason}; {REGRADE_HINT}.")
+            drift_detected = True
+            claims_drift = True
+        else:
+            print(f"SYNCED: {claims_file.name} hashes match RESEARCH.md and sources.yaml.")
+
+    # 4. Deterministic regression suite (run_gate_tests.py)
     if gate_tests.exists():
         code, stdout, stderr = run_process([sys.executable, str(gate_tests)], cwd=marcus_dir)
         if code != 0:
@@ -164,7 +226,7 @@ def main() -> int:
         passed, total = summary
         print(f"PASS: Marcus gate regression suite ({passed}/{total} passing).")
 
-    # 4. G4 validation check (validate_skill.py)
+    # 5. G4 validation check (validate_skill.py)
     if validator.exists():
         code, stdout, stderr = run_process([sys.executable, str(validator), str(marcus_dir)], cwd=marcus_dir)
         if "BLOCKING" in stdout or code > 1:
@@ -179,6 +241,9 @@ def main() -> int:
         return 1
     if mode == "apply" and arch_drift:
         print("RESULT: AGENT_ARCHITECTURE.md derived_from does not match research/RESEARCH.md. Edit it by hand.")
+        return 1
+    if mode == "apply" and claims_drift:
+        print(f"RESULT: {claims_file.name} is stale against research/. Regrade with grade_cap.py --write.")
         return 1
 
     print("RESULT: Marcus is synchronized and all deterministic gates hold.")
