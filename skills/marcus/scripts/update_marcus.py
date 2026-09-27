@@ -27,6 +27,10 @@ SNAPSHOT_DATE_PATTERN = re.compile(r"^snapshot_date:\s*(?P<date>[\d-]+)", re.MUL
 DERIVED_RESEARCH_PATTERN = re.compile(r"RESEARCH\.md\s+v(?P<version>[\d\.]+)", re.MULTILINE)
 
 MARKERS = ["[SETTLED]", "[CONTESTED]", "[VENDOR]", "[EMERGING]"]
+MARKER_PATTERN = re.compile(r"`?\[(SETTLED|CONTESTED|VENDOR|EMERGING)(?::[^\]]*)?\]`?")
+LINK_SUFFIX_PATTERN = re.compile(r"\]\([^)\s]*\)\s*$")
+CHANGELOG_HEADING_PATTERN = re.compile(r"^## Change log", re.MULTILINE)
+GATE_SUMMARY_PATTERN = re.compile(r"^(\d+)/(\d+) passing", re.MULTILINE)
 
 
 def extract_metadata(text: str) -> Tuple[Optional[str], Optional[str]]:
@@ -38,10 +42,26 @@ def extract_metadata(text: str) -> Tuple[Optional[str], Optional[str]]:
 
 
 def count_markers(text: str) -> Dict[str, int]:
-    counts: Dict[str, int] = {}
-    for marker in MARKERS:
-        counts[marker] = text.count(marker)
+    """Count confidence markers above the change log.
+
+    A `[VENDOR]` placed directly after a `](...)` link tags that source, not a rule, so it is skipped.
+    """
+    heading = CHANGELOG_HEADING_PATTERN.search(text)
+    body = text[: heading.start()] if heading else text
+    counts: Dict[str, int] = {marker: 0 for marker in MARKERS}
+    for match in MARKER_PATTERN.finditer(body):
+        name = match.group(1)
+        if name == "VENDOR" and LINK_SUFFIX_PATTERN.search(body, 0, match.start()):
+            continue
+        counts[f"[{name}]"] += 1
     return counts
+
+
+def parse_gate_summary(stdout: str) -> Optional[Tuple[int, int]]:
+    match = GATE_SUMMARY_PATTERN.search(stdout)
+    if not match:
+        return None
+    return int(match.group(1)), int(match.group(2))
 
 
 def run_process(cmd: List[str], cwd: Optional[Path] = None) -> Tuple[int, str, str]:
@@ -81,6 +101,7 @@ def main() -> int:
     canon_counts = count_markers(canon_text)
 
     drift_detected = False
+    arch_drift = False
 
     # 1. Compare canonical research against Marcus's reference copy
     if not reference_research.exists():
@@ -121,11 +142,13 @@ def main() -> int:
             if arch_ver != canon_ver:
                 print(f"DRIFT: AGENT_ARCHITECTURE.md derived_from is v{arch_ver}, but RESEARCH.md is v{canon_ver}.")
                 drift_detected = True
+                arch_drift = True
             else:
                 print(f"SYNCED: AGENT_ARCHITECTURE.md correctly derived from v{canon_ver}.")
         else:
             print("WARNING: Could not parse derived_from RESEARCH.md version in AGENT_ARCHITECTURE.md.")
             drift_detected = True
+            arch_drift = True
 
     # 3. Deterministic regression suite (run_gate_tests.py)
     if gate_tests.exists():
@@ -134,7 +157,12 @@ def main() -> int:
             print(f"FAIL: Gate regression suite failed with exit code {code}:")
             print(stderr or stdout, file=sys.stderr)
             return 1
-        print("PASS: Marcus gate regression suite (14/14 passing).")
+        summary = parse_gate_summary(stdout)
+        if summary is None:
+            print("FAIL: could not parse gate-test summary")
+            return 1
+        passed, total = summary
+        print(f"PASS: Marcus gate regression suite ({passed}/{total} passing).")
 
     # 4. G4 validation check (validate_skill.py)
     if validator.exists():
@@ -148,6 +176,9 @@ def main() -> int:
     print("------------------------------------------------------------------------")
     if mode == "check" and drift_detected:
         print("RESULT: Drift detected between research snapshot and Marcus reference. Run with --apply to update.")
+        return 1
+    if mode == "apply" and arch_drift:
+        print("RESULT: AGENT_ARCHITECTURE.md derived_from does not match research/RESEARCH.md. Edit it by hand.")
         return 1
 
     print("RESULT: Marcus is synchronized and all deterministic gates hold.")
