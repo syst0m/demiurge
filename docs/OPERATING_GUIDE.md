@@ -69,7 +69,7 @@ Buckminster assigns every finding one of four mandatory markers:
 
 | Marker | Definition | Operational Rule for Marcus |
 |---|---|---|
-| `[SETTLED]` | Replicated across independent empirical benchmarks or adopted standards. | Encode as default architecture and behavior. |
+| `[SETTLED]` | At least 3 independent sources confirm it, at most 1 is a vendor, and reception of every paper source is checked (see [RESEARCH_METHODOLOGY.md](../skills/buckminster/references/RESEARCH_METHODOLOGY.md) Step 4). | Encode as default architecture and behavior. |
 | `[CONTESTED]` | Conflicting empirical findings, or a single isolated study. | Surface as a user choice; document the conflict. |
 | `[VENDOR]` | Originates from an entity selling the product or service. | Exclude from defaults; cite commercial conflict. |
 | `[EMERGING]` | Sound theoretical mechanism; lacks longitudinal production data. | Record in design notes; keep out of primary gates. |

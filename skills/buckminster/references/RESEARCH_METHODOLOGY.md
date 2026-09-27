@@ -3,6 +3,14 @@
 This is a method. The point of writing it down is that the same method produces
 comparable snapshots over time — so version-to-version diffs in `RESEARCH.md` mean something.
 
+## Contents
+
+1. The toolchain: connectors, web tools, evidence hierarchy
+2. The method: Steps 1-6, including the canonical `[SETTLED]` definition in Step 4
+3. Standards for the output
+4. Producing an update
+5. Anti-patterns
+
 ---
 
 ## 1. The toolchain
@@ -88,10 +96,15 @@ empirically validated.
 
 Confidence markers are assigned at capture time. `RESEARCH.md` uses four:
 
-- `[SETTLED]` — supported by at least 3 independent, verified resources, with all 3 confirming the finding (empirical backing)
+- `[SETTLED]` — at least 3 independent sources confirm it, at most 1 is a vendor, and reception of
+  every paper source is checked (Step 3: no retraction or correction notice, and citing papers do not
+  mainly contrast with it). A paper source whose reception was not checked does not count toward the 3.
 - `[CONTESTED]` — credible sources disagree, or it rests on fewer than 3 independent studies
 - `[VENDOR]` — the claim originates with a party selling the thing (capped at max 1 of the 3 required sources)
 - `[EMERGING]` — real but too new to have been tested in practice
+
+This `[SETTLED]` definition is canonical. `RESEARCH.md`, `SKILL.md` and `docs/OPERATING_GUIDE.md`
+repeat it and link here. `scripts/research/grade_cap.py` enforces this mechanically (Phase 1).
 
 **Mandatory Tri-Source Verification Rule:**
 
