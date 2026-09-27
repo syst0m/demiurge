@@ -54,6 +54,32 @@ Added a measured revision cycle for editing existing skills, closing the gap whe
 - Rule G-12: Requires a pre-revision baseline (G1), a minimal draft (G2–G3), format/security validation (G4), 100% non-regression plus positive lift on new cases (G5), and an appended `PROVENANCE.md` entry (G6) — codified in `AGENT_ARCHITECTURE.md` and `references/SPEC.md`.
 - Gate regression suite extended to 17/17 passing (`regression-13` through `regression-15`), covering refusal without evidence, refusal on a missing target, and a successful revision that appends both a provenance entry and a new eval case.
 
+## 2026-09-17 — Fix: `modify_skill.py` crash on a bare-list `suites` value
+
+**Evidence of need (G0):** `TypeError: list indices must be integers or slices, not str`,
+thrown by `scripts/modify_skill.py:108` when run against another installed skill's real
+`evals/evals.json`. Reproduced directly with
+`python scripts/modify_skill.py <skill-dir> --feature x --evidence y`.
+
+**Root cause:** the suite-update branch assumed `evals_data["suites"][name]` is always a
+dict shaped `{"cases": [...]}`. That skill's real `evals/evals.json` keys
+`suites["regression"]` and `suites["capability"]` to bare lists of case objects.
+`setdefault("regression", {})` returned the existing list unchanged, so `"cases" in reg`
+tested list membership (false), and `reg["cases"] = new_cases` then assigned a string key
+on a list and crashed.
+
+**Fix:** the branch now checks the type of `suites["regression"]` before writing to it —
+a list is extended directly, a dict appends to (or creates) its `.cases`, and a missing
+key is created as `{"cases": new_cases}` to preserve prior behaviour.
+
+**Verification:** `evals/run_gate_tests.py` regression-16 reproduces the bare-list
+shape (`suites` keyed to bare lists) as a fixture, runs `modify_skill.py` against it, and
+asserts exit 0 with the new case appended to the list in place. Full deterministic suite:
+18/18 passing. G4 (`validate_skill.py`) re-run clean: 0 blocking, 9 suppressed with a
+stated reason. No model-based G5 run: this is a script bug fix with no change to agent
+instructions, so the deterministic regression case is the applicable proof, matching the
+precedent set by regression-13/14/15 for this same script.
+
 ## 2026-09-25 — Interactive UI & Demiurge Controls Integration
 
 Added native Antigravity interactive UI modalities (`ask_question` and Markdown Artifact boards) tailored specifically for Demiurge repository controls:
@@ -73,7 +99,7 @@ Added native Antigravity interactive UI modalities (`ask_question` and Markdown 
 
 ## Deterministic Suite
 
-Execute local regression tests: `python skills/marcus/evals/run_gate_tests.py` (17/17 passing). Regression test cases are derived from the findings above and maintain 100% pass rates.
+Execute local regression tests: `python skills/marcus/evals/run_gate_tests.py` (18/18 passing). Regression test cases are derived from the findings above and maintain 100% pass rates.
 
 ## Trifecta Position
 
