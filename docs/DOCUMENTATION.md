@@ -313,4 +313,12 @@ python evals/benchmarks/swebench/run_swebench_eval.py --slice 0:5 --dry-run
 
 # 7. Run full pre-commit security, style, and negative-parallelism checks
 python -m pre_commit run --all-files
+
+# 8. Run every repo unit test
+python scripts/run_unit_tests.py
+
+# 9. Check research distribution drift without touching deployed skills
+bash scripts/sync-skills.sh --check --repo-only
 ```
+
+CI runs this list in `.github/workflows/checks.yml`.

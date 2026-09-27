@@ -18,6 +18,8 @@ Thanks for contributing! We accept pull requests, bug reports, and feature reque
 
 ## Before opening a PR
 
+Install the pinned tooling first with `python -m pip install -r requirements-dev.txt`.
+
 Run the hooks, then run Vale across the whole repo:
 
 ```bash
