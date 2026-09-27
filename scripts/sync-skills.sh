@@ -6,8 +6,11 @@
 #
 # Windows symlinks need Developer Mode and fail silently otherwise, hence a copy.
 #
-# Usage:  ./scripts/sync-skills.sh          apply
-#         ./scripts/sync-skills.sh --check  report drift, write nothing (exit 1 if drift)
+# Usage:  ./scripts/sync-skills.sh [--check] [--repo-only]
+#   (no flags)   apply: distribute RESEARCH.md, then deploy every skill
+#   --check      report drift, write nothing (exit 1 if drift)
+#   --repo-only  touch only the in-repo RESEARCH.md distribution, never the deploy target
+# Exit codes: 0 ok, 1 drift (--check), 2 usage error, 3 refused (dirty target)
 
 set -euo pipefail
 
@@ -15,7 +18,23 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 REPO_SKILLS="$ROOT/skills"
 TARGET="${HOME}/.claude/skills"
 CHECK_ONLY=false
-[ "${1:-}" = "--check" ] && CHECK_ONLY=true
+REPO_ONLY=false
+
+usage() {
+    echo "Usage: $0 [--check] [--repo-only]" >&2
+}
+
+for arg in "$@"; do
+    case "$arg" in
+        --check) CHECK_ONLY=true ;;
+        --repo-only) REPO_ONLY=true ;;
+        *)
+            echo "ERROR: unknown argument: $arg" >&2
+            usage
+            exit 2
+            ;;
+    esac
+done
 
 drift=0
 
@@ -38,6 +57,7 @@ if [ -f "$RESEARCH_SRC" ] && [ -d "$(dirname "$MARCUS_REF")" ]; then
 fi
 
 for skill_dir in "$REPO_SKILLS"/*/; do
+    $REPO_ONLY && break
     [ -d "$skill_dir" ] || continue
     name=$(basename "$skill_dir")
 
@@ -59,7 +79,16 @@ for skill_dir in "$REPO_SKILLS"/*/; do
         # Preserve local evaluation artifacts (results, transcripts) across directory replacement.
         preserved=$(mktemp -d)
         if [ -d "$TARGET/$name/evals" ]; then
-            find "$TARGET/$name/evals" -maxdepth 1 -type f                 \( -name 'results-*.json' -o -name 'transcripts-*.json' \)                 -exec cp {} "$preserved/" \; 2>/dev/null || true
+            find "$TARGET/$name/evals" -maxdepth 1 -type f                 \( -name 'results-*.json' -o -name 'transcripts-*.json' -o -name 'last_run.json' \)                 -exec cp {} "$preserved/" \; 2>/dev/null || true
+        fi
+        if [ -d "$TARGET/$name" ]; then
+            if git -C "$TARGET/$name" rev-parse --is-inside-work-tree >/dev/null 2>&1 \
+                && [ -n "$(git -C "$TARGET/$name" status --porcelain -- . 2>/dev/null)" ]; then
+                rm -rf "$preserved"
+                echo "REFUSE   $name: uncommitted changes in target working tree"
+                exit 3
+            fi
+            echo "TARGET   $name -> $(cd -P "$TARGET/$name" && pwd)"
         fi
         rm -rf "${TARGET:?}/$name"
         cp -r "$skill_dir" "$TARGET/$name"
