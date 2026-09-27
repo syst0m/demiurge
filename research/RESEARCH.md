@@ -1,7 +1,7 @@
 # RESEARCH.md — Agentic Engineering Snapshot
 
 ```yaml
-version: 1.2.0
+version: 1.2.1
 snapshot_date: 2026-09-06
 maintained_by: buckminster
 consumed_by: marcus
@@ -16,7 +16,7 @@ next_review_due: 2026-10-06
 
 | Marker | Criteria | Marcus Rule |
 |---|---|---|
-| `[SETTLED]` | Multiple independent/empirical sources | Encode as default. |
+| `[SETTLED]` | At least 3 independent sources confirm it, at most 1 is a vendor, and reception of every paper source is checked (see RESEARCH_METHODOLOGY.md Step 4). | Encode as default. |
 | `[CONTESTED]` | Conflicting sources, or a single study | Offer as an option. State the conflict. |
 | `[VENDOR]` | Source sells the solution | Do not encode. Cite with conflict warning. |
 | `[EMERGING]` | Real, but untested | Design notes only. |
@@ -74,7 +74,7 @@ next_review_due: 2026-10-06
 
 ## 4. Evaluation
 
-`[SETTLED]` Evlas are immature.
+`[SETTLED]` Evals are immature.
 
 - **Grade trajectory and outcome.** They diverge.
 - **Start small.** 20–50 real failure cases is enough.
@@ -213,7 +213,7 @@ skill-name/
 
 ---
 
-## 10. Primitive Taxonomy
+## 11. Primitive Taxonomy
 
 This section documents the seven core agentic engineering primitives and their cross-platform implementations. Consumed by Marcus for scaffold generation.
 
@@ -327,3 +327,4 @@ V1.0 scope: packaging only. No installation protocol, sandboxing, or permission 
 | 1.0.0 | 2026-08-30 | Extraction | Initial extract (Anthropic, Cognition, METR, MAST, ACE). See `RESEARCH_METHODOLOGY.md`. |
 | 1.1.0 | 2026-09-01 | Buckminster | Added Lilian Weng framework, OWASP Agentic Top 10, Payload-less skill attacks (Semantic Compliance Hijacking), and Trajectory-grounded security evals. |
 | 1.2.0 | 2026-09-06 | Buckminster | Comprehensive 7-primitive taxonomy pass. New: Rule syntax convergence table, prompt-cache thrashing/instruction decay `[SETTLED]`, context dump fallacy `[SETTLED]`, FrontierCode + SWE-CI benchmarks `[EMERGING]`, benchmark integrity crisis `[CONTESTED]`, worktree failure modes + catastrophic deletion `[SETTLED]`, STORM `[EMERGING]`, Agent Plugins 1.0 `[SETTLED]`, MCP 2026-07-28 stateless spec update `[SETTLED]`, A2A split (governance `[SETTLED]` / solo-operator `[EMERGING]`), METR 2026 methodology failure note, code review overhead (+91%) finding. Reclassifications: write-gating reclassified to `[VENDOR]`; skill security updated to 26-36% range; A2A governance reclassified. New Section 10 Primitive Taxonomy with Marcus rules for all 7 primitives. |
+| 1.2.1 | 2026-09-27 | Maintenance | Renumbered Primitive Taxonomy to Section 11; fixed typo; aligned the [SETTLED] legend with RESEARCH_METHODOLOGY.md. No grades changed. |

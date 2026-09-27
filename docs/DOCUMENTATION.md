@@ -216,7 +216,7 @@ Every emitted artifact maintains complete historical traceability:
 
 ### 5.3 Workspace Rules Architecture
 
-Workspace context files in `.agents/rules/` adhere to Section 10 Primitive standards:
+Workspace context files in `.agents/rules/` adhere to Section 11 Primitive standards:
 
 - **Universal Frontmatter:** Requires YAML frontmatter declaring `description`, `globs`, and activation scopes.
 - **Cache Optimization:** Rules remain static to maximize prompt-cache hits across turns. Volatile task data is strictly barred from rule files.
