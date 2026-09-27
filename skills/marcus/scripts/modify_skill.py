@@ -101,11 +101,17 @@ def main() -> int:
     if "cases" in evals_data and isinstance(evals_data["cases"], list):
         evals_data["cases"].extend(new_cases)
     elif "suites" in evals_data and isinstance(evals_data["suites"], dict):
-        reg = evals_data["suites"].setdefault("regression", {})
-        if "cases" in reg and isinstance(reg["cases"], list):
-            reg["cases"].extend(new_cases)
-        else:
-            reg["cases"] = new_cases
+        suites = evals_data["suites"]
+        if "regression" not in suites:
+            suites["regression"] = {"cases": new_cases}
+        elif isinstance(suites["regression"], list):
+            suites["regression"].extend(new_cases)
+        elif isinstance(suites["regression"], dict):
+            reg = suites["regression"]
+            if "cases" in reg and isinstance(reg["cases"], list):
+                reg["cases"].extend(new_cases)
+            else:
+                reg["cases"] = new_cases
     else:
         evals_data = {
             "skill": skill_dir.name,
