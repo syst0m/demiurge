@@ -29,7 +29,7 @@ without the user signing off.
 
 | | Meaning |
 |---|---|
-| `[SETTLED]` | Supported by ≥3 independent verified sources, all confirming (empirical backing) |
+| `[SETTLED]` | At least 3 independent sources confirm it, at most 1 is a vendor, and reception of every paper source is checked (see [RESEARCH_METHODOLOGY.md](references/RESEARCH_METHODOLOGY.md) Step 4) |
 | `[CONTESTED]` | Credible sources disagree, or it rests on fewer than 3 independent studies |
 | `[VENDOR]` | The claim originates with a party selling the thing (max 1 of 3 required sources) |
 | `[EMERGING]` | Real, but too new to have been tested in practice |
