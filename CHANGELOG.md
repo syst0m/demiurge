@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **RESEARCH.md v1.2.1:** Renumbered Primitive Taxonomy to Section 11, fixed a typo and aligned the `[SETTLED]` legend with `RESEARCH_METHODOLOGY.md`. No grades changed. The Marcus reference copy and `AGENT_ARCHITECTURE.md` `derived_from` track 1.2.1.
+- **RESEARCH.md v1.3.1 Rule Citations:** Every Marcus rule shows its id in the prose, and the multi-rule lines are split into R-RULES-1..4 and R-CA-1..3. `research/sources.yaml` records each rule's basis: `evidence` rules cite the claim ids they rest on, and `design` rules rest on specification or practice alone. `research_lib.validate` rejects a missing basis, an unknown claim id and an `evidence` rule that cites no claim. A rule now also ends at the next rule anchor. No grades changed. `claims.json`, the Marcus reference copy and `AGENT_ARCHITECTURE.md` `derived_from` track 1.3.1.
 - **Single `[SETTLED]` Definition:** `skills/buckminster/references/RESEARCH_METHODOLOGY.md` Step 4 is the canonical definition, including the reception check. `skills/buckminster/SKILL.md` and `docs/OPERATING_GUIDE.md` link to it.
 
 ### Fixed

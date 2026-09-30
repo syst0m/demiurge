@@ -1765,69 +1765,128 @@ claims:
 rules:
   R-CTX-1:
     section: 2
-    basis: null
-    claims: []
+    basis: evidence
+    claims:
+    - ctx.self-rewritten-memory
   R-MEM-1:
     section: 3
-    basis: null
-    claims: []
+    basis: evidence
+    claims:
+    - mem.simple-file
+    - mem.rag-hurts
+    - mem.rag-stateless
   R-EVAL-1:
     section: 4
-    basis: null
-    claims: []
+    basis: evidence
+    claims:
+    - eval.immature
+    - eval.agent-benchmarks
   R-SEC-1:
     section: 6
-    basis: null
-    claims: []
+    basis: evidence
+    claims:
+    - sec.lethal-trifecta
   R-SEC-2:
     section: 6
-    basis: null
-    claims: []
+    basis: evidence
+    claims:
+    - sec.prompt-injection
   R-SEC-3:
     section: 6
-    basis: null
-    claims: []
+    basis: evidence
+    claims:
+    - fail.errors-compound
+    - hooks.deterministic
   R-SEC-4:
     section: 6
-    basis: null
-    claims: []
+    basis: evidence
+    claims:
+    - sec.skills-supply-chain
+    - sec.payloadless-sch
   R-SEC-5:
     section: 6
-    basis: null
-    claims: []
+    basis: evidence
+    claims:
+    - sec.owasp-agentic
+    - sec.skills-supply-chain
   R-MA-1:
     section: 7
-    basis: null
-    claims: []
+    basis: evidence
+    claims:
+    - ma.cognition-stance
+    - ma.value
+    - fail.mast-taxonomy
   R-VEL-1:
     section: 9
-    basis: null
-    claims: []
+    basis: evidence
+    claims:
+    - vel.perception-gap
+    - fail.self-eval
   R-RULES-1:
     section: 11
-    basis: null
+    basis: design
     claims: []
+  R-RULES-2:
+    section: 11
+    basis: evidence
+    claims:
+    - rules.agents-md-canonical
+    - rules.convergence
+  R-RULES-3:
+    section: 11
+    basis: evidence
+    claims:
+    - ctx.cache-thrashing
+  R-RULES-4:
+    section: 11
+    basis: evidence
+    claims:
+    - ctx.cache-thrashing
   R-SKILLS-1:
     section: 11
-    basis: null
-    claims: []
+    basis: evidence
+    claims:
+    - skills.progressive-disclosure
+    - proto.agent-skills
   R-HARNESS-1:
     section: 11
-    basis: null
-    claims: []
+    basis: evidence
+    claims:
+    - disc.harness-binding
+    - harness.swing
   R-HOOKS-1:
     section: 11
-    basis: null
-    claims: []
+    basis: evidence
+    claims:
+    - hooks.deterministic
+    - hooks.contract
+    - fail.errors-compound
   R-PLUGINS-1:
     section: 11
-    basis: null
-    claims: []
+    basis: evidence
+    claims:
+    - plugins.spec
   R-SUB-1:
     section: 11
-    basis: null
-    claims: []
+    basis: evidence
+    claims:
+    - sub.topology
+    - sub.worktree
+    - ma.worktree-failures
+    - ma.cognition-stance
   R-CA-1:
     section: 11
-    basis: null
+    basis: evidence
+    claims:
+    - ca.scoped-tools
+    - ca.fragmented
+  R-CA-2:
+    section: 11
+    basis: evidence
+    claims:
+    - ca.session-handoff
+    - ca.context-forking
+  R-CA-3:
+    section: 11
+    basis: design
     claims: []

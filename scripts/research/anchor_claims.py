@@ -362,7 +362,7 @@ def build_plan(research_text: str, idmap_rows: Sequence[Tuple[int, str, Optional
     plan.markers_assigned = sum(len(c.markers) for c in parsed.claims)
     plan.sidecar = build_sidecar(lines, plan.placements)
     if plan.markers_found == plan.markers_assigned:
-        plan.errors.extend(rl.validate(plan.sidecar, parsed))
+        plan.errors.extend(rl.validate(plan.sidecar, parsed, allow_unset_basis=True))
     return plan
 
 
