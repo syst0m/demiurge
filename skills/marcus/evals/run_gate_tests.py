@@ -300,8 +300,10 @@ def main() -> int:
         prov_text = (scaffolded / "PROVENANCE.md").read_text(encoding="utf-8")
         evals_json = json.loads((scaffolded / "evals" / "evals.json").read_text(encoding="utf-8"))
         has_new_case = any(c.get("feature") == "export-feature" for c in evals_json.get("cases", []))
+        revision = prov_text.split("## Revision 1: export-feature", 1)[-1]
         results.append(("regression-15 modify_skill appends revision and cases",
-                        code == 0 and "## Revision 1: export-feature" in prov_text and has_new_case,
+                        code == 0 and "## Revision 1: export-feature" in prov_text and has_new_case
+                        and "research_snapshot:" in revision and "research_claims: []" in revision,
                         f"exit={code}"))
 
         # regression-16: modify_skill appends to a bare-list suite (a real skill's evals.json
@@ -327,6 +329,21 @@ def main() -> int:
             c.get("feature") == "bare-list-suites-fix" for c in updated["suites"]["regression"])
         results.append(("regression-16 modify_skill appends to a bare-list suite",
                         code == 0 and appended,
+                        f"exit={code}"))
+
+        # regression-18: a scaffold records the RESEARCH.md snapshot it was built against,
+        # read from references/claims.json, so a later regrade shows which skills predate it.
+        claims = json.loads((SKILL_DIR / "references" / "claims.json").read_text(encoding="utf-8"))
+        snapshot_target = root / "snapshot-target"
+        code, out = run([str(SCRIPTS / "new_skill.py"), "--name", "snapshot-skill",
+                         "--dir", str(snapshot_target), "--evidence", "one", "--evidence", "two",
+                         "--evidence", "three"])
+        prov_path = snapshot_target / "snapshot-skill" / "PROVENANCE.md"
+        prov_text = prov_path.read_text(encoding="utf-8") if prov_path.is_file() else ""
+        expected = (f'research_snapshot: {{version: "{claims["research_version"]}", '
+                    f'snapshot_sha256: "{claims["snapshot_sha256"]}"}}')
+        results.append(("regression-18 new_skill output contains research_snapshot:",
+                        code == 0 and expected in prov_text and "research_claims: []" in prov_text,
                         f"exit={code}"))
 
     print("marcus deterministic gate suite")

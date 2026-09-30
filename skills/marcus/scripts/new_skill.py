@@ -35,6 +35,9 @@ MIN_EVIDENCE = 3
 ECONOMIC_THRESHOLD = 2000
 NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 RESERVED = ("anthropic", "claude")
+# Compiled by scripts/research/grade_cap.py --write; names the RESEARCH.md snapshot a scaffold
+# was built against, so a later regrade shows which skills predate it.
+CLAIMS_JSON = Path(__file__).resolve().parent.parent / "references" / "claims.json"
 
 SKILL_TEMPLATE = """---
 name: {name}
@@ -93,6 +96,8 @@ baseline_score: null    # G1 - fill from eval_runner.py --baseline
 treated_score: null     # G5 - fill from eval_runner.py
 delta: null
 model_harness_pair: null
+research_snapshot: {snapshot}
+research_claims: []     # claim ids from references/claims.json this skill's design rests on
 ```
 
 ## Evidence of need (G0)
@@ -161,6 +166,22 @@ These do not co-vary. Success up *and* unsafe actions up is not an improvement.
 """
 
 
+def research_snapshot(claims_path: Path = CLAIMS_JSON) -> str:
+    """Return the YAML flow mapping {version, snapshot_sha256} read from claims.json.
+
+    Both values are null when the file is missing or unreadable; a warning goes to stderr.
+    """
+    try:
+        claims = json.loads(claims_path.read_text(encoding="utf-8"))
+        version = claims["research_version"]
+        digest = claims["snapshot_sha256"]
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        print(f"WARNING: research snapshot unknown, {claims_path.name} unreadable ({exc})",
+              file=sys.stderr)
+        return "{version: null, snapshot_sha256: null}"
+    return f'{{version: "{version}", snapshot_sha256: "{digest}"}}'
+
+
 def refuse(message: str) -> int:
     print(f"REFUSED: {message}", file=sys.stderr)
     return 2
@@ -220,6 +241,7 @@ def main() -> int:
         evidence="\n".join(f"{i}. {e}" for i, e in enumerate(evidence, 1)),
         volume=args.volume or "not estimated",
         economics=economics,
+        snapshot=research_snapshot(),
     ), encoding="utf-8")
 
     evals = dict(EVALS_TEMPLATE, skill=name)

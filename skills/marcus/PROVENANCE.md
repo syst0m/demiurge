@@ -11,6 +11,8 @@ treated_score: null
 delta: null
 model_harness_pair: null
 supersedes: skill-forge@1.0.0
+research_snapshot: {version: "1.3.1", snapshot_sha256: "f36d8fcaa26813a5c6f25aa11fcf82d79e08be9002a469971e8fe90efe609477"}
+research_claims: []
 ```
 
 ## Current Specification
@@ -99,7 +101,7 @@ Added native Antigravity interactive UI modalities (`ask_question` and Markdown 
 
 ## Deterministic Suite
 
-Execute local regression tests: `python skills/marcus/evals/run_gate_tests.py` (18/18 passing). Regression test cases are derived from the findings above and maintain 100% pass rates.
+Execute local regression tests: `python skills/marcus/evals/run_gate_tests.py` (19/19 passing). Regression test cases are derived from the findings above and maintain 100% pass rates.
 
 ## Trifecta Position
 

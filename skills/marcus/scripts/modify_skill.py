@@ -28,6 +28,8 @@ import re
 import sys
 from pathlib import Path
 
+from new_skill import research_snapshot
+
 MIN_EVIDENCE = 1
 RECOMMENDED_EVIDENCE = 3
 
@@ -147,6 +149,8 @@ post_revision_score: null     # G5 - fill from eval_runner.py {skill_dir.as_posi
 delta: null
 regression_pass_rate: null    # G5 - MUST be 100% on historical regression suite
 model_harness_pair: null
+research_snapshot: {research_snapshot()}
+research_claims: []           # claim ids from marcus references/claims.json this revision rests on
 ```
 
 ### Evidence of need (G0)

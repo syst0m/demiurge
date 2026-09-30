@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Sync Guards (`scripts/sync-skills.sh`):** `--check` and `--repo-only` are accepted in any order and any other argument exits 2. `--repo-only` runs only the `research/RESEARCH.md` distribution. The apply loop prints each resolved target, refuses a target with uncommitted git changes (exit 3) and preserves `evals/last_run.json`. Covered by `scripts/test_sync_skills.py`.
 - **Claims Ledger CI and Docs:** `.github/workflows/checks.yml` runs `scripts/research/grade_cap.py --check` on every run and `--check-changelog` against the base branch on pull requests. New `docs/CLAIMS_LEDGER.md` covers anchors, the `research/sources.yaml` schema and enums, the `grade_cap` algorithm, the enforcement transition and the debt workflow. `docs/DOCUMENTATION.md` indexes it with `research/sources.yaml` and `scripts/research/`.
 - **Marcus Gate Regression Integrity:** Added `regression-16` for the bare-list `suites["regression"]` case in `modify_skill.py` (18/18 passing).
+- **Provenance Research Fields:** `new_skill.py` and `modify_skill.py` write `research_snapshot: {version, snapshot_sha256}`, read from `skills/marcus/references/claims.json`, and `research_claims: []` into every scaffold and revision. Marcus's `PROVENANCE.md` records both fields, and the new `skills/buckminster/PROVENANCE.md` records Buckminster at T2, G4. Added `regression-18` to the Marcus gate suite (19/19 passing).
 
 ### Changed
 
