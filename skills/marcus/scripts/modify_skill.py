@@ -7,12 +7,19 @@ Run it; do not read it.
         --feature "short feature description" \
         --evidence "what the skill failed to do, or why this feature is needed" \
         [--evidence "second failure or gap"] \
-        [--evidence "third failure or gap"] \
+        [--evidence ledger:<run_id>] \
         [--dir ~/.claude/skills]
+
+An --evidence value of the form `ledger:<run_id>` cites a run from the run ledger
+($DEMIURGE_LEDGER_DIR or ~/.demiurge/ledger/). The run must exist, belong to the target
+skill, and carry `bad` as its latest label. The ledger is read and never written. Only the
+run id, failure class, label source and origin reach PROVENANCE.md and the new regression
+case. Ledger rows hold no prompt text, and the verdict note is not copied.
 
 Exit codes:
     0  scaffolded revision
-    2  refused (missing target, insufficient evidence, invalid inputs)
+    2  refused (missing target, insufficient evidence, invalid inputs, or a ledger run
+       that is missing, belongs to another skill, or is not labeled bad)
 
 Non-negotiable rule: Modifying a skill or adding a feature requires evidence of failure,
 deficiency, or a real user gap (G0). Adding features without recorded failures produces
@@ -32,11 +39,52 @@ from new_skill import research_snapshot
 
 MIN_EVIDENCE = 1
 RECOMMENDED_EVIDENCE = 3
+LEDGER_PREFIX = "ledger:"
+RUN_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 
 
 def refuse(message: str) -> int:
     print(f"REFUSED: {message}", file=sys.stderr)
     return 2
+
+
+def skill_names(skill_dir: Path) -> set[str]:
+    """Names a ledger row may use for this skill: its directory name and frontmatter name."""
+    names = {skill_dir.name}
+    text = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
+    front = re.match(r"^---\s*\n(.*?)\n---", text, flags=re.DOTALL)
+    if front:
+        name = re.search(r"^name:\s*['\"]?([^'\"\n]+?)['\"]?\s*$", front.group(1),
+                         flags=re.MULTILINE)
+        if name:
+            names.add(name.group(1).strip())
+    return names
+
+
+def ledger_evidence(run_id: str, names: set[str]) -> tuple[str | None, str]:
+    """Resolve one `ledger:<run_id>` citation to (evidence line, "") or (None, refusal)."""
+    if not RUN_ID.match(run_id):
+        return None, f"ledger run id {run_id!r} must match {RUN_ID.pattern}"
+    import ledger_lib
+
+    rows = ledger_lib.find(run_id)
+    if not rows:
+        return None, (f"no ledger row for run_id {run_id!r} in "
+                      f"{ledger_lib.ledger_dir().as_posix()}")
+    skill = rows[0]["skill"]
+    if skill not in names and skill.rsplit(":", 1)[-1] not in names:
+        return None, f"ledger run {run_id} belongs to {skill!r}, not {sorted(names)}"
+    verdicts = [row for row in rows if row["kind"] == "verdict"]
+    if not verdicts:
+        return None, (f"ledger run {run_id} has no verdict; label it first with "
+                      f"ledger.py verdict {run_id} --label bad --class <class>")
+    outcome = verdicts[-1]["outcome"]
+    if outcome["label"] != "bad":
+        return None, (f"ledger run {run_id} is labeled {outcome['label']!r}; only a run "
+                      f"labeled 'bad' is evidence of a failure")
+    failure_class = outcome.get("failure_class", "unclassified")
+    return (f"{LEDGER_PREFIX}{run_id} - {skill} run labeled bad ({failure_class}) by "
+            f"{outcome['source']}, {rows[0]['origin']} run"), ""
 
 
 def main() -> int:
@@ -77,6 +125,21 @@ def main() -> int:
               "Provide real failures or gaps using --evidence.\n", file=sys.stderr)
         return 2
 
+    # Resolve ledger citations before anything is written; one bad citation refuses the run.
+    ledger_runs: list[str] = []
+    names = skill_names(skill_dir)
+    for index, item in enumerate(evidence):
+        if not item.startswith(LEDGER_PREFIX):
+            continue
+        run_id = item[len(LEDGER_PREFIX):].strip()
+        if run_id in ledger_runs:
+            return refuse(f"ledger run {run_id} is cited more than once")
+        line, reason = ledger_evidence(run_id, names)
+        if line is None:
+            return refuse(reason)
+        evidence[index] = line
+        ledger_runs.append(run_id)
+
     # Update evals/evals.json if present, or create it
     evals_path = skill_dir / "evals" / "evals.json"
     evals_data = {}
@@ -89,16 +152,18 @@ def main() -> int:
     timestamp = dt.date.today().isoformat()
     feature_slug = re.sub(r"[^a-z0-9]+", "-", feature.lower()).strip("-")[:32] or "mod"
 
-    new_cases = [
-        {
+    new_cases = []
+    for i, e in enumerate(evidence, 1):
+        case = {
             "id": f"regression-{feature_slug}-{i}",
             "suite": "regression",
             "feature": feature,
             "query": f"TODO - request exercising {feature}: {e}",
             "expected_behavior": [f"TODO - what correct handling looks like for: {e}"],
         }
-        for i, e in enumerate(evidence, 1)
-    ]
+        if e.startswith(LEDGER_PREFIX):
+            case["provenance"] = e.split(" ", 1)[0]
+        new_cases.append(case)
 
     if "cases" in evals_data and isinstance(evals_data["cases"], list):
         evals_data["cases"].extend(new_cases)
@@ -151,6 +216,7 @@ regression_pass_rate: null    # G5 - MUST be 100% on historical regression suite
 model_harness_pair: null
 research_snapshot: {research_snapshot()}
 research_claims: []           # claim ids from marcus references/claims.json this revision rests on
+ledger_evidence: {json.dumps(ledger_runs)}   # run ids cited as ledger:<run_id>, metadata only
 ```
 
 ### Evidence of need (G0)
@@ -168,6 +234,9 @@ research_claims: []           # claim ids from marcus references/claims.json thi
     print(f"Scaffolded revision {rev_num} for {skill_dir.as_posix()} at gate G3.")
     print(f"  Feature: {feature}")
     print(f"  Added {len(evidence)} new regression case(s) to evals/evals.json.")
+    if ledger_runs:
+        print(f"  Cited {len(ledger_runs)} ledger run(s): {', '.join(ledger_runs)}. A case "
+              "staged by ledger.py promote is copied into evals.json by hand.")
     print(f"  Appended Revision {rev_num} to PROVENANCE.md.")
     print("\nNext steps:")
     print(f"  1. Fill the TODO queries/expected_behavior in evals/evals.json.")
