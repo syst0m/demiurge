@@ -38,7 +38,7 @@ Marcus incorporates failure cases identified during skill evaluation:
 
 The five scripts implement the quality gates and self-update loop: G4 (`validate_skill.py`), G5 (`eval_runner.py`), G6 (`route_check.py`), the G0–G3 scaffold (`new_skill.py`), and self-update/drift audit (`update_marcus.py`), alongside `evals/run_gate_tests.py` for Marcus's regression suite. Each performs a deterministic check independent of model judgment.
 
-All scripts use standard-library Python 3: zero network access, zero package installation, and zero writes outside target directories. `eval_runner.py` requires `--yes` prior to API execution.
+All scripts use standard-library Python 3: zero network access, zero package installation, and zero writes outside target directories, with one opt-in exception: `eval_runner.py --ledger` (or `ledger_enabled: true` in the config) appends metadata-only replay rows to the run ledger at `$DEMIURGE_LEDGER_DIR` or `~/.demiurge/ledger/`. `modify_skill.py` reads that ledger. `eval_runner.py` requires `--yes` and `--runner-model` prior to API execution.
 
 ## 2026-09-11 — Fast Commands & Self-Update Subcommand
 
@@ -101,12 +101,12 @@ Added native Antigravity interactive UI modalities (`ask_question` and Markdown 
 
 ## Deterministic Suite
 
-Execute local regression tests: `python skills/marcus/evals/run_gate_tests.py` (19/19 passing). Regression test cases are derived from the findings above and maintain 100% pass rates.
+Execute local regression tests: `python skills/marcus/evals/run_gate_tests.py` (24/24 passing). Regression test cases are derived from the findings above and maintain 100% pass rates.
 
 ## Trifecta Position
 
-- **Private data touched:** Local skills directory only.
+- **Private data touched:** Local skills directory, plus the run ledger at `~/.demiurge/ledger/` when `eval_runner.py --ledger` writes to it (opt-in) or `modify_skill.py` reads it.
 - **Untrusted content ingested:** Third-party `SKILL.md` and reference files during audit.
-- **Exfiltration vector:** Zero in scripts. Zero network calls; zero writes outside the target.
+- **Exfiltration vector:** Zero in scripts. Zero network calls. The only write outside the target is the opt-in ledger append, which holds metadata and no prompt, transcript or judge text.
 
 The scripts remain network-free to prevent audit path exploitation.
