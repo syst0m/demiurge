@@ -30,6 +30,10 @@ enforce_security_pii_gate: true
 # Enforce scan for superfluous commentary and session transcripts (scripts/scan_superfluous.py)
 enforce_superfluous_gate: true
 
+# Run Ledger:
+# Let eval_runner.py append metadata-only replay rows to ~/.demiurge/ledger/ without --ledger
+ledger_enabled: false
+
 # Benchmark Run Registry:
 # Prompt or synchronize docs/BENCHMARKS.md and README.md when benchmark evaluations are conducted
 sync_benchmark_registry: false
