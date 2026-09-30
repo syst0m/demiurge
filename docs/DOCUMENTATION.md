@@ -19,6 +19,7 @@ canonical_path: docs/DOCUMENTATION.md
    - [3.6 Claims Ledger Summary](#36-claims-ledger-summary)
    - [3.7 Skill Registry Summary](#37-skill-registry-summary)
    - [3.8 Research Pipeline Summary](#38-research-pipeline-summary)
+   - [3.9 Run Ledger Summary](#39-run-ledger-summary)
 4. [Repository Layout](#4-repository-layout)
 5. [Low-Level Design (LLD) Architecture](#5-low-level-design-lld-architecture)
    - [5.1 Harness Implementation](#51-harness-implementation)
@@ -170,6 +171,15 @@ The Demiurge documentation suite is structured into focused guides addressing sp
   - An upgrade needs verification records and an owner `/approve-upgrade <sha>` comment; a new push voids earlier approvals.
   - Bot versus owner-credential identity, and deny rules as defense in depth under a ruleset on `main`.
 
+### 3.9 Run Ledger Summary
+
+- **Target File:** [docs/RUN_LEDGER.md](RUN_LEDGER.md)
+- **Scope:** The metadata-only run ledger at `~/.demiurge/ledger/`: which skill ran, in which harness and model, and whether the user labeled it `ok` or `bad`.
+- **Key Concepts:**
+  - Ledger counts never gate, score or rank a skill or harness; a failure reaches a skill only as a staged case a person copies into `evals.json`.
+  - `::bad [<class>]` and `::ok` capture through a pinned, fail-open hook added beside existing hooks.
+  - `modify_skill.py --evidence ledger:<run_id>` at G0, per-case paired G5 with McNemar at 20 or more cases, and dated kill criteria checked by `ledger.py check-kill`.
+
 ---
 
 ## 4. Repository Layout
@@ -187,6 +197,7 @@ The repository is organized to isolate research, skills, tools, and rules:
 | `scripts/` | Deterministic verification harnesses, security linters, link checkers, and sync tools. |
 | `scripts/research/` | Claims ledger tooling: `grade_cap.py` and `check_rule_citations.py` ([CLAIMS_LEDGER.md](CLAIMS_LEDGER.md)), plus the pull request pipeline scripts `sweep_pr.py`, `claims_diff.py`, `check_verifications.py` and `check_upgrade_approval.py` ([RESEARCH_PIPELINE.md](RESEARCH_PIPELINE.md)). |
 | `scripts/registry/` | Local skill registry builder ([SKILL_REGISTRY.md](SKILL_REGISTRY.md)). |
+| `scripts/ledger/` | Run ledger hook and command line: `ledger_hook.py` and `ledger.py` ([RUN_LEDGER.md](RUN_LEDGER.md)). |
 | `skills/` | Source code and manifests for [Marcus](../skills/marcus/) and [Buckminster](../skills/buckminster/). |
 
 *Note: Edit files in `skills/` directly. Never edit deployed skill directories manually.*
@@ -212,7 +223,7 @@ flowchart TD
         G2[G2 Contrast Analysis]
         G3[G3 Draft Validation]
         G4[G4 validate_skill.py]
-        G5[G5 eval_runner.py Delta > 0]
+        G5[G5 eval_runner.py Per-Case b > c]
         G6[G6 route_check.py Collision]
     end
 
@@ -262,12 +273,12 @@ Demiurge structures deterministic enforcement into three mechanical tiers, elimi
 
 Enforced in `skills/marcus/references/SPEC.md` and executed via deterministic scripts:
 
-- **Gate G0 (Intake):** Automated scaffold check (`skills/marcus/scripts/new_skill.py`) refusing synthesis without $\ge 3$ documented failure traces or ungrounded research claims.
+- **Gate G0 (Intake):** Automated scaffold check (`skills/marcus/scripts/new_skill.py`) refusing synthesis without $\ge 3$ documented failure traces or ungrounded research claims. `modify_skill.py` also accepts `--evidence ledger:<run_id>` for a run labeled `bad` in the run ledger ([RUN_LEDGER.md](RUN_LEDGER.md)).
 - **Gate G1 (Baseline):** Executes untreated baseline task runs before skill synthesis via `skills/marcus/scripts/eval_runner.py`.
 - **Gate G2 (Contrast):** Isolates capability differentiators by contrasting successful and failed trajectories on identical tasks.
 - **Gate G3 (Draft / Grounding):** Verifies the draft directly targets the capability delta and cites verified entries in `research/RESEARCH.md`.
 - **Gate G4 (Validation):** Executes `validate_skill.py` checking line bounds ($\le 500$ lines), AST security patterns, negative parallelism tropes, and superfluous comments.
-- **Gate G5 (Proof / Eval Gate):** Executes `eval_runner.py` demanding $\Delta > 0$ on capability cases and 100% pass on regression cases (`skills/marcus/evals/evals.json`).
+- **Gate G5 (Proof / Eval Gate):** Executes `eval_runner.py`, pairing baseline and treated runs per case on an odd-k majority. It demands 100% pass on regression cases and more cases flipping to pass than to fail, plus an exact McNemar p-value below alpha at 20 or more cases (`skills/marcus/evals/evals.json`).
 - **Gate G6 (Registration):** Executes `route_check.py` to ensure description embeddings do not collide with existing library entries.
 
 #### Tier 2: Repository & Pre-Commit OS Gates

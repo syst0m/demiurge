@@ -115,6 +115,8 @@ line. It is now `scripts/validate_skill.py`. Run it; do not perform it from memo
 
 **G5 cannot be waived.** Say the number, or say it was not measured.
 
+**A labeled ledger run is G0 evidence:** `modify_skill.py --evidence ledger:<run_id>` accepts a run whose latest label is `bad`, and G5 still pairs per case (`references/SPEC.md` §3).
+
 Full gate definitions, owners and failure actions: `references/SPEC.md` §3.
 
 ## Scripts
