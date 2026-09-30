@@ -1,0 +1,58 @@
+name: Research PR
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+  pull-requests: read
+  issues: read
+jobs:
+  research-approval:
+    runs-on: ubuntu-latest
+    env:
+      BASE_REF: ${{ github.base_ref }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: scope
+        run: |
+          if git diff --name-only "origin/$BASE_REF...HEAD" | grep -qE '^(research/|skills/marcus/references/|skills/marcus/AGENT_ARCHITECTURE.md)'; then
+            echo "research=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No research changes; research-approval passes."
+            echo "research=false" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.scope.outputs.research == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - if: steps.scope.outputs.research == 'true'
+        run: |
+          python -m pip install -r requirements-dev.txt
+          git worktree add gate "origin/$BASE_REF"
+      - if: steps.scope.outputs.research == 'true'
+        id: diff
+        run: |
+          if [ ! -f gate/scripts/research/claims_diff.py ]; then
+            echo "::notice::Base branch has no scripts/research/claims_diff.py; bootstrap run passes."
+            echo "rc=bootstrap" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          python gate/scripts/research/grade_cap.py --repo . --check
+          python gate/scripts/research/grade_cap.py --repo . --check-changelog --base "origin/$BASE_REF"
+          rc=0
+          python gate/scripts/research/claims_diff.py --repo . --base "origin/$BASE_REF" --head HEAD --json > diff.json || rc=$?
+          [ "$rc" -eq 0 ] || [ "$rc" -eq 10 ] || exit "$rc"
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+      - name: Upgrade gate
+        if: steps.diff.outputs.rc == '10'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          OWNER: ${{ github.repository_owner }}
+          DENY_LOGIN: ${{ vars.RESEARCH_BOT_LOGIN }}
+        run: |
+          python gate/scripts/research/check_verifications.py --repo . --diff diff.json --claims skills/marcus/references/claims.json --dir research/verifications
+          python gate/scripts/research/check_upgrade_approval.py --pr "$PR" --head-sha "$HEAD_SHA" --owner "$OWNER" --deny-login "$DENY_LOGIN"
