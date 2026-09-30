@@ -486,6 +486,54 @@ def main() -> int:
                         code == 2 and "odd k of at least 3" in out,
                         f"exit={code}"))
 
+        # regression-24: modify_skill accepts --evidence ledger:<run_id> only for a run of the
+        # target skill whose latest label is bad, reading a temp DEMIURGE_LEDGER_DIR. A missing
+        # run, another skill's run or a run labeled ok is refused before anything is written,
+        # and the ledger itself is never written to.
+        cite_dir = root / "ledger-cite"
+        cite_env = dict(os.environ, DEMIURGE_LEDGER_DIR=str(cite_dir))
+        sys.path.insert(0, str(SCRIPTS))
+        try:
+            ledger_lib = importlib.import_module("ledger_lib")
+            for run_id, skill, label in (("run-bad-1", "ledger-target", "bad"),
+                                         ("run-ok-1", "ledger-target", "ok"),
+                                         ("run-other-1", "other-skill", "bad")):
+                ledger_lib.append({"run_id": run_id, "kind": "invoke", "origin": "organic",
+                                   "skill": skill, "trigger": "slash"}, directory=cite_dir)
+                outcome = {"label": label, "source": "user"}
+                if label == "bad":
+                    outcome["failure_class"] = "misroute"
+                ledger_lib.append({"run_id": run_id, "kind": "verdict", "origin": "organic",
+                                   "skill": skill, "outcome": outcome}, directory=cite_dir)
+        finally:
+            sys.path.remove(str(SCRIPTS))
+        ledger_before = {p.name: p.read_bytes() for p in cite_dir.iterdir()}
+        cite_target = write_fixture(root, "ledger-target", FIXTURE_ALT_PHRASING)
+        refusals = []
+        for run_id in ("run-missing", "run-other-1", "run-ok-1"):
+            code, out = run([str(SCRIPTS / "modify_skill.py"), str(cite_target),
+                             "--feature", "ledger-cited", "--evidence", f"ledger:{run_id}"],
+                            env=cite_env)
+            refusals.append(code == 2 and "REFUSED" in out)
+        untouched = (not (cite_target / "PROVENANCE.md").exists()
+                     and not (cite_target / "evals").exists())
+        code, out = run([str(SCRIPTS / "modify_skill.py"), str(cite_target),
+                         "--feature", "ledger-cited", "--evidence", "ledger:run-bad-1"],
+                        env=cite_env)
+        prov_path = cite_target / "PROVENANCE.md"
+        prov_text = prov_path.read_text(encoding="utf-8") if prov_path.is_file() else ""
+        evals_path = cite_target / "evals" / "evals.json"
+        cited = (json.loads(evals_path.read_text(encoding="utf-8")).get("cases", [])
+                 if evals_path.is_file() else [])
+        ledger_after = {p.name: p.read_bytes() for p in cite_dir.iterdir()}
+        results.append(("regression-24 modify_skill cites a bad ledger run as G0 evidence",
+                        all(refusals) and untouched and code == 0
+                        and "ledger:run-bad-1 - ledger-target run labeled bad (misroute)" in prov_text
+                        and 'ledger_evidence: ["run-bad-1"]' in prov_text
+                        and any(c.get("provenance") == "ledger:run-bad-1" for c in cited)
+                        and ledger_after == ledger_before,
+                        f"refusals={refusals} exit={code}"))
+
     print("marcus deterministic gate suite")
     print("-" * 72)
     for name, passed, note in results:
