@@ -18,6 +18,7 @@ canonical_path: docs/DOCUMENTATION.md
    - [3.5 Independent Benchmarking Summary](#35-independent-benchmarking-summary)
    - [3.6 Claims Ledger Summary](#36-claims-ledger-summary)
    - [3.7 Skill Registry Summary](#37-skill-registry-summary)
+   - [3.8 Research Pipeline Summary](#38-research-pipeline-summary)
 4. [Repository Layout](#4-repository-layout)
 5. [Low-Level Design (LLD) Architecture](#5-low-level-design-lld-architecture)
    - [5.1 Harness Implementation](#51-harness-implementation)
@@ -160,6 +161,15 @@ The Demiurge documentation suite is structured into focused guides addressing sp
   - The registry is written to `~/.demiurge/` and never committed, because the repo is public and the installed library is private.
   - CI runs `--repo-only --check`, which parses the repo skills and writes nothing.
 
+### 3.8 Research Pipeline Summary
+
+- **Target File:** [docs/RESEARCH_PIPELINE.md](RESEARCH_PIPELINE.md)
+- **Scope:** How research changes reach `main`: the sweep opens a pull request, a fresh-context verifier re-retrieves the sources behind any upgrade, and the owner approves the head SHA and merges.
+- **Key Concepts:**
+  - The `research-approval` check runs the gate scripts from the base ref and classifies each diff as `upgrade` or `downgrade-or-sourcing`.
+  - An upgrade needs verification records and an owner `/approve-upgrade <sha>` comment; a new push voids earlier approvals.
+  - Bot versus owner-credential identity, and deny rules as defense in depth under a ruleset on `main`.
+
 ---
 
 ## 4. Repository Layout
@@ -173,8 +183,9 @@ The repository is organized to isolate research, skills, tools, and rules:
 | `docs/` | Human-facing guides: Installation, Operating Guide, Design Manual, and Master Documentation. |
 | `evals/` | Deterministic gate regression tests and independent industry benchmark adapters. |
 | `research/` | Master empirical knowledge base (`RESEARCH.md`), updated solely through reviewed proposals, and its sources sidecar (`sources.yaml`). |
+| `routines/` | Prompts for the scheduled research sweep and the fresh-context verifier ([RESEARCH_PIPELINE.md](RESEARCH_PIPELINE.md)). |
 | `scripts/` | Deterministic verification harnesses, security linters, link checkers, and sync tools. |
-| `scripts/research/` | Claims ledger tooling: `grade_cap.py` and `check_rule_citations.py` ([CLAIMS_LEDGER.md](CLAIMS_LEDGER.md)). |
+| `scripts/research/` | Claims ledger tooling: `grade_cap.py` and `check_rule_citations.py` ([CLAIMS_LEDGER.md](CLAIMS_LEDGER.md)), plus the pull request pipeline scripts `sweep_pr.py`, `claims_diff.py`, `check_verifications.py` and `check_upgrade_approval.py` ([RESEARCH_PIPELINE.md](RESEARCH_PIPELINE.md)). |
 | `scripts/registry/` | Local skill registry builder ([SKILL_REGISTRY.md](SKILL_REGISTRY.md)). |
 | `skills/` | Source code and manifests for [Marcus](../skills/marcus/) and [Buckminster](../skills/buckminster/). |
 
