@@ -23,7 +23,7 @@ Each graded claim line starts with an HTML comment anchor:
 | Prose or header | At the start of the line | `<!-- claim:disc.agentic-eng --> **Agentic engineering** ...` |
 
 - Claim ids match `^[a-z]+\.[a-z0-9-]+$`. Rule ids match `^R-[A-Z]+-\d+$`.
-- Rules carry `<!-- rule:R-CTX-1 -->` on their first line. A multi-line rule runs until the next blank line.
+- Rules carry `<!-- rule:R-CTX-1 -->` on their first line and show the id in the text, as in `*Marcus Rule (R-CTX-1):*` or `- *R-SEC-1:*`. A rule runs until the next blank line or the next rule anchor. Each rule states one requirement.
 - The grade markers on an anchored line map, in order, to the claim's `grades` list.
 - A `[VENDOR]` directly after a link `](...)` is a source tag. It is not a grade.
 - Every graded marker line needs an anchor, so a new claim cannot bypass the sidecar. The legend, the change-log table and fenced blocks are exempt.
@@ -72,7 +72,7 @@ claims:
     verified_by: null
     notes: ""
 rules:
-  R-CTX-1: {section: 2, basis: null, claims: []}
+  R-CTX-1: {section: 2, basis: evidence, claims: [ctx.self-rewritten-memory]}
 ```
 
 ### 2.1 Field enums
@@ -84,7 +84,7 @@ rules:
 | `asserted`, `cap`, `cap_evidence` | `SETTLED`, `CONTESTED`, `EMERGING`, `VENDOR` |
 | `type`, `resolves_to_type` | `peer`, `preprint`, `spec`, `vendor`, `practitioner`, `aggregator`, `none` |
 | `supports` | `confirms`, `contrasts`, `mentions` |
-| `basis` (rules) | `evidence`, `design`, `null` (null is allowed until Phase 2) |
+| `basis` (rules) | `evidence`, `design` |
 
 ### 2.2 Field meanings
 
@@ -95,6 +95,7 @@ rules:
 - `quote` is a verbatim excerpt of 25 words or fewer. `accessed` is the retrieval date.
 - `duplicates` lists claims that restate this one. Pairs are recorded in both directions and never merged.
 - A named source with no URL is recorded as `{url: null, type: none, title: "<name as written>"}`.
+- A rule's `claims` lists the claim ids it rests on. `basis: evidence` needs at least one. A rule that rests on a specification or on practice alone is `basis: design` with `claims: []`. `validate` rejects an unknown claim id and a missing `basis`.
 
 ### 2.3 Compiled output: `skills/marcus/references/claims.json`
 

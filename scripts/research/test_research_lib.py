@@ -99,7 +99,7 @@ def valid_sources() -> dict:
             "ctx.budget": claim(2, [grade("EMERGING")], kind="table_row"),
             "fail.compound": claim(5, [grade("VENDOR"), grade("SETTLED")]),
         },
-        "rules": {"R-CTX-1": {"section": 2, "basis": None, "claims": ["ctx.cache-thrashing"]}},
+        "rules": {"R-CTX-1": {"section": 2, "basis": "evidence", "claims": ["ctx.cache-thrashing"]}},
     }
 
 
@@ -143,6 +143,17 @@ class TestParseResearch(unittest.TestCase):
         self.assertEqual(rule.end_line_no, rule.line_no + 1)
         self.assertIn("Never regenerate wholesale.", rule.text)
 
+    def test_rule_ends_at_next_rule_anchor(self):
+        text = RESEARCH.replace(
+            "Never regenerate wholesale.\n",
+            "Never regenerate wholesale.\n- <!-- rule:R-CTX-2 --> *R-CTX-2:* Keep a scratchpad.\n",
+        )
+        first, second = rl.parse_research(text).rules
+        self.assertEqual((first.id, second.id), ("R-CTX-1", "R-CTX-2"))
+        self.assertEqual(first.end_line_no, first.line_no + 1)
+        self.assertNotIn("R-CTX-2", first.text)
+        self.assertEqual(second.line_no, first.end_line_no + 1)
+
     def test_unanchored_marker_line_reported(self):
         text = RESEARCH.replace("<!-- claim:ctx.budget --> ", "")
         parsed = rl.parse_research(text)
@@ -178,7 +189,7 @@ class TestValidate(unittest.TestCase):
 
     def test_rule_bijection(self):
         sources = valid_sources()
-        sources["rules"] = {"R-MEM-2": {"section": 3, "basis": None, "claims": []}}
+        sources["rules"] = {"R-MEM-2": {"section": 3, "basis": "design", "claims": []}}
         errors = rl.validate(sources, RESEARCH)
         self.assertTrue(any("R-CTX-1" in e for e in errors))
         self.assertTrue(any("R-MEM-2" in e for e in errors))
@@ -193,7 +204,7 @@ class TestValidate(unittest.TestCase):
         text = RESEARCH.replace("claim:ctx.budget", "claim:Ctx_Budget").replace("rule:R-CTX-1", "rule:r-ctx-1")
         sources = valid_sources()
         sources["claims"]["Ctx_Budget"] = sources["claims"].pop("ctx.budget")
-        sources["rules"] = {"r-ctx-1": {"section": 2, "basis": None, "claims": []}}
+        sources["rules"] = {"r-ctx-1": {"section": 2, "basis": "design", "claims": []}}
         errors = rl.validate(sources, text)
         self.assertTrue(any("Ctx_Budget" in e and "does not match" in e for e in errors))
         self.assertTrue(any("r-ctx-1" in e and "does not match" in e for e in errors))
@@ -223,6 +234,24 @@ class TestValidate(unittest.TestCase):
         errors = "\n".join(rl.validate(sources, RESEARCH))
         for token in ("paragraph", "maybe", "PROVEN", "made_up", "blog", "agrees", "vibes"):
             self.assertIn(repr(token), errors)
+
+    def test_rule_basis_must_be_set(self):
+        sources = valid_sources()
+        sources["rules"]["R-CTX-1"]["basis"] = None
+        errors = rl.validate(sources, RESEARCH)
+        self.assertTrue(any("R-CTX-1" in e and "basis None" in e for e in errors))
+        self.assertEqual(rl.validate(sources, RESEARCH, allow_unset_basis=True), [])
+
+    def test_evidence_rule_needs_a_claim(self):
+        sources = valid_sources()
+        sources["rules"]["R-CTX-1"]["claims"] = []
+        errors = rl.validate(sources, RESEARCH)
+        self.assertTrue(any("R-CTX-1" in e and "cites no claim" in e for e in errors))
+
+    def test_design_rule_needs_no_claim(self):
+        sources = valid_sources()
+        sources["rules"]["R-CTX-1"] = {"section": 2, "basis": "design", "claims": []}
+        self.assertEqual(rl.validate(sources, RESEARCH), [])
 
     def test_quote_word_limit(self):
         sources = valid_sources()

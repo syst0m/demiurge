@@ -69,7 +69,7 @@ class TestPlanOnFixture(FixtureCase):
 
     def test_sidecar_validates(self):
         self.assertEqual(self.plan.errors, [])
-        self.assertEqual(rl.validate(self.plan.sidecar, self.plan.anchored_text), [])
+        self.assertEqual(rl.validate(self.plan.sidecar, self.plan.anchored_text, allow_unset_basis=True), [])
 
     def test_two_grades_on_one_line_with_scopes(self):
         grades = self.claims["disc.framing"]["grades"]
@@ -252,7 +252,7 @@ class TestMain(unittest.TestCase):
         self.assertEqual(STRIP_RE.sub("", anchored).encode("utf-8"), FIXTURE_RESEARCH.read_bytes())
         sidecar_text = self.sources.read_text(encoding="utf-8")
         self.assertEqual(rl.check_no_comments(sidecar_text), [])
-        self.assertEqual(rl.validate(rl.load_sources(self.sources), anchored), [])
+        self.assertEqual(rl.validate(rl.load_sources(self.sources), anchored, allow_unset_basis=True), [])
 
     def test_second_write_is_refused(self):
         self.assertEqual(run_main(*self.args("--write"))[0], 0)

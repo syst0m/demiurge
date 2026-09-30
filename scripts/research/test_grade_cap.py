@@ -98,7 +98,7 @@ def sidecar(enforced: bool = False, enforce_after=None) -> dict:
             "ctx.thin": claim([src("p1"), src("p2", "preprint")], [grade("SETTLED"), grade("VENDOR")]),
             "hype.negated": claim([], [grade("SETTLED")], polarity="negate"),
         },
-        "rules": {"R-CTX-1": {"section": 2, "basis": None, "claims": ["ctx.solid"]}},
+        "rules": {"R-CTX-1": {"section": 2, "basis": "evidence", "claims": ["ctx.solid"]}},
     }
 
 
@@ -261,7 +261,7 @@ class TestWriteAndCheck(CliCase):
         solid = compiled["claims"][0]
         self.assertEqual(solid["id"], "ctx.solid")
         self.assertEqual(solid["rules"], ["R-CTX-1"])
-        self.assertEqual(compiled["rules"], [{"id": "R-CTX-1", "basis": None, "claims": ["ctx.solid"]}])
+        self.assertEqual(compiled["rules"], [{"id": "R-CTX-1", "basis": "evidence", "claims": ["ctx.solid"]}])
 
     def test_write_is_idempotent(self):
         self.run_cli("--write")

@@ -40,7 +40,7 @@ RULE_ID_RE = re.compile(r"^R-[A-Z]+-\d+$")
 KINDS = ("prose", "bullet", "table_row", "header")
 SOURCE_TYPES = ("peer", "preprint", "spec", "vendor", "practitioner", "aggregator", "none")
 SUPPORTS = ("confirms", "contrasts", "mentions")
-BASES = ("evidence", "design", None)
+BASES = ("evidence", "design")
 POLARITIES = ("affirm", "negate")
 
 EVIDENCE_REASONS = ("contrasting_source", "retracted_source", "vendor_gt1", "vendor_only")
@@ -215,7 +215,8 @@ def parse_research(text: str) -> ParsedResearch:
     """Parse anchors, markers, rules and change-log rows out of RESEARCH.md text.
 
     Fenced blocks, the confidence-marker legend table and the change-log table
-    are skipped for anchors and markers. Change-log data rows are returned
+    are skipped for anchors and markers. A rule runs until the next blank line
+    or the next rule anchor. Change-log data rows are returned
     verbatim, header and separator excluded. Line numbers are 1-based.
     """
     parsed = ParsedResearch()
@@ -272,11 +273,10 @@ def parse_research(text: str) -> ParsedResearch:
         else:
             table_mode = None
 
-        if open_rule is not None:
+        rule_ids = RULE_ANCHOR_RE.findall(line)
+        if open_rule is not None and not rule_ids:
             open_rule.end_line_no = line_no
             open_rule.text += "\n" + line
-
-        rule_ids = RULE_ANCHOR_RE.findall(line)
         for rule_id in rule_ids:
             rule = RuleAnchor(id=rule_id, line_no=line_no, end_line_no=line_no, text=line)
             parsed.rules.append(rule)
@@ -404,8 +404,17 @@ def _validate_source(errors: List[str], where: str, source: Any, seen_ids: set) 
             errors.append(f"{where}: reception.checked must be true or false")
 
 
-def validate(sources: Mapping[str, Any], research: Union[str, ParsedResearch]) -> List[str]:
-    """Check sidecar and prose against each other; return errors, empty when clean."""
+def validate(
+    sources: Mapping[str, Any],
+    research: Union[str, ParsedResearch],
+    allow_unset_basis: bool = False,
+) -> List[str]:
+    """Check sidecar and prose against each other; return errors, empty when clean.
+
+    Every rule needs ``basis`` ``evidence`` (citing at least one claim) or
+    ``design``. ``allow_unset_basis`` also accepts ``null``, which only the
+    ``anchor_claims.py`` bootstrap skeleton emits.
+    """
     parsed = parse_research(research) if isinstance(research, str) else research
     errors: List[str] = []
 
@@ -503,7 +512,8 @@ def validate(sources: Mapping[str, Any], research: Union[str, ParsedResearch]) -
         if not isinstance(rule, dict):
             errors.append(f"{where}: not a mapping")
             continue
-        _check_enum(errors, where, "basis", rule.get("basis"), BASES)
+        basis = rule.get("basis")
+        _check_enum(errors, where, "basis", basis, BASES + ((None,) if allow_unset_basis else ()))
         cited = rule.get("claims", [])
         if not isinstance(cited, list):
             errors.append(f"{where}: claims must be a list")
@@ -511,5 +521,7 @@ def validate(sources: Mapping[str, Any], research: Union[str, ParsedResearch]) -
             for claim_id in cited:
                 if claim_id not in claims:
                     errors.append(f"{where}: cites unknown claim {claim_id!r}")
+            if basis == "evidence" and not cited:
+                errors.append(f"{where}: basis evidence cites no claim")
 
     return errors

@@ -1,9 +1,9 @@
 {
   "schema": "demiurge.claims.compiled.v1",
-  "research_version": "1.3.0",
-  "sources_sha256": "f7b240e4307e665d7a9328eafea4809828f43e50238c6a5f97ce741129dfa442",
-  "research_sha256": "fa901d0b148e46a7e2afdfeacb55d13541579260381bc67f58e077b072b45e2f",
-  "snapshot_sha256": "9be19b4adca8a655ea69eedeef3ba6a89e0f0589e3f8d293ae44f027ecceb795",
+  "research_version": "1.3.1",
+  "sources_sha256": "616cda2c4790ea7dcc5dd381364896ac4283be1f50072677c0250801edad65e2",
+  "research_sha256": "3743e2de86e1cc27027bf0945f49a4c6fdba6f167e20395d3f0edc89f1f70f97",
+  "snapshot_sha256": "f36d8fcaa26813a5c6f25aa11fcf82d79e08be9002a469971e8fe90efe609477",
   "enforced": false,
   "claims": [
     {
@@ -52,7 +52,9 @@
         }
       ],
       "claim_sha256": "4bee6d2d0b3e31150bffbab7c3b68dcb56ca03068767ae7697532acf7330057d",
-      "rules": []
+      "rules": [
+        "R-HARNESS-1"
+      ]
     },
     {
       "id": "ctx.practices-table",
@@ -94,7 +96,10 @@
         }
       ],
       "claim_sha256": "1c293c8686c3be01d7dfdced2e221a8c3305a03be8ef35691d7b53de2960adf7",
-      "rules": []
+      "rules": [
+        "R-RULES-3",
+        "R-RULES-4"
+      ]
     },
     {
       "id": "ctx.length-degradation",
@@ -122,7 +127,9 @@
         }
       ],
       "claim_sha256": "89e74955a66b4e8d17543294645b93308dff1b60eac00b7381288240b6fe8824",
-      "rules": []
+      "rules": [
+        "R-CTX-1"
+      ]
     },
     {
       "id": "mem.simple-file",
@@ -136,7 +143,9 @@
         }
       ],
       "claim_sha256": "06dbc240351889a050dc1238f6b4d68459f5471a06ec5aad4650cca272fac287",
-      "rules": []
+      "rules": [
+        "R-MEM-1"
+      ]
     },
     {
       "id": "mem.rag-hurts",
@@ -150,7 +159,9 @@
         }
       ],
       "claim_sha256": "e39c6ca18df89a9fb3873eb8185e835dd0502fdd0659a0c2cc1f1c4b724dfc9e",
-      "rules": []
+      "rules": [
+        "R-MEM-1"
+      ]
     },
     {
       "id": "mem.mem0",
@@ -178,7 +189,9 @@
         }
       ],
       "claim_sha256": "17d76167c2d4cdf455fff4dbf27947ca709a555a2227e6d71a0d970077e76bba",
-      "rules": []
+      "rules": [
+        "R-MEM-1"
+      ]
     },
     {
       "id": "eval.immature",
@@ -192,7 +205,9 @@
         }
       ],
       "claim_sha256": "dfaf73e8dee26fac3680438fedaf479d8fe91218b23654aaff87bd1065a00549",
-      "rules": []
+      "rules": [
+        "R-EVAL-1"
+      ]
     },
     {
       "id": "eval.agent-benchmarks",
@@ -206,7 +221,9 @@
         }
       ],
       "claim_sha256": "42201c5f7060880addfa21039a2a294778bdf07c5fbe0f6dd5ab17bea11882ff",
-      "rules": []
+      "rules": [
+        "R-EVAL-1"
+      ]
     },
     {
       "id": "eval.judge-bias",
@@ -304,7 +321,9 @@
         }
       ],
       "claim_sha256": "bc641f1b5c481d791d8c957ac911c0c9382d766a96f0cd24dc9c1c4e09aab2a5",
-      "rules": []
+      "rules": [
+        "R-VEL-1"
+      ]
     },
     {
       "id": "fail.errors-compound",
@@ -318,7 +337,10 @@
         }
       ],
       "claim_sha256": "6850d0f68189649a449258d114829a031853a893a695b00d66437058106eee20",
-      "rules": []
+      "rules": [
+        "R-SEC-3",
+        "R-HOOKS-1"
+      ]
     },
     {
       "id": "fail.self-correction",
@@ -360,7 +382,9 @@
         }
       ],
       "claim_sha256": "be418ad1d8808b423395b882ec639a78e3faea684934656b774e0911eeb33ada",
-      "rules": []
+      "rules": [
+        "R-MA-1"
+      ]
     },
     {
       "id": "sec.prompt-injection",
@@ -374,7 +398,9 @@
         }
       ],
       "claim_sha256": "4a04d4a139c4e7773f1e70d327d76b2b72e03a26a6b7deb9c31492e9650cec91",
-      "rules": []
+      "rules": [
+        "R-SEC-2"
+      ]
     },
     {
       "id": "sec.lethal-trifecta",
@@ -388,7 +414,9 @@
         }
       ],
       "claim_sha256": "2b43f9bcc6b16113709d7d34636d0e56a8a48339a90a9feef74fa1e1137f9ea6",
-      "rules": []
+      "rules": [
+        "R-SEC-1"
+      ]
     },
     {
       "id": "sec.skills-supply-chain",
@@ -402,7 +430,10 @@
         }
       ],
       "claim_sha256": "a63c25c4c2e9d091805934e8448cd3d532ab2ee7050dfc214ccb11a7f0d98bfd",
-      "rules": []
+      "rules": [
+        "R-SEC-4",
+        "R-SEC-5"
+      ]
     },
     {
       "id": "sec.payloadless-sch",
@@ -416,7 +447,9 @@
         }
       ],
       "claim_sha256": "16b65573ae8ef6ce78801cee35cdc1f09d2b68ab3c8ca21bf3d6b6f6af278dc7",
-      "rules": []
+      "rules": [
+        "R-SEC-4"
+      ]
     },
     {
       "id": "sec.owasp-agentic",
@@ -430,7 +463,9 @@
         }
       ],
       "claim_sha256": "50654830f6ec57752921bcf87e137f7ebd39cb2204e28a54508c786a2c3e61d6",
-      "rules": []
+      "rules": [
+        "R-SEC-5"
+      ]
     },
     {
       "id": "sec.trajectory-eval",
@@ -458,7 +493,10 @@
         }
       ],
       "claim_sha256": "4a326b30962ac9259139e96363133afc9eb368de6656bdfbd034b1ed2777339d",
-      "rules": []
+      "rules": [
+        "R-MA-1",
+        "R-SUB-1"
+      ]
     },
     {
       "id": "ma.worktree-failures",
@@ -472,7 +510,9 @@
         }
       ],
       "claim_sha256": "6d203639a1dfb2098fb38a8109e3aca00a99ebaa220f0d32abeed158f1a5f13f",
-      "rules": []
+      "rules": [
+        "R-SUB-1"
+      ]
     },
     {
       "id": "ma.storm",
@@ -500,7 +540,9 @@
         }
       ],
       "claim_sha256": "0cd7116cf6bff1927092334aca080ca38c3ac48d0e8f930d50077bc1f2ef629e",
-      "rules": []
+      "rules": [
+        "R-MA-1"
+      ]
     },
     {
       "id": "proto.mcp",
@@ -528,7 +570,9 @@
         }
       ],
       "claim_sha256": "b76dd583fcc6f52a89ecf20b2c0e24debab647e376a8a4732d0d6fef843df964",
-      "rules": []
+      "rules": [
+        "R-SKILLS-1"
+      ]
     },
     {
       "id": "proto.plugins",
@@ -646,7 +690,9 @@
         }
       ],
       "claim_sha256": "9ebec22f5b3e0a330614d69dfb7df06e21f258b9632a99724d9c865c2f07565c",
-      "rules": []
+      "rules": [
+        "R-VEL-1"
+      ]
     },
     {
       "id": "hype.list",
@@ -674,7 +720,9 @@
         }
       ],
       "claim_sha256": "bdcd7567d963f76bc77991139745f2a91f17c1968af89187c5edab0cd00c6ee5",
-      "rules": []
+      "rules": [
+        "R-RULES-2"
+      ]
     },
     {
       "id": "rules.model-decision",
@@ -702,7 +750,9 @@
         }
       ],
       "claim_sha256": "f2eca7ce401a5640bf56ec5aa882b3f4ac54615e91863cf19d9a29f360ce98fc",
-      "rules": []
+      "rules": [
+        "R-RULES-2"
+      ]
     },
     {
       "id": "skills.progressive-disclosure",
@@ -716,7 +766,9 @@
         }
       ],
       "claim_sha256": "78d8513016299692e204c378fc23df62aff92cb2324162a69a306438ff4e9a2e",
-      "rules": []
+      "rules": [
+        "R-SKILLS-1"
+      ]
     },
     {
       "id": "skills.pd-unmeasured",
@@ -744,7 +796,9 @@
         }
       ],
       "claim_sha256": "f0b5dd86b11cf7688fd26f4bf6a426346675f59a2aa16a21955df74f77c042a9",
-      "rules": []
+      "rules": [
+        "R-HARNESS-1"
+      ]
     },
     {
       "id": "harness.new-benchmarks",
@@ -772,7 +826,9 @@
         }
       ],
       "claim_sha256": "8d606bcee044551fb3a85202bc66450487ac21c6902fe4f19ea177ac1efd0482",
-      "rules": []
+      "rules": [
+        "R-HOOKS-1"
+      ]
     },
     {
       "id": "hooks.deterministic",
@@ -786,7 +842,10 @@
         }
       ],
       "claim_sha256": "1bd4ebc3a1fefe3a901f5ca91fa3217081da1f03e33ffd3c1389ecaf3bfe664e",
-      "rules": []
+      "rules": [
+        "R-SEC-3",
+        "R-HOOKS-1"
+      ]
     },
     {
       "id": "hooks.camel",
@@ -820,7 +879,9 @@
         }
       ],
       "claim_sha256": "386bfd9cbb4f039e0a6124366b3fdf14494e6254ab322245e6dcb261fae6d176",
-      "rules": []
+      "rules": [
+        "R-PLUGINS-1"
+      ]
     },
     {
       "id": "sub.worktree",
@@ -834,7 +895,9 @@
         }
       ],
       "claim_sha256": "a7818879bb7a68451f70b7bdbb8510aa46321b0fb27ec7669601f4370b7de054",
-      "rules": []
+      "rules": [
+        "R-SUB-1"
+      ]
     },
     {
       "id": "sub.topology",
@@ -848,7 +911,9 @@
         }
       ],
       "claim_sha256": "6cb7c7bd9d7538027a51e39440d351a325bcfeb745c4b3fb8db48f3352c0411f",
-      "rules": []
+      "rules": [
+        "R-SUB-1"
+      ]
     },
     {
       "id": "sub.storm",
@@ -876,7 +941,9 @@
         }
       ],
       "claim_sha256": "84f806cbb310a9eded55d669c9587d98ef338c46eed3bfc153cf7456f459474f",
-      "rules": []
+      "rules": [
+        "R-CA-1"
+      ]
     },
     {
       "id": "ca.scoped-tools",
@@ -890,7 +957,9 @@
         }
       ],
       "claim_sha256": "5d227de38893bc8a1846e0f6aed4b07f47367a61eed86988ca8995d5936d445e",
-      "rules": []
+      "rules": [
+        "R-CA-1"
+      ]
     },
     {
       "id": "ca.context-forking",
@@ -904,7 +973,9 @@
         }
       ],
       "claim_sha256": "ff78e4472aab8c0a96377050061d2975b909242ef69771f1ef179d9688822aae",
-      "rules": []
+      "rules": [
+        "R-CA-2"
+      ]
     },
     {
       "id": "ca.session-handoff",
@@ -918,93 +989,179 @@
         }
       ],
       "claim_sha256": "79b2dff67b87a1aa81e9eb97a95d23887683d4f7eba0525292155d566718c48d",
-      "rules": []
+      "rules": [
+        "R-CA-2"
+      ]
     }
   ],
   "rules": [
     {
       "id": "R-CTX-1",
-      "basis": null,
-      "claims": []
+      "basis": "evidence",
+      "claims": [
+        "ctx.self-rewritten-memory"
+      ]
     },
     {
       "id": "R-MEM-1",
-      "basis": null,
-      "claims": []
+      "basis": "evidence",
+      "claims": [
+        "mem.simple-file",
+        "mem.rag-hurts",
+        "mem.rag-stateless"
+      ]
     },
     {
       "id": "R-EVAL-1",
-      "basis": null,
-      "claims": []
+      "basis": "evidence",
+      "claims": [
+        "eval.immature",
+        "eval.agent-benchmarks"
+      ]
     },
     {
       "id": "R-SEC-1",
-      "basis": null,
-      "claims": []
+      "basis": "evidence",
+      "claims": [
+        "sec.lethal-trifecta"
+      ]
     },
     {
       "id": "R-SEC-2",
-      "basis": null,
-      "claims": []
+      "basis": "evidence",
+      "claims": [
+        "sec.prompt-injection"
+      ]
     },
     {
       "id": "R-SEC-3",
-      "basis": null,
-      "claims": []
+      "basis": "evidence",
+      "claims": [
+        "fail.errors-compound",
+        "hooks.deterministic"
+      ]
     },
     {
       "id": "R-SEC-4",
-      "basis": null,
-      "claims": []
+      "basis": "evidence",
+      "claims": [
+        "sec.skills-supply-chain",
+        "sec.payloadless-sch"
+      ]
     },
     {
       "id": "R-SEC-5",
-      "basis": null,
-      "claims": []
+      "basis": "evidence",
+      "claims": [
+        "sec.owasp-agentic",
+        "sec.skills-supply-chain"
+      ]
     },
     {
       "id": "R-MA-1",
-      "basis": null,
-      "claims": []
+      "basis": "evidence",
+      "claims": [
+        "ma.cognition-stance",
+        "ma.value",
+        "fail.mast-taxonomy"
+      ]
     },
     {
       "id": "R-VEL-1",
-      "basis": null,
-      "claims": []
+      "basis": "evidence",
+      "claims": [
+        "vel.perception-gap",
+        "fail.self-eval"
+      ]
     },
     {
       "id": "R-RULES-1",
-      "basis": null,
+      "basis": "design",
       "claims": []
+    },
+    {
+      "id": "R-RULES-2",
+      "basis": "evidence",
+      "claims": [
+        "rules.agents-md-canonical",
+        "rules.convergence"
+      ]
+    },
+    {
+      "id": "R-RULES-3",
+      "basis": "evidence",
+      "claims": [
+        "ctx.cache-thrashing"
+      ]
+    },
+    {
+      "id": "R-RULES-4",
+      "basis": "evidence",
+      "claims": [
+        "ctx.cache-thrashing"
+      ]
     },
     {
       "id": "R-SKILLS-1",
-      "basis": null,
-      "claims": []
+      "basis": "evidence",
+      "claims": [
+        "skills.progressive-disclosure",
+        "proto.agent-skills"
+      ]
     },
     {
       "id": "R-HARNESS-1",
-      "basis": null,
-      "claims": []
+      "basis": "evidence",
+      "claims": [
+        "disc.harness-binding",
+        "harness.swing"
+      ]
     },
     {
       "id": "R-HOOKS-1",
-      "basis": null,
-      "claims": []
+      "basis": "evidence",
+      "claims": [
+        "hooks.deterministic",
+        "hooks.contract",
+        "fail.errors-compound"
+      ]
     },
     {
       "id": "R-PLUGINS-1",
-      "basis": null,
-      "claims": []
+      "basis": "evidence",
+      "claims": [
+        "plugins.spec"
+      ]
     },
     {
       "id": "R-SUB-1",
-      "basis": null,
-      "claims": []
+      "basis": "evidence",
+      "claims": [
+        "sub.topology",
+        "sub.worktree",
+        "ma.worktree-failures",
+        "ma.cognition-stance"
+      ]
     },
     {
       "id": "R-CA-1",
-      "basis": null,
+      "basis": "evidence",
+      "claims": [
+        "ca.scoped-tools",
+        "ca.fragmented"
+      ]
+    },
+    {
+      "id": "R-CA-2",
+      "basis": "evidence",
+      "claims": [
+        "ca.session-handoff",
+        "ca.context-forking"
+      ]
+    },
+    {
+      "id": "R-CA-3",
+      "basis": "design",
       "claims": []
     }
   ],
