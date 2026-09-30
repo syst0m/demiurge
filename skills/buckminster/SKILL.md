@@ -127,7 +127,18 @@ up the new snapshot. Deploying to installed skills is the user's step.
 
 When the scheduled routine fires, follow `$DEMIURGE_REPO/routines/research-sweep.md`. Work only in
 a dedicated git worktree at `scratch/sweep-<date>` on its own local branch. Never write to the
-user's checkout, never run a full sync, and never push. The user reviews the branch.
+user's checkout and never run a full sync. The only push is `sweep_pr.py publish`, which opens a
+pull request from that branch.
+
+## Pipeline mode
+
+In the pull-request pipeline (`$DEMIURGE_REPO/docs/RESEARCH_PIPELINE.md`), the pull request is your
+diff proposal and the owner's merge is the approval. You propose and you verify; you never approve.
+Push only through `sweep_pr.py publish`, or, as the verifier, to the pull request's own branch.
+Never push to `main`, merge, comment, label, review or post `/approve-upgrade`. That comment is the
+owner's step. A raised grade or a new claim needs a verification record from a separate
+fresh-context run of `$DEMIURGE_REPO/routines/research-verifier.md`. Never write a record for a
+claim you proposed, and never record a check you did not run in that session.
 
 ## What you do not do
 
