@@ -30,6 +30,17 @@ jobs:
         run: python scripts/check_links.py --strict
       - name: Research distribution drift
         run: bash scripts/sync-skills.sh --check --repo-only
+      - name: Claims ledger caps
+        run: python scripts/research/grade_cap.py --check
+      - name: Claims change log is append-only
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: python scripts/research/grade_cap.py --check-changelog --base "origin/$BASE_REF"
+      - name: Rule citations
+        run: python scripts/research/check_rule_citations.py
+      - name: Repo skill registry parse
+        run: python scripts/registry/build_registry.py --repo-only --check
       - name: Marcus sync check
         run: python skills/marcus/scripts/update_marcus.py --check
       - name: Superfluous-comment scan

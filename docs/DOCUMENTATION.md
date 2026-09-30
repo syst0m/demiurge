@@ -16,6 +16,8 @@ canonical_path: docs/DOCUMENTATION.md
    - [3.3 Design Manual Summary](#33-design-manual-summary)
    - [3.4 Research Methodology Summary](#34-research-methodology-summary)
    - [3.5 Independent Benchmarking Summary](#35-independent-benchmarking-summary)
+   - [3.6 Claims Ledger Summary](#36-claims-ledger-summary)
+   - [3.7 Skill Registry Summary](#37-skill-registry-summary)
 4. [Repository Layout](#4-repository-layout)
 5. [Low-Level Design (LLD) Architecture](#5-low-level-design-lld-architecture)
    - [5.1 Harness Implementation](#51-harness-implementation)
@@ -141,6 +143,23 @@ The Demiurge documentation suite is structured into focused guides addressing sp
   - Latest Run Metrics (`v0.2.0`): $+40.00\%$ resolution lift ($\Delta$), $82.0\%$ prompt-cache hit ratio, $74\%$ lower cost per resolved task.
   - Multi-benchmark roadmap (SWE-bench, GAIA, Tau-bench, BIPIA, BFCL) and execution cadences.
 
+### 3.6 Claims Ledger Summary
+
+- **Target File:** [docs/CLAIMS_LEDGER.md](CLAIMS_LEDGER.md)
+- **Scope:** How every graded claim in `research/RESEARCH.md` is tied to its sources in `research/sources.yaml` and checked by `scripts/research/grade_cap.py`.
+- **Key Concepts:**
+  - Claim and rule anchors, the sidecar schema and the compiled `skills/marcus/references/claims.json`.
+  - The `grade_cap` algorithm: evidence reasons lower a grade, debt reasons flag it `[UNVERIFIED]` until enforcement.
+  - The debt queue that opens every Buckminster sweep.
+
+### 3.7 Skill Registry Summary
+
+- **Target File:** [docs/SKILL_REGISTRY.md](SKILL_REGISTRY.md)
+- **Scope:** The local registry of skills, tiers, gates, research snapshots and eval state built by `scripts/registry/build_registry.py`.
+- **Key Concepts:**
+  - The registry is written to `~/.demiurge/` and never committed, because the repo is public and the installed library is private.
+  - CI runs `--repo-only --check`, which parses the repo skills and writes nothing.
+
 ---
 
 ## 4. Repository Layout
@@ -153,8 +172,10 @@ The repository is organized to isolate research, skills, tools, and rules:
 | `assets/` | Project diagrams, visual documentation, and brand media. |
 | `docs/` | Human-facing guides: Installation, Operating Guide, Design Manual, and Master Documentation. |
 | `evals/` | Deterministic gate regression tests and independent industry benchmark adapters. |
-| `research/` | Master empirical knowledge base (`RESEARCH.md`), updated solely through reviewed proposals. |
+| `research/` | Master empirical knowledge base (`RESEARCH.md`), updated solely through reviewed proposals, and its sources sidecar (`sources.yaml`). |
 | `scripts/` | Deterministic verification harnesses, security linters, link checkers, and sync tools. |
+| `scripts/research/` | Claims ledger tooling: `grade_cap.py` and `check_rule_citations.py` ([CLAIMS_LEDGER.md](CLAIMS_LEDGER.md)). |
+| `scripts/registry/` | Local skill registry builder ([SKILL_REGISTRY.md](SKILL_REGISTRY.md)). |
 | `skills/` | Source code and manifests for [Marcus](../skills/marcus/) and [Buckminster](../skills/buckminster/). |
 
 *Note: Edit files in `skills/` directly. Never edit deployed skill directories manually.*

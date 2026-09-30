@@ -7,7 +7,11 @@ Enforces:
 3. Rule diff inspection across confidence markers ([SETTLED], [CONTESTED], [VENDOR], [EMERGING]).
 4. Grade counts from references/claims.json, whose research_sha256 and sources_sha256 must match
    research/RESEARCH.md and research/sources.yaml (a mismatch is DRIFT; rerun grade_cap.py --write).
-5. Execution of Marcus's deterministic gate test suite (run_gate_tests.py) and validator (validate_skill.py).
+5. The derived_from line `RESEARCH.md v<version> (<snapshot_date>) snapshot_sha256:<hex>`, whose
+   date must match RESEARCH.md and whose hash must match claims.json.
+6. Rule citation tokens, checked by scripts/research/check_rule_citations.py when the repo has it.
+   A docs/AGENT_DESIGN.md derived_from line behind RESEARCH.md or AGENT_ARCHITECTURE.md is a WARNING.
+7. Execution of Marcus's deterministic gate test suite (run_gate_tests.py) and validator (validate_skill.py).
 
 Usage:
     python skills/marcus/scripts/update_marcus.py --check   # Report drift (exit 1 if drift)
@@ -29,6 +33,13 @@ from typing import Any, Dict, List, Optional, Tuple
 RESEARCH_VERSION_PATTERN = re.compile(r"^version:\s*(?P<version>[\d\.]+)", re.MULTILINE)
 SNAPSHOT_DATE_PATTERN = re.compile(r"^snapshot_date:\s*(?P<date>[\d-]+)", re.MULTILINE)
 DERIVED_RESEARCH_PATTERN = re.compile(r"RESEARCH\.md\s+v(?P<version>[\d\.]+)", re.MULTILINE)
+DERIVED_SNAPSHOT_PATTERN = re.compile(
+    r"RESEARCH\.md\s+v(?P<version>[\d\.]+)\s+\((?P<date>[\d-]+)\)\s+snapshot_sha256:(?P<sha>[0-9a-f]{64})\b"
+)
+DESIGN_DERIVED_PATTERN = re.compile(
+    r"^derived_from:\s*RESEARCH\.md\s+v(?P<research>[\d\.]+)\s*·\s*AGENT_ARCHITECTURE\.md\s+v(?P<arch>[\d\.]+)",
+    re.MULTILINE,
+)
 
 MARKERS = ["[SETTLED]", "[CONTESTED]", "[VENDOR]", "[EMERGING]"]
 MARKER_PATTERN = re.compile(r"`?\[(SETTLED|CONTESTED|VENDOR|EMERGING)(?::[^\]]*)?\]`?")
@@ -84,6 +95,11 @@ def claims_counts(claims: Dict[str, Any]) -> Dict[str, int]:
     return {key: int(counts.get(key, 0)) for key in GRADE_COUNT_KEYS}
 
 
+def snapshot_sha256(research_sha: str, sources_sha: str) -> str:
+    """Hash of both file hashes, research first, joined by a newline, as grade_cap.py writes it."""
+    return hashlib.sha256(f"{research_sha}\n{sources_sha}".encode("ascii")).hexdigest()
+
+
 def claims_hash_drift(claims: Dict[str, Any], research: Path, sources: Path) -> List[str]:
     """Name each hashed input whose bytes no longer match the hash stored in claims.json."""
     stale = []
@@ -94,7 +110,46 @@ def claims_hash_drift(claims: Dict[str, Any], research: Path, sources: Path) -> 
         actual = hashlib.sha256(path.read_bytes()).hexdigest()
         if claims.get(key) != actual:
             stale.append(f"{key} does not match {label}")
+    research_sha, sources_sha = claims.get("research_sha256"), claims.get("sources_sha256")
+    hashes_present = isinstance(research_sha, str) and isinstance(sources_sha, str)
+    if not hashes_present or claims.get("snapshot_sha256") != snapshot_sha256(research_sha, sources_sha):
+        stale.append("snapshot_sha256 does not match research_sha256 and sources_sha256")
     return stale
+
+
+def derived_snapshot_drift(
+    arch_text: str, canon_date: Optional[str], claims: Optional[Dict[str, Any]]
+) -> List[str]:
+    """Check the date and hash on the derived_from RESEARCH.md line against RESEARCH.md and claims.json."""
+    match = DERIVED_SNAPSHOT_PATTERN.search(arch_text)
+    if not match:
+        return ["derived_from has no `RESEARCH.md v<version> (<date>) snapshot_sha256:<hex>` line"]
+    problems = []
+    if match.group("date") != canon_date:
+        problems.append(f"derived_from date {match.group('date')} does not match snapshot_date {canon_date}")
+    expected = claims.get("snapshot_sha256") if claims else None
+    if expected is not None and match.group("sha") != expected:
+        problems.append("derived_from snapshot_sha256 does not match claims.json")
+    return problems
+
+
+def design_doc_warnings(design_text: str, canon_ver: Optional[str], arch_ver: Optional[str]) -> List[str]:
+    """Report a docs/AGENT_DESIGN.md derived_from line that lags RESEARCH.md or AGENT_ARCHITECTURE.md."""
+    match = DESIGN_DERIVED_PATTERN.search(design_text)
+    if not match:
+        return ["AGENT_DESIGN.md has no `derived_from: RESEARCH.md vX · AGENT_ARCHITECTURE.md vY` line"]
+    warnings = []
+    if match.group("research") != canon_ver:
+        warnings.append(
+            f"AGENT_DESIGN.md derived_from is RESEARCH.md v{match.group('research')}, "
+            f"but RESEARCH.md is v{canon_ver}"
+        )
+    if match.group("arch") != arch_ver:
+        warnings.append(
+            f"AGENT_DESIGN.md derived_from is AGENT_ARCHITECTURE.md v{match.group('arch')}, "
+            f"but AGENT_ARCHITECTURE.md is v{arch_ver}"
+        )
+    return warnings
 
 
 def parse_gate_summary(stdout: str) -> Optional[Tuple[int, int]]:
@@ -109,7 +164,16 @@ def run_process(cmd: List[str], cwd: Optional[Path] = None) -> Tuple[int, str, s
     return proc.returncode, proc.stdout.strip(), proc.stderr.strip()
 
 
+def use_utf8_output() -> None:
+    """Print § and · from check_rule_citations.py even where the console default is a legacy code page."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            reconfigure(encoding="utf-8")
+
+
 def main() -> int:
+    use_utf8_output()
     parser = argparse.ArgumentParser(description="Marcus self-update and drift audit engine")
     parser.add_argument("--check", action="store_true", help="Check drift without modifying files (exit 1 if drift detected)")
     parser.add_argument("--apply", action="store_true", help="Synchronize references and verify gates")
@@ -130,6 +194,8 @@ def main() -> int:
     architecture_file = marcus_dir / "AGENT_ARCHITECTURE.md"
     gate_tests = marcus_dir / "evals" / "run_gate_tests.py"
     validator = marcus_dir / "scripts" / "validate_skill.py"
+    citation_checker = repo_root / "scripts" / "research" / "check_rule_citations.py"
+    design_doc = repo_root / "docs" / "AGENT_DESIGN.md"
 
     print("Marcus Self-Update & Architecture Audit Engine")
     print("------------------------------------------------------------------------")
@@ -145,6 +211,8 @@ def main() -> int:
     drift_detected = False
     arch_drift = False
     claims_drift = False
+    citations_drift = False
+    arch_text: Optional[str] = None
 
     # 1. Compare canonical research against Marcus's reference copy
     if not reference_research.exists():
@@ -212,7 +280,47 @@ def main() -> int:
         else:
             print(f"SYNCED: {claims_file.name} hashes match RESEARCH.md and sources.yaml.")
 
-    # 4. Deterministic regression suite (run_gate_tests.py)
+    # 4. Snapshot date and hash in AGENT_ARCHITECTURE.md derived_from
+    if arch_text is not None:
+        problems = derived_snapshot_drift(arch_text, canon_date, claims)
+        if problems:
+            for problem in problems:
+                print(f"DRIFT: AGENT_ARCHITECTURE.md {problem}.")
+            expected_sha = (claims or {}).get("snapshot_sha256") or "<hex>"
+            print(f"       Expected: RESEARCH.md v{canon_ver} ({canon_date}) snapshot_sha256:{expected_sha}")
+            drift_detected = True
+            arch_drift = True
+        else:
+            print(f"SYNCED: AGENT_ARCHITECTURE.md snapshot_sha256 matches {claims_file.name} ({canon_date}).")
+
+    # 5. Rule citation tokens and the human companion's derived_from line
+    if citation_checker.is_file() and arch_text is not None:
+        checker_cmd = [
+            sys.executable,
+            str(citation_checker),
+            "--repo",
+            str(repo_root),
+            "--arch",
+            str(architecture_file),
+            "--claims",
+            str(claims_file),
+        ]
+        code, stdout, stderr = run_process(checker_cmd, cwd=repo_root)
+        if code == 0:
+            print(f"PASS: Rule citations ({stdout.splitlines()[-1] if stdout else 'no output'}).")
+        else:
+            print(f"DRIFT: check_rule_citations.py exited {code}:")
+            for line in (stdout or stderr).splitlines():
+                print(f"       {line}")
+            drift_detected = True
+            citations_drift = True
+
+    if design_doc.is_file() and arch_text is not None:
+        arch_ver, _ = extract_metadata(arch_text)
+        for warning in design_doc_warnings(design_doc.read_text(encoding="utf-8"), canon_ver, arch_ver):
+            print(f"WARNING: {warning}.")
+
+    # 6. Deterministic regression suite (run_gate_tests.py)
     if gate_tests.exists():
         code, stdout, stderr = run_process([sys.executable, str(gate_tests)], cwd=marcus_dir)
         if code != 0:
@@ -226,7 +334,7 @@ def main() -> int:
         passed, total = summary
         print(f"PASS: Marcus gate regression suite ({passed}/{total} passing).")
 
-    # 5. G4 validation check (validate_skill.py)
+    # 7. G4 validation check (validate_skill.py)
     if validator.exists():
         code, stdout, stderr = run_process([sys.executable, str(validator), str(marcus_dir)], cwd=marcus_dir)
         if "BLOCKING" in stdout or code > 1:
@@ -244,6 +352,9 @@ def main() -> int:
         return 1
     if mode == "apply" and claims_drift:
         print(f"RESULT: {claims_file.name} is stale against research/. Regrade with grade_cap.py --write.")
+        return 1
+    if mode == "apply" and citations_drift:
+        print("RESULT: AGENT_ARCHITECTURE.md rule citations fail check_rule_citations.py. Fix the tokens by hand.")
         return 1
 
     print("RESULT: Marcus is synchronized and all deterministic gates hold.")

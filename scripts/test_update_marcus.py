@@ -20,6 +20,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SCRIPT = REPO_ROOT / "skills" / "marcus" / "scripts" / "update_marcus.py"
+CHECKER = REPO_ROOT / "scripts" / "research" / "check_rule_citations.py"
 
 _spec = importlib.util.spec_from_file_location("update_marcus", SCRIPT)
 um = importlib.util.module_from_spec(_spec)
@@ -35,11 +36,23 @@ snapshot_date: 2026-09-06
 """
 
 ARCH_TEXT = """---
+version: 2.0.0
 derived_from:
-  - RESEARCH.md v{version} (2026-09-06)
+  - RESEARCH.md v{version} ({date}) snapshot_sha256:{sha}  # agentic engineering generally
 ---
 # Architecture
 """
+
+DESIGN_TEXT = """# Design
+
+```yaml
+version: 1.1.0
+derived_from: RESEARCH.md v{research} · AGENT_ARCHITECTURE.md v{arch}
+```
+"""
+
+RULE_OK = "\n**Rule I-1.** `[DESIGN]` Descriptions name activating situations.\n"
+RULE_BAD = "\n**Rule I-1.** Descriptions name activating situations.\n"
 
 
 SOURCES_TEXT = """schema: demiurge.sources.v1
@@ -51,6 +64,15 @@ claims: {}
 COUNTS = {"SETTLED": 3, "CONTESTED": 1, "EMERGING": 2, "VENDOR": 1, "UNVERIFIED": 4}
 
 
+def snapshot_of(research: bytes, sources: bytes) -> str:
+    """snapshot_sha256 as grade_cap.py writes it: sha256 of "<research_sha256>\\n<sources_sha256>"."""
+    joined = f"{hashlib.sha256(research).hexdigest()}\n{hashlib.sha256(sources).hexdigest()}"
+    return hashlib.sha256(joined.encode("ascii")).hexdigest()
+
+
+SNAPSHOT = snapshot_of(RESEARCH_TEXT.encode("utf-8"), SOURCES_TEXT.encode("utf-8"))
+
+
 def compiled_claims(research: bytes, sources: bytes) -> str:
     """A claims.json whose hashes match the given RESEARCH.md and sources.yaml bytes."""
     data = {
@@ -58,6 +80,7 @@ def compiled_claims(research: bytes, sources: bytes) -> str:
         "research_version": "1.2.1",
         "sources_sha256": hashlib.sha256(sources).hexdigest(),
         "research_sha256": hashlib.sha256(research).hexdigest(),
+        "snapshot_sha256": snapshot_of(research, sources),
         "enforced": False,
         "claims": [{"id": "ctx.one"}, {"id": "ctx.two"}],
         "rules": [],
@@ -69,7 +92,15 @@ def compiled_claims(research: bytes, sources: bytes) -> str:
 class TempRepo:
     """A minimal repo tree: research/, skills/marcus/{scripts,references,evals}."""
 
-    def __init__(self, root: Path, gate_stdout: str = "17/17 passing\n", arch_version: str = "1.2.1") -> None:
+    def __init__(
+        self,
+        root: Path,
+        gate_stdout: str = "17/17 passing\n",
+        arch_version: str = "1.2.1",
+        arch_date: str = "2026-09-06",
+        arch_sha: str = SNAPSHOT,
+        arch_rules: str = "",
+    ) -> None:
         self.root = root
         marcus = root / "skills" / "marcus"
         (root / "research").mkdir(parents=True)
@@ -84,11 +115,26 @@ class TempRepo:
         self.claims_json.write_bytes(
             compiled_claims(RESEARCH_TEXT.encode("utf-8"), SOURCES_TEXT.encode("utf-8")).encode("utf-8")
         )
-        (marcus / "AGENT_ARCHITECTURE.md").write_text(ARCH_TEXT.format(version=arch_version), encoding="utf-8")
+        self.arch = marcus / "AGENT_ARCHITECTURE.md"
+        self.arch.write_text(
+            ARCH_TEXT.format(version=arch_version, date=arch_date, sha=arch_sha) + arch_rules, encoding="utf-8"
+        )
         (marcus / "evals" / "run_gate_tests.py").write_text(
             f"import sys\nsys.stdout.write({gate_stdout!r})\n", encoding="utf-8"
         )
         self.script = marcus / "scripts" / "update_marcus.py"
+
+    def add_citation_checker(self) -> None:
+        """Copy the real check_rule_citations.py into scripts/research/."""
+        target = self.root / "scripts" / "research"
+        target.mkdir(parents=True)
+        shutil.copy2(CHECKER, target / "check_rule_citations.py")
+
+    def add_design_doc(self, research: str, arch: str) -> None:
+        (self.root / "docs").mkdir()
+        (self.root / "docs" / "AGENT_DESIGN.md").write_text(
+            DESIGN_TEXT.format(research=research, arch=arch), encoding="utf-8"
+        )
 
     def run(self, *args: str) -> subprocess.CompletedProcess:
         return subprocess.run(
@@ -206,6 +252,113 @@ class TestClaimsJson(unittest.TestCase):
         proc = repo.run("--check")
         self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
         self.assertIn("DRIFT: claims.json is missing", proc.stdout)
+
+
+    def test_inconsistent_snapshot_sha_is_drift(self):
+        repo = TempRepo(self.tmp)
+        data = json.loads(repo.claims_json.read_text(encoding="utf-8"))
+        data["snapshot_sha256"] = "0" * 64
+        repo.claims_json.write_text(json.dumps(data), encoding="utf-8")
+        proc = repo.run("--check")
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertIn(
+            "DRIFT: claims.json snapshot_sha256 does not match research_sha256 and sources_sha256", proc.stdout
+        )
+
+
+class TestDerivedSnapshot(unittest.TestCase):
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.tmp = Path(self._tmp.name)
+
+    def test_matching_snapshot_is_synced(self):
+        repo = TempRepo(self.tmp)
+        proc = repo.run("--check")
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertIn("SYNCED: AGENT_ARCHITECTURE.md snapshot_sha256 matches claims.json (2026-09-06).", proc.stdout)
+
+    def test_wrong_hash_is_drift(self):
+        repo = TempRepo(self.tmp, arch_sha="a" * 64)
+        proc = repo.run("--check")
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertIn("DRIFT: AGENT_ARCHITECTURE.md derived_from snapshot_sha256 does not match claims.json.", proc.stdout)
+        self.assertIn(f"Expected: RESEARCH.md v1.2.1 (2026-09-06) snapshot_sha256:{SNAPSHOT}", proc.stdout)
+        apply = repo.run("--apply")
+        self.assertEqual(apply.returncode, 1, apply.stdout + apply.stderr)
+        self.assertIn("Edit it by hand.", apply.stdout)
+
+    def test_wrong_date_is_drift(self):
+        repo = TempRepo(self.tmp, arch_date="2026-09-01")
+        proc = repo.run("--check")
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertIn("derived_from date 2026-09-01 does not match snapshot_date 2026-09-06", proc.stdout)
+
+    def test_missing_hash_is_drift(self):
+        repo = TempRepo(self.tmp)
+        repo.arch.write_text(
+            "---\nderived_from:\n  - RESEARCH.md v1.2.1 (2026-09-06)\n---\n# Architecture\n", encoding="utf-8"
+        )
+        proc = repo.run("--check")
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertIn("DRIFT: AGENT_ARCHITECTURE.md derived_from has no", proc.stdout)
+
+
+class TestRuleCitations(unittest.TestCase):
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.tmp = Path(self._tmp.name)
+
+    def test_checker_absent_is_skipped(self):
+        repo = TempRepo(self.tmp)
+        proc = repo.run("--check")
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertNotIn("Rule citations", proc.stdout)
+
+    def test_valid_citations_pass(self):
+        repo = TempRepo(self.tmp, arch_rules=RULE_OK)
+        repo.add_citation_checker()
+        proc = repo.run("--check")
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertIn("PASS: Rule citations (OK: 1 rules, 0 violations).", proc.stdout)
+
+    def test_missing_token_is_drift(self):
+        repo = TempRepo(self.tmp, arch_rules=RULE_BAD)
+        repo.add_citation_checker()
+        proc = repo.run("--check")
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertIn("DRIFT: check_rule_citations.py exited 1:", proc.stdout)
+        self.assertIn("ERROR: I-1: no citation token", proc.stdout)
+        apply = repo.run("--apply")
+        self.assertEqual(apply.returncode, 1, apply.stdout + apply.stderr)
+        self.assertIn("Fix the tokens by hand.", apply.stdout)
+
+
+class TestDesignDocWarning(unittest.TestCase):
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmp.cleanup)
+        self.tmp = Path(self._tmp.name)
+
+    def test_lagging_design_doc_warns_without_drift(self):
+        repo = TempRepo(self.tmp)
+        repo.add_design_doc("1.1.0", "1.1.0")
+        proc = repo.run("--check")
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertIn("WARNING: AGENT_DESIGN.md derived_from is RESEARCH.md v1.1.0, but RESEARCH.md is v1.2.1.", proc.stdout)
+        self.assertIn(
+            "WARNING: AGENT_DESIGN.md derived_from is AGENT_ARCHITECTURE.md v1.1.0, but AGENT_ARCHITECTURE.md is v2.0.0.",
+            proc.stdout,
+        )
+        self.assertNotIn("DRIFT", proc.stdout)
+
+    def test_current_design_doc_is_quiet(self):
+        repo = TempRepo(self.tmp)
+        repo.add_design_doc("1.2.1", "2.0.0")
+        proc = repo.run("--check")
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertNotIn("WARNING", proc.stdout)
 
 
 if __name__ == "__main__":
