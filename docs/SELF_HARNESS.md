@@ -70,6 +70,11 @@ What Demiurge lacks is the automation connecting these three pieces: a diagnosis
 benchmark failures, a proposal step that turns a cluster into a bounded edit of a named harness
 surface, and an orchestrator that runs the loop end to end with resumable state.
 
+The run ledger ([RUN_LEDGER.md](RUN_LEDGER.md)) supplies failures from real skill runs as G0
+evidence and staged regression cases. Its counts never gate or rank a harness. G5 now pairs
+baseline and treated runs per case, with an exact McNemar test at 20 or more cases
+(`skills/marcus/references/SPEC.md` §3).
+
 ## 3. Stage Mapping
 
 | Self-Harness stage           | Upstream reference                                             | Demiurge asset (existing)                                                                                                              | Demiurge asset (new)                             |
