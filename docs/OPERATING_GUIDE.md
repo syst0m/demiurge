@@ -139,7 +139,7 @@ Marcus enforces mechanical gates defined in `references/SPEC.md`:
 - **G2 (Contrast Gate):** Extracts candidates by contrasting failure traces against successful runs on identical tasks.
 - **G3 (Draft Gate):** Rejects drafts lacking measured capability gaps or valid citations.
 - **G4 (Format & Security Gate):** Deterministic AST, regex, and file structure scan. Zero unreasoned findings.
-- **G5 (Proof Gate):** Hard requirement for a positive measured delta ($\Delta > 0$) on capability and 100% pass on regression.
+- **G5 (Proof Gate):** Pairs cases with the G1 baseline: b > c per case; McNemar p < alpha at 20 or more cases; regression at 100%.
 - **G6 (Route Collision Gate):** Checks embedding and description distance against the installed skill library to prevent ambiguity.
 
 ### Marcus Example Workflows

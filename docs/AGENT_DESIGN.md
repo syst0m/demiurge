@@ -231,7 +231,7 @@ When revising an existing skill or adding a feature:
 - **Elicit the gap (G0)**: Demand at least one real failure or user gap where the current skill failed. Never add instructions for hypothetical scenarios.
 - **Baseline the unmodified agent (G1)**: Run the expanded evaluation suite on the unmodified agent first to establish the true pre-revision score.
 - **Draft minimal deltas (G3)**: Make surgical edits to instructions, references, or bundled scripts.
-- **Enforce strict non-regression (G5)**: The historical regression suite must hold at **100%**. Any drop on prior cases is a hard reject. New capability cases must demonstrate a positive delta.
+- **Enforce strict non-regression (G5)**: The historical regression suite must hold at **100%**. Any drop on prior cases is a hard reject. More cases must flip to pass than to fail against the G1 baseline (b > c per case, McNemar p < alpha at 20 or more cases).
 - **Append provenance (G6)**: Keep an immutable record of every revision in `PROVENANCE.md`. Never wipe prior origin history.
 
 ---

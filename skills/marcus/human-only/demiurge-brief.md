@@ -119,7 +119,7 @@ Skill selection shows *phase transitions* rather than gradual decay, and same-ca
 | **G2** | Contrast | Model | Stop | Contrast successful vs failed execution traces. |
 | **G3** | Draft | Model | Stop | Draft minimal instructions addressing verified gaps. |
 | **G4** | Validate | Automated | Refuse | Format limits, trigger clauses, references, security scans. |
-| **G5** | Prove | Automated | Reject | Require positive delta ($\Delta > 0$) on regression suite. |
+| **G5** | Prove | Automated | Reject | Require b > c per case against the baseline, McNemar p < alpha at 20+ cases, regression at 100%. |
 | **G6** | Register | Hybrid | Revision | Trigger-weighted description collision check. |
 
 ### Harness Specification: Six Runtime Responsibilities

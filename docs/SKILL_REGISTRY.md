@@ -64,7 +64,7 @@ Run every command from the demiurge checkout root. The builder needs PyYAML: `py
 | `python scripts/registry/build_registry.py --repo-only --check` | The CI mode: prints `OK: 2 repo skills parsed`, or exits 1 on a parse failure. |
 | `python scripts/registry/build_registry.py --propose-backfill [DIR]` | Also writes a proposed `PROVENANCE.md` header for each skill with a missing or unstructured `PROVENANCE.md`, no recorded tier or a name mismatch. |
 
-`--library <dir>` points at another installed library and `--out <path>` at another output file. Both must stay outside every git working tree.
+`--library <dir>` points at another installed library, which is only read and may sit inside a git working tree (the default library often does). `--out <path>` points at another output file. The output file and the backfill directory must stay outside every git working tree.
 
 CI runs `--repo-only --check` on every push and pull request (`.github/workflows/checks.yml`).
 

@@ -56,6 +56,17 @@ Antigravity is natively integrated with the Gemini ecosystem.
    bash scripts/sync-skills.sh
    ```
 
+   A deploy target inside a git working tree with uncommitted changes is refused before anything
+   is written. Eval outputs (`evals/results-*.json`, `evals/transcripts-*.json`,
+   `evals/last_run.json`) do not count as uncommitted changes. If the target is a repository you
+   commit, add these lines to its `.gitignore` so transcripts are never committed:
+
+   ```gitignore
+   **/evals/results-*.json
+   **/evals/transcripts-*.json
+   **/evals/last_run.json
+   ```
+
 3. Run `claude` in your terminal, and the agents will be loaded.
 
 ---

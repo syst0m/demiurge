@@ -119,9 +119,9 @@ finding with no design consequence is still worth recording, but say so.
 
 On approval: bump the `version` and `snapshot_date` in the YAML header, append the row from
 `grade_cap.py --changelog-row` to the change log (**append-only**: never rewrite past entries), and
-confirm `grade_cap.py --check` passes. Then tell the user to run
-`bash scripts/sync-skills.sh --repo-only` from `$DEMIURGE_REPO` so the Marcus reference copy picks
-up the new snapshot. Deploying to installed skills is the user's step.
+confirm `grade_cap.py --check` passes. Then run `python skills/marcus/scripts/update_marcus.py --apply`
+from the worktree root: it copies the snapshot to Marcus's references and re-pins the `derived_from`
+line of `AGENT_ARCHITECTURE.md`, and edits no rule. Deploying to installed skills is the user's step.
 
 ## Scheduled mode
 
