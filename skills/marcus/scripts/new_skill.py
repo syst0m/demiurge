@@ -111,7 +111,7 @@ research_claims: []     # claim ids from references/claims.json this skill's des
 ## What has not been verified
 
 - This skill has not been measured. Trust tier stays **T2** and it must not be installed
-  until `eval_runner.py` shows a positive delta over the G1 baseline.
+  until `eval_runner.py` shows b > c per case; McNemar p < alpha at 20 or more cases; regression at 100% against the G1 baseline.
 - No security review of bundled scripts has been recorded. If `scripts/` is populated, state
   here why executable content is necessary - script-bundling skills are 2.12x more likely to
   carry a vulnerability.
@@ -268,7 +268,7 @@ def main() -> int:
     print("  1. Fill the TODOs in SKILL.md and evals/evals.json.")
     print(f"  2. python eval_runner.py {target.as_posix()} --baseline     # G1")
     print(f"  3. python validate_skill.py {target.as_posix()}             # G4")
-    print(f"  4. python eval_runner.py {target.as_posix()}                # G5 - must show a positive delta")
+    print(f"  4. python eval_runner.py {target.as_posix()}                # G5 - must show b > c per case")
     print(f"  5. python route_check.py {target.as_posix()} --library {args.dir.expanduser().as_posix()}  # G6")
     print("\nIt stays T2 and uninstalled until G5 passes.")
     return 0

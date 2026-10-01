@@ -8,14 +8,15 @@ Enforces:
 4. Grade counts from references/claims.json, whose research_sha256 and sources_sha256 must match
    research/RESEARCH.md and research/sources.yaml (a mismatch is DRIFT; rerun grade_cap.py --write).
 5. The derived_from line `RESEARCH.md v<version> (<snapshot_date>) snapshot_sha256:<hex>`, whose
-   date must match RESEARCH.md and whose hash must match claims.json.
+   date must match RESEARCH.md and whose hash must match claims.json. --apply re-pins that one line
+   to the current version, date and hash when claims.json is fresh; rule text is never edited.
 6. Rule citation tokens, checked by scripts/research/check_rule_citations.py when the repo has it.
    A docs/AGENT_DESIGN.md derived_from line behind RESEARCH.md or AGENT_ARCHITECTURE.md is a WARNING.
 7. Execution of Marcus's deterministic gate test suite (run_gate_tests.py) and validator (validate_skill.py).
 
 Usage:
     python skills/marcus/scripts/update_marcus.py --check   # Report drift (exit 1 if drift)
-    python skills/marcus/scripts/update_marcus.py --apply   # Sync references, check gates
+    python skills/marcus/scripts/update_marcus.py --apply   # Sync references, re-pin derived_from, check gates
 """
 
 from __future__ import annotations
@@ -35,6 +36,10 @@ SNAPSHOT_DATE_PATTERN = re.compile(r"^snapshot_date:\s*(?P<date>[\d-]+)", re.MUL
 DERIVED_RESEARCH_PATTERN = re.compile(r"RESEARCH\.md\s+v(?P<version>[\d\.]+)", re.MULTILINE)
 DERIVED_SNAPSHOT_PATTERN = re.compile(
     r"RESEARCH\.md\s+v(?P<version>[\d\.]+)\s+\((?P<date>[\d-]+)\)\s+snapshot_sha256:(?P<sha>[0-9a-f]{64})\b"
+)
+DERIVED_LINE_PATTERN = re.compile(
+    r"^(?P<prefix>[ \t]*-[ \t]+)RESEARCH\.md[ \t]+v[\d.]+[ \t]+\([\d-]+\)[ \t]+snapshot_sha256:[0-9a-f]{64}(?P<suffix>.*)$",
+    re.MULTILINE,
 )
 DESIGN_DERIVED_PATTERN = re.compile(
     r"^derived_from:\s*RESEARCH\.md\s+v(?P<research>[\d\.]+)\s*·\s*AGENT_ARCHITECTURE\.md\s+v(?P<arch>[\d\.]+)",
@@ -131,6 +136,29 @@ def derived_snapshot_drift(
     if expected is not None and match.group("sha") != expected:
         problems.append("derived_from snapshot_sha256 does not match claims.json")
     return problems
+
+
+def repin_derived_from(arch_text: str, version: str, date: str, sha: str) -> Optional[str]:
+    """``arch_text`` with its derived_from RESEARCH.md line pinned to version, date and hash.
+
+    Only that line changes; its indent and trailing comment are kept. None when the file has no
+    line of the full ``RESEARCH.md v<version> (<date>) snapshot_sha256:<hex>`` form.
+    """
+    match = DERIVED_LINE_PATTERN.search(arch_text)
+    if not match:
+        return None
+    line = f"{match.group('prefix')}RESEARCH.md v{version} ({date}) snapshot_sha256:{sha}{match.group('suffix')}"
+    return arch_text[: match.start()] + line + arch_text[match.end() :]
+
+
+def read_lf(path: Path) -> str:
+    with open(path, encoding="utf-8", newline="") as handle:
+        return handle.read()
+
+
+def write_lf(path: Path, text: str) -> None:
+    with open(path, "w", encoding="utf-8", newline="") as handle:
+        handle.write(text)
 
 
 def design_doc_warnings(design_text: str, canon_ver: Optional[str], arch_ver: Optional[str]) -> List[str]:
@@ -244,6 +272,17 @@ def main() -> int:
         else:
             print(f"SYNCED: Reference copy matches research/RESEARCH.md v{canon_ver} ({canon_date}).")
 
+    # 1b. --apply re-pins the derived_from RESEARCH.md line once claims.json matches research/.
+    # The rules themselves are checked by check_rule_citations.py below and never edited here.
+    if mode == "apply" and architecture_file.exists() and canon_ver and canon_date:
+        fresh_claims, _ = load_claims(claims_file)
+        if fresh_claims is not None and not claims_hash_drift(fresh_claims, canonical_research, canonical_sources):
+            current = read_lf(architecture_file)
+            pinned = repin_derived_from(current, canon_ver, canon_date, fresh_claims["snapshot_sha256"])
+            if pinned is not None and pinned != current:
+                write_lf(architecture_file, pinned)
+                print(f"APPLIED: Pinned AGENT_ARCHITECTURE.md derived_from to RESEARCH.md v{canon_ver} ({canon_date}).")
+
     # 2. Check AGENT_ARCHITECTURE.md derived_from header
     if architecture_file.exists():
         arch_text = architecture_file.read_text(encoding="utf-8")
@@ -348,7 +387,10 @@ def main() -> int:
         print("RESULT: Drift detected between research snapshot and Marcus reference. Run with --apply to update.")
         return 1
     if mode == "apply" and arch_drift:
-        print("RESULT: AGENT_ARCHITECTURE.md derived_from does not match research/RESEARCH.md. Edit it by hand.")
+        print(
+            "RESULT: AGENT_ARCHITECTURE.md derived_from does not match research/RESEARCH.md and could not be "
+            "re-pinned. Edit it by hand."
+        )
         return 1
     if mode == "apply" and claims_drift:
         print(f"RESULT: {claims_file.name} is stale against research/. Regrade with grade_cap.py --write.")

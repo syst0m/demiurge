@@ -300,6 +300,27 @@ class TestFailOpen(HookTestCase):
                          ["post-tool", "LedgerLockTimeout"])
         self.assertEqual(self.rows(), [])
 
+    def test_lock_timeout_on_bad_still_blocks(self) -> None:
+        self.post_tool()
+        with ledger_lib.locked(self.ledger, timeout=1.0):
+            result = self.prompt("::bad misroute private words")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout),
+                         {"decision": "block", "reason": "ledger: not recorded (error logged)"})
+        self.assertEqual(self.error_log()[0].split("\t")[1:], ["prompt", "LedgerLockTimeout"])
+        self.assertEqual(len(self.rows()), 1)
+
+    def test_oversized_skill_row_has_no_skill_sha(self) -> None:
+        skill = self.home / ".claude" / "skills" / "demo"
+        for index in range(ledger_lib.HOOK_MAX_FILES + 1):
+            (skill / f"f{index}.md").write_text("x", encoding="utf-8")
+        result = self.post_tool()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        rows = self.rows()
+        self.assertEqual(len(rows), 1)
+        self.assertNotIn("skill_sha", rows[0])
+        self.assertEqual(self.error_log(), [])
+
     @unittest.skipIf(BASH is None, WSL_REFUSED)
     def test_installed_command_exits_zero_when_script_deleted(self) -> None:
         pinned = self.root / "bin"

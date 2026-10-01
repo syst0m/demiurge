@@ -168,6 +168,33 @@ class TestSkillSha(unittest.TestCase):
             self._write(Path(two), [("scripts/a.py", "print(2)")])
             self.assertNotEqual(first, ledger_lib.skill_sha(Path(two)))
 
+    def test_eval_outputs_and_skipped_trees_do_not_change_hash(self) -> None:
+        with tempfile.TemporaryDirectory() as one:
+            root = Path(one)
+            self._write(root, [("SKILL.md", "body"), ("evals/evals.json", "[]")])
+            first = ledger_lib.skill_sha(root)
+            self._write(root, [
+                ("evals/results-baseline.json", "{}"),
+                ("evals/transcripts-treated.json", "[]"),
+                ("evals/last_run.json", "{}"),
+                ("node_modules/pkg/index.js", "x"),
+                (".git/HEAD", "ref"),
+            ])
+            self.assertEqual(first, ledger_lib.skill_sha(root))
+            self._write(root, [("references/results-notes.json", "{}")])
+            self.assertNotEqual(first, ledger_lib.skill_sha(root))
+
+    def test_budget_raises(self) -> None:
+        with tempfile.TemporaryDirectory() as one:
+            root = Path(one)
+            self._write(root, [("SKILL.md", "body"), ("a.md", "12345")])
+            self.assertEqual(ledger_lib.skill_sha(root, max_files=2, max_bytes=9),
+                             ledger_lib.skill_sha(root))
+            with self.assertRaises(ledger_lib.SkillShaBudgetExceeded):
+                ledger_lib.skill_sha(root, max_files=1)
+            with self.assertRaises(ledger_lib.SkillShaBudgetExceeded):
+                ledger_lib.skill_sha(root, max_bytes=8)
+
     def test_rename_changes_hash(self) -> None:
         with tempfile.TemporaryDirectory() as one, tempfile.TemporaryDirectory() as two:
             self._write(Path(one), [("a.md", "same")])

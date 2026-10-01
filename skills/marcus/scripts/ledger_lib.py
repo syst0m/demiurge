@@ -287,23 +287,52 @@ def find(run_id: str, directory: Optional[Path] = None) -> List[Dict[str, Any]]:
 
 
 SKIP_PARTS = {"__pycache__", "node_modules", ".git"}
+# Written into evals/ by eval_runner.py after every measurement; they describe a run, not the skill.
+EVAL_OUTPUT_RE = re.compile(r"^(?:results-.+|transcripts-.+|last_run)\.json$")
+HOOK_MAX_FILES = 500
+HOOK_MAX_BYTES = 8 * 1024 * 1024
 
 
-def skill_sha(skill_dir: Path) -> str:
+class SkillShaBudgetExceeded(Exception):
+    """The bundle holds more files or bytes than the caller allowed."""
+
+
+def _bundle_files(root: Path) -> Iterator[Tuple[Path, str]]:
+    """(path, bundle-relative posix path) for every hashed file. Skipped trees are never entered."""
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = [d for d in dirnames if d not in SKIP_PARTS and not d.startswith(".")]
+        rel_dir = Path(dirpath).relative_to(root)
+        for name in filenames:
+            if name.startswith("."):
+                continue
+            if rel_dir.parts == ("evals",) and EVAL_OUTPUT_RE.match(name):
+                continue
+            path = Path(dirpath) / name
+            if path.is_symlink() or not path.is_file():
+                continue
+            yield path, (rel_dir / name).as_posix()
+
+
+def skill_sha(skill_dir: Path, max_files: Optional[int] = None, max_bytes: Optional[int] = None) -> str:
     """sha256 over a skill bundle's files, independent of directory listing order.
 
     Each file contributes its path relative to the bundle and the sha256 of its bytes, in
-    sorted path order. Caches, dot-directories and dotfiles are left out.
+    sorted path order. Caches, dot-directories, dotfiles and the eval outputs in ``evals/``
+    (``results-*.json``, ``transcripts-*.json``, ``last_run.json``) are left out, so a
+    measurement does not change the hash of the skill it measured. With ``max_files`` or
+    ``max_bytes`` set, raises SkillShaBudgetExceeded as soon as the bundle passes either limit.
     """
     root = Path(skill_dir)
     entries: List[Tuple[str, str]] = []
-    for path in root.rglob("*"):
-        rel = path.relative_to(root)
-        if not path.is_file() or path.is_symlink():
-            continue
-        if any(part in SKIP_PARTS or part.startswith(".") for part in rel.parts):
-            continue
-        entries.append((rel.as_posix(), hashlib.sha256(path.read_bytes()).hexdigest()))
+    total = 0
+    for path, rel in _bundle_files(root):
+        if max_files is not None and len(entries) >= max_files:
+            raise SkillShaBudgetExceeded(f"more than {max_files} files")
+        data = path.read_bytes()
+        total += len(data)
+        if max_bytes is not None and total > max_bytes:
+            raise SkillShaBudgetExceeded(f"more than {max_bytes} bytes")
+        entries.append((rel, hashlib.sha256(data).hexdigest()))
     digest = hashlib.sha256()
     for rel, file_hash in sorted(entries):
         digest.update(f"{rel}\0{file_hash}\n".encode("utf-8"))
