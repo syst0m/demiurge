@@ -12,25 +12,39 @@ jobs:
     env:
       BASE_REF: ${{ github.base_ref }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
+          persist-credentials: false
       - id: scope
         run: |
-          if git diff --name-only "origin/$BASE_REF...HEAD" | grep -qE '^(research/|skills/marcus/references/|skills/marcus/AGENT_ARCHITECTURE.md)'; then
+          # Written to a file first, so a failing git diff fails the step instead of reading as "no research change".
+          git diff --name-only "origin/$BASE_REF...HEAD" > "$RUNNER_TEMP/changed.txt"
+          if grep -qE '^(research/|skills/marcus/references/|skills/marcus/AGENT_ARCHITECTURE\.md$)' "$RUNNER_TEMP/changed.txt"; then
             echo "research=true" >> "$GITHUB_OUTPUT"
           else
             echo "No research changes; research-approval passes."
             echo "research=false" >> "$GITHUB_OUTPUT"
           fi
       - if: steps.scope.outputs.research == 'true'
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.14"
       - if: steps.scope.outputs.research == 'true'
         run: |
-          python -m pip install -r requirements-dev.txt
           git worktree add gate "origin/$BASE_REF"
+          # Packages come from the base ref too, so a pull request cannot swap what the gate scripts import.
+          if [ -f gate/requirements-dev.txt ]; then
+            python -m pip install -r gate/requirements-dev.txt
+          fi
+      - name: Research branch scope
+        if: steps.scope.outputs.research == 'true' && startsWith(github.head_ref, 'research/')
+        run: |
+          if [ ! -f gate/scripts/research/sweep_pr.py ]; then
+            echo "::notice::Base branch has no scripts/research/sweep_pr.py; bootstrap run passes."
+            exit 0
+          fi
+          python gate/scripts/research/sweep_pr.py --repo . --base "origin/$BASE_REF" check-scope
       - if: steps.scope.outputs.research == 'true'
         id: diff
         run: |
@@ -51,8 +65,16 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           PR: ${{ github.event.pull_request.number }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          OWNER: ${{ github.repository_owner }}
+          # An organization login can never approve, so an org-owned repository must name its approver.
+          OWNER: ${{ vars.RESEARCH_APPROVER_LOGIN || (github.event.repository.owner.type == 'User' && github.repository_owner || '') }}
           DENY_LOGIN: ${{ vars.RESEARCH_BOT_LOGIN }}
         run: |
+          if [ -z "$OWNER" ]; then
+            echo "::error::Set the RESEARCH_APPROVER_LOGIN repository variable to the login whose approval counts."
+            exit 1
+          fi
+          if [ -z "$DENY_LOGIN" ]; then
+            echo "::warning::RESEARCH_BOT_LOGIN is unset, so nothing tells the routine apart from the owner and this approval check is advisory."
+          fi
           python gate/scripts/research/check_verifications.py --repo . --diff diff.json --claims skills/marcus/references/claims.json --dir research/verifications
           python gate/scripts/research/check_upgrade_approval.py --pr "$PR" --head-sha "$HEAD_SHA" --owner "$OWNER" --deny-login "$DENY_LOGIN"

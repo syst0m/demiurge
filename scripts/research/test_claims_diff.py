@@ -275,7 +275,7 @@ class TestClasses(DiffCase):
         self.assertEqual(diff["enforced"], {"base": False, "head": True})
 
     def test_tooling_change_is_an_upgrade(self):
-        for rel in ("scripts/research/grade_cap.py", ".github/workflows/research-pr.yml"):
+        for rel in ("scripts/research/grade_cap.py", ".github/workflows/research-pr.yml", "requirements-dev.txt"):
             with self.subTest(rel=rel):
                 self.git("reset", "-q", "--hard", "base")
                 self.touch(rel)

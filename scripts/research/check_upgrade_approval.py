@@ -13,11 +13,14 @@ and passes when one comment meets all of these:
   - ``user.login`` equals ``--owner``
   - ``user.type`` is ``User``
   - ``user.login`` differs from ``--deny-login`` (the routine's bot login)
+  - ``created_at`` and ``updated_at`` are both present and equal, so the
+    comment was never edited (anyone with write access can edit another
+    user's comment, and the login would still read as the owner's)
   - a line of the body matches ``^/approve-upgrade ([0-9a-f]{40})$`` and the
     SHA equals ``--head-sha``
 
-A new push changes the head SHA, so it voids every earlier approval. No
-timestamps are involved. The order is: the verifier pushes its records, the
+A new push changes the head SHA, so it voids every earlier approval. An
+edited comment never counts; the owner posts a new one instead. The order is: the verifier pushes its records, the
 owner comments ``/approve-upgrade <final head SHA>``, then the owner re-runs
 the failed job.
 
@@ -32,6 +35,7 @@ Usage:
         --head-sha <40 hex> --owner <login> [--deny-login <bot login>]
 
 An empty --deny-login denies nothing, so the check still requires the owner.
+An --owner equal to --deny-login is a configuration error.
 
 Exit codes:
     0  an owner comment approves the head SHA
@@ -105,6 +109,12 @@ def approved_shas(body: str) -> List[str]:
     return shas
 
 
+def unedited(comment: Mapping[str, Any]) -> bool:
+    """True when the comment carries both timestamps and they are equal."""
+    created, updated = comment.get("created_at"), comment.get("updated_at")
+    return isinstance(created, str) and bool(created) and created == updated
+
+
 def find_approval(
     comments: Iterable[Mapping[str, Any]],
     head_sha: str,
@@ -120,6 +130,8 @@ def find_approval(
         if login != owner or user.get("type") != USER_TYPE:
             continue
         if deny_login and login == deny_login:
+            continue
+        if not unedited(comment):
             continue
         body = comment.get("body")
         if isinstance(body, str) and head_sha in approved_shas(body):
@@ -149,6 +161,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if not owner:
         print("ERROR: --owner is empty")
         return 2
+    if owner == deny_login:
+        print(f"ERROR: --owner and --deny-login are both {owner!r}; the approver must not be the routine's login")
+        return 2
     repository = args.repository or os.environ.get("GITHUB_REPOSITORY", "").strip() or REPO_PLACEHOLDER
     try:
         comments = fetch_comments(repository, args.pr)
@@ -162,6 +177,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if approval is None:
         print(f"FAIL: no /approve-upgrade {head_sha} comment from {owner} on PR #{args.pr}.")
         print(f"The owner comments '/approve-upgrade {head_sha}' after the last push, then re-runs this job.")
+        print("Edited comments do not count; post a new comment instead of editing an old one.")
         return 1
     where = approval.get("html_url") or f"comment {approval.get('id', '?')}"
     print(f"OK: {owner} approved upgrade at {head_sha} ({where}).")

@@ -14,7 +14,9 @@ These hold for the whole run. If a step would break one, stop and report instead
 - Never comment on, label, approve or review a pull request, including the one this sweep opens.
 - Open no pull request for an empty diff.
 - Never create, edit or delete a file outside `research/**` and `skills/marcus/references/**`.
-  `sweep_pr.py publish` refuses such a diff; do not work around it.
+  The one exception is the `derived_from` RESEARCH.md line of `skills/marcus/AGENT_ARCHITECTURE.md`,
+  and only `update_marcus.py --apply` in the Checks below may change it. `sweep_pr.py publish`
+  refuses any other diff; do not work around it.
 - Never write to the user's checkout at `$DEMIURGE_REPO`. Every edit, script run and commit
   happens inside the sweep worktree.
 - Run `sync-skills.sh` only with both `--check` and `--repo-only`. A full sync writes to installed
@@ -86,9 +88,17 @@ Run these from the worktree root. Stop at the first failure and report it.
 ```bash
 python scripts/research/grade_cap.py --write
 python scripts/research/grade_cap.py --check
+python skills/marcus/scripts/update_marcus.py --apply
 python scripts/run_unit_tests.py
 bash scripts/sync-skills.sh --check --repo-only
+python skills/marcus/scripts/update_marcus.py --check
 ```
+
+`update_marcus.py --apply` copies `research/RESEARCH.md` to `skills/marcus/references/` and re-pins
+the `derived_from` line of `AGENT_ARCHITECTURE.md` to the new version, date and `snapshot_sha256`.
+It edits no rule. When it fails on rule citations, a downgrade has dropped a claim below the grade
+an architecture rule cites, and only the owner may change that rule. Stop, leave the worktree in
+place, and report the violations it printed.
 
 ## Finish
 
@@ -119,7 +129,8 @@ bash scripts/sync-skills.sh --check --repo-only
 
    `publish` refuses a branch outside `research/sweep-*` or `research/verify-*`, the `main`
    branch, a diff with no `research/` change, and a diff that touches any path outside
-   `research/**` or `skills/marcus/references/**`. A refusal ends the run; report it.
+   `research/**` or `skills/marcus/references/**`, apart from the `derived_from` pin line of
+   `AGENT_ARCHITECTURE.md`. A refusal ends the run; report it.
 5. Remove the worktree from the checkout root:
 
    ```bash

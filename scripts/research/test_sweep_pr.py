@@ -27,11 +27,23 @@ GH_STUB = """\
 import json, os, sys
 with open(os.environ["GH_STUB_LOG"], "a", encoding="utf-8") as fh:
     fh.write(json.dumps(sys.argv[1:]) + "\\n")
-print("https://example.invalid/pull/1")
+print(os.environ.get("GH_STUB_OUT", "https://example.invalid/pull/1"))
+"""
+ARCH = "skills/marcus/AGENT_ARCHITECTURE.md"
+ARCH_TEXT = """# AGENT_ARCHITECTURE.md
+
+derived_from:
+  - RESEARCH.md v{version} (2026-09-06) snapshot_sha256:{sha}  # agentic engineering generally
+
+**Rule C-1.** {rule}
 """
 
 
-class TestSweepPr(unittest.TestCase):
+def arch(version: str = "1.3.1", sha: str = "a" * 64, rule: str = "A rule.") -> str:
+    return ARCH_TEXT.format(version=version, sha=sha, rule=rule)
+
+
+class SweepFixture(unittest.TestCase):
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
         self.tmp = Path(self._tmp.name).resolve()
@@ -65,6 +77,7 @@ class TestSweepPr(unittest.TestCase):
         self.write(self.repo, "research/RESEARCH.md", "# Research\n")
         self.write(self.repo, "skills/marcus/references/claims.json", "{}\n")
         self.write(self.repo, "scripts/tool.py", "print('tool')\n")
+        self.write(self.repo, ARCH, arch())
         self.commit(self.repo, "initial")
         self.git(self.repo, "push", "--quiet", "origin", "main")
 
@@ -107,6 +120,8 @@ class TestSweepPr(unittest.TestCase):
     def remote_has_branch(self) -> bool:
         return bool(self.git(self.repo, "ls-remote", "--heads", "origin", BRANCH).strip())
 
+
+class TestSweepPr(SweepFixture):
     def test_prepare_creates_branch_and_worktree(self):
         worktree = self.prepared()
         self.assertTrue((worktree / "research" / "RESEARCH.md").is_file())
@@ -224,6 +239,125 @@ class TestSweepPr(unittest.TestCase):
         proc = self.sweep(self.repo, "publish")
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
         self.assertIn("--head research/verify-pr-12", proc.stdout)
+
+    def test_publish_allows_research_change_with_arch_repin(self):
+        worktree = self.prepared()
+        self.write(worktree, "research/RESEARCH.md", "# Research\n\nNew.\n")
+        self.write(worktree, "skills/marcus/references/RESEARCH.md", "# Research\n\nNew.\n")
+        self.write(worktree, ARCH, arch(version="1.3.2", sha="b" * 64))
+        self.commit(worktree, "sweep")
+        proc = self.sweep(worktree, "publish")
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertIn("passes the publish guards (3 changed files)", proc.stdout)
+
+    def test_publish_refuses_arch_rule_edit(self):
+        worktree = self.prepared()
+        self.write(worktree, "research/RESEARCH.md", "# Research\n\nNew.\n")
+        self.write(worktree, ARCH, arch(version="1.3.2", sha="b" * 64, rule="A weaker rule."))
+        self.commit(worktree, "sneak")
+        proc = self.sweep(worktree, "publish")
+        self.assertEqual(proc.returncode, 1, proc.stdout)
+        self.assertIn(f"{ARCH} (lines other than the derived_from pin)", proc.stdout)
+
+    def test_publish_refuses_foreign_base(self):
+        self.git(self.repo, "checkout", "--quiet", "-b", "feature/code")
+        self.write(self.repo, "scripts/tool.py", "print('changed')\n")
+        self.commit(self.repo, "code change")
+        self.git(self.repo, "checkout", "--quiet", "main")
+        worktree = self.prepared()
+        self.git(worktree, "merge", "--quiet", "--ff-only", "feature/code")
+        self.write(worktree, "research/RESEARCH.md", "# Research\n\nNew.\n")
+        self.commit(worktree, "edit")
+        proc = self.sweep(worktree, "--base", "feature/code", "publish", "--yes")
+        self.assertEqual(proc.returncode, 1, proc.stdout)
+        self.assertIn("is not origin/main", proc.stdout)
+        self.assertFalse(self.remote_has_branch())
+        self.assertEqual(self.gh_calls(), [])
+
+    def test_check_scope_passes_and_refuses(self):
+        worktree = self.prepared()
+        self.write(worktree, "research/RESEARCH.md", "# Research\n\nNew.\n")
+        self.commit(worktree, "edit")
+        ok = self.sweep(worktree, "--base", "origin/main", "check-scope")
+        self.assertEqual(ok.returncode, 0, ok.stdout + ok.stderr)
+        self.write(worktree, "requirements-dev.txt", "pyyaml\n")
+        self.commit(worktree, "sneak")
+        bad = self.sweep(worktree, "--base", "origin/main", "check-scope")
+        self.assertEqual(bad.returncode, 1, bad.stdout)
+        self.assertIn("requirements-dev.txt", bad.stdout)
+
+
+class TestPushVerification(SweepFixture):
+    """push-verification, run from a detached checkout of a pushed sweep branch."""
+
+    def setUp(self):
+        super().setUp()
+        worktree = self.prepared()
+        self.write(worktree, "research/RESEARCH.md", "# Research\n\nNew.\n")
+        self.commit(worktree, "sweep")
+        self.git(worktree, "push", "--quiet", "origin", f"{BRANCH}:{BRANCH}")
+        self.pr_oid = self.git(worktree, "rev-parse", "HEAD").strip()
+        self.verify = self.tmp / "verify"
+        self.git(self.repo, "worktree", "add", "--quiet", "--detach", str(self.verify), self.pr_oid)
+        self.gh_view(BRANCH, self.pr_oid, False)
+
+    def gh_view(self, branch: str, oid: str, cross: bool) -> None:
+        self.env["GH_STUB_OUT"] = json.dumps(
+            {"headRefName": branch, "headRefOid": oid, "isCrossRepository": cross}
+        )
+
+    def remote_head(self) -> str:
+        return self.git(self.repo, "ls-remote", "origin", f"refs/heads/{BRANCH}").split()[0]
+
+    def test_pushes_verification_records(self):
+        self.write(self.verify, "research/verifications/ctx.one/abc.yaml", "verdict: pass\n")
+        self.commit(self.verify, "records")
+        head = self.git(self.verify, "rev-parse", "HEAD").strip()
+        dry = self.sweep(self.verify, "push-verification", "--pr", "5")
+        self.assertEqual(dry.returncode, 0, dry.stdout + dry.stderr)
+        self.assertEqual(self.remote_head(), self.pr_oid)
+        proc = self.sweep(self.verify, "push-verification", "--pr", "5", "--yes")
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertEqual(self.remote_head(), head)
+        self.assertEqual(self.gh_calls()[-1][:3], ["pr", "view", "5"])
+
+    def test_refuses_path_outside_verifications(self):
+        self.write(self.verify, "research/verifications/ctx.one/abc.yaml", "verdict: pass\n")
+        self.write(self.verify, "research/RESEARCH.md", "# Research\n\nEdited.\n")
+        self.commit(self.verify, "records")
+        proc = self.sweep(self.verify, "push-verification", "--pr", "5", "--yes")
+        self.assertEqual(proc.returncode, 1, proc.stdout)
+        self.assertIn("research/RESEARCH.md", proc.stdout)
+        self.assertEqual(self.remote_head(), self.pr_oid)
+
+    def test_refuses_fork_and_foreign_branch(self):
+        self.write(self.verify, "research/verifications/ctx.one/abc.yaml", "verdict: pass\n")
+        self.commit(self.verify, "records")
+        for branch, cross, message in ((BRANCH, True, "from a fork"), ("main", False, "does not match")):
+            with self.subTest(branch=branch):
+                self.gh_view(branch, self.pr_oid, cross)
+                proc = self.sweep(self.verify, "push-verification", "--pr", "5", "--yes")
+                self.assertEqual(proc.returncode, 1, proc.stdout)
+                self.assertIn(message, proc.stdout)
+        self.assertEqual(self.remote_head(), self.pr_oid)
+
+    def test_refuses_when_branch_moved(self):
+        self.write(self.verify, "research/verifications/ctx.one/abc.yaml", "verdict: pass\n")
+        self.commit(self.verify, "records")
+        self.gh_view(BRANCH, "c" * 40, False)
+        proc = self.sweep(self.verify, "push-verification", "--pr", "5", "--yes")
+        self.assertEqual(proc.returncode, 1, proc.stdout)
+        self.assertIn("pull request #5 head is", proc.stdout)
+        self.assertEqual(self.remote_head(), self.pr_oid)
+
+    def test_refuses_non_descendant_head(self):
+        self.git(self.verify, "checkout", "--quiet", "--detach", "origin/main")
+        self.write(self.verify, "research/verifications/ctx.one/abc.yaml", "verdict: pass\n")
+        self.commit(self.verify, "records")
+        proc = self.sweep(self.verify, "push-verification", "--pr", "5", "--yes")
+        self.assertEqual(proc.returncode, 1, proc.stdout)
+        self.assertIn("does not descend", proc.stdout)
+        self.assertEqual(self.remote_head(), self.pr_oid)
 
 
 if __name__ == "__main__":

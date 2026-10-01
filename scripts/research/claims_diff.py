@@ -12,7 +12,8 @@ The diff is ``upgrade`` when any of these holds:
   - a new claim has an effective grade of CONTESTED or higher
   - a claim is removed, or a claim's grade count changes
   - ``meta.enforced`` changes from true to false
-  - the changed paths touch ``scripts/research/**`` or ``.github/**``
+  - the changed paths touch ``scripts/research/**``, ``.github/**`` or
+    ``requirements-dev.txt``
 Otherwise it is ``downgrade-or-sourcing``.
 
 Usage:
@@ -52,7 +53,8 @@ UPGRADE = "upgrade"
 DOWNGRADE_OR_SOURCING = "downgrade-or-sourcing"
 EXIT_UPGRADE = 10
 
-TOOLING_PREFIXES = ("scripts/research/", ".github/")
+# requirements-dev.txt is here because it decides which packages the gate scripts import.
+TOOLING_PREFIXES = ("scripts/research/", ".github/", "requirements-dev.txt")
 SCOPE_PREFIXES = ("research/", "skills/marcus/references/")
 NEW_CLAIM_UPGRADE_RANK = rl.GRADE_RANK["CONTESTED"]
 

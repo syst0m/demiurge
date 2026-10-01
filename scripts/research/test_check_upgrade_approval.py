@@ -40,8 +40,17 @@ with open(os.environ["GH_STUB_PAGES"], encoding="utf-8") as fh:
 """
 
 
-def comment(login: str, body: str, user_type: str = "User", cid: int = 1) -> dict:
-    return {"id": cid, "user": {"login": login, "type": user_type}, "body": body}
+CREATED = "2026-10-01T10:00:00Z"
+
+
+def comment(login: str, body: str, user_type: str = "User", cid: int = 1, updated: str = CREATED) -> dict:
+    return {
+        "id": cid,
+        "user": {"login": login, "type": user_type},
+        "body": body,
+        "created_at": CREATED,
+        "updated_at": updated,
+    }
 
 
 class TestCheckUpgradeApproval(unittest.TestCase):
@@ -104,8 +113,8 @@ class TestCheckUpgradeApproval(unittest.TestCase):
         self.assertEqual(self.run_check().returncode, 1)
 
     def test_bot_login_fails_even_as_owner(self):
-        self.write_pages([comment(OWNER, f"/approve-upgrade {HEAD}")])
-        self.assertEqual(self.run_check(deny=OWNER).returncode, 1)
+        comments = [comment(OWNER, f"/approve-upgrade {HEAD}")]
+        self.assertIsNone(cua.find_approval(comments, HEAD, OWNER, OWNER))
 
     def test_bot_comment_fails(self):
         self.write_pages([comment(BOT, f"/approve-upgrade {HEAD}", user_type="Bot")])
@@ -159,6 +168,21 @@ class TestCheckUpgradeApproval(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
         calls = [json.loads(line) for line in self.log.read_text(encoding="utf-8").splitlines()]
         self.assertEqual(calls[0][1], "repos/other/repo/issues/7/comments")
+
+    def test_edited_owner_comment_fails(self):
+        self.write_pages([comment(OWNER, f"/approve-upgrade {HEAD}", updated="2026-10-02T09:00:00Z")])
+        proc = self.run_check()
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertIn("Edited comments do not count", proc.stdout)
+
+    def test_comment_without_timestamps_fails(self):
+        bare = {"id": 4, "user": {"login": OWNER, "type": "User"}, "body": f"/approve-upgrade {HEAD}"}
+        self.assertIsNone(cua.find_approval([bare], HEAD, OWNER, BOT))
+
+    def test_owner_equal_to_deny_login_is_usage_error(self):
+        self.write_pages([comment(OWNER, f"/approve-upgrade {HEAD}")])
+        proc = self.run_check(deny=OWNER)
+        self.assertEqual(proc.returncode, 2, proc.stdout + proc.stderr)
 
 
 class TestHelpers(unittest.TestCase):
