@@ -226,8 +226,8 @@ ledger_evidence: {json.dumps(ledger_runs)}   # run ids cited as ledger:<run_id>,
 ### What has not been verified for this revision
 
 - The skill instructions have been modified but not yet proven. Trust tier for this revision
-  is T2 until `eval_runner.py` demonstrates a positive delta on the new test cases AND 100%
-  pass rate on the pre-existing regression suite.
+  is T2 until `eval_runner.py` shows b > c per case; McNemar p < alpha at 20 or more cases; regression at 100%
+  against the G1 baseline.
 """
     prov_path.write_text(existing_prov + rev_block, encoding="utf-8")
 
@@ -245,7 +245,7 @@ ledger_evidence: {json.dumps(ledger_runs)}   # run ids cited as ledger:<run_id>,
     print(f"  3. Apply the minimal instructions/changes to SKILL.md (and references/scripts).")
     print(f"  4. Format and security check:")
     print(f"     python scripts/validate_skill.py {skill_dir.as_posix()}            # G4")
-    print(f"  5. Prove non-regression (100% historical pass) and positive lift:")
+    print(f"  5. Prove it per case (b > c, McNemar at 20+ cases) with regression at 100%:")
     print(f"     python scripts/eval_runner.py {skill_dir.as_posix()}               # G5")
     print(f"  6. Check route collisions if description was updated:")
     print(f"     python scripts/route_check.py {skill_dir.as_posix()} --library {args.dir.expanduser().as_posix()} # G6")

@@ -54,8 +54,8 @@ G3  model   Draft the minimum. Apply I/K/C/V/T/E rules by evidence grade.
 G4  auto    validate_skill.py — format limits, description triggers, reference depth,
             line-level security scan. Blocking findings are not waivable; suppressions
             need a stated reason and are always printed.
-G5  auto    eval_runner.py. Positive delta required. Regression suite at 100%.
-            └─ no delta → REJECT, archive with the number, return to G2.
+G5  auto    eval_runner.py. b > c per case; McNemar p < alpha at 20+ cases; regression 100%.
+            └─ b <= c → REJECT, archive with the flips, return to G2.
 G6  auto    route_check.py against the installed library, then PROVENANCE.md.
     +human  └─ high overlap → this build is a revision of an existing skill.
 ```
@@ -67,7 +67,7 @@ The loop closes at G5 → G2. A failed measurement indicates candidate error.
 This split is the whole point, so it is stated rather than left to be inferred.
 
 **Scripts decide:** whether the format conforms, whether a security pattern is present, whether a
-suppression carries a reason, whether the delta is positive, whether the regression suite held,
+suppression carries a reason, whether more cases flipped to pass than to fail, whether the regression suite held,
 whether the description collides with an installed skill.
 
 **Marcus decides:** what the failures actually have in common, which candidate explains an outcome

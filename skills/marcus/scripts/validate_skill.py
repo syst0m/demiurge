@@ -485,7 +485,7 @@ def main() -> int:
         elif warnings and args.strict:
             print("\nG4 FAILED under --strict.")
         else:
-            print("\nG4 passed. Next: G5 - eval_runner.py must show a positive delta before this ships.")
+            print("\nG4 passed. Next: G5 - eval_runner.py must show b > c per case, regression at 100%, before this ships.")
 
     if blocking or (args.strict and warnings):
         return 2

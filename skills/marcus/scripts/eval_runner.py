@@ -131,10 +131,32 @@ def majority_pass(attempts: list[str]) -> bool:
     return bool(attempts) and 2 * attempts.count("PASS") > len(attempts)
 
 
+def case_id_errors(cases: list[dict]) -> list[str]:
+    """Why these cases cannot be paired by id: a missing or empty id, or an id used twice."""
+    errors = []
+    missing = sum(1 for c in cases if not isinstance(c.get("id"), str) or not c["id"].strip())
+    if missing:
+        errors.append(f"{missing} case(s) without a non-empty string id")
+    seen: set[str] = set()
+    repeated: set[str] = set()
+    for case in cases:
+        case_id = case.get("id")
+        if isinstance(case_id, str) and case_id.strip():
+            if case_id in seen:
+                repeated.add(case_id)
+            seen.add(case_id)
+    if repeated:
+        errors.append("repeated case id(s): " + ", ".join(sorted(repeated)))
+    return errors
+
+
 def pairing_errors(baseline: dict, current: dict) -> list[str]:
     """Every field that stops a baseline pairing with this run; empty means paired."""
     errors = []
-    if sorted(baseline.get("case_ids") or []) != sorted(current["case_ids"]):
+    base_ids = list(baseline.get("case_ids") or [])
+    if len(set(base_ids)) != len(base_ids):
+        errors.append("baseline case ids repeat")
+    if sorted(base_ids) != sorted(current["case_ids"]):
         errors.append("case ids differ")
     if baseline.get("evals_sha256") != current["evals_sha256"]:
         errors.append("evals.json sha256 differs")
@@ -146,14 +168,22 @@ def pairing_errors(baseline: dict, current: dict) -> list[str]:
 
 
 def discordant(baseline_cases: list[dict], treated_cases: list[dict]) -> tuple[int, int]:
-    """(b, c): cases failing at baseline and passing treated, and the reverse."""
-    before = {str(r.get("id")): r.get("majority_pass", majority_pass(r.get("attempts", [])))
+    """(b, c): cases failing at baseline and passing treated, and the reverse.
+
+    Raises ValueError unless both sides hold the same unique, non-empty case ids, so no case is
+    dropped or counted twice.
+    """
+    for side, rows in (("baseline", baseline_cases), ("treated", treated_cases)):
+        errors = case_id_errors(rows)
+        if errors:
+            raise ValueError(f"{side}: " + "; ".join(errors))
+    before = {r["id"]: r.get("majority_pass", majority_pass(r.get("attempts", [])))
               for r in baseline_cases}
+    if sorted(before) != sorted(r["id"] for r in treated_cases):
+        raise ValueError("baseline and treated runs hold different case ids")
     b = c = 0
     for row in treated_cases:
-        was = before.get(str(row.get("id")))
-        if was is None:
-            continue
+        was = before[row["id"]]
         if row["majority_pass"] and not was:
             b += 1
         elif was and not row["majority_pass"]:
@@ -373,6 +403,11 @@ def main() -> int:
         print("A skill without evals has not been measured, and an unmeasured skill does not ship.",
               file=sys.stderr)
         return 2
+    id_errors = case_id_errors(cases)
+    if id_errors:
+        print("error: G5 pairs cases by id, so every case needs its own id: "
+              + "; ".join(id_errors), file=sys.stderr)
+        return 2
     unready = unready_case_ids(cases)
     if unready:
         print("error: case(s) with no expected_behavior to grade against: "
@@ -390,7 +425,7 @@ def main() -> int:
 
     evals_path = find_evals(skill_dir)
     evals_sha256 = hashlib.sha256(evals_path.read_bytes()).hexdigest()
-    case_ids = [str(c.get("id")) for c in cases]
+    case_ids = [c["id"] for c in cases]
 
     mode = "baseline" if args.baseline else "treated"
     total_calls = len(cases) * args.k * 2  # each attempt plus its judge call
@@ -582,7 +617,11 @@ def main() -> int:
     before = baseline.get("pass_pow_k_overall") or 0.0
     after = report["pass_pow_k_overall"] or 0.0
     regression = report["pass_pow_k_regression"]
-    b, c = discordant(baseline.get("cases", []), results)
+    try:
+        b, c = discordant(baseline.get("cases", []), results)
+    except ValueError as exc:
+        print(f"\nG5 REJECTED: unpaired cases ({exc}).", file=sys.stderr)
+        return 2
     p_value = ledger_lib.mcnemar_exact(b, c)
     basis = "significant" if len(results) >= SIGNIFICANCE_MIN_CASES else "directional"
     report.update({"discordant_b": b, "discordant_c": c, "p_value": p_value,

@@ -91,7 +91,7 @@ Build progress:
 - [ ] G2  Candidates extracted by contrasting success against failure
 - [ ] G3  Minimal draft written; contract stated; rules applied by grade
 - [ ] G4  validate_skill.py passes (format + security)
-- [ ] G5  eval_runner.py shows positive delta; regression suite at 100%
+- [ ] G5  eval_runner.py: b > c per case; McNemar p < alpha at 20 or more cases; regression at 100%
 - [ ] G6  route_check.py finds no collision; PROVENANCE.md written
 ```
 
@@ -219,7 +219,7 @@ Invokes Marcus to design and scaffold a new skill live on disk:
 - Measures unassisted baseline via `python scripts/eval_runner.py <skill> --baseline --yes` (G1).
 - Synthesizes rules and mechanical hooks (G2–G3).
 - Lints formatting and security via `python scripts/validate_skill.py <skill>` (G4).
-- Enforces measured positive delta and 100% regression pass via `python scripts/eval_runner.py <skill> --yes` (G5).
+- Enforces per-case pairing via `python scripts/eval_runner.py <skill> --yes` (G5): b > c per case; McNemar p < alpha at 20 or more cases; regression at 100%.
 - Verifies route collision via `python scripts/route_check.py` and records `PROVENANCE.md` (G6).
 
 ### 3. Modify / Add Feature: `/marcus modify <path-or-name>` or `/marcus edit <path-or-name>`
@@ -231,7 +231,7 @@ Invokes Marcus to modify or add features to an existing skill without regression
 - Measures pre-modification baseline on the updated test suite via `python scripts/eval_runner.py <skill> --baseline --yes` (G1).
 - Applies minimal edits to instructions, contracts, workflows, or scripts (G3).
 - Lints formatting and security via `python scripts/validate_skill.py <skill>` (G4).
-- Enforces strict non-regression: 100% pass on historical regression suite AND positive lift on new capability cases via `python scripts/eval_runner.py <skill> --yes` (G5).
+- Enforces strict non-regression via `python scripts/eval_runner.py <skill> --yes` (G5): b > c per case; McNemar p < alpha at 20 or more cases; regression at 100%.
 - Verifies route collision if description was altered via `python scripts/route_check.py` and appends revision block to `PROVENANCE.md` (G6).
 
 ### 4. Audit: `/marcus audit <path-or-url>` or `/marcus review <path-or-url>`
@@ -247,13 +247,13 @@ Audits a third-party or local skill:
 
 Updates Marcus himself against upstream research findings when Buckminster updates `RESEARCH.md`:
 
-1. Compares `~/Documents/code/demiurge/research/RESEARCH.md` version against `derived_from` in `AGENT_ARCHITECTURE.md`.
-2. Syncs `~/Documents/code/demiurge/research/RESEARCH.md` to `references/RESEARCH.md`.
+1. Compares the demiurge checkout's `research/RESEARCH.md` version against `derived_from` in `AGENT_ARCHITECTURE.md`.
+2. Syncs that `research/RESEARCH.md` to `references/RESEARCH.md`, and re-pins the `derived_from` line to its version, date and `snapshot_sha256`.
 3. Reports rule diffs: added, changed, removed, or confidence grade shifts (`[SETTLED]`, `[CONTESTED]`, `[VENDOR]`, `[EMERGING]`).
-4. Regenerates `AGENT_ARCHITECTURE.md` and `~/Documents/code/demiurge/docs/AGENT_DESIGN.md`, bumping `derived_from`.
+4. Regenerates `AGENT_ARCHITECTURE.md` and the checkout's `docs/AGENT_DESIGN.md`, bumping `derived_from`.
 5. Flags production agents generated against superseded rules for review.
 6. Runs gate tests (`evals/run_gate_tests.py`) and validator (`scripts/validate_skill.py`).
-7. Synchronizes deployed skills via `~/Documents/code/demiurge/scripts/sync-skills.sh`.
+7. Checks distribution with `bash scripts/sync-skills.sh --check --repo-only` from the checkout. Deploying to installed skills (`sync-skills.sh` with no flags) writes outside the repo; it is the user's step and needs their explicit approval.
 
 Run mechanically via:
 `python scripts/update_marcus.py --apply`

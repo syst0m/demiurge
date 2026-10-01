@@ -201,12 +201,62 @@ class TestApplyExitCode(unittest.TestCase):
         self.addCleanup(self._tmp.cleanup)
         self.tmp = Path(self._tmp.name)
 
-    def test_apply_with_arch_drift_exits_1(self):
+    def test_apply_repins_version_drift(self):
         repo = TempRepo(self.tmp, arch_version="1.2.0")
+        proc = repo.run("--apply")
+        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        self.assertIn("APPLIED: Pinned AGENT_ARCHITECTURE.md derived_from to RESEARCH.md v1.2.1", proc.stdout)
+        self.assertEqual(
+            repo.arch.read_text(encoding="utf-8"),
+            ARCH_TEXT.format(version="1.2.1", date="2026-09-06", sha=SNAPSHOT),
+        )
+
+    def test_apply_with_unpinnable_arch_drift_exits_1(self):
+        repo = TempRepo(self.tmp)
+        repo.arch.write_text(
+            "---\nderived_from:\n  - RESEARCH.md v1.2.0 (2026-09-06)\n---\n# Architecture\n", encoding="utf-8"
+        )
         proc = repo.run("--apply")
         self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
         self.assertIn("RESULT:", proc.stdout)
         self.assertIn("Edit it by hand.", proc.stdout)
+
+    def test_research_only_change_repins_after_regrade(self):
+        """A sweep edits RESEARCH.md only; after grade_cap --write, --apply leaves --check clean."""
+        repo = TempRepo(self.tmp)
+        edited = RESEARCH_TEXT.replace("version: 1.2.1", "version: 1.2.2").replace(
+            "snapshot_date: 2026-09-06", "snapshot_date: 2026-10-01"
+        ) + "`[EMERGING]` Another rule.\n"
+        research = edited.encode("utf-8")
+        (self.tmp / "research" / "RESEARCH.md").write_bytes(research)
+        repo.claims_json.write_bytes(compiled_claims(research, SOURCES_TEXT.encode("utf-8")).encode("utf-8"))
+        before = repo.run("--check")
+        self.assertEqual(before.returncode, 1, before.stdout + before.stderr)
+        apply = repo.run("--apply")
+        self.assertEqual(apply.returncode, 0, apply.stdout + apply.stderr)
+        self.assertEqual(
+            (self.tmp / "skills" / "marcus" / "references" / "RESEARCH.md").read_bytes(), research
+        )
+        expected_sha = snapshot_of(research, SOURCES_TEXT.encode("utf-8"))
+        self.assertIn(f"RESEARCH.md v1.2.2 (2026-10-01) snapshot_sha256:{expected_sha}", repo.arch.read_text(encoding="utf-8"))
+        after = repo.run("--check")
+        self.assertEqual(after.returncode, 0, after.stdout + after.stderr)
+
+    def test_apply_does_not_repin_against_stale_claims(self):
+        repo = TempRepo(self.tmp, arch_version="1.2.0")
+        (self.tmp / "research" / "sources.yaml").write_bytes(SOURCES_TEXT.replace("false", "true").encode("utf-8"))
+        before = repo.arch.read_text(encoding="utf-8")
+        proc = repo.run("--apply")
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertNotIn("APPLIED: Pinned", proc.stdout)
+        self.assertEqual(repo.arch.read_text(encoding="utf-8"), before)
+
+    def test_repin_keeps_indent_and_comment(self):
+        text = ARCH_TEXT.format(version="1.0.0", date="2026-01-01", sha="b" * 64)
+        pinned = um.repin_derived_from(text, "1.3.2", "2026-10-01", "c" * 64)
+        self.assertEqual(pinned, ARCH_TEXT.format(version="1.3.2", date="2026-10-01", sha="c" * 64))
+        unpinned = "derived_from:\n  - RESEARCH.md v1.0.0 (2026-01-01)\n"
+        self.assertIsNone(um.repin_derived_from(unpinned, "1", "d", "e"))
 
 
 class TestClaimsJson(unittest.TestCase):
@@ -285,8 +335,8 @@ class TestDerivedSnapshot(unittest.TestCase):
         self.assertIn("DRIFT: AGENT_ARCHITECTURE.md derived_from snapshot_sha256 does not match claims.json.", proc.stdout)
         self.assertIn(f"Expected: RESEARCH.md v1.2.1 (2026-09-06) snapshot_sha256:{SNAPSHOT}", proc.stdout)
         apply = repo.run("--apply")
-        self.assertEqual(apply.returncode, 1, apply.stdout + apply.stderr)
-        self.assertIn("Edit it by hand.", apply.stdout)
+        self.assertEqual(apply.returncode, 0, apply.stdout + apply.stderr)
+        self.assertIn(f"snapshot_sha256:{SNAPSHOT}", repo.arch.read_text(encoding="utf-8"))
 
     def test_wrong_date_is_drift(self):
         repo = TempRepo(self.tmp, arch_date="2026-09-01")

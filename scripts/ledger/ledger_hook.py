@@ -18,7 +18,9 @@ The hook reads the harness event JSON on stdin and never blocks the user:
 No prompt text is ever stored. Text after a ``::bad`` class is accepted and dropped.
 Every import sits inside one top-level try. Any failure writes ``ts, event, exception type``
 to ``hook-errors.log`` in the ledger directory, and the hook still exits 0. A lock timeout
-drops the row the same way. No network access.
+drops the row the same way; a ``::bad`` or ``::ok`` prompt is still blocked, with the reason
+``ledger: not recorded (error logged)``. ``skill_sha`` is left off a row when the skill holds
+more than ``HOOK_MAX_FILES`` files or ``HOOK_MAX_BYTES`` bytes. No network access.
 
 The installed copy lives next to ledger_lib.py (see ``ledger.py install-hook``). In the repo,
 ledger_lib.py is found under skills/marcus/scripts.
@@ -198,7 +200,11 @@ def _run(event, raw):
             row["session"] = session
         directory = skill_dir(name)
         if directory is not None:
-            row["skill_sha"] = ledger_lib.skill_sha(directory)
+            try:
+                row["skill_sha"] = ledger_lib.skill_sha(directory, max_files=ledger_lib.HOOK_MAX_FILES,
+                                                        max_bytes=ledger_lib.HOOK_MAX_BYTES)
+            except ledger_lib.SkillShaBudgetExceeded:
+                pass  # too large to hash inside the hook's time budget; the row goes without it
         row.update(transcript_meta())
         return row
 
@@ -242,18 +248,24 @@ def _run(event, raw):
         outcome = {"label": label, "source": "user"}
         if bad and bad.group(1) and bad.group(1).lower() in ledger_lib.FAILURE_CLASSES:
             outcome["failure_class"] = bad.group(1).lower()
-        last = None
-        if session:
-            last = next((row for row in session_rows(session) if row["kind"] == "invoke"),
-                        None)
-        if last is None:
-            reason = "ledger: no skill run in this session to label"
-        else:
-            verdict = {"run_id": last["run_id"], "kind": "verdict", "origin": "organic",
-                       "skill": last["skill"], "session": session, "harness": harness,
-                       "outcome": outcome}
-            ledger_lib.append(verdict)
-            reason = f"ledger: recorded {label} for {last['skill']}"
+        # The block decision is printed even when recording fails, so the capture text never
+        # reaches the model.
+        reason = "ledger: not recorded (error logged)"
+        try:
+            last = None
+            if session:
+                last = next((row for row in session_rows(session) if row["kind"] == "invoke"),
+                            None)
+            if last is None:
+                reason = "ledger: no skill run in this session to label"
+            else:
+                verdict = {"run_id": last["run_id"], "kind": "verdict", "origin": "organic",
+                           "skill": last["skill"], "session": session, "harness": harness,
+                           "outcome": outcome}
+                ledger_lib.append(verdict)
+                reason = f"ledger: recorded {label} for {last['skill']}"
+        except Exception as exc:  # logged like any hook failure; the block still goes out
+            _log_error(event, exc)
         sys.stdout.write(json.dumps({"decision": "block", "reason": reason}) + "\n")
         return
 
