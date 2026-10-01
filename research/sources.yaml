@@ -211,7 +211,7 @@ claims:
       asserted: SETTLED
       cap: CONTESTED
       cap_evidence: CONTESTED
-      unverified: true
+      unverified: false
       cap_reasons:
       - vendor_gt1
       - lt2_primary
@@ -559,10 +559,11 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: CONTESTED
-      cap_evidence: SETTLED
-      unverified: true
+      cap: VENDOR
+      cap_evidence: VENDOR
+      unverified: false
       cap_reasons:
+      - vendor_only
       - aggregator_unresolved
       - lt3_independent
       - lt2_primary

@@ -3,7 +3,7 @@
 ```yaml
 version: 2.0.0
 derived_from:
-  - RESEARCH.md v1.3.1 (2026-09-06) snapshot_sha256:f36d8fcaa26813a5c6f25aa11fcf82d79e08be9002a469971e8fe90efe609477  # agentic engineering generally
+  - RESEARCH.md v1.3.2 (2026-09-06) snapshot_sha256:99b5404309fe81343f9935bc392bce38a0592a0667b86fad5fee6b7b5ff6a650  # agentic engineering generally
   - references/EVIDENCE.md v1.0.0 (2026-09-04)  # generating skills and harnesses
 maintained_by: marcus
 audience: machine — Marcus reads this to generate agents
@@ -310,7 +310,7 @@ ELICIT GAP ──> BASELINE CURRENT ──> CONTRAST & DRAFT ──> VALIDATE �
 2. **G1 Baseline Current**: The baseline for a revision is the **unmodified skill** evaluated on the expanded test suite (existing regression cases + new feature cases).
 3. **G2–G3 Contrast & Draft**: Identify the specific delta needed to satisfy the new requirement while preserving existing invariants. Keep changes minimal to prevent prompt bloat.
 4. **G4 Validate**: Run `scripts/validate_skill.py <skill-dir>` to ensure format and security invariants remain intact.
-5. **G5 Prove (Non-Regression Invariant)**: Re-evaluate with the modified skill. **Historical regression suite must hold at 100%** (zero regression tolerated) AND new capability cases must demonstrate positive lift.
+5. **G5 Prove (Non-Regression Invariant)**: Re-evaluate with the modified skill. **Historical regression suite must hold at 100%** (zero regression tolerated) AND more cases must flip to pass than to fail against the baseline (b > c per case, McNemar p < alpha at 20 or more cases).
 6. **G6 Register & Append**: Check library description overlap via `scripts/route_check.py` if the description was altered. Append an immutable revision entry to `PROVENANCE.md`.
 
 ## 7. Regeneration

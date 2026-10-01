@@ -1,9 +1,9 @@
 {
   "schema": "demiurge.claims.compiled.v1",
-  "research_version": "1.3.1",
-  "sources_sha256": "616cda2c4790ea7dcc5dd381364896ac4283be1f50072677c0250801edad65e2",
-  "research_sha256": "3743e2de86e1cc27027bf0945f49a4c6fdba6f167e20395d3f0edc89f1f70f97",
-  "snapshot_sha256": "f36d8fcaa26813a5c6f25aa11fcf82d79e08be9002a469971e8fe90efe609477",
+  "research_version": "1.3.2",
+  "sources_sha256": "6143192f668a73355b3aa2cf2bc23d713c5a8fc1d372567853a3bc6b5736fd67",
+  "research_sha256": "457c36306b68ffdf59767309a809b29e56055c37f460a31bc6693f5834ea632b",
+  "snapshot_sha256": "99b5404309fe81343f9935bc392bce38a0592a0667b86fad5fee6b7b5ff6a650",
   "enforced": false,
   "claims": [
     {
@@ -92,7 +92,7 @@
           "scope": null,
           "asserted": "SETTLED",
           "effective": "CONTESTED",
-          "unverified": true
+          "unverified": false
         }
       ],
       "claim_sha256": "1c293c8686c3be01d7dfdced2e221a8c3305a03be8ef35691d7b53de2960adf7",
@@ -274,8 +274,8 @@
         {
           "scope": null,
           "asserted": "SETTLED",
-          "effective": "SETTLED",
-          "unverified": true
+          "effective": "VENDOR",
+          "unverified": false
         }
       ],
       "claim_sha256": "4c603a2a7681ba14de97af7138afee21e4c31184c83d2180b373f675fb7c8ad2",
@@ -1166,10 +1166,10 @@
     }
   ],
   "counts": {
-    "SETTLED": 47,
+    "SETTLED": 46,
     "CONTESTED": 6,
     "EMERGING": 11,
-    "VENDOR": 3,
-    "UNVERIFIED": 52
+    "VENDOR": 4,
+    "UNVERIFIED": 50
   }
 }

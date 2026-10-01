@@ -35,6 +35,7 @@ import argparse
 import datetime as dt
 import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
@@ -110,7 +111,6 @@ def compute_reasons(sources: Sequence[Mapping[str, Any]]) -> List[str]:
         members.setdefault(_group(s), []).append(s)
     primary = [g for g, group in members.items() if any(etype(s) in PRIMARY_TYPES for s in group)]
     vgroups = [g for g, group in members.items() if all(etype(s) == "vendor" for s in group)]
-    unresolved = any(_unresolved_aggregator(s) or etype(s) == "none" for s in sources)
 
     found = set()
     if any(s.get("supports") == "contrasts" and etype(s) not in UNCOUNTED_TYPES for s in sources):
@@ -119,7 +119,9 @@ def compute_reasons(sources: Sequence[Mapping[str, Any]]) -> List[str]:
         found.add("retracted_source")
     if len(vgroups) > 1:
         found.add("vendor_gt1")
-    if counted and all(etype(s) == "vendor" for s in counted) and not unresolved:
+    # Uncounted sources (unresolved aggregators, type none) weigh nothing here, so adding one can
+    # never lift a vendor-only claim out of the VENDOR cap.
+    if counted and all(etype(s) == "vendor" for s in counted):
         found.add("vendor_only")
     if not counted:
         found.add("no_countable_sources")
@@ -186,7 +188,9 @@ def evaluate_claim(claim_id: str, claim: Mapping[str, Any], enforced: bool) -> C
     for g in grades:
         asserted = g["asserted"]
         effective = rl.lower_grade(asserted, cap if enforced else cap_evidence)
-        unverified = rl.GRADE_RANK[cap] < rl.GRADE_RANK[asserted] and has_debt
+        # Flag only a grade shown above what the full cap allows; a grade already at its cap has
+        # nothing left for enforcement to lower.
+        unverified = rl.GRADE_RANK[cap] < rl.GRADE_RANK[effective] and has_debt
         results.append(GradeResult(g.get("scope"), asserted, cap, cap_evidence, effective, unverified, list(reasons)))
     return ClaimResult(claim_id, False, reasons, results)
 
@@ -437,8 +441,9 @@ def stats_lines(results: Mapping[str, ClaimResult]) -> List[str]:
         for grade in result.grades:
             effective[grade.effective] += 1
             unverified += int(grade.unverified)
-            enforced_grade = grade.asserted if result.skipped else rl.lower_grade(grade.asserted, grade.cap)
-            settled_if_enforced += int(enforced_grade == "SETTLED")
+            # Negated claims have no methodology to survive, so they are counted only as skipped.
+            if not result.skipped:
+                settled_if_enforced += int(rl.lower_grade(grade.asserted, grade.cap) == "SETTLED")
     lines = [f"{grade}={count}" for grade, count in effective.items()]
     lines.append(f"SETTLED if enforced={settled_if_enforced}")
     lines.append(f"UNVERIFIED={unverified}")
@@ -531,7 +536,10 @@ def cmd_check(paths: Paths) -> int:
     enforced = bool(meta.get("enforced"))
     enforce_after = _date_value(meta.get("enforce_after"))
     if not enforced and enforce_after is not None and dt.date.today() >= enforce_after:
-        print(f"WARNING: enforce_after {enforce_after.isoformat()} has passed and meta.enforced is still false")
+        message = f"enforce_after {enforce_after.isoformat()} has passed and meta.enforced is still false"
+        if os.environ.get("GITHUB_ACTIONS") == "true":
+            print(f"::warning title=grade_cap::{message}")
+        print(f"WARNING: {message}")
 
     if errors:
         for error in errors:

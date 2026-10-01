@@ -1,7 +1,7 @@
 # RESEARCH.md — Agentic Engineering Snapshot
 
 ```yaml
-version: 1.3.1
+version: 1.3.2
 snapshot_date: 2026-09-06
 maintained_by: buckminster
 consumed_by: marcus
@@ -52,7 +52,7 @@ Evidence reasons (a contrasting, retracted or second vendor source) lower a grad
 
 <!-- claim:ctx.failures-keep-prune --> `[CONTESTED]` `[UNVERIFIED]` **Keep failures or prune them?** Manus keeps them to avoid repeating errors. Anthropic prunes them to reduce noise. Likely task-dependent.
 
-<!-- claim:ctx.cache-thrashing --> `[CONTESTED]` `[UNVERIFIED]` **Prompt-cache thrashing.** Volatile data (todo lists, timestamps, dynamic configs) placed inside the stable cached prefix forces full context re-processing on every mutation. Keep volatile task data at the END of context, not in rules files or the system prompt prefix. *Solo-operator finding; fresh-subagent-per-task patterns are immune.* Source: [Claude Code Architecture Documentation](https://docs.anthropic.com/claude-code/rules) `[VENDOR]`, [AAIF Agent Configuration Specification](https://aaif.io/specs/workspace-rules), [Cursor Rules Specification](https://docs.cursor.com/context/rules-for-ai) `[VENDOR]`.
+<!-- claim:ctx.cache-thrashing --> `[CONTESTED]` **Prompt-cache thrashing.** Volatile data (todo lists, timestamps, dynamic configs) placed inside the stable cached prefix forces full context re-processing on every mutation. Keep volatile task data at the END of context, not in rules files or the system prompt prefix. *Solo-operator finding; fresh-subagent-per-task patterns are immune.* Source: [Claude Code Architecture Documentation](https://docs.anthropic.com/claude-code/rules) `[VENDOR]`, [AAIF Agent Configuration Specification](https://aaif.io/specs/workspace-rules), [Cursor Rules Specification](https://docs.cursor.com/context/rules-for-ai) `[VENDOR]`.
 
 <!-- claim:ctx.length-degradation --> `[SETTLED]` `[UNVERIFIED]` **Context Length Degradation & Positional Bias.** Adherence to instructions and reasoning capability degrade measurably as input length increases (13.9%–85% drop across models even with perfect retrieval; [Context Length Alone Hurts LLM Performance](https://consensus.app/papers/details/1aecfc3c99265aeab55fa1d25acf1135/?utm_source=unknown)). This is driven by intrinsic U-shaped attention bias ([Found in the Middle](https://consensus.app/papers/details/694c246f6c4750f893e1b08a0ad3f62e/?utm_source=unknown), [Lost in the Middle at Birth](https://consensus.app/papers/details/bac6172df89c5adbbc84945f9a05cb52/?utm_source=unknown)). Workaround: session chunking every 30-45 minutes; progressive disclosure; stable instructions at top of cacheable prefix.
 
@@ -95,7 +95,7 @@ Evidence reasons (a contrasting, retracted or second vendor source) lower a grad
 
 <!-- rule:R-EVAL-1 --> *Marcus Rule (R-EVAL-1):* Every agent ships with a starter eval suite (capability/regression) based on real failures.
 
-<!-- claim:eval.benchmark-integrity --> **Benchmark integrity crisis** `[SETTLED]` `[UNVERIFIED]`: Popular benchmarks exhibit critical data quality flaws: 32.67% of resolved instances in SWE-bench involve solution leakage and 31.08% rely on weak test cases incapable of confirming patch correctness ([SWE-Bench+](https://consensus.app/papers/details/a2fde21b76f5544c9edca661a2b6e868/?utm_source=unknown), [SWE-rebench](https://consensus.app/papers/details/84224bee0b8e5a0794a3b69ae7f3e1c1/?utm_source=unknown), [Cursor SWE-bench Leakage Investigation](https://www.cursor.com/blog/swe-bench-leakage) `[VENDOR]`).
+<!-- claim:eval.benchmark-integrity --> **Benchmark integrity crisis** `[VENDOR]`: Popular benchmarks exhibit critical data quality flaws: 32.67% of resolved instances in SWE-bench involve solution leakage and 31.08% rely on weak test cases incapable of confirming patch correctness ([SWE-Bench+](https://consensus.app/papers/details/a2fde21b76f5544c9edca661a2b6e868/?utm_source=unknown), [SWE-rebench](https://consensus.app/papers/details/84224bee0b8e5a0794a3b69ae7f3e1c1/?utm_source=unknown), [Cursor SWE-bench Leakage Investigation](https://www.cursor.com/blog/swe-bench-leakage) `[VENDOR]`).
 
 <!-- claim:eval.new-benchmarks --> **New benchmarks** `[EMERGING]`:
 
@@ -342,3 +342,4 @@ V1.0 scope: packaging only. No installation protocol, sandboxing, or permission 
 | 1.2.1 | 2026-09-27 | Maintenance | Renumbered Primitive Taxonomy to Section 11; fixed typo; aligned the [SETTLED] legend with RESEARCH_METHODOLOGY.md. No grades changed. |
 | 1.3.0 | 2026-09-27 | grade_cap | grade_cap: 1 grade lowered (ctx.cache-thrashing SETTLED→CONTESTED); 52 flagged `[UNVERIFIED]`. |
 | 1.3.1 | 2026-09-30 | Maintenance | Rules show their ids in the prose. Split R-RULES-1 into R-RULES-1..4 and R-CA-1 into R-CA-1..3. Every rule in research/sources.yaml records its basis (evidence or design) and the claim ids it rests on. No grades changed. |
+| 1.3.2 | 2026-09-30 | grade_cap | grade_cap: 2 grades lowered (ctx.cache-thrashing SETTLED→CONTESTED, eval.benchmark-integrity SETTLED→VENDOR); 50 flagged `[UNVERIFIED]`. Unresolved aggregators no longer lift a vendor-only claim above `[VENDOR]`, and a grade already at its cap is not flagged. |

@@ -124,7 +124,7 @@ vgroups   = groups whose members are all vendor
 | `contrasting_source` | Evidence | Any source with `supports: contrasts` whose type counts |
 | `retracted_source` | Evidence | Any source with `reception.retracted` true |
 | `vendor_gt1` | Evidence | More than one all-vendor group |
-| `vendor_only` | Evidence | Every counted source is vendor, no aggregator is unresolved and no source has `type: none` |
+| `vendor_only` | Evidence | There is a counted source, and every counted source is vendor. Unresolved aggregators and `type: none` sources are not counted, so adding one never lifts a claim out of `[VENDOR]` |
 | `no_countable_sources` | Debt | No counted source |
 | `aggregator_unresolved` | Debt | An aggregator source has no `resolves_to` |
 | `lt3_independent` | Debt | Between one and two independence groups |
@@ -147,11 +147,13 @@ cap(R): VENDOR    if vendor_only in R
 cap_evidence = cap(reasons ∩ EVIDENCE)
 cap          = cap(reasons)
 effective    = lower_rank(asserted, cap if meta.enforced else cap_evidence)
-unverified   = rank(cap) < rank(asserted) and (reasons ∩ DEBT) non-empty
+unverified   = rank(cap) < rank(effective) and (reasons ∩ DEBT) non-empty
 ```
 
 - With no countable source the cap is EMERGING. The legend keeps CONTESTED for conflicting sources or a single study.
 - `polarity: negate` claims (the hype list) are skipped and reported as `skipped_negate`.
+- `unverified` compares the cap with the grade shown, so a grade already at its cap carries no flag, and no grade is flagged once `meta.enforced` is true.
+- Adding a source that is not counted never raises `cap` or `effective`; a unit test holds this.
 
 ---
 
@@ -162,9 +164,9 @@ The methodology applies to existing claims in two stages.
 1. **Evidence reasons lower the grade at once.** A contrasting, retracted or second vendor source is already in the record, so `cap_evidence` applies while `meta.enforced` is false.
 2. **Debt reasons only flag the grade** while `meta.enforced` is false. RESEARCH.md shows `` `[UNVERIFIED]` `` beside the grade and Marcus keeps acting on the grade shown.
 
-`meta.enforce_after` holds the date after which the operator runs the debt pass and opens a PR that sets `enforced: true`. The flip is a PR, so CI stays deterministic. From that date on, while `enforced` is false, `grade_cap.py --check` prints a WARNING and still exits 0.
+`meta.enforce_after` holds the date after which the operator runs the debt pass and opens a PR that sets `enforced: true`. The flip is a PR, so CI stays deterministic. From that date on, while `enforced` is false, `grade_cap.py --check` prints a WARNING and still exits 0. Under GitHub Actions it also prints a `::warning` annotation, so the overdue flip shows on every run.
 
-`--stats` prints `SETTLED if enforced=<n>`, the count of SETTLED grades that would survive enforcement today.
+`--stats` prints `SETTLED if enforced=<n>`, the count of SETTLED grades on affirmed claims that would survive enforcement today. Negated claims are left out of it and counted under `skipped_negate`.
 
 ---
 
