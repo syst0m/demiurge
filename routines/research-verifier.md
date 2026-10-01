@@ -129,24 +129,19 @@ verdict is expected to fail this check; push it anyway so the owner sees it.
 
 ## Push
 
-1. Confirm that the new commit touches nothing outside `research/verifications/`:
+1. Commit the records, then push them with the gate copy of `sweep_pr.py`, the only push path:
 
    ```bash
    git add research/verifications
    git commit -m "chore(research): add verification records"
-   if git diff --name-only "origin/$BRANCH" HEAD | grep -qv '^research/verifications/'; then
-     echo "ERROR: change outside research/verifications" >&2; exit 1
-   fi
+   python "../verify-$PR-gate/scripts/research/sweep_pr.py" push-verification --pr "$PR" --yes
    ```
 
-2. Push to the pull request branch only, as a fast-forward:
-
-   ```bash
-   git push origin "HEAD:refs/heads/$BRANCH"
-   ```
-
-   If the push is rejected because the branch moved, stop and report it. Never force-push.
-3. Remove both worktrees from the checkout root:
+   `push-verification` looks the pull request up again and refuses a branch outside
+   `research/sweep-*`, a fork, a branch that moved since the pull request's head, a HEAD that does
+   not descend from it, and any new change outside `research/verifications/**`. It pushes without
+   force. If it refuses, stop and report it. Never run `git push` yourself.
+2. Remove both worktrees from the checkout root:
 
    ```bash
    cd "$DEMIURGE_REPO"
