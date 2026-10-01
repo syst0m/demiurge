@@ -8,12 +8,14 @@ from __future__ import annotations
 import contextlib
 import io
 import json
+import os
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 import grade_cap as gc
 import research_lib as rl
@@ -119,7 +121,7 @@ class TestAlgorithm(unittest.TestCase):
         self.assertEqual(loose.reasons, ["reception_unchecked"])
         self.assertEqual((loose.cap, loose.effective, loose.unverified), ("CONTESTED", "SETTLED", True))
         strict = one(sources, enforced=True)
-        self.assertEqual((strict.effective, strict.unverified), ("CONTESTED", True))
+        self.assertEqual((strict.effective, strict.unverified), ("CONTESTED", False))
 
     def test_three_practitioner_sources_lack_primary(self):
         result = one([src("p1", "practitioner"), src("p2", "practitioner"), src("p3", "practitioner")])
@@ -145,12 +147,38 @@ class TestAlgorithm(unittest.TestCase):
         self.assertIn("vendor_only", result.reasons)
         self.assertEqual((result.cap, result.effective), ("VENDOR", "VENDOR"))
 
-    def test_vendor_plus_unresolved_aggregator_is_not_vendor_only(self):
+    def test_vendor_only_at_its_cap_is_not_flagged(self):
+        for enforced in (False, True):
+            with self.subTest(enforced=enforced):
+                result = one([src("v1", "vendor")], enforced=enforced)
+                self.assertEqual((result.cap, result.effective, result.unverified), ("VENDOR", "VENDOR", False))
+
+    def test_vendor_plus_unresolved_aggregator_stays_vendor_only(self):
         aggregator = src("a1", "aggregator", quote=None, accessed=None)
-        result = one([src("v1", "vendor"), aggregator])
-        self.assertNotIn("vendor_only", result.reasons)
-        self.assertIn("aggregator_unresolved", result.reasons)
-        self.assertEqual((result.cap, result.effective, result.unverified), ("CONTESTED", "SETTLED", True))
+        for enforced in (False, True):
+            with self.subTest(enforced=enforced):
+                result = one([src("v1", "vendor"), aggregator], enforced=enforced)
+                self.assertIn("vendor_only", result.reasons)
+                self.assertIn("aggregator_unresolved", result.reasons)
+                self.assertEqual((result.cap, result.effective), ("VENDOR", "VENDOR"))
+
+    def test_adding_an_uncounted_source_never_raises_the_grade(self):
+        extras = [
+            src("a9", "aggregator", quote=None, accessed=None),
+            src("n9", "none", quote=None, accessed=None),
+            src("c9", "aggregator", supports="contrasts"),
+            src("r9", "peer", reception={"checked": True, "retracted": True}),
+        ]
+        bases = [[src("v1", "vendor")], [src("v1", "vendor"), src("v2", "vendor")], primary3(), [src("p1")], []]
+        for base in bases:
+            for extra in extras:
+                for enforced in (False, True):
+                    with self.subTest(base=[s["id"] for s in base], extra=extra["id"], enforced=enforced):
+                        before = one(base, enforced=enforced)
+                        after = one(base + [extra], enforced=enforced)
+                        rank = rl.GRADE_RANK
+                        self.assertLessEqual(rank[after.cap], rank[before.cap])
+                        self.assertLessEqual(rank[after.effective], rank[before.effective])
 
     def test_resolved_aggregator_counts_as_its_target(self):
         resolved = src("a1", "aggregator", resolves_to="https://doi.org/10.0/x", resolves_to_type="peer")
@@ -302,9 +330,12 @@ class TestWriteAndCheck(CliCase):
     def test_check_warns_after_enforce_after(self):
         rl.dump_sources(sidecar(enforce_after="2000-01-01"), self.sources)
         self.run_cli("--write")
-        code, out = self.run_cli("--check")
-        self.assertEqual(code, 0, out)
-        self.assertIn("WARNING: enforce_after 2000-01-01 has passed", out)
+        for actions, annotated in (("", False), ("true", True)):
+            with self.subTest(actions=actions), mock.patch.dict(os.environ, {"GITHUB_ACTIONS": actions}):
+                code, out = self.run_cli("--check")
+                self.assertEqual(code, 0, out)
+                self.assertIn("WARNING: enforce_after 2000-01-01 has passed", out)
+                self.assertEqual("::warning title=grade_cap::enforce_after 2000-01-01" in out, annotated)
 
     def test_write_refuses_comments(self):
         self.sources.write_text(self.sources.read_text(encoding="utf-8") + "# note\n", encoding="utf-8")
@@ -317,7 +348,7 @@ class TestWriteAndCheck(CliCase):
     def test_enforced_write_lowers_debt_grades(self):
         rl.dump_sources(sidecar(enforced=True), self.sources)
         self.run_cli("--write")
-        self.assertIn("**Thin claim.** `[CONTESTED]` `[UNVERIFIED]` and", self.research.read_text(encoding="utf-8"))
+        self.assertIn("**Thin claim.** `[CONTESTED]` and", self.research.read_text(encoding="utf-8"))
         code, out = self.run_cli("--check")
         self.assertEqual(code, 0, out)
         self.assertTrue(out.strip().endswith("(enforced=true)"))
@@ -329,7 +360,7 @@ class TestReports(CliCase):
         self.assertEqual(code, 0)
         lines = out.splitlines()
         self.assertIn("SETTLED=3", lines)
-        self.assertIn("SETTLED if enforced=2", lines)
+        self.assertIn("SETTLED if enforced=1", lines)
         self.assertIn("UNVERIFIED=1", lines)
         self.assertIn("  lt3_independent=1", lines)
         self.assertIn("skipped_negate=1", lines)
@@ -356,7 +387,7 @@ class TestReports(CliCase):
         self.assertEqual(
             out.strip(),
             "| 1.3.0 | 2026-09-27 | grade_cap | grade_cap: 1 grade lowered (ctx.thin#0 SETTLED→CONTESTED); "
-            "1 flagged `[UNVERIFIED]`. |",
+            "0 flagged `[UNVERIFIED]`. |",
         )
 
     def test_debt_prints_arrows_through_a_pipe(self):
