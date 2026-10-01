@@ -190,7 +190,7 @@ The repository is organized to isolate research, skills, tools, and rules:
 |---|---|
 | `.agents/` | Canonical workspace configuration and path-scoped rules (`.agents/rules/`). |
 | `assets/` | Project diagrams, visual documentation, and brand media. |
-| `docs/` | Human-facing guides: Installation, Operating Guide, Design Manual, and Master Documentation. |
+| `docs/` | Human-facing guides: Installation, Operating Guide, Design Manual, Master Documentation, Claims Ledger (`CLAIMS_LEDGER.md`), Research Pipeline (`RESEARCH_PIPELINE.md`), Skill Registry (`SKILL_REGISTRY.md`) and Run Ledger (`RUN_LEDGER.md`). |
 | `evals/` | Deterministic gate regression tests and independent industry benchmark adapters. |
 | `research/` | Master empirical knowledge base (`RESEARCH.md`), updated solely through reviewed proposals, and its sources sidecar (`sources.yaml`). |
 | `routines/` | Prompts for the scheduled research sweep and the fresh-context verifier ([RESEARCH_PIPELINE.md](RESEARCH_PIPELINE.md)). |
@@ -362,6 +362,20 @@ python scripts/run_unit_tests.py
 
 # 9. Check research distribution drift without touching deployed skills
 bash scripts/sync-skills.sh --check --repo-only
+
+# 10. Check the claims ledger caps and the compiled claims.json
+python scripts/research/grade_cap.py --check
+
+# 11. Check the rule citation tokens in AGENT_ARCHITECTURE.md
+python scripts/research/check_rule_citations.py
+
+# 12. Parse the repo's own skills into the registry format, writing nothing
+python scripts/registry/build_registry.py --repo-only --check
+
+# 13. Check Marcus against the research snapshot, claims.json and his own gates
+python skills/marcus/scripts/update_marcus.py --check
 ```
 
-CI runs this list in `.github/workflows/checks.yml`.
+`.github/workflows/checks.yml` runs every command above except the SWE-bench dry run (6); step 1
+runs inside step 13. Its `checks` job also runs `grade_cap.py --check-changelog` on pull requests, and its `pre-commit` job
+runs step 7 with Vale skipped.

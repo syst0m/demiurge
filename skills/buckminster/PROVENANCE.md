@@ -34,7 +34,7 @@ G4 (`validate_skill.py`) reports 0 blocking findings.
 ## What Has Not Been Verified
 
 No G1 baseline or G5 treated run is recorded. The trust tier stays **T2** until `eval_runner.py`
-shows a positive delta over a recorded baseline.
+shows b > c per case; McNemar p < alpha at 20 or more cases; regression at 100% against a recorded baseline.
 
 ## Trifecta Position
 

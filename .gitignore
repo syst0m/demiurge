@@ -6,6 +6,12 @@ scratch/
 eval_results/**/*.json
 !eval_results/**/report.md
 
+# Written by skills/marcus/scripts/eval_runner.py after every measurement; transcripts
+# can hold prompt text and local paths.
+skills/*/evals/results-*.json
+skills/*/evals/transcripts-*.json
+skills/*/evals/last_run.json
+
 
 
 

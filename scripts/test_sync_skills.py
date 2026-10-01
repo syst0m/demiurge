@@ -179,6 +179,55 @@ class TestSyncSkills(unittest.TestCase):
         self.assertIn("REFUSE   marcus: uncommitted changes in target working tree", result.stdout)
         self.assertTrue((deployed / "local-edit.md").is_file())
 
+    def git_target(self, path: Path, *args: str) -> None:
+        env = {
+            "HOME": str(self.home),
+            "PATH": os.environ.get("PATH", ""),
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_AUTHOR_NAME": "Test",
+            "GIT_AUTHOR_EMAIL": "test@example.invalid",
+            "GIT_COMMITTER_NAME": "Test",
+            "GIT_COMMITTER_EMAIL": "test@example.invalid",
+        }
+        for key in ("SYSTEMROOT", "TEMP", "TMP", "COMSPEC"):
+            if key in os.environ:
+                env[key] = os.environ[key]
+        proc = subprocess.run(["git", "-C", str(path), *args], capture_output=True, text=True, env=env, timeout=60)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+
+    def test_refusal_writes_nothing_to_any_target(self):
+        alpha = self.root / "skills" / "alpha"
+        alpha.mkdir()
+        (alpha / "SKILL.md").write_text("alpha v2\n", encoding="utf-8")
+        self.deploy_identical()
+        (self.target / "alpha").mkdir()
+        (self.target / "alpha" / "SKILL.md").write_text("alpha v1\n", encoding="utf-8")
+        deployed = self.target / "marcus"
+        self.git_target(deployed, "init", "-q")
+        (deployed / "local-edit.md").write_text("uncommitted\n", encoding="utf-8")
+        (self.root / "skills" / "marcus" / "SKILL.md").write_text("changed\n", encoding="utf-8")
+        result = self.run_sync()
+        self.assertEqual(result.returncode, 3, result.stdout + result.stderr)
+        self.assertIn("REFUSE   marcus", result.stdout)
+        self.assertNotIn("SYNCED", result.stdout)
+        self.assertEqual((self.target / "alpha" / "SKILL.md").read_text(encoding="utf-8"), "alpha v1\n")
+
+    def test_eval_outputs_do_not_block_a_git_target(self):
+        self.deploy_identical()
+        deployed = self.target / "marcus"
+        self.git_target(deployed, "init", "-q")
+        self.git_target(deployed, "add", "-A")
+        self.git_target(deployed, "commit", "-q", "-m", "deployed")
+        evals = deployed / "evals"
+        evals.mkdir()
+        for name in ("results-baseline.json", "transcripts-baseline.json", "last_run.json"):
+            (evals / name).write_text("{}\n", encoding="utf-8")
+        (self.root / "skills" / "marcus" / "SKILL.md").write_text("changed\n", encoding="utf-8")
+        result = self.run_sync()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("SYNCED   marcus", result.stdout)
+        self.assertTrue((evals / "results-baseline.json").is_file())
+
     def test_last_run_json_preserved(self):
         self.deploy_identical()
         evals = self.target / "marcus" / "evals"
