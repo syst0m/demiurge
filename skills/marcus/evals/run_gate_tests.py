@@ -288,8 +288,11 @@ def main() -> int:
                         code == 2 and "no-isolate on a baseline" in out,
                         f"exit={code}"))
 
+        library = root / "library"
+        (library / "other-skill").mkdir(parents=True, exist_ok=True)
         code, out = run([str(SCRIPTS / "eval_runner.py"), str(scaffolded),
                          "--baseline", "--yes", "--runner-model", "stub",
+                         "--skills-dir", str(library),
                          "--runner", "claude -p {prompt}"])
         results.append(("regression-10 runner without {settings} refused",
                         code == 2 and "{settings} placeholder" in out,
@@ -301,7 +304,8 @@ def main() -> int:
                         encoding="utf-8")
         stub_runner = f"{sys.executable} {stub} {{prompt}} {{settings}}"
         code, out = run([str(SCRIPTS / "eval_runner.py"), str(scaffolded),
-                         "--baseline", "--yes", "--runner-model", "stub", "--runner", stub_runner])
+                         "--baseline", "--yes", "--runner-model", "stub",
+                         "--skills-dir", str(library), "--runner", stub_runner])
         results.append(("regression-11 infrastructure stub aborts the run",
                         code == 2 and "ABORTED" in out
                         and not (scaffolded / "evals" / "results-baseline.json").exists(),
