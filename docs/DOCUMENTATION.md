@@ -16,6 +16,10 @@ canonical_path: docs/DOCUMENTATION.md
    - [3.3 Design Manual Summary](#33-design-manual-summary)
    - [3.4 Research Methodology Summary](#34-research-methodology-summary)
    - [3.5 Independent Benchmarking Summary](#35-independent-benchmarking-summary)
+   - [3.6 Claims Ledger Summary](#36-claims-ledger-summary)
+   - [3.7 Skill Registry Summary](#37-skill-registry-summary)
+   - [3.8 Research Pipeline Summary](#38-research-pipeline-summary)
+   - [3.9 Run Ledger Summary](#39-run-ledger-summary)
 4. [Repository Layout](#4-repository-layout)
 5. [Low-Level Design (LLD) Architecture](#5-low-level-design-lld-architecture)
    - [5.1 Harness Implementation](#51-harness-implementation)
@@ -141,6 +145,41 @@ The Demiurge documentation suite is structured into focused guides addressing sp
   - Latest Run Metrics (`v0.2.0`): $+40.00\%$ resolution lift ($\Delta$), $82.0\%$ prompt-cache hit ratio, $74\%$ lower cost per resolved task.
   - Multi-benchmark roadmap (SWE-bench, GAIA, Tau-bench, BIPIA, BFCL) and execution cadences.
 
+### 3.6 Claims Ledger Summary
+
+- **Target File:** [docs/CLAIMS_LEDGER.md](CLAIMS_LEDGER.md)
+- **Scope:** How every graded claim in `research/RESEARCH.md` is tied to its sources in `research/sources.yaml` and checked by `scripts/research/grade_cap.py`.
+- **Key Concepts:**
+  - Claim and rule anchors, the sidecar schema and the compiled `skills/marcus/references/claims.json`.
+  - The `grade_cap` algorithm: evidence reasons lower a grade, debt reasons flag it `[UNVERIFIED]` until enforcement.
+  - The debt queue that opens every Buckminster sweep.
+
+### 3.7 Skill Registry Summary
+
+- **Target File:** [docs/SKILL_REGISTRY.md](SKILL_REGISTRY.md)
+- **Scope:** The local registry of skills, tiers, gates, research snapshots and eval state built by `scripts/registry/build_registry.py`.
+- **Key Concepts:**
+  - The registry is written to `~/.demiurge/` and never committed, because the repo is public and the installed library is private.
+  - CI runs `--repo-only --check`, which parses the repo skills and writes nothing.
+
+### 3.8 Research Pipeline Summary
+
+- **Target File:** [docs/RESEARCH_PIPELINE.md](RESEARCH_PIPELINE.md)
+- **Scope:** How research changes reach `main`: the sweep opens a pull request, a fresh-context verifier re-retrieves the sources behind any upgrade, and the owner approves the head SHA and merges.
+- **Key Concepts:**
+  - The `research-approval` check runs the gate scripts from the base ref and classifies each diff as `upgrade` or `downgrade-or-sourcing`.
+  - An upgrade needs verification records and an owner `/approve-upgrade <sha>` comment; a new push voids earlier approvals.
+  - Bot versus owner-credential identity, and deny rules as defense in depth under a ruleset on `main`.
+
+### 3.9 Run Ledger Summary
+
+- **Target File:** [docs/RUN_LEDGER.md](RUN_LEDGER.md)
+- **Scope:** The metadata-only run ledger at `~/.demiurge/ledger/`: which skill ran, in which harness and model, and whether the user labeled it `ok` or `bad`.
+- **Key Concepts:**
+  - Ledger counts never gate, score or rank a skill or harness; a failure reaches a skill only as a staged case a person copies into `evals.json`.
+  - `::bad [<class>]` and `::ok` capture through a pinned, fail-open hook added beside existing hooks.
+  - `modify_skill.py --evidence ledger:<run_id>` at G0, per-case paired G5 with McNemar at 20 or more cases, and dated kill criteria checked by `ledger.py check-kill`.
+
 ---
 
 ## 4. Repository Layout
@@ -151,10 +190,14 @@ The repository is organized to isolate research, skills, tools, and rules:
 |---|---|
 | `.agents/` | Canonical workspace configuration and path-scoped rules (`.agents/rules/`). |
 | `assets/` | Project diagrams, visual documentation, and brand media. |
-| `docs/` | Human-facing guides: Installation, Operating Guide, Design Manual, and Master Documentation. |
+| `docs/` | Human-facing guides: Installation, Operating Guide, Design Manual, Master Documentation, Claims Ledger (`CLAIMS_LEDGER.md`), Research Pipeline (`RESEARCH_PIPELINE.md`), Skill Registry (`SKILL_REGISTRY.md`) and Run Ledger (`RUN_LEDGER.md`). |
 | `evals/` | Deterministic gate regression tests and independent industry benchmark adapters. |
-| `research/` | Master empirical knowledge base (`RESEARCH.md`), updated solely through reviewed proposals. |
+| `research/` | Master empirical knowledge base (`RESEARCH.md`), updated solely through reviewed proposals, and its sources sidecar (`sources.yaml`). |
+| `routines/` | Prompts for the scheduled research sweep and the fresh-context verifier ([RESEARCH_PIPELINE.md](RESEARCH_PIPELINE.md)). |
 | `scripts/` | Deterministic verification harnesses, security linters, link checkers, and sync tools. |
+| `scripts/research/` | Claims ledger tooling: `grade_cap.py` and `check_rule_citations.py` ([CLAIMS_LEDGER.md](CLAIMS_LEDGER.md)), plus the pull request pipeline scripts `sweep_pr.py`, `claims_diff.py`, `check_verifications.py` and `check_upgrade_approval.py` ([RESEARCH_PIPELINE.md](RESEARCH_PIPELINE.md)). |
+| `scripts/registry/` | Local skill registry builder ([SKILL_REGISTRY.md](SKILL_REGISTRY.md)). |
+| `scripts/ledger/` | Run ledger hook and command line: `ledger_hook.py` and `ledger.py` ([RUN_LEDGER.md](RUN_LEDGER.md)). |
 | `skills/` | Source code and manifests for [Marcus](../skills/marcus/) and [Buckminster](../skills/buckminster/). |
 
 *Note: Edit files in `skills/` directly. Never edit deployed skill directories manually.*
@@ -180,7 +223,7 @@ flowchart TD
         G2[G2 Contrast Analysis]
         G3[G3 Draft Validation]
         G4[G4 validate_skill.py]
-        G5[G5 eval_runner.py Delta > 0]
+        G5[G5 eval_runner.py Per-Case b > c]
         G6[G6 route_check.py Collision]
     end
 
@@ -216,7 +259,7 @@ Every emitted artifact maintains complete historical traceability:
 
 ### 5.3 Workspace Rules Architecture
 
-Workspace context files in `.agents/rules/` adhere to Section 10 Primitive standards:
+Workspace context files in `.agents/rules/` adhere to Section 11 Primitive standards:
 
 - **Universal Frontmatter:** Requires YAML frontmatter declaring `description`, `globs`, and activation scopes.
 - **Cache Optimization:** Rules remain static to maximize prompt-cache hits across turns. Volatile task data is strictly barred from rule files.
@@ -230,12 +273,12 @@ Demiurge structures deterministic enforcement into three mechanical tiers, elimi
 
 Enforced in `skills/marcus/references/SPEC.md` and executed via deterministic scripts:
 
-- **Gate G0 (Intake):** Automated scaffold check (`skills/marcus/scripts/new_skill.py`) refusing synthesis without $\ge 3$ documented failure traces or ungrounded research claims.
+- **Gate G0 (Intake):** Automated scaffold check (`skills/marcus/scripts/new_skill.py`) refusing synthesis without $\ge 3$ documented failure traces or ungrounded research claims. `modify_skill.py` also accepts `--evidence ledger:<run_id>` for a run labeled `bad` in the run ledger ([RUN_LEDGER.md](RUN_LEDGER.md)).
 - **Gate G1 (Baseline):** Executes untreated baseline task runs before skill synthesis via `skills/marcus/scripts/eval_runner.py`.
 - **Gate G2 (Contrast):** Isolates capability differentiators by contrasting successful and failed trajectories on identical tasks.
 - **Gate G3 (Draft / Grounding):** Verifies the draft directly targets the capability delta and cites verified entries in `research/RESEARCH.md`.
 - **Gate G4 (Validation):** Executes `validate_skill.py` checking line bounds ($\le 500$ lines), AST security patterns, negative parallelism tropes, and superfluous comments.
-- **Gate G5 (Proof / Eval Gate):** Executes `eval_runner.py` demanding $\Delta > 0$ on capability cases and 100% pass on regression cases (`skills/marcus/evals/evals.json`).
+- **Gate G5 (Proof / Eval Gate):** Executes `eval_runner.py`, pairing baseline and treated runs per case on an odd-k majority. It demands 100% pass on regression cases and more cases flipping to pass than to fail, plus an exact McNemar p-value below alpha at 20 or more cases (`skills/marcus/evals/evals.json`).
 - **Gate G6 (Registration):** Executes `route_check.py` to ensure description embeddings do not collide with existing library entries.
 
 #### Tier 2: Repository & Pre-Commit OS Gates
@@ -313,4 +356,26 @@ python evals/benchmarks/swebench/run_swebench_eval.py --slice 0:5 --dry-run
 
 # 7. Run full pre-commit security, style, and negative-parallelism checks
 python -m pre_commit run --all-files
+
+# 8. Run every repo unit test
+python scripts/run_unit_tests.py
+
+# 9. Check research distribution drift without touching deployed skills
+bash scripts/sync-skills.sh --check --repo-only
+
+# 10. Check the claims ledger caps and the compiled claims.json
+python scripts/research/grade_cap.py --check
+
+# 11. Check the rule citation tokens in AGENT_ARCHITECTURE.md
+python scripts/research/check_rule_citations.py
+
+# 12. Parse the repo's own skills into the registry format, writing nothing
+python scripts/registry/build_registry.py --repo-only --check
+
+# 13. Check Marcus against the research snapshot, claims.json and his own gates
+python skills/marcus/scripts/update_marcus.py --check
 ```
+
+`.github/workflows/checks.yml` runs every command above except the SWE-bench dry run (6); step 1
+runs inside step 13. Its `checks` job also runs `grade_cap.py --check-changelog` on pull requests, and its `pre-commit` job
+runs step 7 with Vale skipped.

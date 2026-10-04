@@ -75,7 +75,10 @@ need.**
 Required before proceeding:
 
 1. **At least 3 real instances** where the current setup failed or was tediously re-explained.
-   Transcripts, task descriptions, or a written account — but real, and from the user.
+   Transcripts, task descriptions, or a written account — but real, and from the user. A run from
+   the run ledger counts when its latest label is `bad`: cite it as `--evidence ledger:<run_id>`
+   (`scripts/modify_skill.py`). Only its metadata is copied; see `docs/RUN_LEDGER.md` in the
+   Demiurge repo.
 2. **What "correct" looks like**, checkable by someone who was not there.
 3. **Data touched** and **write surface** (what it can mutate).
 4. **Deployment volume estimate** — feeds the economics warning above.
@@ -138,9 +141,24 @@ Re-run the eval suite **with** the artefact. Two suites, following the documente
 | **Regression** | The real failures from G0 | **100%**, always. Any drop is a hard reject. |
 | **Capability** | Aspirational cases | Starts near 0; measures progress |
 
-**Acceptance requires a positive measured delta over the G1 baseline.** No delta, no artefact. Report
-`pass^k` rather than `pass@1` for anything intended to run unattended, and record the **model-harness
-pair** with every number (EVIDENCE §4) — a score without its harness is not a result.
+**Acceptance requires more cases flipping to pass than to fail against the G1 baseline.** No
+per-case gain, no artefact. The rule:
+
+1. **Pair per case, never per attempt.** k is odd and at least 3, and each case's result is the
+   majority over its k attempts.
+2. **Refuse an unpaired baseline.** The baseline must match the case ids, the `evals.json` sha256,
+   k and the runner template.
+3. **Count the discordant cases.** b = cases failing at baseline and passing when treated; c = the
+   reverse.
+4. **Accept** when the regression suite holds pass^k 1.0 and b > c.
+5. **With 20 or more cases**, also require the exact McNemar p-value below `--alpha` (default 0.05)
+   and record `g5_basis: significant`. Below 20, record `g5_basis: directional` and print the
+   p-value. A directional result makes no significance claim; say so wherever it is recorded.
+
+`eval_runner.py` prints `discordant b=<b> c=<c> p=<p> basis=<basis>`. Report `pass^k` rather than
+`pass@1` for anything intended to run unattended, and record the **model-harness pair** with every
+number (EVIDENCE §4) — a score without its harness is not a result. Ledger counts never feed this
+gate; only paired replay does.
 
 A rejected draft is not deleted. It goes to the archive with its measured delta, which is what makes
 the archive worth keeping.
@@ -189,7 +207,7 @@ When modifying an existing skill or adding features:
 2. **Baseline (G1)**: The baseline is the unmodified skill evaluated on the expanded test suite (existing regression suite + new test cases).
 3. **Drafting (G2–G3)**: Incremental modifications to instructions or references. Invariants remain intact.
 4. **Validation (G4)**: Format and security scan via `scripts/validate_skill.py`.
-5. **Proving (G5)**: Strict non-regression — 100% pass rate on all pre-existing regression cases, plus measured positive delta on new feature test cases. Any regression on historical cases triggers a hard rejection.
+5. **Proving (G5)**: Strict non-regression — 100% pass rate on all pre-existing regression cases, plus more cases flipping to pass than to fail under the §3 G5 rule. Any regression on historical cases triggers a hard rejection.
 6. **Registration (G6)**: Route check against library to detect new description collisions. Provenance updated via append-only revision entry in `PROVENANCE.md`.
 
 ---
@@ -258,7 +276,7 @@ The factory says no, and says which finding it is applying:
 | **No evidence of need** | Fewer than 3 real failures at G0 | §1 |
 | **Not economic** | Volume below the design-cost threshold | §3 |
 | **Unmeasurable** | No checkable definition of correct | §1, §7 |
-| **No lift** | G5 delta ≤ 0 | §1 |
+| **No lift** | G5 b ≤ c, or p ≥ alpha at 20 or more cases | §1 |
 | **Regression** | Any regression case drops | §7 |
 | **Duplicate** | Description collides at G6 | §6 |
 | **Unjustified scripts** | Bundled executables without a recorded reason | §5 |
