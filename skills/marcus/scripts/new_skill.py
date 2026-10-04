@@ -35,6 +35,9 @@ MIN_EVIDENCE = 3
 ECONOMIC_THRESHOLD = 2000
 NAME_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 RESERVED = ("anthropic", "claude")
+# Compiled by scripts/research/grade_cap.py --write; names the RESEARCH.md snapshot a scaffold
+# was built against, so a later regrade shows which skills predate it.
+CLAIMS_JSON = Path(__file__).resolve().parent.parent / "references" / "claims.json"
 
 SKILL_TEMPLATE = """---
 name: {name}
@@ -93,6 +96,8 @@ baseline_score: null    # G1 - fill from eval_runner.py --baseline
 treated_score: null     # G5 - fill from eval_runner.py
 delta: null
 model_harness_pair: null
+research_snapshot: {snapshot}
+research_claims: []     # claim ids from references/claims.json this skill's design rests on
 ```
 
 ## Evidence of need (G0)
@@ -106,7 +111,7 @@ model_harness_pair: null
 ## What has not been verified
 
 - This skill has not been measured. Trust tier stays **T2** and it must not be installed
-  until `eval_runner.py` shows a positive delta over the G1 baseline.
+  until `eval_runner.py` shows b > c per case; McNemar p < alpha at 20 or more cases; regression at 100% against the G1 baseline.
 - No security review of bundled scripts has been recorded. If `scripts/` is populated, state
   here why executable content is necessary - script-bundling skills are 2.12x more likely to
   carry a vulnerability.
@@ -159,6 +164,22 @@ it is measured against that baseline.
 
 These do not co-vary. Success up *and* unsafe actions up is not an improvement.
 """
+
+
+def research_snapshot(claims_path: Path = CLAIMS_JSON) -> str:
+    """Return the YAML flow mapping {version, snapshot_sha256} read from claims.json.
+
+    Both values are null when the file is missing or unreadable; a warning goes to stderr.
+    """
+    try:
+        claims = json.loads(claims_path.read_text(encoding="utf-8"))
+        version = claims["research_version"]
+        digest = claims["snapshot_sha256"]
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        print(f"WARNING: research snapshot unknown, {claims_path.name} unreadable ({exc})",
+              file=sys.stderr)
+        return "{version: null, snapshot_sha256: null}"
+    return f'{{version: "{version}", snapshot_sha256: "{digest}"}}'
 
 
 def refuse(message: str) -> int:
@@ -220,6 +241,7 @@ def main() -> int:
         evidence="\n".join(f"{i}. {e}" for i, e in enumerate(evidence, 1)),
         volume=args.volume or "not estimated",
         economics=economics,
+        snapshot=research_snapshot(),
     ), encoding="utf-8")
 
     evals = dict(EVALS_TEMPLATE, skill=name)
@@ -246,7 +268,7 @@ def main() -> int:
     print("  1. Fill the TODOs in SKILL.md and evals/evals.json.")
     print(f"  2. python eval_runner.py {target.as_posix()} --baseline     # G1")
     print(f"  3. python validate_skill.py {target.as_posix()}             # G4")
-    print(f"  4. python eval_runner.py {target.as_posix()}                # G5 - must show a positive delta")
+    print(f"  4. python eval_runner.py {target.as_posix()}                # G5 - must show b > c per case")
     print(f"  5. python route_check.py {target.as_posix()} --library {args.dir.expanduser().as_posix()}  # G6")
     print("\nIt stays T2 and uninstalled until G5 passes.")
     return 0

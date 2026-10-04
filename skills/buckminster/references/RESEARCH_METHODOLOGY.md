@@ -3,6 +3,14 @@
 This is a method. The point of writing it down is that the same method produces
 comparable snapshots over time — so version-to-version diffs in `RESEARCH.md` mean something.
 
+## Contents
+
+1. The toolchain: connectors, web tools, evidence hierarchy
+2. The method: Steps 1-6, including the canonical `[SETTLED]` definition in Step 4
+3. Standards for the output
+4. Producing an update, including source debt
+5. Anti-patterns
+
 ---
 
 ## 1. The toolchain
@@ -88,10 +96,15 @@ empirically validated.
 
 Confidence markers are assigned at capture time. `RESEARCH.md` uses four:
 
-- `[SETTLED]` — supported by at least 3 independent, verified resources, with all 3 confirming the finding (empirical backing)
+- `[SETTLED]` — at least 3 independent sources confirm it, at most 1 is a vendor, and reception of
+  every paper source is checked (Step 3: no retraction or correction notice, and citing papers do not
+  mainly contrast with it). A paper source whose reception was not checked does not count toward the 3.
 - `[CONTESTED]` — credible sources disagree, or it rests on fewer than 3 independent studies
 - `[VENDOR]` — the claim originates with a party selling the thing (capped at max 1 of the 3 required sources)
 - `[EMERGING]` — real but too new to have been tested in practice
+
+This `[SETTLED]` definition is canonical. `RESEARCH.md`, `SKILL.md` and `docs/OPERATING_GUIDE.md`
+repeat it and link here. `scripts/research/grade_cap.py` enforces this mechanically (Phase 1).
 
 **Mandatory Tri-Source Verification Rule:**
 
@@ -167,6 +180,35 @@ into every agent generated afterwards.
 **Append-only for the change log.** Entries are added, never rewritten — self-rewritten agent
 memory has measured failure modes (brevity bias, context collapse), and this file is exactly the
 kind of accumulated knowledge those findings describe.
+
+### Source debt
+
+`research/sources.yaml` is the claims ledger. `scripts/research/grade_cap.py` reads it and caps
+each grade at what the recorded sources support. A claim whose asserted grade sits above its cap for
+lack of records is source debt: `RESEARCH.md` shows `[UNVERIFIED]` beside the grade. Every sweep
+starts with `grade_cap.py --debt --limit 10` and pays down the top of that queue before any new
+topic. For each source on a debt claim, Buckminster:
+
+1. **Resolves aggregator links.** A consensus.app link only points at a paper. Follow it to the
+   paper, set `resolves_to` to the DOI or publisher URL, and set `resolves_to_type` from the tiers
+   in Section 1. If it cannot be resolved, leave it unresolved and say so.
+2. **Runs reception through scite.** Check `editorialNotices` and Smart Citations (Step 3), then
+   fill `reception`: `checked: true`, `retracted`, and the supporting and contrasting counts. Specs,
+   vendor documents and practitioner sources are exempt. If scite is absent, leave `checked: false`.
+3. **Records retrieval.** Set `accessed` to the date the source was opened, and `quote` to a
+   verbatim passage of 25 words or fewer that states the finding. Set `independence_group` so that
+   sources sharing authors, data or a sponsor fall in one group. Set `verified_by` and
+   `last_verified` on the claim.
+
+Two limits hold without exception:
+
+- **Never add a source that was not retrieved in the same session.** No URL, DOI, title or quote
+  from memory or from an earlier pass. A source that cannot be retrieved stays out of the ledger.
+- **Never edit `asserted` upward without a PR that names the new sources.** `grade_cap.py` only
+  lowers grades. A higher grade is a human decision, made in review, on the sources listed there.
+
+Paying down debt clears the `[UNVERIFIED]` flag. It can also lower a grade, when a resolved source
+turns out to be a vendor, a contrasting study or a retraction. Report that as a reclassification.
 
 ---
 
