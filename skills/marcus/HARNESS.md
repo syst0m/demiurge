@@ -37,7 +37,7 @@ not.
 | **Observation** | Three tiers by load cost: `SKILL.md` on activation; `references/` on a stated *load before:* trigger; scripts executed, never read — only their output enters context. Any third-party `SKILL.md` under audit is fenced as data. |
 | **Context** | `RESEARCH.md` and `EVIDENCE.md` are read, never written by Marcus. The build archive is maintained as a **selected** population — expanding context with every previous design measures *worse* than ignoring prior designs entirely, so accepted entries and same-family near-misses load. |
 | **Control** | Seven gates in fixed order. Each names an owner (`human` / `auto` / `model`) and a failure action. Gates G0, G1, G4, G5 and G6 are `auto` or `human` — Marcus does not adjudicate them. G2 and G3 are `model`, and they are the only steps where his judgement is the mechanism. |
-| **Action** | Reads open. Writes confined to the target skill directory. The scripts make no network calls and install no packages. `eval_runner.py` is the only one that spends money and refuses to without `--yes`. Nothing Marcus generates inherits write permissions by default. |
+| **Action** | Reads open. Writes confined to the target skill directory; `install_skill.py --yes` also writes the chosen project or library, the skill's `PROVENANCE.md` and `~/.demiurge/installs.jsonl`, and never `~/.claude/settings.json` or `~/.gemini/config/hooks.json` (Rule G-13). The scripts make no network calls and install no packages. `eval_runner.py` is the only one that spends money and refuses to without `--yes`. Nothing Marcus generates inherits write permissions by default. |
 | **State** | `PROVENANCE.md` per generated skill (origin, trust tier, measured deltas, what was not verified) and `archive/index.jsonl` append-only across builds. Rejected drafts are archived with their measured delta rather than deleted — the rejections are what make the archive worth keeping. Never rewritten wholesale. |
 | **Verification** | Deterministic where one exists: `validate_skill.py` (G4), `eval_runner.py` (G5), `route_check.py` (G6), `run_gate_tests.py` for the harness itself. Fresh-context review where none exists — the reviewer must not be the context that produced the work. |
 
@@ -58,6 +58,8 @@ G5  auto    eval_runner.py. b > c per case; McNemar p < alpha at 20+ cases; regr
             └─ b <= c → REJECT, archive with the flips, return to G2.
 G6  auto    route_check.py against the installed library, then PROVENANCE.md.
     +human  └─ high overlap → this build is a revision of an existing skill.
+            Install-scope question: hooks listed in plain words, then Project / Global /
+            Staging. install_skill.py applies the answer and refuses a scope above the tier.
 ```
 
 The loop closes at G5 → G2. A failed measurement indicates candidate error.

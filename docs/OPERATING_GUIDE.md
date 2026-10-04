@@ -175,6 +175,47 @@ Run deterministic Gate G4 validation on skills/marcus and skills/buckminster.
 Verify route collision against existing skills.
 ```
 
+### Choosing an Install Scope (Rule G-13)
+
+A skill's hooks run in every session that loads the skill. Where the skill lives decides which
+sessions those are, so Marcus asks before linking anything. The question comes at the end of G6
+and in `/marcus interactive`.
+
+1. **Marcus lists the hooks.** `install_skill.py --describe` prints one line per hook in plain
+   words, for example: *"PreToolUse hook deny_outbound.py runs before every MCP tool, Bash and
+   PowerShell call and can block it."* It also counts the deny rules.
+2. **Marcus asks:** *"Where should `<skill>` and its hooks live?"*
+   - **Project (choose folder):** links the skill into that folder's `.claude/skills/` and/or
+     `.agents/skills/`, and appends its hooks and deny rules to the folder's
+     `.claude/settings.json` and `.agents/hooks.json` beside the hooks already there. A backup
+     of each settings file is written first.
+   - **Global:** links the skill into `~/.claude/skills`. Hooks come along only through the
+     skill's `SKILL.md` frontmatter. Marcus never edits `~/.claude/settings.json` or
+     `~/.gemini/config/hooks.json`; it prints what would be needed instead.
+   - **Staging:** nothing is linked. The skill stays in its source folder until it earns a tier.
+3. **The recommended option follows the tier.** T4 is never installed. T2 and T3 default to
+   Staging, with Project open for your own testing. A T1 skill whose hook blocks a whole tool
+   class (MCP tools, Bash or PowerShell) defaults to Project. Any other T1 skill defaults to
+   Global.
+4. **Marcus shows the dry run, then applies it.**
+
+Run it yourself from `skills/marcus/`:
+
+```bash
+# Hooks in plain words, plus the recommended scope
+python scripts/install_skill.py <skill-dir> --describe
+
+# Dry run for one project and both harnesses; add --yes to apply
+python scripts/install_skill.py <skill-dir> --scope project --project <project-dir> --harness claude-code,antigravity
+
+# Undo exactly what that install added
+python scripts/install_skill.py <skill-dir> --remove --scope project --project <project-dir> --yes
+```
+
+Every applied install and removal is recorded in the skill's `PROVENANCE.md` and in
+`~/.demiurge/installs.jsonl`. Antigravity has no skill-level hooks, so a hook that must run under
+Antigravity needs a project install. Full rules: `skills/marcus/references/SPEC.md` §6.1.
+
 ---
 
 ## 4. Caveats & Gotchas
@@ -206,6 +247,10 @@ Allowing concurrent subagents to create or remove git worktrees causes `.git/con
 ### Gotcha 7: Version Pinning Immutability
 
 When `RESEARCH.md` receives an update, Marcus notifies the operator of schema drift. Marcus never automatically overwrites existing production agents. Production agents remain pinned to the `derived_from` version recorded in their headers until explicitly upgraded.
+
+### Gotcha 8: A Global Hook Reaches Every Session
+
+A `PreToolUse` hook that guards MCP tools, Bash or PowerShell blocks that whole tool class in every session that loads it, including sessions that never use the skill. `install_skill.py` refuses a global install of such a skill, and refuses any global install below T1. Install it into the project that needs it instead.
 
 ---
 
