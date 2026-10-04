@@ -214,7 +214,10 @@ python scripts/install_skill.py <skill-dir> --remove --scope project --project <
 
 Every applied install and removal is recorded in the skill's `PROVENANCE.md` and in
 `~/.demiurge/installs.jsonl`. Antigravity has no skill-level hooks, so a hook that must run under
-Antigravity needs a project install. Full rules: `skills/marcus/references/SPEC.md` §6.1.
+Antigravity needs a project install. Its tool names differ from Claude Code's, so a hook scoped to
+`Bash` or `mcp__.*` is refused for Antigravity unless you pass `--antigravity-all-tools`, which runs
+it on every Antigravity tool call. A global install of a skill outside the Marcus repository needs
+`--trust-provenance`, because such a skill writes its own tier. Full rules: `skills/marcus/references/SPEC.md` §6.1.
 
 ---
 

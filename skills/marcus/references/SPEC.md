@@ -286,13 +286,16 @@ in `/marcus interactive`, and applied only by `scripts/install_skill.py`.
 | T1 | a `PreToolUse` matcher covering MCP tools, Bash or PowerShell | Project | Project, Staging; Global only with `--i-know` |
 | T1 | none of those | Global | all three |
 
-`T1-conditional` counts as T1. A missing tier counts as T4, as in the skill registry.
+`T1-conditional` counts as T1. A missing tier counts as T4, as in the skill registry. For a
+global install the tier is read from `PROVENANCE.md` as committed in the Marcus repository; a
+skill outside it declares its own tier, so its T1 also needs `--trust-provenance`, the operator's
+confirmation that Marcus recorded it at G5.
 
 **What each scope writes.**
 
 | Scope | Links | Hooks and deny rules |
 |---|---|---|
-| Project | `<dir>/.claude/skills/<name>` and/or `<dir>/.agents/skills/<name>`, each a symlink (a directory junction on Windows without Developer Mode) to the canonical source | Backs up, then appends the fragment's hooks to `<dir>/.claude/settings.json` (Claude Code shape) and `<dir>/.agents/hooks.json` (Antigravity shape: group name, then event, then a list of `{type, command, timeout}` with no `hooks` wrapper and no matcher). Existing entries stay; `permissions.deny` entries go to `.claude/settings.json` only |
+| Project | `<dir>/.claude/skills/<name>` and/or `<dir>/.agents/skills/<name>`, each a symlink (a directory junction on Windows without Developer Mode) to the canonical source | Backs up, then appends the fragment's hooks to `<dir>/.claude/settings.json` (Claude Code shape) and `<dir>/.agents/hooks.json` (Antigravity shape, per its hooks documentation: the skill's group name, then the event; `PreToolUse` and `PostToolUse` hold `{matcher, hooks: [{type, command, timeout}]}` entries, and `Stop`, `PreInvocation` and `PostInvocation` hold `{type, command, timeout}` handlers directly). Antigravity's tool names (`run_command`, `write_to_file`, ...) are not Claude Code's, so a Claude Code matcher is refused rather than dropped; `--antigravity-all-tools` writes matcher `*` instead. Existing entries stay; `permissions.deny` entries go to `.claude/settings.json` only |
 | Global | `<library>/<name>`, default `~/.claude/skills` | None written. Hooks reach a global install only through `SKILL.md` frontmatter, registered when the skill is invoked and kept for the rest of that session. The script prints the frontmatter that would be needed and never writes `~/.claude/settings.json` or `~/.gemini/config/hooks.json` |
 | Staging | None | None. The canonical source is the only copy |
 
@@ -300,9 +303,14 @@ Antigravity has no skill-level hooks, only global, workspace (`.agents/hooks.jso
 hooks, so a skill whose hooks must run under Antigravity is a project install.
 
 **Refusals (exit 2, nothing written):** global below T1; global with a tool-class-blocking hook
-without `--i-know`; project for T4; a project at the home directory; a link path that already
-exists and is not a link to the source; any write outside the target project or library other than
-the two records below; a settings file that is not a JSON object.
+without `--i-know`, where a frontmatter `hooks:` block the script cannot read counts as blocking;
+project for T4; a skill name other than lowercase letters, digits and single hyphens (it becomes a
+link path and a group key); a `PROVENANCE.md` or sidecar that is a link; an Antigravity hook with a
+Claude Code matcher without `--antigravity-all-tools`, or on an event Antigravity lacks; a project
+at the home directory; a link path that already exists and is not a link to the source; any write
+outside the target project or library other than the two records below; a settings file that is
+not a JSON object. A global install links into the library path exactly as given,
+with a note when that path resolves into a git working tree.
 
 **Records.** Every applied install or removal appends an `install:` block under a `## Install <n>`
 heading in the skill's `PROVENANCE.md`, and one JSON line to `~/.demiurge/installs.jsonl`
@@ -311,7 +319,10 @@ committed, so the project path is written relative to that tree, or as a `sha256
 project is outside it; elsewhere it is absolute. The sidecar keeps absolute paths and the exact
 entries added, refuses a location inside a git working tree, and is what `--remove` reads:
 `--remove` unlinks the recorded links, takes out exactly the recorded hook and deny entries, deletes
-a settings file it created once it is empty, and leaves every other entry as it is.
+a settings file it created once it is empty, and leaves every other entry as it is. When the result
+equals the install's backup, the file is restored from the backup byte for byte. Both record paths
+are checked before anything is installed; if a record cannot be written, the install is rolled
+back.
 
 ---
 

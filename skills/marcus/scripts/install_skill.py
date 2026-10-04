@@ -4,8 +4,9 @@
 Run it; do not read it.
 
     python install_skill.py <skill-dir> --describe [--json]
-    python install_skill.py <skill-dir> --scope project --project <dir> [--harness claude-code,antigravity] [--yes]
-    python install_skill.py <skill-dir> --scope global [--library <dir>] [--i-know] [--yes]
+    python install_skill.py <skill-dir> --scope project --project <dir> [--harness claude-code,antigravity]
+                            [--antigravity-all-tools] [--yes]
+    python install_skill.py <skill-dir> --scope global [--library <dir>] [--i-know] [--trust-provenance] [--yes]
     python install_skill.py <skill-dir> --scope staging [--yes]
     python install_skill.py <skill-dir> --remove --scope <scope> [--project <dir> | --library <dir>] [--yes]
 
@@ -20,15 +21,21 @@ Every mode is a dry run until --yes. Scopes (references/SPEC.md section 6.1, Rul
              ~/.claude/settings.json or ~/.gemini/config/hooks.json; it prints what would be needed.
     staging  links nothing; the canonical source is the only copy.
 
-Refused: global below T1; global with a PreToolUse hook covering MCP tools, Bash or PowerShell
-(unless --i-know); project for an unread (T4) skill; any write outside the target project or
-library; a link path that already exists and is not ours.
+Refused: global below T1, where the tier counts as recorded only when PROVENANCE.md is committed
+in this script's own repository (a tier the skill declares about itself needs --trust-provenance);
+global with a PreToolUse hook covering MCP tools, Bash or PowerShell, or with a frontmatter
+'hooks:' block this script cannot read (unless --i-know); project for an unread (T4) skill; a skill
+name that is not lowercase letters, digits and single hyphens; a linked PROVENANCE.md or sidecar;
+an Antigravity hook with a Claude Code matcher (Antigravity tool names differ) unless
+--antigravity-all-tools, or on an event Antigravity does not have; any write outside the target
+project or library; a link path that already exists and is not ours.
 
-Every applied install or removal is recorded twice: an append-only 'install:' block in the
-skill's PROVENANCE.md (paths relative to the skill's git working tree, or hashed when outside
-it, because PROVENANCE files in a working tree get committed; absolute otherwise), and one line
-in the local sidecar ~/.demiurge/installs.jsonl ($DEMIURGE_INSTALLS_FILE or --installs-file),
-which holds absolute paths and the exact entries --remove takes out again.
+Every applied install or removal is recorded twice: one line in the local sidecar
+~/.demiurge/installs.jsonl ($DEMIURGE_INSTALLS_FILE or --installs-file), which holds absolute
+paths and the exact entries --remove takes out again, and an append-only 'install:' block in the
+skill's PROVENANCE.md (paths relative to the skill's git working tree, or hashed when outside it,
+because PROVENANCE files in a working tree get committed; absolute otherwise). If either record
+cannot be written, the install is rolled back.
 
 Exit codes:
     0  planned (dry run), applied, or already installed
@@ -63,14 +70,35 @@ DEFAULT_HARNESS = "claude-code"
 DEFAULT_LIBRARY = "~/.claude/skills"
 INSTALLS_ENV = "DEMIURGE_INSTALLS_FILE"
 
-# A PreToolUse matcher that covers any of these blocks a whole tool class. Each probe is a tool
-# name the matcher is tested against, so "Bash|Write" covers Bash and "mcp__gmail__send" covers
-# no class.
-TOOL_CLASS_PROBES: Dict[str, str] = {
-    "MCP tools": "mcp__probe_server__probe_tool",
-    "Bash": "Bash",
-    "PowerShell": "PowerShell",
+# A PreToolUse matcher that covers any of these blocks a whole tool class. Each class has probe
+# tool names the matcher is tested against, so "Bash|Write" covers Bash and an exact
+# "mcp__gmail__send_message" covers no class. MCP probes vary the server name (with and without
+# underscores or a connector UUID) and the tool verb; a matcher covers MCP tools when it matches
+# MCP_MIN_PROBES of them, or when any alternative starts with mcp__ and holds a regex wildcard,
+# since that reaches tools its author never saw: the reach Rule G-13 keeps out of the global scope.
+TOOL_CLASS_PROBES: Dict[str, Tuple[str, ...]] = {
+    "MCP tools": (
+        "mcp__probe_server__probe_tool", "mcp__probe__probe", "mcp__gmail__send_message",
+        "mcp__claude_ai_Gmail__create_draft", "mcp__github__create_pull_request",
+        "mcp__slack__post_message", "mcp__filesystem__write_file", "mcp__calendar__create_event",
+        "mcp__f1fa7737-2b02-4aac-81b0-1cc00295da83__send_message",
+    ),
+    "Bash": ("Bash",),
+    "PowerShell": ("PowerShell",),
 }
+MCP_MIN_PROBES = 2
+REGEX_WILDCARD = re.compile(r"[.*+?\[\](){}\\]")
+NAME_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")      # validate_skill.py NAME_PATTERN
+NAME_MAX = 64
+
+# Antigravity workspace hooks (antigravity.google/docs/hooks): tool events hold
+# {matcher, hooks: [{type, command, timeout}]} entries; the other events hold the
+# {type, command, timeout} handlers directly. Its tool names (run_command, write_to_file, ...)
+# are not Claude Code's, so a Claude Code matcher cannot be carried over.
+ANTIGRAVITY_TOOL_EVENTS = ("PreToolUse", "PostToolUse")
+ANTIGRAVITY_EVENTS = ANTIGRAVITY_TOOL_EVENTS + ("PreInvocation", "PostInvocation", "Stop")
+FRONTMATTER_HOOK_KEYS = {"matcher", "hooks", "type", "command", "timeout"}
+UNPARSED_EVENT = "(unreadable hooks block)"
 
 EVENT_WORDS: Dict[str, str] = {
     "PreToolUse": "runs before every {tools} call and can block it",
@@ -100,20 +128,32 @@ class Hook:
     event: str
     matcher: Optional[str]
     commands: List[str] = field(default_factory=list)
+    unparsed: bool = False           # a frontmatter block this script could not read
 
     def classes(self) -> List[str]:
+        if self.unparsed and self.event in ("PreToolUse", UNPARSED_EVENT):
+            return list(TOOL_CLASS_PROBES)  # unreadable: assume it blocks everything
         return covered_classes(self.matcher) if self.event == "PreToolUse" else []
 
 
-def covered_classes(matcher: Optional[str]) -> List[str]:
+def covered_classes(matcher: Any) -> List[str]:
     """Tool classes a matcher covers. An absent, empty or '*' matcher covers every tool."""
-    if matcher is None or matcher.strip() in ("", "*"):
+    if matcher is None or (isinstance(matcher, str) and matcher.strip() in ("", "*")):
         return list(TOOL_CLASS_PROBES)
+    if not isinstance(matcher, str):
+        return list(TOOL_CLASS_PROBES)      # not a matcher string: assume the worst
     try:
         pattern = re.compile(matcher)
     except re.error:
         return list(TOOL_CLASS_PROBES)      # unreadable matcher: assume the worst
-    return [name for name, probe in TOOL_CLASS_PROBES.items() if pattern.fullmatch(probe)]
+    out = [name for name, probes in TOOL_CLASS_PROBES.items()
+           if sum(1 for probe in probes if pattern.fullmatch(probe))
+           >= (MCP_MIN_PROBES if name == "MCP tools" else 1)]
+    if "MCP tools" not in out and any(
+            part.strip().lstrip("^(").startswith("mcp__") and REGEX_WILDCARD.search(part)
+            for part in matcher.split("|")):
+        out.insert(0, "MCP tools")
+    return out
 
 
 def frontmatter_text(skill_md: Path) -> str:
@@ -132,43 +172,102 @@ def frontmatter_name(skill_dir: Path) -> Optional[str]:
     return match.group(1) if match else None
 
 
+def unquote(text: str) -> str:
+    text = text.strip()
+    if len(text) >= 2 and text[0] == text[-1] and text[0] in "'\"":
+        return text[1:-1]
+    return text
+
+
+EMPTY_YAML = ("", "[]", "{}", "null", "~")
+
+
 def frontmatter_hooks(skill_dir: Path) -> List[Hook]:
     """Event, matcher and commands from a SKILL.md frontmatter 'hooks:' block.
 
-    Reads only the documented shape (event -> list of {matcher, hooks: [{type, command}]}),
-    by indentation, so no YAML library is needed.
+    Reads only the documented block shape (event -> list of {matcher, hooks: [{type, command}]}),
+    by indentation, so no YAML library is needed. It fails closed: anything else under 'hooks:'
+    (flow style, a path, an unknown key) becomes an unparsed hook that counts as blocking every
+    tool class, so an unreadable block can never pass as no hooks at all.
     """
     lines = frontmatter_text(skill_dir / "SKILL.md").splitlines()
     hooks: List[Hook] = []
-    inside = False
+    unparsed: List[str] = []
+    in_hooks = False
     event_indent: Optional[int] = None
+    entry_indent: Optional[int] = None
     event: Optional[str] = None
+    current: Optional[Hook] = None
+
+    def flag(name: Optional[str]) -> None:
+        name = name or UNPARSED_EVENT
+        if name not in unparsed:
+            unparsed.append(name)
+
     for line in lines:
         if not line.strip() or line.lstrip().startswith("#"):
             continue
         indent = len(line) - len(line.lstrip())
+        stripped = line.strip()
         if indent == 0:
-            inside = line.split(":", 1)[0].strip() == "hooks"
-            event_indent = None
+            key, _, value = stripped.partition(":")
+            in_hooks = unquote(key) == "hooks"
+            event_indent = entry_indent = None
+            event, current = None, None
+            if in_hooks and value.strip() not in EMPTY_YAML:
+                flag(None)                   # inline or flow-style value
             continue
-        if not inside:
+        if not in_hooks:
             continue
         if event_indent is None:
             event_indent = indent
-        stripped = line.strip().lstrip("- ").strip()
-        if indent == event_indent and stripped.endswith(":"):
-            event = stripped[:-1].strip()
+        if indent <= event_indent:           # an event line
+            key, sep, value = stripped.partition(":")
+            event, current, entry_indent = (unquote(key) if sep else None), None, None
+            if indent < event_indent or not sep or stripped.startswith(("-", "{", "[")):
+                flag(event if not stripped.startswith(("-", "{", "[")) else None)
+            elif value.strip() not in EMPTY_YAML:
+                flag(event)
             continue
         if event is None:
+            flag(None)
             continue
-        key, _, value = stripped.partition(":")
-        value = value.strip().strip("'\"")
-        if key.strip() == "matcher":
-            hooks.append(Hook("frontmatter", event, value))
-        elif key.strip() == "command":
-            if not hooks or hooks[-1].event != event:
-                hooks.append(Hook("frontmatter", event, None))
-            hooks[-1].commands.append(value)
+        if entry_indent is None:
+            entry_indent = indent
+        if indent < entry_indent:
+            flag(event)
+            continue
+        if indent == entry_indent:
+            if not stripped.startswith("-"):
+                flag(event)
+                continue
+            current = None                   # a new entry under this event
+        item = stripped[1:].strip() if stripped.startswith("-") else stripped
+        if not item:
+            continue
+        if item.startswith(("{", "[")):
+            flag(event)
+            continue
+        key, sep, value = item.partition(":")
+        key, value = unquote(key), unquote(value)
+        if not sep or key not in FRONTMATTER_HOOK_KEYS:
+            flag(event)
+            continue
+        if key == "hooks":
+            if value not in EMPTY_YAML:
+                flag(event)
+        elif key == "matcher":
+            if current is None:
+                current = Hook("frontmatter", event, value)
+                hooks.append(current)
+            else:
+                current.matcher = value
+        elif key == "command":
+            if current is None:
+                current = Hook("frontmatter", event, None)
+                hooks.append(current)
+            current.commands.append(value)
+    hooks.extend(Hook("frontmatter", name, None, unparsed=True) for name in unparsed)
     return hooks
 
 
@@ -208,10 +307,40 @@ def read_tier(skill_dir: Path) -> str:
     path = skill_dir / "PROVENANCE.md"
     if not path.is_file():
         return "T4"
+    return tier_in(path.read_text(encoding="utf-8", errors="replace"))
+
+
+def tier_in(text: str) -> str:
     tiers: List[str] = []
-    for block in YAML_FENCE_RE.findall(path.read_text(encoding="utf-8", errors="replace")):
+    for block in YAML_FENCE_RE.findall(text):
         tiers.extend(TIER_RE.findall(block))
     return tiers[-1] if tiers else "T4"
+
+
+def own_repo() -> Optional[Path]:
+    """The git working tree holding this script: the Marcus repository."""
+    return git_root(Path(__file__).resolve().parent)
+
+
+def committed_tier(skill_dir: Path) -> Optional[str]:
+    """trust_tier from PROVENANCE.md as committed at HEAD in the Marcus repository, or None.
+
+    A skill outside that repository records its own tier, so a third party can ship
+    'trust_tier: T1'. Only a committed record in this repository went through its review gates;
+    uncommitted edits, including the install blocks this script appends, do not count.
+    """
+    repo = own_repo()
+    path = skill_dir / "PROVENANCE.md"
+    if repo is None or not path.is_file() or not inside(path, repo):
+        return None
+    rel = Path(os.path.relpath(absolute(path), absolute(repo))).as_posix()
+    try:
+        shown = subprocess.run(["git", "-C", str(repo), "show", f"HEAD:{rel}"],
+                               capture_output=True, text=True, encoding="utf-8",
+                               errors="replace", check=False)
+    except OSError:
+        return None
+    return tier_in(shown.stdout) if shown.returncode == 0 else None
 
 
 def base_tier(tier: str) -> str:
@@ -238,6 +367,11 @@ def tool_words(matcher: Optional[str]) -> str:
 
 
 def describe_hook(hook: Hook) -> str:
+    if hook.unparsed:
+        where = "" if hook.event == UNPARSED_EVENT else f" under {hook.event}"
+        return (f"SKILL.md frontmatter hooks{where} are in a shape this script cannot read, so "
+                "they count as blocking every tool class: "
+                + ", ".join(hook.classes() or ["none (not a PreToolUse event)"]) + ".")
     phrase = EVENT_WORDS.get(hook.event, "runs on " + hook.event).format(tools=tool_words(hook.matcher))
     scripts = ", ".join(sorted({script_name(c) for c in hook.commands})) or "(no command)"
     text = f"{hook.event} hook {scripts} {phrase}."
@@ -269,12 +403,21 @@ def allowed_scopes(tier: str, blocking: bool) -> List[str]:
     return scopes
 
 
-def refusals(name: str, tier: str, scope: str, hooks: Sequence[Hook], i_know: bool) -> List[str]:
+def refusals(name: str, tier: str, scope: str, hooks: Sequence[Hook], i_know: bool,
+             committed: Optional[str] = None, trust: bool = False) -> List[str]:
+    """Why an install is refused. committed is the tier at HEAD in the Marcus repository (None
+    when the skill is outside it); trust is --trust-provenance for a self-declared tier."""
     out: List[str] = []
     blocking = [h for h in hooks if h.classes()]
-    if scope == "global" and base_tier(tier) != "T1":
-        out.append(f"global install needs T1; {name} is {tier} (Rule G-13). "
+    effective = committed if committed is not None else tier
+    source = "as committed in the Marcus repository" if committed is not None else "self-declared"
+    if scope == "global" and base_tier(effective) != "T1":
+        out.append(f"global install needs T1; {name} is {effective} ({source}; Rule G-13). "
                    "Use --scope project for operator testing, or --scope staging")
+    elif scope == "global" and committed is None and not trust:
+        out.append(f"{name}'s {tier} is self-declared: its PROVENANCE.md is not committed in the "
+                   "Marcus repository, and a skill's author can write any tier there (Rule G-13). "
+                   "Check that Marcus recorded it at G5, then pass --trust-provenance")
     if scope == "global" and blocking and not i_know:
         classes = [c for c in TOOL_CLASS_PROBES if any(c in h.classes() for h in blocking)]
         out.append(f"{name} has a PreToolUse hook that blocks {', '.join(classes)} in every "
@@ -352,11 +495,13 @@ class Guard:
         self.roots = list(roots)
         self.real_roots = [real(r) for r in self.roots]
         self.files = {norm(f) for f in files}
-        self.real_files = {real(f) for f in files}
+        # The allowed file itself is not followed: a PROVENANCE.md or sidecar that is a link
+        # resolves elsewhere and fails check().
+        self.real_files = {real_parent(f) for f in files}
 
     def allow_file(self, path: Path) -> None:
         self.files.add(norm(path))
-        self.real_files.add(real(path))
+        self.real_files.add(real_parent(path))
 
     def check(self, path: Path, link: bool = False) -> None:
         resolved = real_parent(path) if link else real(path)
@@ -398,11 +543,16 @@ def make_link(link: Path, target: Path) -> None:
     except OSError:
         if os.name != "nt":
             raise
-    # Windows without Developer Mode: a directory junction needs no privilege.
-    result = subprocess.run(["cmd", "/c", "mklink", "/J", str(link), str(target)],
-                            capture_output=True, text=True, check=False)
-    if result.returncode != 0 or not os.path.lexists(str(link)):
-        raise OSError(f"could not link {link}: {(result.stdout + result.stderr).strip()}")
+    # Windows without Developer Mode: a directory junction needs no privilege. It is made with
+    # the Win32 call itself, never through cmd.exe, so no character in a path is a shell operator.
+    try:
+        import _winapi
+        create = _winapi.CreateJunction
+    except (ImportError, AttributeError) as exc:
+        raise OSError(f"could not link {link}: no symlink privilege and no junction API") from exc
+    create(absolute(target), absolute(link))
+    if not os.path.lexists(str(link)):
+        raise OSError(f"could not link {link}: the junction was not created")
 
 
 def remove_link(link: Path) -> None:
@@ -430,17 +580,43 @@ def substitute(value: Any, skill_dir: Path) -> Any:
     return value
 
 
-def antigravity_entries(fragment: Dict[str, Any], skill_dir: Path) -> List[Tuple[str, Dict[str, Any]]]:
-    """Antigravity workspace shape: event -> [{type, command, timeout}], no 'hooks' wrapper."""
+def antigravity_handler(hook: Dict[str, Any], skill_dir: Path) -> Dict[str, Any]:
+    entry = {"type": hook.get("type", "command"),
+             "command": substitute(hook.get("command", ""), skill_dir)}
+    if hook.get("timeout") is not None:
+        entry["timeout"] = hook["timeout"]
+    return entry
+
+
+def antigravity_entries(fragment: Dict[str, Any], skill_dir: Path,
+                        all_tools: bool) -> List[Tuple[str, Dict[str, Any]]]:
+    """Antigravity workspace shape under the skill's group name (antigravity.google/docs/hooks).
+
+    PreToolUse and PostToolUse hold {matcher, hooks: [{type, command, timeout}]} entries; the
+    other events hold {type, command, timeout} handlers directly, with no 'hooks' wrapper.
+    A Claude Code matcher names Claude Code tools (Bash, mcp__...), which Antigravity does not
+    have, so it is refused rather than dropped: dropping it would widen the hook to every tool.
+    all_tools (--antigravity-all-tools) writes matcher '*' instead, on the operator's say-so.
+    """
     out: List[Tuple[str, Dict[str, Any]]] = []
     for event, groups in fragment.get("hooks", {}).items():
+        if event not in ANTIGRAVITY_EVENTS:
+            raise Refusal(f"Antigravity has no {event} hook event (it has "
+                          f"{', '.join(ANTIGRAVITY_EVENTS)}); install with --harness claude-code")
         for group in groups:
-            for hook in group.get("hooks", []):
-                entry = {"type": hook.get("type", "command"),
-                         "command": substitute(hook.get("command", ""), skill_dir)}
-                if hook.get("timeout") is not None:
-                    entry["timeout"] = hook["timeout"]
-                out.append((event, entry))
+            handlers = [antigravity_handler(h, skill_dir) for h in group.get("hooks", [])
+                        if isinstance(h, dict)]
+            if event not in ANTIGRAVITY_TOOL_EVENTS:
+                out.extend((event, handler) for handler in handlers)
+                continue
+            matcher = group.get("matcher")
+            if matcher not in (None, "", "*") and not all_tools:
+                raise Refusal(f"the {event} hook's matcher {json.dumps(matcher)} names Claude Code "
+                              "tools; Antigravity's tools are named differently (run_command, "
+                              "write_to_file, ...), so it cannot be carried over. Install with "
+                              "--harness claude-code, or pass --antigravity-all-tools to run it on "
+                              "every Antigravity tool call (matcher '*')")
+            out.append((event, {"matcher": "*", "hooks": handlers}))
     return out
 
 
@@ -461,8 +637,17 @@ def read_json(path: Path) -> Dict[str, Any]:
     return data
 
 
+def backup_state(path: Path) -> Optional[Dict[str, Any]]:
+    """A backup's parsed content, or None when it cannot be read as a JSON object."""
+    try:
+        data = json.loads(path.read_text(encoding="utf-8") or "{}")
+    except (OSError, ValueError):
+        return None
+    return data if isinstance(data, dict) else None
+
+
 def write_json(path: Path, data: Dict[str, Any]) -> None:
-    path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
 def container(data: Dict[str, Any], keys: Sequence[str], kind: type, created: List[str]) -> Any:
@@ -630,6 +815,7 @@ class Context:
     harnesses: List[str]
     target: Optional[Path]
     installs: Path
+    antigravity_all_tools: bool = False
     notes: List[str] = field(default_factory=list)
 
 
@@ -637,6 +823,14 @@ def inspect(skill_dir: Path) -> Tuple[str, str, List[Hook], Dict[str, Any]]:
     if not (skill_dir / "SKILL.md").is_file():
         raise Refusal(f"no SKILL.md in {skill_dir}")
     name = frontmatter_name(skill_dir) or skill_dir.name
+    # The name becomes a link path and an Antigravity group key, so it must be one plain path
+    # component: no separators, dots, spaces or shell characters.
+    if len(name) > NAME_MAX or not NAME_RE.fullmatch(name):
+        raise Refusal(f"skill name {name!r} must be lowercase letters, digits and single hyphens, "
+                      f"at most {NAME_MAX} characters")
+    if is_link(skill_dir / "PROVENANCE.md"):
+        raise Refusal(f"{skill_dir / 'PROVENANCE.md'} is a link; the tier and install records "
+                      "must live in the skill's own file")
     fragment = load_fragment(skill_dir)
     hooks = fragment_hooks(fragment) + frontmatter_hooks(skill_dir)
     return name, read_tier(skill_dir), hooks, fragment
@@ -644,12 +838,18 @@ def inspect(skill_dir: Path) -> Tuple[str, str, List[Hook], Dict[str, Any]]:
 
 def describe(skill_dir: Path) -> Dict[str, Any]:
     name, tier, hooks, fragment = inspect(skill_dir)
+    committed = committed_tier(skill_dir)
+    if committed is not None:
+        tier = committed
     blocking = any(h.classes() for h in hooks)
     scope, reason = recommend(tier, blocking)
+    if committed is None and scope == "global":
+        reason += "; the tier is self-declared, so a global install needs --trust-provenance"
     deny = fragment.get("deny", [])
     return {
         "skill": name,
         "trust_tier": tier,
+        "tier_source": "committed" if committed is not None else "self-declared",
         "question": f"Where should {name} and its hooks live?",
         "hooks": [{"source": h.source, "event": h.event, "matcher": h.matcher,
                    "blocks_classes": h.classes(), "plain": describe_hook(h)} for h in hooks],
@@ -662,7 +862,7 @@ def describe(skill_dir: Path) -> Dict[str, Any]:
 
 
 def print_description(info: Dict[str, Any]) -> None:
-    print(f"{info['question']}  ({info['skill']}, {info['trust_tier']})")
+    print(f"{info['question']}  ({info['skill']}, {info['trust_tier']} {info['tier_source']})")
     print("-" * 72)
     if info["hooks"]:
         for number, hook in enumerate(info["hooks"], 1):
@@ -712,14 +912,24 @@ def global_hook_notes(ctx: Context) -> List[str]:
 
 
 def plan_install(ctx: Context) -> Dict[str, Any]:
-    links: List[Tuple[Path, str]] = []
+    links: List[Tuple[Path, str, Path]] = []
     if ctx.scope == "project":
         for harness in ctx.harnesses:
-            links.append((ctx.target / HARNESSES[harness]["skills"] / ctx.name, harness))
+            skills_dir = ctx.target / HARNESSES[harness]["skills"]
+            links.append((skills_dir / ctx.name, harness, skills_dir))
     elif ctx.scope == "global":
-        links.append((ctx.target / ctx.name, "library"))
+        links.append((ctx.target / ctx.name, "library", ctx.target))
+        if real(ctx.target) != norm(ctx.target):
+            ctx.notes.append(f"the library {ctx.target} is itself a link to {real(ctx.target)}; "
+                             "the new link lands there")
+        tree = git_root(Path(os.path.realpath(str(ctx.target))))
+        if tree is not None:
+            ctx.notes.append(f"the library sits inside the git working tree {tree}; the link shows "
+                             "there as an untracked file. Keep it out of that tree's commits")
     plan: Dict[str, Any] = {"links": [], "settings": []}
-    for link, harness in links:
+    for link, harness, skills_dir in links:
+        if norm(link.parent) != norm(skills_dir):
+            raise Refusal(f"{link} is not directly inside {skills_dir}")
         if inside(link, ctx.skill_dir):
             raise Refusal(f"{link} would sit inside the skill's own source")
         state = link_state(link, ctx.skill_dir)
@@ -737,20 +947,26 @@ def plan_install(ctx: Context) -> Dict[str, Any]:
                 entries = claude_entries(ctx.fragment, ctx.skill_dir)
                 deny = ctx.fragment.get("deny", [])
             else:
-                entries = antigravity_entries(ctx.fragment, ctx.skill_dir)
+                entries = antigravity_entries(ctx.fragment, ctx.skill_dir, ctx.antigravity_all_tools)
                 deny = []
                 if ctx.fragment.get("deny"):
                     ctx.notes.append("Antigravity: this script knows no workspace deny-rule schema, so "
                                      "the permissions.deny entries go to .claude/settings.json only.")
-                if any(g.get("matcher") for gs in ctx.fragment.get("hooks", {}).values() for g in gs):
-                    ctx.notes.append("Antigravity entries carry no matcher; each hook script sees every "
-                                     "call of its event and must filter by tool name itself.")
+                if ctx.antigravity_all_tools and any(
+                        g.get("matcher") not in (None, "", "*")
+                        for e, gs in ctx.fragment.get("hooks", {}).items()
+                        if e in ANTIGRAVITY_TOOL_EVENTS for g in gs):
+                    ctx.notes.append("--antigravity-all-tools: the Antigravity entries use matcher '*', "
+                                     "so each hook script sees every tool call of its event and must "
+                                     "filter by tool name itself.")
             if not entries and not deny:
                 continue
+            exists = path.is_file()
             data = read_json(path)
             preview = copy.deepcopy(data)
             result = merge(preview, harness, ctx.name, entries, deny)
-            plan["settings"].append({"path": path, "harness": harness, "exists": path.is_file(),
+            plan["settings"].append({"path": path, "harness": harness, "exists": exists,
+                                     "backup": backup_path(path) if exists else None,
                                      "mkdirs": missing_dirs(path.parent), "result": result,
                                      "data": preview})
     if ctx.scope == "global":
@@ -770,7 +986,7 @@ def print_plan(ctx: Context, plan: Dict[str, Any], applying: bool) -> None:
             print(f"LINK     {verb}link {item['path']} -> {ctx.skill_dir}")
     for item in plan["settings"]:
         if item["exists"]:
-            print(f"BACKUP   {verb}copy {item['path']} to a .bak beside it")
+            print(f"BACKUP   {verb}copy {item['path']} to {item['backup'].name}")
         for added in item["result"]["entries"]:
             print(f"HOOK     {verb}append to {'.'.join(added['keys'])} in {item['path']}: "
                   f"{json.dumps(added['entry'])}")
@@ -791,22 +1007,62 @@ def new_id(*parts: str) -> str:
     return hashlib.sha256(seed.encode("utf-8")).hexdigest()[:12]
 
 
-def append_records(ctx: Context, guard: Guard, row: Dict[str, Any]) -> None:
+def prepare_records(ctx: Context, guard: Guard, create: bool) -> List[str]:
+    """Check both record paths before anything is installed; with create, make the sidecar's
+    missing parents (~/.demiurge on a first install) and nothing else."""
     provenance = ctx.skill_dir / "PROVENANCE.md"
-    block = provenance_block(ctx.skill_dir, row)
-    guard.check(provenance)
-    if not provenance.is_file():
-        block = f"# PROVENANCE — {ctx.name}\n" + block
-    with provenance.open("a", encoding="utf-8", newline="\n") as handle:
-        handle.write(block)
-    guard.check(ctx.installs)
-    # The sidecar's own missing parents (~/.demiurge on a first install) and nothing else.
+    for path in (provenance, ctx.installs):
+        if is_link(path):
+            raise Refusal(f"{path} is a link; records are written only to a plain file")
+        if os.path.lexists(str(path)) and not path.is_file():
+            raise Refusal(f"{path} exists and is not a file")
+        guard.check(path)
+    made: List[str] = []
     for directory in missing_dirs(ctx.installs.parent):
         guard.allow_file(directory)
         guard.check(directory)
-    ctx.installs.parent.mkdir(parents=True, exist_ok=True)
-    with ctx.installs.open("a", encoding="utf-8", newline="\n") as handle:
-        handle.write(json.dumps(row, sort_keys=True) + "\n")
+        if create:
+            directory.mkdir()
+            made.append(absolute(directory))
+    return made
+
+
+def append_text(path: Path, text: str) -> None:
+    with path.open("a", encoding="utf-8", newline="\n") as handle:
+        handle.write(text)
+
+
+def truncate_to(path: Path, size: Optional[int]) -> None:
+    """Put an appended-to file back to its earlier size, or remove it if it was new."""
+    if size is None:
+        if path.is_file():
+            path.unlink()
+        return
+    with path.open("r+b") as handle:
+        handle.truncate(size)
+
+
+def append_records(ctx: Context, guard: Guard, row: Dict[str, Any]) -> None:
+    """Sidecar line first (it is what --remove reads), then the PROVENANCE.md block. If either
+    write fails, both files go back to their earlier size and the error propagates."""
+    provenance = ctx.skill_dir / "PROVENANCE.md"
+    block = provenance_block(ctx.skill_dir, row)
+    if not provenance.is_file():
+        block = f"# PROVENANCE — {ctx.name}\n" + block
+    guard.check(ctx.installs)
+    guard.check(provenance)
+    sizes = {path: (path.stat().st_size if path.is_file() else None)
+             for path in (ctx.installs, provenance)}
+    try:
+        append_text(ctx.installs, json.dumps(row, sort_keys=True) + "\n")
+        append_text(provenance, block)
+    except OSError:
+        for path, size in sizes.items():
+            try:
+                truncate_to(path, size)
+            except OSError:
+                pass
+        raise
 
 
 def make_dirs(dirs: Sequence[Path], guard: Guard, created: List[str]) -> None:
@@ -817,17 +1073,22 @@ def make_dirs(dirs: Sequence[Path], guard: Guard, created: List[str]) -> None:
             created.append(absolute(directory))
 
 
-def apply_install(ctx: Context, plan: Dict[str, Any], guard: Guard) -> Dict[str, Any]:
-    # Check every write before making any, so a refusal leaves nothing half done.
+def check_plan(plan: Dict[str, Any], guard: Guard) -> None:
+    """Check every write a plan makes before making any, so a refusal leaves nothing half done."""
     for item in plan["links"]:
         guard.check(item["path"], link=True)
         for d in item["mkdirs"]:
             guard.check(d)
     for item in plan["settings"]:
         guard.check(item["path"])
-        guard.check(backup_path(item["path"]))
+        if item["backup"] is not None:
+            guard.check(item["backup"])
         for d in item["mkdirs"]:
             guard.check(d)
+
+
+def apply_install(ctx: Context, plan: Dict[str, Any], guard: Guard) -> Dict[str, Any]:
+    check_plan(plan, guard)
     created_dirs: List[str] = []
     links_made: List[str] = []
     settings_rows: List[Dict[str, Any]] = []
@@ -842,9 +1103,10 @@ def apply_install(ctx: Context, plan: Dict[str, Any], guard: Guard) -> Dict[str,
             if not result["entries"] and not result["deny"]:
                 continue
             make_dirs(item["mkdirs"], guard, created_dirs)
-            backup = None
-            if item["exists"]:
-                backup = backup_path(item["path"])
+            backup = item["backup"]
+            if backup is not None:
+                if os.path.lexists(str(backup)):
+                    raise Refusal(f"backup {backup} appeared after planning; nothing overwritten")
                 shutil.copy2(str(item["path"]), str(backup))
             settings_rows.append({"file": absolute(item["path"]), "harness": item["harness"],
                                   "created_file": not item["exists"],
@@ -916,6 +1178,11 @@ def run_remove(ctx: Context, record: Dict[str, Any], guard: Guard, apply: bool) 
               f"out of {path}")
         for note in notes:
             print(f"NOTE     {note}")
+        # When nothing else changed since the install, the file goes back byte for byte from the
+        # install's backup, so the user's own formatting and characters survive.
+        original = Path(row["backup"]) if row.get("backup") else None
+        restore = (original is not None and original.is_file() and not is_link(original)
+                   and backup_state(original) == data)
         if apply:
             if row.get("created_file") and not data:
                 path.unlink()
@@ -923,7 +1190,10 @@ def run_remove(ctx: Context, record: Dict[str, Any], guard: Guard, apply: bool) 
                 backup = backup_path(path)
                 guard.check(backup)
                 shutil.copy2(str(path), str(backup))
-                write_json(path, data)
+                if restore:
+                    path.write_bytes(original.read_bytes())
+                else:
+                    write_json(path, data)
     for directory in reversed(record.get("created_dirs", [])):
         path = Path(directory)
         guard.check(path)
@@ -969,7 +1239,10 @@ def resolve_target(args: argparse.Namespace) -> Optional[Path]:
             raise Refusal("the home directory is the global scope, not a project; use --scope global")
         return target
     if args.scope == "global":
-        target = Path(args.library or DEFAULT_LIBRARY).expanduser().resolve()
+        # Kept as written, not resolved: ~/.claude/skills may be a link into another git tree,
+        # and the link and record belong at the library path the operator named. The Guard
+        # still resolves every write.
+        target = Path(absolute(Path(args.library or DEFAULT_LIBRARY).expanduser()))
         if not target.is_dir():
             raise Refusal(f"library {target} does not exist; create it first")
         return target
@@ -989,6 +1262,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                         help="list hooks in plain words and the recommended scope, then exit")
     parser.add_argument("--i-know", action="store_true",
                         help="allow a global install whose hook blocks a whole tool class")
+    parser.add_argument("--trust-provenance", action="store_true",
+                        help="accept a T1 the skill's own PROVENANCE.md declares, outside the "
+                             "Marcus repository, for a global install")
+    parser.add_argument("--antigravity-all-tools", action="store_true",
+                        help="write an Antigravity tool hook with matcher '*' when its Claude Code "
+                             "matcher cannot be carried over")
     parser.add_argument("--installs-file", help=f"install sidecar (default ${INSTALLS_ENV} or "
                                                 "~/.demiurge/installs.jsonl)")
     parser.add_argument("--yes", action="store_true", help="apply; without it nothing is written")
@@ -1013,19 +1292,26 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         if git_root(installs.parent) is not None:
             raise Refusal(f"{installs} sits inside a git working tree; the sidecar holds absolute "
                           "paths and stays out of every checkout")
-        ctx = Context(skill_dir, name, tier, hooks, fragment, args.scope, harnesses, target, installs)
+        ctx = Context(skill_dir, name, tier, hooks, fragment, args.scope, harnesses, target, installs,
+                      antigravity_all_tools=args.antigravity_all_tools)
         roots = [target] if target else []
         guard = Guard(roots, [skill_dir / "PROVENANCE.md", installs])
+        prepare_records(ctx, guard, create=False)
         rows = read_records(installs)
         existing = active_install(rows, skill_dir, args.scope, target)
+        record_dirs: List[str] = []
 
         if args.remove:
             if existing is None:
                 raise Refusal(f"no recorded {args.scope} install of {name}"
                               + (f" at {target}" if target else "") + f" in {installs}")
+            if args.yes:
+                record_dirs = prepare_records(ctx, guard, create=True)
             row = run_remove(ctx, existing, guard, args.yes)
         else:
-            reasons = refusals(name, tier, args.scope, hooks, args.i_know)
+            committed = committed_tier(skill_dir) if args.scope == "global" else None
+            reasons = refusals(name, tier, args.scope, hooks, args.i_know,
+                               committed, args.trust_provenance)
             if reasons:
                 raise Refusal("; ".join(reasons))
             if existing is not None:
@@ -1037,11 +1323,24 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             if not args.yes:
                 print("\nDRY RUN: nothing written. Re-run with --yes to apply.")
                 return 0
-            row = apply_install(ctx, plan, guard)
+            check_plan(plan, guard)
+            record_dirs = prepare_records(ctx, guard, create=True)
+            try:
+                row = apply_install(ctx, plan, guard)
+            except Exception:
+                rollback([], [], record_dirs)
+                raise
         if not args.yes:
             print("\nDRY RUN: nothing written. Re-run with --yes to apply.")
             return 0
-        append_records(ctx, guard, row)
+        try:
+            append_records(ctx, guard, row)
+        except OSError as exc:
+            if row["action"] == "install":
+                rollback(row["links"], row["settings"], [*row["created_dirs"], *record_dirs])
+                raise OSError(f"could not record the install, so it was rolled back: {exc}") from exc
+            raise OSError(f"removal applied but not recorded ({exc}); re-run --remove to "
+                          "record it") from exc
         print(f"\nDONE: {row['action']} {row['id']} recorded.")
         return 0
     except Refusal as exc:

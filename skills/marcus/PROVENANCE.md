@@ -126,9 +126,20 @@ two harness schemas and two platforms (symlink, or a directory junction on Windo
 Developer Mode). A script makes the refusal rules and the exact undo deterministic, where a prompt
 line would not.
 
-**Verification:** `scripts/test_install_skill.py` (29 unit tests, temp directories with HOME,
-USERPROFILE and the sidecar redirected) and `regression-25` to `regression-28` in
-`evals/run_gate_tests.py` (29/29 passing). G4 re-run: 0 blocking. No model-based G5 run: the
+**Review fixes (same revision):** a fresh-context review found that the skill name reached the
+link path and, through `mklink`, `cmd.exe`; that a linked `PROVENANCE.md` carried the record
+outside the skill; that a skill's own `PROVENANCE.md` could declare T1; that flow-style frontmatter
+hooks and MCP matchers such as `mcp__[a-z]+__.*` passed as non-blocking; that Antigravity entries
+dropped the matcher; and that `--remove` re-serialized the settings file. The script now checks the
+name, makes junctions with the Win32 call, refuses linked records, reads the tier from the commit
+in this repository (`--trust-provenance` otherwise), fails closed on unreadable hooks, writes the
+documented Antigravity shape (refusing a Claude Code matcher without `--antigravity-all-tools`),
+restores the backup's bytes, links a global library at its literal path and rolls back when a
+record cannot be written.
+
+**Verification:** `scripts/test_install_skill.py` (44 unit tests, temp directories with HOME,
+USERPROFILE and the sidecar redirected, the junction path forced by failing `os.symlink`) and
+`regression-25` to `regression-31` in `evals/run_gate_tests.py` (32/32 passing). G4 re-run: 0 blocking. No model-based G5 run: the
 change adds a script and a G6 question, and the deterministic cases are the applicable proof, as
 for regression-13 to regression-16.
 
@@ -142,7 +153,7 @@ for regression-13 to regression-16.
 
 ## Deterministic Suite
 
-Execute local regression tests: `python skills/marcus/evals/run_gate_tests.py` (29/29 passing). Regression test cases are derived from the findings above and maintain 100% pass rates.
+Execute local regression tests: `python skills/marcus/evals/run_gate_tests.py` (32/32 passing). Regression test cases are derived from the findings above and maintain 100% pass rates.
 
 ## Trifecta Position
 

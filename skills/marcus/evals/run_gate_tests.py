@@ -599,7 +599,8 @@ def main() -> int:
         original = json.dumps(INSTALL_EXISTING_SETTINGS, indent=2) + "\n"
         settings_path.write_text(original, encoding="utf-8")
         project_args = [install, str(t1_skill), "--scope", "project", "--project",
-                        str(install_project), "--harness", "claude-code,antigravity"]
+                        str(install_project), "--harness", "claude-code,antigravity",
+                        "--antigravity-all-tools"]
         before = tree(install_project)
         code, out = run(project_args, env=install_env)
         results.append(("regression-27 install dry run writes nothing",
@@ -613,10 +614,14 @@ def main() -> int:
         agy_path = install_project / ".agents" / "hooks.json"
         agy = json.loads(agy_path.read_text(encoding="utf-8")) if agy_path.is_file() else {}
         agy_entries = agy.get("t1-guarded", {}).get("PreToolUse", [])
+        # Antigravity tool events hold {matcher, hooks: [{type, command, timeout}]}
+        # (antigravity.google/docs/hooks); a Claude Code matcher becomes '*' only on opt-in.
         installed = (code == 0 and len(pre) == 2
                      and pre[0] == INSTALL_EXISTING_SETTINGS["hooks"]["PreToolUse"][0]
                      and "Bash(sendmail:*)" in merged.get("permissions", {}).get("deny", [])
-                     and len(agy_entries) == 1 and set(agy_entries[0]) == {"type", "command", "timeout"}
+                     and len(agy_entries) == 1 and set(agy_entries[0]) == {"matcher", "hooks"}
+                     and agy_entries[0]["matcher"] == "*"
+                     and set(agy_entries[0]["hooks"][0]) == {"type", "command", "timeout"}
                      and os.path.realpath(install_project / ".claude" / "skills" / "t1-guarded")
                      == os.path.realpath(t1_skill))
         rcode, rout = run([install, str(t1_skill), "--remove", "--scope", "project", "--project",
@@ -627,6 +632,35 @@ def main() -> int:
         results.append(("regression-28 project install appends hooks; remove restores exactly",
                         installed and restored,
                         f"exit={code}/{rcode}"))
+
+        # regression-29 to -31: review findings on install_skill.py. A frontmatter name reached
+        # the link path and cmd.exe; a skill's own PROVENANCE.md could declare T1; dropping a
+        # Claude Code matcher widened an Antigravity hook to every tool call.
+        unsafe = install_fixture("unsafe-name", "T1")
+        skill_md = unsafe / "SKILL.md"
+        skill_md.write_text(skill_md.read_text(encoding="utf-8").replace(
+            "name: unsafe-name", "name: ../x&mkdir"), encoding="utf-8")
+        before = tree(install_project)
+        code, out = run([install, str(unsafe), "--scope", "project", "--project",
+                         str(install_project), "--yes"], env=install_env)
+        results.append(("regression-29 unsafe skill name refused before any link",
+                        code == 2 and "single hyphens" in out and tree(install_project) == before,
+                        f"exit={code}"))
+
+        quiet = install_fixture("t1-quiet", "T1")
+        (quiet / "settings.fragment.json").unlink()
+        code, out = run([install, str(quiet), "--scope", "global", "--library",
+                         str(install_library), "--yes"], env=install_env)
+        results.append(("regression-30 self-declared T1 needs --trust-provenance for global",
+                        code == 2 and "self-declared" in out and tree(install_library) == [],
+                        f"exit={code}"))
+
+        code, out = run([install, str(t1_skill), "--scope", "project", "--project",
+                         str(install_project), "--harness", "antigravity", "--yes"], env=install_env)
+        results.append(("regression-31 Antigravity refuses a Claude Code matcher without opt-in",
+                        code == 2 and "names Claude Code tools" in out
+                        and not (install_project / ".agents").exists(),
+                        f"exit={code}"))
 
     print("marcus deterministic gate suite")
     print("-" * 72)
