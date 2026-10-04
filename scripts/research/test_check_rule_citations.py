@@ -185,7 +185,7 @@ class MainTests(unittest.TestCase):
     def test_repo_architecture_passes(self) -> None:
         code, out = self.run_main(["--repo", str(REPO_ROOT)])
         self.assertEqual(code, 0, out)
-        self.assertEqual(out.strip(), "OK: 37 rules, 0 violations")
+        self.assertEqual(out.strip(), "OK: 38 rules, 0 violations")
 
 
 if __name__ == "__main__":

@@ -113,7 +113,8 @@ The Demiurge documentation suite is structured into focused guides addressing sp
 - **Key Concepts:**
   - When and how to activate Buckminster vs. Marcus.
   - Prompt templates for claim verification and scheduled research sweeps.
-  - Detailed breakdown of 7 operational gotchas: prompt-cache thrashing, lethal trifecta, multi-agent worktree locks, and negative parallelism bans.
+  - Detailed breakdown of 8 operational gotchas: prompt-cache thrashing, lethal trifecta, multi-agent worktree locks, negative parallelism bans, and global hooks that reach every session.
+  - Choosing an install scope (Rule G-13): the G6 question *"Where should `<skill>` and its hooks live?"*, the Project, Global and Staging options, and `skills/marcus/scripts/install_skill.py`, which applies the answer and records it.
   - Architectural best practices including small-N starter evals and fresh-context review patterns.
 
 ### 3.3 Design Manual Summary
@@ -307,6 +308,7 @@ Hooks provide deterministic boundary defense independent of model state:
 - **`Stop`:** Evaluates completion conditions at the conclusion of an agent turn.
 - **`UserPromptSubmit`:** Sanitizes input prompts prior to model context ingestion.
 - **Contract:** Standardized JSON over `stdin` with exit code evaluation.
+- **Install scope (Rule G-13):** A hook reaches every session that loads it. `skills/marcus/scripts/install_skill.py` merges a skill's `settings.fragment.json` hooks into one project's `.claude/settings.json` and `.agents/hooks.json` as new entries, links global installs without writing any global settings file, and refuses a global install below T1 or with a hook that blocks MCP tools, Bash or PowerShell. Rules and records: `skills/marcus/references/SPEC.md` §6.1 and [OPERATING_GUIDE.md](OPERATING_GUIDE.md).
 
 ### 5.6 Evaluation Suites & Regression Isolation
 

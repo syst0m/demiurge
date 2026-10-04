@@ -141,6 +141,22 @@ PAIRING_EVALS = {
     ],
 }
 
+# Install-scope fixtures (regression-25 to -28). The fragment has the shape of a real send
+# guard: one PreToolUse hook over MCP tools, Bash and PowerShell, plus deny rules.
+INSTALL_FRAGMENT = {
+    "hooks": {"PreToolUse": [{
+        "matcher": "mcp__.*|Bash|PowerShell",
+        "hooks": [{"type": "command", "command": "\"{PYTHON}\" \"{SKILL}/hooks/guard.py\"",
+                   "timeout": 10}],
+    }]},
+    "permissions": {"deny": ["Bash(sendmail:*)"]},
+}
+INSTALL_EXISTING_SETTINGS = {
+    "hooks": {"PreToolUse": [{"matcher": "Bash",
+                              "hooks": [{"type": "command", "command": "existing-hook"}]}]},
+    "permissions": {"deny": ["Bash(existing:*)"]},
+}
+
 ECHO_RUNNER = "import sys\nprint(sys.argv[1] + ' ' + 'x' * 600)\n"
 MARK_JUDGE = (
     "import sys\n"
@@ -537,6 +553,80 @@ def main() -> int:
                         and any(c.get("provenance") == "ledger:run-bad-1" for c in cited)
                         and ledger_after == ledger_before,
                         f"refusals={refusals} exit={code}"))
+
+        # regression-25 to -28: install scope (Rule G-13). A send guard designed for a global
+        # PreToolUse install would block MCP tools, Bash and PowerShell in every session, and a
+        # T2 skill became loadable everywhere through a symlinked library. HOME, USERPROFILE and
+        # the install sidecar all point into the temp dir, so nothing reaches the real home.
+        install_home = root / "install-home"
+        (install_home / ".claude" / "skills").mkdir(parents=True)
+        install_env = dict(SUBPROCESS_ENV, HOME=str(install_home), USERPROFILE=str(install_home),
+                           DEMIURGE_INSTALLS_FILE=str(root / "install-state" / "installs.jsonl"))
+        install_library = install_home / ".claude" / "skills"
+
+        def install_fixture(name: str, tier: str) -> Path:
+            skill = write_fixture(root / "install-skills", name, FIXTURE_ALT_PHRASING.replace(
+                "phrasing-fixture", name))
+            (skill / "PROVENANCE.md").write_text(
+                f"# PROVENANCE\n\n```yaml\nskill: {name}\ntrust_tier: {tier}\n```\n", encoding="utf-8")
+            (skill / "settings.fragment.json").write_text(json.dumps(INSTALL_FRAGMENT, indent=2),
+                                                          encoding="utf-8")
+            return skill
+
+        def tree(path: Path) -> list[str]:
+            return sorted(p.relative_to(path).as_posix() for p in path.rglob("*"))
+
+        install = str(SCRIPTS / "install_skill.py")
+        t2_skill = install_fixture("t2-guarded", "T2")
+        code, out = run([install, str(t2_skill), "--scope", "global", "--library",
+                         str(install_library), "--i-know", "--yes"], env=install_env)
+        results.append(("regression-25 global install refused below T1",
+                        code == 2 and "needs T1" in out and tree(install_library) == [],
+                        f"exit={code}"))
+
+        t1_skill = install_fixture("t1-guarded", "T1")
+        code, out = run([install, str(t1_skill), "--scope", "global", "--library",
+                         str(install_library), "--yes"], env=install_env)
+        results.append(("regression-26 global install refused for a tool-class-blocking hook",
+                        code == 2 and "MCP tools, Bash, PowerShell" in out
+                        and tree(install_library) == []
+                        and not (install_home / ".claude" / "settings.json").exists(),
+                        f"exit={code}"))
+
+        install_project = root / "install-project"
+        (install_project / ".claude").mkdir(parents=True)
+        settings_path = install_project / ".claude" / "settings.json"
+        original = json.dumps(INSTALL_EXISTING_SETTINGS, indent=2) + "\n"
+        settings_path.write_text(original, encoding="utf-8")
+        project_args = [install, str(t1_skill), "--scope", "project", "--project",
+                        str(install_project), "--harness", "claude-code,antigravity"]
+        before = tree(install_project)
+        code, out = run(project_args, env=install_env)
+        results.append(("regression-27 install dry run writes nothing",
+                        code == 0 and "DRY RUN" in out and tree(install_project) == before
+                        and settings_path.read_text(encoding="utf-8") == original,
+                        f"exit={code}"))
+
+        code, out = run([*project_args, "--yes"], env=install_env)
+        merged = json.loads(settings_path.read_text(encoding="utf-8"))
+        pre = merged.get("hooks", {}).get("PreToolUse", [])
+        agy_path = install_project / ".agents" / "hooks.json"
+        agy = json.loads(agy_path.read_text(encoding="utf-8")) if agy_path.is_file() else {}
+        agy_entries = agy.get("t1-guarded", {}).get("PreToolUse", [])
+        installed = (code == 0 and len(pre) == 2
+                     and pre[0] == INSTALL_EXISTING_SETTINGS["hooks"]["PreToolUse"][0]
+                     and "Bash(sendmail:*)" in merged.get("permissions", {}).get("deny", [])
+                     and len(agy_entries) == 1 and set(agy_entries[0]) == {"type", "command", "timeout"}
+                     and os.path.realpath(install_project / ".claude" / "skills" / "t1-guarded")
+                     == os.path.realpath(t1_skill))
+        rcode, rout = run([install, str(t1_skill), "--remove", "--scope", "project", "--project",
+                           str(install_project), "--yes"], env=install_env)
+        restored = (rcode == 0 and settings_path.read_text(encoding="utf-8") == original
+                    and not (install_project / ".agents").exists()
+                    and not os.path.lexists(install_project / ".claude" / "skills" / "t1-guarded"))
+        results.append(("regression-28 project install appends hooks; remove restores exactly",
+                        installed and restored,
+                        f"exit={code}/{rcode}"))
 
     print("marcus deterministic gate suite")
     print("-" * 72)

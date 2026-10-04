@@ -389,6 +389,8 @@ SETTLED grade requires all 3 confirming; vendor sources capped at 1 of 3).
 
 **Rule G-12.** `[SETTLED EVIDENCE §6,§7]` Evolve existing skills through measured revision, not drift. Modifying a skill or adding a feature requires G0 evidence of deficiency or gap, establishes the unmodified skill as the G1 baseline, enforces 100% non-regression on historical eval cases (G5), and appends revision history to `PROVENANCE.md` (G6). Any regression on prior capabilities is an immediate hard rejection.
 
+**Rule G-13.** `[DESIGN]` Trust tier gates install scope, and Marcus never installs a hook that blocks a tool class globally. This is a default. A global install needs T1. A T2 or T3 skill stays in staging, or goes into one project while the operator tests it; a T4 skill is never installed. A `PreToolUse` hook whose matcher covers MCP tools, Bash or PowerShell blocks that whole class in every session that loads it, so it goes into one project's `.claude/settings.json` or `.agents/hooks.json` and never into `~/.claude/settings.json` or `~/.gemini/config/hooks.json`. A global install carries hooks only through `SKILL.md` frontmatter, which Claude Code registers when the skill is invoked. G6 ends by asking the operator where the skill and its hooks live; `scripts/install_skill.py` applies the answer and refuses a scope above the tier.
+
 ## 9. What the gates do not cover
 
 Stated so the enforcement is not mistaken for a guarantee:
