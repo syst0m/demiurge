@@ -1,0 +1,1175 @@
+{
+  "schema": "demiurge.claims.compiled.v1",
+  "research_version": "1.3.2",
+  "sources_sha256": "6143192f668a73355b3aa2cf2bc23d713c5a8fc1d372567853a3bc6b5736fd67",
+  "research_sha256": "457c36306b68ffdf59767309a809b29e56055c37f460a31bc6693f5834ea632b",
+  "snapshot_sha256": "99b5404309fe81343f9935bc392bce38a0592a0667b86fad5fee6b7b5ff6a650",
+  "enforced": false,
+  "claims": [
+    {
+      "id": "disc.agentic-eng",
+      "section": 1,
+      "grades": [
+        {
+          "scope": "a framing",
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        },
+        {
+          "scope": "a codified practice",
+          "asserted": "EMERGING",
+          "effective": "EMERGING",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "f5a7ffd95fa1a651504cc293bf665321d11356382c3d50b333c7aaaaafd3e3f4",
+      "rules": []
+    },
+    {
+      "id": "disc.weng-framework",
+      "section": 1,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "bd837b831936656552cd7364a999247e7dc48af7a0ba1e9d4617deeae91a4cbc",
+      "rules": []
+    },
+    {
+      "id": "disc.harness-binding",
+      "section": 1,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "4bee6d2d0b3e31150bffbab7c3b68dcb56ca03068767ae7697532acf7330057d",
+      "rules": [
+        "R-HARNESS-1"
+      ]
+    },
+    {
+      "id": "ctx.practices-table",
+      "section": 2,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "590d33ac3803ef0fde5d80b2dbf7389610ab94788680c6a77c5fb539ab07fd1c",
+      "rules": []
+    },
+    {
+      "id": "ctx.failures-keep-prune",
+      "section": 2,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "CONTESTED",
+          "effective": "CONTESTED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "296f20a66e460a43d027bd9c2dbdca74584a55197c01bf8899a052a6d8979428",
+      "rules": []
+    },
+    {
+      "id": "ctx.cache-thrashing",
+      "section": 2,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "CONTESTED",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "1c293c8686c3be01d7dfdced2e221a8c3305a03be8ef35691d7b53de2960adf7",
+      "rules": [
+        "R-RULES-3",
+        "R-RULES-4"
+      ]
+    },
+    {
+      "id": "ctx.length-degradation",
+      "section": 2,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "2fddee935d97fd8e715de4dac0691b0d6a26d6c49da2a7ffac6c37a5d8ce2d15",
+      "rules": []
+    },
+    {
+      "id": "ctx.self-rewritten-memory",
+      "section": 2,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "89e74955a66b4e8d17543294645b93308dff1b60eac00b7381288240b6fe8824",
+      "rules": [
+        "R-CTX-1"
+      ]
+    },
+    {
+      "id": "mem.simple-file",
+      "section": 3,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "06dbc240351889a050dc1238f6b4d68459f5471a06ec5aad4650cca272fac287",
+      "rules": [
+        "R-MEM-1"
+      ]
+    },
+    {
+      "id": "mem.rag-hurts",
+      "section": 3,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "CONTESTED",
+          "effective": "CONTESTED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "e39c6ca18df89a9fb3873eb8185e835dd0502fdd0659a0c2cc1f1c4b724dfc9e",
+      "rules": [
+        "R-MEM-1"
+      ]
+    },
+    {
+      "id": "mem.mem0",
+      "section": 3,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "VENDOR",
+          "effective": "VENDOR",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "0fcaec2d793639a59009cc42a341ca3a275283670a5c30e2a799de2cb94e7d48",
+      "rules": []
+    },
+    {
+      "id": "mem.rag-stateless",
+      "section": 3,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "17d76167c2d4cdf455fff4dbf27947ca709a555a2227e6d71a0d970077e76bba",
+      "rules": [
+        "R-MEM-1"
+      ]
+    },
+    {
+      "id": "eval.immature",
+      "section": 4,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "dfaf73e8dee26fac3680438fedaf479d8fe91218b23654aaff87bd1065a00549",
+      "rules": [
+        "R-EVAL-1"
+      ]
+    },
+    {
+      "id": "eval.agent-benchmarks",
+      "section": 4,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "42201c5f7060880addfa21039a2a294778bdf07c5fbe0f6dd5ab17bea11882ff",
+      "rules": [
+        "R-EVAL-1"
+      ]
+    },
+    {
+      "id": "eval.judge-bias",
+      "section": 4,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "88e685f2496853432d471f080c1950485e3fa69d84d4916e966416f2a0ccfe34",
+      "rules": []
+    },
+    {
+      "id": "eval.calibration-ceiling",
+      "section": 4,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "9eb7cce07239574b7314829c2520004af04675f7f48efda4e5dd60dba8bd0267",
+      "rules": []
+    },
+    {
+      "id": "eval.bench-vs-deploy",
+      "section": 4,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "9f8e4104a3b3941b53c0d0d1ff4689dd4f0828e53f0104cddbaeb645cfea9523",
+      "rules": []
+    },
+    {
+      "id": "eval.benchmark-integrity",
+      "section": 4,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "VENDOR",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "4c603a2a7681ba14de97af7138afee21e4c31184c83d2180b373f675fb7c8ad2",
+      "rules": []
+    },
+    {
+      "id": "eval.new-benchmarks",
+      "section": 4,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "EMERGING",
+          "effective": "EMERGING",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "d6682ed6d49850a8f8052a5c6b31867f859415c284d8152ff23722c9d33d019d",
+      "rules": []
+    },
+    {
+      "id": "eval.frontiercode",
+      "section": 4,
+      "grades": [
+        {
+          "scope": "exact scores",
+          "asserted": "VENDOR",
+          "effective": "VENDOR",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "5261cd580117edd7c79dd341c042bbc345d761ac6432c76b54cec22a0cf65d64",
+      "rules": []
+    },
+    {
+      "id": "fail.self-eval",
+      "section": 5,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "bc641f1b5c481d791d8c957ac911c0c9382d766a96f0cd24dc9c1c4e09aab2a5",
+      "rules": [
+        "R-VEL-1"
+      ]
+    },
+    {
+      "id": "fail.errors-compound",
+      "section": 5,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "VENDOR",
+          "effective": "VENDOR",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "6850d0f68189649a449258d114829a031853a893a695b00d66437058106eee20",
+      "rules": [
+        "R-SEC-3",
+        "R-HOOKS-1"
+      ]
+    },
+    {
+      "id": "fail.self-correction",
+      "section": 5,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "3bbf0119c835bc8467a069112c0193c9bd6feae691f5011438419c08103fedbd",
+      "rules": []
+    },
+    {
+      "id": "fail.reward-hacking",
+      "section": 5,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "9ef72edd40444efd9506a4f79f56f824bb15c3f31dc36f48f867a3470d0ed4c1",
+      "rules": []
+    },
+    {
+      "id": "fail.mast-taxonomy",
+      "section": 5,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "be418ad1d8808b423395b882ec639a78e3faea684934656b774e0911eeb33ada",
+      "rules": [
+        "R-MA-1"
+      ]
+    },
+    {
+      "id": "sec.prompt-injection",
+      "section": 6,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "4a04d4a139c4e7773f1e70d327d76b2b72e03a26a6b7deb9c31492e9650cec91",
+      "rules": [
+        "R-SEC-2"
+      ]
+    },
+    {
+      "id": "sec.lethal-trifecta",
+      "section": 6,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "2b43f9bcc6b16113709d7d34636d0e56a8a48339a90a9feef74fa1e1137f9ea6",
+      "rules": [
+        "R-SEC-1"
+      ]
+    },
+    {
+      "id": "sec.skills-supply-chain",
+      "section": 6,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "a63c25c4c2e9d091805934e8448cd3d532ab2ee7050dfc214ccb11a7f0d98bfd",
+      "rules": [
+        "R-SEC-4",
+        "R-SEC-5"
+      ]
+    },
+    {
+      "id": "sec.payloadless-sch",
+      "section": 6,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "16b65573ae8ef6ce78801cee35cdc1f09d2b68ab3c8ca21bf3d6b6f6af278dc7",
+      "rules": [
+        "R-SEC-4"
+      ]
+    },
+    {
+      "id": "sec.owasp-agentic",
+      "section": 6,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "50654830f6ec57752921bcf87e137f7ebd39cb2204e28a54508c786a2c3e61d6",
+      "rules": [
+        "R-SEC-5"
+      ]
+    },
+    {
+      "id": "sec.trajectory-eval",
+      "section": 6,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "1ef9d6ffc321ddb423a3f269287def03dd078e84a88cc83296c21835256eca49",
+      "rules": []
+    },
+    {
+      "id": "ma.cognition-stance",
+      "section": 7,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "4a326b30962ac9259139e96363133afc9eb368de6656bdfbd034b1ed2777339d",
+      "rules": [
+        "R-MA-1",
+        "R-SUB-1"
+      ]
+    },
+    {
+      "id": "ma.worktree-failures",
+      "section": 7,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "6d203639a1dfb2098fb38a8109e3aca00a99ebaa220f0d32abeed158f1a5f13f",
+      "rules": [
+        "R-SUB-1"
+      ]
+    },
+    {
+      "id": "ma.storm",
+      "section": 7,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "EMERGING",
+          "effective": "EMERGING",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "50291a2843eea4997492deea5a44cfb1c5c0c05a95d133ff0db711aa5a4e419c",
+      "rules": []
+    },
+    {
+      "id": "ma.value",
+      "section": 7,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "CONTESTED",
+          "effective": "CONTESTED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "0cd7116cf6bff1927092334aca080ca38c3ac48d0e8f930d50077bc1f2ef629e",
+      "rules": [
+        "R-MA-1"
+      ]
+    },
+    {
+      "id": "proto.mcp",
+      "section": 8,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "2a7f3d77849af3198529d332e230b43235b9912fbd8e9c3dc804fa06fb5d8097",
+      "rules": []
+    },
+    {
+      "id": "proto.agent-skills",
+      "section": 8,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "b76dd583fcc6f52a89ecf20b2c0e24debab647e376a8a4732d0d6fef843df964",
+      "rules": [
+        "R-SKILLS-1"
+      ]
+    },
+    {
+      "id": "proto.plugins",
+      "section": 8,
+      "grades": [
+        {
+          "scope": "packaging spec",
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        },
+        {
+          "scope": "adoption",
+          "asserted": "EMERGING",
+          "effective": "EMERGING",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "cd46f5a26eca88f742cef7182a38e0f5046aff5914f25706ab9334305369741d",
+      "rules": []
+    },
+    {
+      "id": "proto.agents-md",
+      "section": 8,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "20dcb9e384d3eee06dc19d8f56166ab939bf9f7dde3fc843f4018f2b74ab51aa",
+      "rules": []
+    },
+    {
+      "id": "proto.a2a",
+      "section": 8,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "8b9b47f5067b13c9ab4fb40e732a753980332beea531710fc61f3005695b6d06",
+      "rules": []
+    },
+    {
+      "id": "proto.a2a-solo",
+      "section": 8,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "EMERGING",
+          "effective": "EMERGING",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "9b090b424b701534ebc32a7be3f753c208d841161a302e9937c03427d5ae4c97",
+      "rules": []
+    },
+    {
+      "id": "proto.mcp-cost",
+      "section": 8,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "60b3408b5f167203e9e984e5874b56f9445a366f22503d90f850552a5c4b8b55",
+      "rules": []
+    },
+    {
+      "id": "vel.faster",
+      "section": 9,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "CONTESTED",
+          "effective": "CONTESTED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "74be467ad66e3c294052b95e57f674a5cb6bbdb04bbfb9d9f1270fab5e016b31",
+      "rules": []
+    },
+    {
+      "id": "vel.productivity-paradox",
+      "section": 9,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "0892054f48d2eae6c770019ac39109c4786aa182699339a55b8d8a0a96842799",
+      "rules": []
+    },
+    {
+      "id": "vel.perception-gap",
+      "section": 9,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "9ebec22f5b3e0a330614d69dfb7df06e21f258b9632a99724d9c865c2f07565c",
+      "rules": [
+        "R-VEL-1"
+      ]
+    },
+    {
+      "id": "hype.list",
+      "section": 10,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "445058c83b309f3b71ff36edc74a8c266fca329a71519d8dacbcafc630c2ed01",
+      "rules": []
+    },
+    {
+      "id": "rules.convergence",
+      "section": 11,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "bdcd7567d963f76bc77991139745f2a91f17c1968af89187c5edab0cd00c6ee5",
+      "rules": [
+        "R-RULES-2"
+      ]
+    },
+    {
+      "id": "rules.model-decision",
+      "section": 11,
+      "grades": [
+        {
+          "scope": "whether other platforms will adopt it",
+          "asserted": "EMERGING",
+          "effective": "EMERGING",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "c4f78143176bb35815027859eb62dc0fcafd25020dfa70f1a3c68119709d889f",
+      "rules": []
+    },
+    {
+      "id": "rules.agents-md-canonical",
+      "section": 11,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "f2eca7ce401a5640bf56ec5aa882b3f4ac54615e91863cf19d9a29f360ce98fc",
+      "rules": [
+        "R-RULES-2"
+      ]
+    },
+    {
+      "id": "skills.progressive-disclosure",
+      "section": 11,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "78d8513016299692e204c378fc23df62aff92cb2324162a69a306438ff4e9a2e",
+      "rules": [
+        "R-SKILLS-1"
+      ]
+    },
+    {
+      "id": "skills.pd-unmeasured",
+      "section": 11,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "CONTESTED",
+          "effective": "CONTESTED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "29903d7b09e6422e849d397d30bab867f8416c27fbd7ad922a5a5cd5b7f1dd86",
+      "rules": []
+    },
+    {
+      "id": "harness.swing",
+      "section": 11,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "f0b5dd86b11cf7688fd26f4bf6a426346675f59a2aa16a21955df74f77c042a9",
+      "rules": [
+        "R-HARNESS-1"
+      ]
+    },
+    {
+      "id": "harness.new-benchmarks",
+      "section": 11,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "EMERGING",
+          "effective": "EMERGING",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "5ba42c26a32100e71cb8a01969fa413b426440764eca7931d69d9a8f62252a21",
+      "rules": []
+    },
+    {
+      "id": "hooks.contract",
+      "section": 11,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "8d606bcee044551fb3a85202bc66450487ac21c6902fe4f19ea177ac1efd0482",
+      "rules": [
+        "R-HOOKS-1"
+      ]
+    },
+    {
+      "id": "hooks.deterministic",
+      "section": 11,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "1bd4ebc3a1fefe3a901f5ca91fa3217081da1f03e33ffd3c1389ecaf3bfe664e",
+      "rules": [
+        "R-SEC-3",
+        "R-HOOKS-1"
+      ]
+    },
+    {
+      "id": "hooks.camel",
+      "section": 11,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "EMERGING",
+          "effective": "EMERGING",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "3c6af4ed3b1c048f3ed892e273920202a4f56cdd7008e9f2be672dcc0760e27c",
+      "rules": []
+    },
+    {
+      "id": "plugins.spec",
+      "section": 11,
+      "grades": [
+        {
+          "scope": "governance",
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        },
+        {
+          "scope": "adoption",
+          "asserted": "EMERGING",
+          "effective": "EMERGING",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "386bfd9cbb4f039e0a6124366b3fdf14494e6254ab322245e6dcb261fae6d176",
+      "rules": [
+        "R-PLUGINS-1"
+      ]
+    },
+    {
+      "id": "sub.worktree",
+      "section": 11,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "a7818879bb7a68451f70b7bdbb8510aa46321b0fb27ec7669601f4370b7de054",
+      "rules": [
+        "R-SUB-1"
+      ]
+    },
+    {
+      "id": "sub.topology",
+      "section": 11,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "6cb7c7bd9d7538027a51e39440d351a325bcfeb745c4b3fb8db48f3352c0411f",
+      "rules": [
+        "R-SUB-1"
+      ]
+    },
+    {
+      "id": "sub.storm",
+      "section": 11,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "EMERGING",
+          "effective": "EMERGING",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "3b7e060cd5ca4cce9fbb0c0c76e98ff062e1271d915c98880a2f2566a0787bd5",
+      "rules": []
+    },
+    {
+      "id": "ca.fragmented",
+      "section": 11,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "84f806cbb310a9eded55d669c9587d98ef338c46eed3bfc153cf7456f459474f",
+      "rules": [
+        "R-CA-1"
+      ]
+    },
+    {
+      "id": "ca.scoped-tools",
+      "section": 11,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "5d227de38893bc8a1846e0f6aed4b07f47367a61eed86988ca8995d5936d445e",
+      "rules": [
+        "R-CA-1"
+      ]
+    },
+    {
+      "id": "ca.context-forking",
+      "section": 11,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "ff78e4472aab8c0a96377050061d2975b909242ef69771f1ef179d9688822aae",
+      "rules": [
+        "R-CA-2"
+      ]
+    },
+    {
+      "id": "ca.session-handoff",
+      "section": 11,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "EMERGING",
+          "effective": "EMERGING",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "79b2dff67b87a1aa81e9eb97a95d23887683d4f7eba0525292155d566718c48d",
+      "rules": [
+        "R-CA-2"
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "id": "R-CTX-1",
+      "basis": "evidence",
+      "claims": [
+        "ctx.self-rewritten-memory"
+      ]
+    },
+    {
+      "id": "R-MEM-1",
+      "basis": "evidence",
+      "claims": [
+        "mem.simple-file",
+        "mem.rag-hurts",
+        "mem.rag-stateless"
+      ]
+    },
+    {
+      "id": "R-EVAL-1",
+      "basis": "evidence",
+      "claims": [
+        "eval.immature",
+        "eval.agent-benchmarks"
+      ]
+    },
+    {
+      "id": "R-SEC-1",
+      "basis": "evidence",
+      "claims": [
+        "sec.lethal-trifecta"
+      ]
+    },
+    {
+      "id": "R-SEC-2",
+      "basis": "evidence",
+      "claims": [
+        "sec.prompt-injection"
+      ]
+    },
+    {
+      "id": "R-SEC-3",
+      "basis": "evidence",
+      "claims": [
+        "fail.errors-compound",
+        "hooks.deterministic"
+      ]
+    },
+    {
+      "id": "R-SEC-4",
+      "basis": "evidence",
+      "claims": [
+        "sec.skills-supply-chain",
+        "sec.payloadless-sch"
+      ]
+    },
+    {
+      "id": "R-SEC-5",
+      "basis": "evidence",
+      "claims": [
+        "sec.owasp-agentic",
+        "sec.skills-supply-chain"
+      ]
+    },
+    {
+      "id": "R-MA-1",
+      "basis": "evidence",
+      "claims": [
+        "ma.cognition-stance",
+        "ma.value",
+        "fail.mast-taxonomy"
+      ]
+    },
+    {
+      "id": "R-VEL-1",
+      "basis": "evidence",
+      "claims": [
+        "vel.perception-gap",
+        "fail.self-eval"
+      ]
+    },
+    {
+      "id": "R-RULES-1",
+      "basis": "design",
+      "claims": []
+    },
+    {
+      "id": "R-RULES-2",
+      "basis": "evidence",
+      "claims": [
+        "rules.agents-md-canonical",
+        "rules.convergence"
+      ]
+    },
+    {
+      "id": "R-RULES-3",
+      "basis": "evidence",
+      "claims": [
+        "ctx.cache-thrashing"
+      ]
+    },
+    {
+      "id": "R-RULES-4",
+      "basis": "evidence",
+      "claims": [
+        "ctx.cache-thrashing"
+      ]
+    },
+    {
+      "id": "R-SKILLS-1",
+      "basis": "evidence",
+      "claims": [
+        "skills.progressive-disclosure",
+        "proto.agent-skills"
+      ]
+    },
+    {
+      "id": "R-HARNESS-1",
+      "basis": "evidence",
+      "claims": [
+        "disc.harness-binding",
+        "harness.swing"
+      ]
+    },
+    {
+      "id": "R-HOOKS-1",
+      "basis": "evidence",
+      "claims": [
+        "hooks.deterministic",
+        "hooks.contract",
+        "fail.errors-compound"
+      ]
+    },
+    {
+      "id": "R-PLUGINS-1",
+      "basis": "evidence",
+      "claims": [
+        "plugins.spec"
+      ]
+    },
+    {
+      "id": "R-SUB-1",
+      "basis": "evidence",
+      "claims": [
+        "sub.topology",
+        "sub.worktree",
+        "ma.worktree-failures",
+        "ma.cognition-stance"
+      ]
+    },
+    {
+      "id": "R-CA-1",
+      "basis": "evidence",
+      "claims": [
+        "ca.scoped-tools",
+        "ca.fragmented"
+      ]
+    },
+    {
+      "id": "R-CA-2",
+      "basis": "evidence",
+      "claims": [
+        "ca.session-handoff",
+        "ca.context-forking"
+      ]
+    },
+    {
+      "id": "R-CA-3",
+      "basis": "design",
+      "claims": []
+    }
+  ],
+  "counts": {
+    "SETTLED": 46,
+    "CONTESTED": 6,
+    "EMERGING": 11,
+    "VENDOR": 4,
+    "UNVERIFIED": 50
+  }
+}

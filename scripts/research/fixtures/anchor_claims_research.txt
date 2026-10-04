@@ -1,0 +1,52 @@
+# Fixture RESEARCH
+
+```yaml
+version: 1.0.0
+```
+
+> **Header blockquote.** Not a claim.
+
+| Marker | Criteria | Marcus Rule |
+|---|---|---|
+| `[SETTLED]` | Three sources | Encode as default. |
+| `[VENDOR]` | Source sells it | Do not encode. |
+
+## 1. The Discipline
+
+**Framing.** `[SETTLED]` as a framing, `[EMERGING]` as a codified practice.
+
+**Cache.** `[SETTLED]` Keep volatile data late. Source: [Docs](https://docs.anthropic.com/en/docs/cache) `[VENDOR]`, [Paper](https://arxiv.org/abs/2601.00001).
+
+### New benchmarks `[EMERGING]`
+
+- **FrontierCode** ([Cognition](https://www.cognition.ai/blog/frontier-code)): scores 30-50%. `[VENDOR]` for exact scores.
+- Plain bullet without a grade.
+
+`[VENDOR: Cognition]` **Errors compound.** `[SETTLED]` as framing.
+
+## 2. Protocols
+
+| Protocol | Status |
+|---|---|
+| **MCP** `[SETTLED]` | Spec at [MCP](https://modelcontextprotocol.io/specification). |
+| **A2A** | Draft. |
+
+> **Blockquote claim.** `[CONTESTED]` Writes stay single-threaded.
+
+*Marcus Rule:* Use append-only files.
+Never regenerate wholesale.
+
+```text
+# not a heading
+`[SETTLED]` inside a fence
+```
+
+## 3. Hype
+
+`[SETTLED]` Full replacement of engineers is overstated ([Review](https://doi.org/10.1145/1234567), [Preprint](https://doi.org/10.48550/arxiv.2606.12344)).
+
+## Change log
+
+| Version | Date | By | Change |
+|---|---|---|---|
+| 1.0.0 | 2026-08-30 | Extraction | Initial `[SETTLED]` extract. |

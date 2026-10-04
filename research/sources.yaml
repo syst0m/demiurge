@@ -1,0 +1,1893 @@
+schema: demiurge.sources.v1
+meta:
+  enforced: false
+  enforce_after: '2026-11-08'
+claims:
+  disc.agentic-eng:
+    section: 1
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: a framing
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    - scope: a codified practice
+      asserted: EMERGING
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: false
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  disc.weng-framework:
+    section: 1
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources:
+    - id: s1
+      url: null
+      title: Lilian Weng
+      type: none
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  disc.harness-binding:
+    section: 1
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: CONTESTED
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - aggregator_unresolved
+      - lt3_independent
+      - lt2_primary
+      - independence_unset
+      - reception_unchecked
+      - unretrieved_source
+    sources:
+    - id: s1
+      url: https://doi.org/10.48550/arxiv.2606.12344
+      title: Claw-SWE-Bench
+      type: preprint
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s2
+      url: https://consensus.app/papers/details/43f4d82302df51dfa305fc7c9545c823/?utm_source=unknown
+      title: Stop Comparing LLM Agents Without Disclosing the Harness
+      type: aggregator
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s3
+      url: https://consensus.app/papers/details/f4b46f0c169756078f5c8de629846665/?utm_source=unknown
+      title: Don't Blame the Large Language Model
+      type: aggregator
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  ctx.practices-table:
+    section: 2
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates:
+    - ca.context-forking
+    last_verified: null
+    verified_by: null
+    notes: ''
+  ctx.failures-keep-prune:
+    section: 2
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: CONTESTED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources:
+    - id: s1
+      url: null
+      title: Manus
+      type: none
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s2
+      url: null
+      title: Anthropic
+      type: none
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  ctx.cache-thrashing:
+    section: 2
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: CONTESTED
+      cap_evidence: CONTESTED
+      unverified: false
+      cap_reasons:
+      - vendor_gt1
+      - lt2_primary
+      - unretrieved_source
+    sources:
+    - id: s1
+      url: https://docs.anthropic.com/claude-code/rules
+      title: Claude Code Architecture Documentation
+      type: vendor
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: anthropic
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s2
+      url: https://aaif.io/specs/workspace-rules
+      title: AAIF Agent Configuration Specification
+      type: spec
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: aaif
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s3
+      url: https://docs.cursor.com/context/rules-for-ai
+      title: Cursor Rules Specification
+      type: vendor
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: cursor
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  ctx.length-degradation:
+    section: 2
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - aggregator_unresolved
+      - lt2_primary
+    sources:
+    - id: s1
+      url: https://consensus.app/papers/details/1aecfc3c99265aeab55fa1d25acf1135/?utm_source=unknown
+      title: Context Length Alone Hurts LLM Performance
+      type: aggregator
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s2
+      url: https://consensus.app/papers/details/694c246f6c4750f893e1b08a0ad3f62e/?utm_source=unknown
+      title: Found in the Middle
+      type: aggregator
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s3
+      url: https://consensus.app/papers/details/bac6172df89c5adbbc84945f9a05cb52/?utm_source=unknown
+      title: Lost in the Middle at Birth
+      type: aggregator
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  ctx.self-rewritten-memory:
+    section: 2
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources:
+    - id: s1
+      url: null
+      title: ACE
+      type: none
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: The +10.6% figure carries no source on its line; the change-log row for 1.0.0 names ACE.
+  mem.simple-file:
+    section: 3
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources:
+    - id: s1
+      url: null
+      title: YC-Bench
+      type: none
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: mentions
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: YC-Bench is named on the ungraded bullet below the section 3 claims and is attached here as a mention.
+  mem.rag-hurts:
+    section: 3
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: CONTESTED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  mem.mem0:
+    section: 3
+    kind: bullet
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: VENDOR
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: false
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  mem.rag-stateless:
+    section: 3
+    kind: bullet
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  eval.immature:
+    section: 4
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  eval.agent-benchmarks:
+    section: 4
+    kind: bullet
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  eval.judge-bias:
+    section: 4
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  eval.calibration-ceiling:
+    section: 4
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  eval.bench-vs-deploy:
+    section: 4
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  eval.benchmark-integrity:
+    section: 4
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: VENDOR
+      cap_evidence: VENDOR
+      unverified: false
+      cap_reasons:
+      - vendor_only
+      - aggregator_unresolved
+      - lt3_independent
+      - lt2_primary
+      - unretrieved_source
+    sources:
+    - id: s1
+      url: https://consensus.app/papers/details/a2fde21b76f5544c9edca661a2b6e868/?utm_source=unknown
+      title: SWE-Bench+
+      type: aggregator
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s2
+      url: https://consensus.app/papers/details/84224bee0b8e5a0794a3b69ae7f3e1c1/?utm_source=unknown
+      title: SWE-rebench
+      type: aggregator
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s3
+      url: https://www.cursor.com/blog/swe-bench-leakage
+      title: Cursor SWE-bench Leakage Investigation
+      type: vendor
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: cursor
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  eval.new-benchmarks:
+    section: 4
+    kind: header
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: EMERGING
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: false
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates:
+    - harness.new-benchmarks
+    last_verified: null
+    verified_by: null
+    notes: ''
+  eval.frontiercode:
+    section: 4
+    kind: bullet
+    population: any
+    polarity: affirm
+    grades:
+    - scope: exact scores
+      asserted: VENDOR
+      cap: VENDOR
+      cap_evidence: VENDOR
+      unverified: false
+      cap_reasons:
+      - vendor_only
+      - lt3_independent
+      - lt2_primary
+      - unretrieved_source
+    sources:
+    - id: s1
+      url: https://www.cognition.ai/blog/frontier-code
+      title: Cognition
+      type: vendor
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: cognition
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  fail.self-eval:
+    section: 5
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources:
+    - id: s1
+      url: null
+      title: Cognition
+      type: none
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  fail.errors-compound:
+    section: 5
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: VENDOR
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: false
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  fail.self-correction:
+    section: 5
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  fail.reward-hacking:
+    section: 5
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  fail.mast-taxonomy:
+    section: 5
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources:
+    - id: s1
+      url: null
+      title: MAST
+      type: none
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  sec.prompt-injection:
+    section: 6
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - aggregator_unresolved
+      - lt2_primary
+    sources:
+    - id: s1
+      url: https://consensus.app/papers/details/b0771d1e67385e0bb6331098ea1ab770/?utm_source=unknown
+      title: Prompt Injection Attacks on Agentic Coding Assistants
+      type: aggregator
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s2
+      url: https://consensus.app/papers/details/1f22a6682586514aaa8f32ad3e8a9fb5/?utm_source=unknown
+      title: InjecAgent
+      type: aggregator
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  sec.lethal-trifecta:
+    section: 6
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  sec.skills-supply-chain:
+    section: 6
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: CONTESTED
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - aggregator_unresolved
+      - lt3_independent
+      - lt2_primary
+      - independence_unset
+      - reception_unchecked
+      - unretrieved_source
+    sources:
+    - id: s1
+      url: https://doi.org/10.48550/arxiv.2601.10338
+      title: Agent Skills in the Wild
+      type: preprint
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s2
+      url: https://consensus.app/papers/details/8a295e8d6d1f5769b75fd915ee2400ce/?utm_source=unknown
+      title: Skill-Inject
+      type: aggregator
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s3
+      url: https://consensus.app/papers/details/54dcdfd7a523538ba9ee6f638ad5023b/?utm_source=unknown
+      title: ClawGuard
+      type: aggregator
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s4
+      url: https://consensus.app/papers/details/a745a1c7313b56d8a9bc4b145486b0c3/?utm_source=unknown
+      title: AgentForge
+      type: aggregator
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  sec.payloadless-sch:
+    section: 6
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  sec.owasp-agentic:
+    section: 6
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  sec.trajectory-eval:
+    section: 6
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  ma.cognition-stance:
+    section: 7
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources:
+    - id: s1
+      url: null
+      title: Cognition
+      type: none
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  ma.worktree-failures:
+    section: 7
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates:
+    - sub.worktree
+    last_verified: null
+    verified_by: null
+    notes: ''
+  ma.storm:
+    section: 7
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: EMERGING
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: false
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates:
+    - sub.storm
+    last_verified: null
+    verified_by: null
+    notes: ''
+  ma.value:
+    section: 7
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: CONTESTED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources:
+    - id: s1
+      url: null
+      title: MAST
+      type: none
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  proto.mcp:
+    section: 8
+    kind: table_row
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  proto.agent-skills:
+    section: 8
+    kind: table_row
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  proto.plugins:
+    section: 8
+    kind: table_row
+    population: any
+    polarity: affirm
+    grades:
+    - scope: packaging spec
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    - scope: adoption
+      asserted: EMERGING
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: false
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates:
+    - plugins.spec
+    last_verified: null
+    verified_by: null
+    notes: ''
+  proto.agents-md:
+    section: 8
+    kind: table_row
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  proto.a2a:
+    section: 8
+    kind: table_row
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  proto.a2a-solo:
+    section: 8
+    kind: table_row
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: EMERGING
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: false
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  proto.mcp-cost:
+    section: 8
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  vel.faster:
+    section: 9
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: CONTESTED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources:
+    - id: s1
+      url: null
+      title: METR (2025)
+      type: none
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s2
+      url: null
+      title: METR (2026)
+      type: none
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: Both METR sources are named on the ungraded bullets under this claim.
+  vel.productivity-paradox:
+    section: 9
+    kind: bullet
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - aggregator_unresolved
+      - lt2_primary
+    sources:
+    - id: s1
+      url: https://consensus.app/papers/details/fc9e0099b4ec5c54a8648ec26372d59a/?utm_source=unknown
+      title: The Productivity-Reliability Paradox
+      type: aggregator
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s2
+      url: https://consensus.app/papers/details/bbf4a1d27e2c54f9b296dec6401ce09e/?utm_source=unknown
+      title: 'The Impact of AI Coding Assistants: Longitudinal Study'
+      type: aggregator
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s3
+      url: https://consensus.app/papers/details/7446bc1934b256a1a9f1b979f41ad494/?utm_source=unknown
+      title: Impact of LLM-Assistants on Developer Productivity
+      type: aggregator
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: null
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  vel.perception-gap:
+    section: 9
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  hype.list:
+    section: 10
+    kind: prose
+    population: any
+    polarity: negate
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: null
+      cap_evidence: null
+      unverified: false
+      cap_reasons: []
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  rules.convergence:
+    section: 11
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  rules.model-decision:
+    section: 11
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: whether other platforms will adopt it
+      asserted: EMERGING
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: false
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  rules.agents-md-canonical:
+    section: 11
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  skills.progressive-disclosure:
+    section: 11
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  skills.pd-unmeasured:
+    section: 11
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: CONTESTED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  harness.swing:
+    section: 11
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  harness.new-benchmarks:
+    section: 11
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: EMERGING
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: false
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates:
+    - eval.new-benchmarks
+    last_verified: null
+    verified_by: null
+    notes: ''
+  hooks.contract:
+    section: 11
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  hooks.deterministic:
+    section: 11
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  hooks.camel:
+    section: 11
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: EMERGING
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: false
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  plugins.spec:
+    section: 11
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: governance
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    - scope: adoption
+      asserted: EMERGING
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: false
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates:
+    - proto.plugins
+    last_verified: null
+    verified_by: null
+    notes: ''
+  sub.worktree:
+    section: 11
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates:
+    - ma.worktree-failures
+    last_verified: null
+    verified_by: null
+    notes: ''
+  sub.topology:
+    section: 11
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  sub.storm:
+    section: 11
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: EMERGING
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: false
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates:
+    - ma.storm
+    last_verified: null
+    verified_by: null
+    notes: ''
+  ca.fragmented:
+    section: 11
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  ca.scoped-tools:
+    section: 11
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  ca.context-forking:
+    section: 11
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates:
+    - ctx.practices-table
+    last_verified: null
+    verified_by: null
+    notes: ''
+  ca.session-handoff:
+    section: 11
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: EMERGING
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: false
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+rules:
+  R-CTX-1:
+    section: 2
+    basis: evidence
+    claims:
+    - ctx.self-rewritten-memory
+  R-MEM-1:
+    section: 3
+    basis: evidence
+    claims:
+    - mem.simple-file
+    - mem.rag-hurts
+    - mem.rag-stateless
+  R-EVAL-1:
+    section: 4
+    basis: evidence
+    claims:
+    - eval.immature
+    - eval.agent-benchmarks
+  R-SEC-1:
+    section: 6
+    basis: evidence
+    claims:
+    - sec.lethal-trifecta
+  R-SEC-2:
+    section: 6
+    basis: evidence
+    claims:
+    - sec.prompt-injection
+  R-SEC-3:
+    section: 6
+    basis: evidence
+    claims:
+    - fail.errors-compound
+    - hooks.deterministic
+  R-SEC-4:
+    section: 6
+    basis: evidence
+    claims:
+    - sec.skills-supply-chain
+    - sec.payloadless-sch
+  R-SEC-5:
+    section: 6
+    basis: evidence
+    claims:
+    - sec.owasp-agentic
+    - sec.skills-supply-chain
+  R-MA-1:
+    section: 7
+    basis: evidence
+    claims:
+    - ma.cognition-stance
+    - ma.value
+    - fail.mast-taxonomy
+  R-VEL-1:
+    section: 9
+    basis: evidence
+    claims:
+    - vel.perception-gap
+    - fail.self-eval
+  R-RULES-1:
+    section: 11
+    basis: design
+    claims: []
+  R-RULES-2:
+    section: 11
+    basis: evidence
+    claims:
+    - rules.agents-md-canonical
+    - rules.convergence
+  R-RULES-3:
+    section: 11
+    basis: evidence
+    claims:
+    - ctx.cache-thrashing
+  R-RULES-4:
+    section: 11
+    basis: evidence
+    claims:
+    - ctx.cache-thrashing
+  R-SKILLS-1:
+    section: 11
+    basis: evidence
+    claims:
+    - skills.progressive-disclosure
+    - proto.agent-skills
+  R-HARNESS-1:
+    section: 11
+    basis: evidence
+    claims:
+    - disc.harness-binding
+    - harness.swing
+  R-HOOKS-1:
+    section: 11
+    basis: evidence
+    claims:
+    - hooks.deterministic
+    - hooks.contract
+    - fail.errors-compound
+  R-PLUGINS-1:
+    section: 11
+    basis: evidence
+    claims:
+    - plugins.spec
+  R-SUB-1:
+    section: 11
+    basis: evidence
+    claims:
+    - sub.topology
+    - sub.worktree
+    - ma.worktree-failures
+    - ma.cognition-stance
+  R-CA-1:
+    section: 11
+    basis: evidence
+    claims:
+    - ca.scoped-tools
+    - ca.fragmented
+  R-CA-2:
+    section: 11
+    basis: evidence
+    claims:
+    - ca.session-handoff
+    - ca.context-forking
+  R-CA-3:
+    section: 11
+    basis: design
+    claims: []
