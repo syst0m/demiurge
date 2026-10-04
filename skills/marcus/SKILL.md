@@ -92,7 +92,7 @@ Build progress:
 - [ ] G3  Minimal draft written; contract stated; rules applied by grade
 - [ ] G4  validate_skill.py passes (format + security)
 - [ ] G5  eval_runner.py: b > c per case; McNemar p < alpha at 20 or more cases; regression at 100%
-- [ ] G6  route_check.py finds no collision; PROVENANCE.md written
+- [ ] G6  route_check.py finds no collision; PROVENANCE.md written; install scope asked
 ```
 
 **G0 is the gate most worth defending.** It is Step 1's question 5 — *what has gone wrong before?* —
@@ -115,6 +115,15 @@ line. It is now `scripts/validate_skill.py`. Run it; do not perform it from memo
 
 **G5 cannot be waived.** Say the number, or say it was not measured.
 
+**G6 ends with the install-scope question.** Run `python scripts/install_skill.py <skill> --describe`,
+list each hook and what it blocks in plain words, then ask with `ask_question`: *"Where should
+`<skill>` and its hooks live?"* with the options Project (choose folder), Global and Staging, the
+recommended one marked. Rule G-13 sets the recommendation: T4 → Staging; T2 or T3 → Staging, with
+Project only for operator testing; T1 with a hook that blocks MCP tools, Bash or PowerShell →
+Project; any other T1 → Global. Apply the answer with `install_skill.py`, dry run first, then
+`--yes`. Never write `~/.claude/settings.json` or `~/.gemini/config/hooks.json`
+(`references/SPEC.md` §6.1).
+
 **A labeled ledger run is G0 evidence:** `modify_skill.py --evidence ledger:<run_id>` accepts a run whose latest label is `bad`, and G5 still pairs per case (`references/SPEC.md` §3).
 
 Full gate definitions, owners and failure actions: `references/SPEC.md` §3.
@@ -131,6 +140,8 @@ python scripts/validate_skill.py ~/.claude/skills/my-skill          # G4
 python scripts/eval_runner.py ~/.claude/skills/my-skill --baseline  # G1
 python scripts/eval_runner.py ~/.claude/skills/my-skill             # G5
 python scripts/route_check.py ~/.claude/skills/my-skill --library ~/.claude/skills   # G6
+python scripts/install_skill.py ~/code/skills/my-skill --describe           # G6 install-scope question
+python scripts/install_skill.py ~/code/skills/my-skill --scope project --project ~/code/app   # dry run; --yes applies
 python scripts/update_marcus.py --check                              # Marcus self-update & drift check
 python evals/run_gate_tests.py                                      # your own regression suite
 ```
@@ -220,7 +231,7 @@ Invokes Marcus to design and scaffold a new skill live on disk:
 - Synthesizes rules and mechanical hooks (G2–G3).
 - Lints formatting and security via `python scripts/validate_skill.py <skill>` (G4).
 - Enforces per-case pairing via `python scripts/eval_runner.py <skill> --yes` (G5): b > c per case; McNemar p < alpha at 20 or more cases; regression at 100%.
-- Verifies route collision via `python scripts/route_check.py` and records `PROVENANCE.md` (G6).
+- Verifies route collision via `python scripts/route_check.py`, records `PROVENANCE.md` and asks the install-scope question (G6).
 
 ### 3. Modify / Add Feature: `/marcus modify <path-or-name>` or `/marcus edit <path-or-name>`
 
@@ -232,7 +243,7 @@ Invokes Marcus to modify or add features to an existing skill without regression
 - Applies minimal edits to instructions, contracts, workflows, or scripts (G3).
 - Lints formatting and security via `python scripts/validate_skill.py <skill>` (G4).
 - Enforces strict non-regression via `python scripts/eval_runner.py <skill> --yes` (G5): b > c per case; McNemar p < alpha at 20 or more cases; regression at 100%.
-- Verifies route collision if description was altered via `python scripts/route_check.py` and appends revision block to `PROVENANCE.md` (G6).
+- Verifies route collision if description was altered via `python scripts/route_check.py`, appends revision block to `PROVENANCE.md` and asks the install-scope question when hooks or tier changed (G6).
 
 ### 4. Audit: `/marcus audit <path-or-url>` or `/marcus review <path-or-url>`
 
@@ -277,3 +288,4 @@ Launches the interactive Demiurge intake and control dashboard:
 1. Resolves configuration overrides via `scripts/resolve_config.py`.
 2. Launches `ask_question` modal for selecting task (New Skill, Modify Skill, Audit Third-Party, Research Sync, Run Gate Tests, or Release Check).
 3. Emits or updates the visual pipeline board artifact (`demiurge_build_board.md`).
+4. Before any install, lists each hook from `install_skill.py <skill> --describe` in plain words, then asks *"Where should `<skill>` and its hooks live?"*: Project (choose folder) / Global / Staging, recommended option marked by Rule G-13. A Project answer opens a second `ask_question` for the folder and the harnesses (Claude Code, Antigravity).
