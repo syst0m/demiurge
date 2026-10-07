@@ -340,6 +340,20 @@ def main() -> int:
                             and not (scaffolded / "evals" / "results-baseline.json").exists(),
                             f"exit={code}"))
 
+        # regression-11c: a judge that returns a limit stub aborts the run instead of scoring UNKNOWN.
+        answer = root / "answer_runner.py"
+        answer.write_text("print('A full, ordinary answer to the request. ' * 20)", encoding="utf-8")
+        stub.write_text("print(\"You've hit your session limit · resets 4:30pm\")", encoding="utf-8")
+        code, out = run([str(SCRIPTS / "eval_runner.py"), str(scaffolded),
+                         "--baseline", "--yes", "--runner-model", "stub",
+                         "--skills-dir", str(library),
+                         "--runner", f"{sys.executable} {answer} {{prompt}} {{settings}}",
+                         "--judge", f"{sys.executable} {stub} {{prompt}}"])
+        results.append(("regression-11c judge limit stub aborts the run",
+                        code == 2 and "ABORTED" in out
+                        and not (scaffolded / "evals" / "results-baseline.json").exists(),
+                        f"exit={code}"))
+
         # regression-12: ensure bundled scripts and references are staged in cwd for execution.
         (scaffolded / "scripts" / "marker.txt").write_text("STAGED-OK", encoding="utf-8")
         cwd_check = root / "cwd_check.py"
