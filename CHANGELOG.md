@@ -44,7 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Eval Runner Limit Detection (`skills/marcus/scripts/eval_runner.py`):** The infrastructure-stub check now matches daily, weekly and monthly usage limits, a dated reset time and the 403 auth error, so the run aborts instead of scoring those attempts as FAIL. Covered by `regression-11b` in the Marcus gate suite.
+- **Eval Runner Limit Detection (`skills/marcus/scripts/eval_runner.py`):** The infrastructure-stub check now matches daily, weekly and monthly usage limits, a dated reset time and the 403 auth error, so the run aborts instead of scoring those attempts as FAIL. Covered by `regression-11b` in the Marcus gate suite. The judge's output gets the same check, so a judge that hits a limit aborts the run instead of scoring UNKNOWN (`regression-11c`).
 - **Deployed Marcus Drift:** Ported the bare-list `suites["regression"]` fix in `skills/marcus/scripts/modify_skill.py` from the deployed copy and recorded it in `PROVENANCE.md`.
 - **`update_marcus.py` Reporting:** Parses the `n/m passing` summary from `run_gate_tests.py` and fails when it cannot. Counts marker variants above the change log only, skipping `[VENDOR]` source tags after links. `--apply` exits 1 while `AGENT_ARCHITECTURE.md` `derived_from` still drifts. Covered by `scripts/test_update_marcus.py`.
 
