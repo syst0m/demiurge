@@ -311,6 +311,19 @@ def main() -> int:
                         and not (scaffolded / "evals" / "results-baseline.json").exists(),
                         f"exit={code}"))
 
+        # regression-11b: the real weekly-limit and 403 messages, with a non-zero exit, also abort.
+        for label, message in (
+                ("weekly limit", "You've hit your weekly limit · resets Oct 6, 11pm (Asia/Shanghai)"),
+                ("403", "Failed to authenticate. API Error: 403 Request not allowed")):
+            stub.write_text(f"import sys\nprint({message!r})\nsys.exit(1)", encoding="utf-8")
+            code, out = run([str(SCRIPTS / "eval_runner.py"), str(scaffolded),
+                             "--baseline", "--yes", "--runner-model", "stub",
+                             "--skills-dir", str(library), "--runner", stub_runner])
+            results.append((f"regression-11b {label} stub aborts the run",
+                            code == 2 and "ABORTED" in out
+                            and not (scaffolded / "evals" / "results-baseline.json").exists(),
+                            f"exit={code}"))
+
         # regression-12: ensure bundled scripts and references are staged in cwd for execution.
         (scaffolded / "scripts" / "marker.txt").write_text("STAGED-OK", encoding="utf-8")
         cwd_check = root / "cwd_check.py"

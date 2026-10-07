@@ -288,8 +288,10 @@ def stage_skill_root(skill_dir: Path) -> Path:
 # A run that never executed must not be scored. Detects CLI abort / infrastructure stubs
 # when an account is rate-limited, unauthenticated, or overloaded.
 INFRA_STUB = re.compile(
-    r"(?i)(hit your (session|usage|rate) limit"
+    r"(?i)(hit your (session|usage|rate|daily|weekly|monthly) limit"
     r"|resets \d{1,2}[:.]\d{2}\s*(am|pm)"
+    r"|resets [a-z]{3} \d{1,2}, \d{1,2}(:\d{2})?\s*(am|pm)"
+    r"|failed to authenticate|request not allowed"
     r"|rate.?limit(ed|; )"
     r"|not logged in|please run /login"
     r"|invalid api key|authentication_error"
