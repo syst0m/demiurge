@@ -331,6 +331,10 @@ def run(command_template: str, prompt: str, settings: Path | None = None,
     return output.strip(), result.returncode == 0
 
 
+class InfraAbort(Exception):
+    """The judge returned an infrastructure stub, so the run must stop unscored."""
+
+
 def judge(judge_template: str, case: dict, transcript: str,
           settings: Path | None = None) -> tuple[str, str]:
     """Return (verdict, reason).
@@ -349,6 +353,8 @@ def judge(judge_template: str, case: dict, transcript: str,
         transcript=transcript[:12000],
     )
     raw, _ = run(judge_template, prompt, settings)
+    if (match := INFRA_STUB.search(raw)) and len(raw.strip()) <= STUB_MAX_CHARS:
+        raise InfraAbort(f"judge returned {match.group(0)!r}")
     lines = [ln.strip() for ln in raw.strip().split("\n") if ln.strip()]
     first = (lines[0] if lines else "").upper()
     reason = lines[1] if len(lines) > 1 else ""
@@ -514,7 +520,11 @@ def main() -> int:
                     aborted = (case.get("id"), reason)
                     break
                 if ok:
-                    verdict, why = judge(args.judge, case, transcript, settings)
+                    try:
+                        verdict, why = judge(args.judge, case, transcript, settings)
+                    except InfraAbort as exc:
+                        aborted = (case.get("id"), str(exc))
+                        break
                 else:
                     verdict, why = "FAIL", "runner exited non-zero"
                 attempts.append(verdict)
