@@ -91,6 +91,58 @@ Added native Antigravity interactive UI modalities (`ask_question` and Markdown 
 - Subcommand `/marcus interactive` (alias `/marcus ui`): Launches an interactive intake modal and emits a visual pipeline board artifact (`demiurge_build_board.md`).
 - Gate G4 re-validated (0 blocking, 0 warnings); gate regression suite maintained at 17/17 passing.
 
+## 2026-10-04 — Install Scope (Rule G-13)
+
+**Evidence of need (G0), recorded for the modify pipeline:**
+
+1. **A send guard designed for a global install.** Networker's outbound guard
+   (`hooks/deny_outbound.py`, wired by its `settings.fragment.json`) is a `PreToolUse` hook whose
+   matcher covers `mcp__.*`, Bash and PowerShell. It was designed for a global `PreToolUse`
+   install, where it would have blocked Gmail and Calendar tools in every session, including
+   sessions that never load networker.
+2. **A T2 skill loadable everywhere.** Networker is recorded at T2 ("must not be installed"), yet
+   it became loadable in every Claude Code session because `~/.claude/skills` is a symlink into
+   the agent-skills repo's `skills/` directory. Nothing between "written to the canonical source"
+   and "loaded in every session" asked where the skill should live.
+3. **Antigravity has no skill-level hooks.** Its hooks are global, workspace (`.agents/hooks.json`)
+   or plugin hooks. A skill whose hooks must run under Antigravity can only be scoped to a
+   workspace, so "global or nothing" leaves no safe place for a hook that blocks a tool class.
+
+**Change:** new `scripts/install_skill.py` installs a skill at project, global or staging scope,
+dry run until `--yes`. Project scope links the skill into `<dir>/.claude/skills/` and/or
+`<dir>/.agents/skills/` and appends the skill's fragment hooks and deny entries to the project's
+settings as new array entries, after a backup. Global scope links into a library and writes no
+hooks: they reach a global install only through `SKILL.md` frontmatter. The script refuses global
+below T1, global with a tool-class-blocking `PreToolUse` hook unless `--i-know`, project for T4,
+any write outside the target, and a link path that already exists and is not ours. `--remove`
+takes out exactly what the install recorded. Every applied install appends an `install:` block
+here, in the installed skill's `PROVENANCE.md`, and a line to `~/.demiurge/installs.jsonl`. Rule
+G-13 in `AGENT_ARCHITECTURE.md`; detail in `references/SPEC.md` §6.1. G6 and `/marcus
+interactive` ask *"Where should `<skill>` and its hooks live?"* after listing each hook in plain
+words.
+
+**Script justification (G4):** linking and settings merges are fragile file operations across
+two harness schemas and two platforms (symlink, or a directory junction on Windows without
+Developer Mode). A script makes the refusal rules and the exact undo deterministic, where a prompt
+line would not.
+
+**Review fixes (same revision):** a fresh-context review found that the skill name reached the
+link path and, through `mklink`, `cmd.exe`; that a linked `PROVENANCE.md` carried the record
+outside the skill; that a skill's own `PROVENANCE.md` could declare T1; that flow-style frontmatter
+hooks and MCP matchers such as `mcp__[a-z]+__.*` passed as non-blocking; that Antigravity entries
+dropped the matcher; and that `--remove` re-serialized the settings file. The script now checks the
+name, makes junctions with the Win32 call, refuses linked records, reads the tier from the commit
+in this repository (`--trust-provenance` otherwise), fails closed on unreadable hooks, writes the
+documented Antigravity shape (refusing a Claude Code matcher without `--antigravity-all-tools`),
+restores the backup's bytes, links a global library at its literal path and rolls back when a
+record cannot be written.
+
+**Verification:** `scripts/test_install_skill.py` (44 unit tests, temp directories with HOME,
+USERPROFILE and the sidecar redirected, the junction path forced by failing `os.symlink`) and
+`regression-25` to `regression-31` in `evals/run_gate_tests.py` (32/32 passing). G4 re-run: 0 blocking. No model-based G5 run: the
+change adds a script and a G6 question, and the deterministic cases are the applicable proof, as
+for regression-13 to regression-16.
+
 ## Open Validation Scope
 
 - **Self-Referential Gate G5 Evaluation:** End-to-end G5 execution on Marcus's full skill factory workflow requires isolated execution environments to prevent nested agents from inheriting the installed skill library.
@@ -101,12 +153,12 @@ Added native Antigravity interactive UI modalities (`ask_question` and Markdown 
 
 ## Deterministic Suite
 
-Execute local regression tests: `python skills/marcus/evals/run_gate_tests.py` (25/25 passing). Regression test cases are derived from the findings above and maintain 100% pass rates.
+Execute local regression tests: `python skills/marcus/evals/run_gate_tests.py` (32/32 passing). Regression test cases are derived from the findings above and maintain 100% pass rates.
 
 ## Trifecta Position
 
-- **Private data touched:** Local skills directory, plus the run ledger at `~/.demiurge/ledger/` when `eval_runner.py --ledger` writes to it (opt-in) or `modify_skill.py --evidence ledger:<run_id>` reads it (read-only).
+- **Private data touched:** Local skills directory, the install sidecar at `~/.demiurge/installs.jsonl` (absolute project paths; written by `install_skill.py --yes`), plus the run ledger at `~/.demiurge/ledger/` when `eval_runner.py --ledger` writes to it (opt-in) or `modify_skill.py --evidence ledger:<run_id>` reads it (read-only).
 - **Untrusted content ingested:** Third-party `SKILL.md` and reference files during audit.
-- **Exfiltration vector:** Zero in scripts. Zero network calls. The only write outside the target is the opt-in ledger append, which holds metadata and no prompt, transcript or judge text.
+- **Exfiltration vector:** Zero in scripts. Zero network calls. Writes outside the target skill are the opt-in ledger append, which holds metadata and no prompt, transcript or judge text, and `install_skill.py --yes`, which writes only the chosen project or library, the installed skill's `PROVENANCE.md` and the local install sidecar.
 
 The scripts remain network-free to prevent audit path exploitation.
