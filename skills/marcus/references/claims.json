@@ -1,9 +1,9 @@
 {
   "schema": "demiurge.claims.compiled.v1",
   "research_version": "1.3.2",
-  "sources_sha256": "6143192f668a73355b3aa2cf2bc23d713c5a8fc1d372567853a3bc6b5736fd67",
-  "research_sha256": "457c36306b68ffdf59767309a809b29e56055c37f460a31bc6693f5834ea632b",
-  "snapshot_sha256": "99b5404309fe81343f9935bc392bce38a0592a0667b86fad5fee6b7b5ff6a650",
+  "sources_sha256": "c52654b2a36300e420a59c81d93f79fa5aa2b475098fe6b9cab4e08485c65133",
+  "research_sha256": "085e50e7f6de52a683ce1bd9c28b96d0b893510bc671346847a54132c6fa2d27",
+  "snapshot_sha256": "54eebb7339166c3a4aa547f7c76c1990de56cc54c4b21374139cf61e5fd1924c",
   "enforced": false,
   "claims": [
     {
@@ -51,7 +51,7 @@
           "unverified": true
         }
       ],
-      "claim_sha256": "4bee6d2d0b3e31150bffbab7c3b68dcb56ca03068767ae7697532acf7330057d",
+      "claim_sha256": "942b8b511a85e80f10d768c51d5bde285aac1bb17bb151cac2f99a14dc5694d4",
       "rules": [
         "R-HARNESS-1"
       ]
@@ -95,7 +95,7 @@
           "unverified": false
         }
       ],
-      "claim_sha256": "1c293c8686c3be01d7dfdced2e221a8c3305a03be8ef35691d7b53de2960adf7",
+      "claim_sha256": "f308b1fc01333431ace3ba363d5930177f756db1b3750ecfe49b370c0fac0298",
       "rules": [
         "R-RULES-3",
         "R-RULES-4"
@@ -397,7 +397,7 @@
           "unverified": true
         }
       ],
-      "claim_sha256": "4a04d4a139c4e7773f1e70d327d76b2b72e03a26a6b7deb9c31492e9650cec91",
+      "claim_sha256": "1ff2844f3066965e428f2a0f6e3d559da60c68be8e88765fbc4e35051fb3f834",
       "rules": [
         "R-SEC-2"
       ]
@@ -429,7 +429,7 @@
           "unverified": true
         }
       ],
-      "claim_sha256": "a63c25c4c2e9d091805934e8448cd3d532ab2ee7050dfc214ccb11a7f0d98bfd",
+      "claim_sha256": "7f82ad4935d1134dea0e29629e2194083f5b39bb4fb20d18b46e38e2470c81fa",
       "rules": [
         "R-SEC-4",
         "R-SEC-5"
