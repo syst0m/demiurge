@@ -78,10 +78,7 @@ claims:
       cap_reasons:
       - aggregator_unresolved
       - lt3_independent
-      - lt2_primary
-      - independence_unset
       - reception_unchecked
-      - unretrieved_source
     sources:
     - id: s1
       url: https://doi.org/10.48550/arxiv.2606.12344
@@ -89,10 +86,10 @@ claims:
       type: preprint
       resolves_to: null
       resolves_to_type: null
-      independence_group: null
+      independence_group: zheng-2026-claw-swe-bench
       supports: confirms
-      quote: null
-      accessed: null
+      quote: success rates and resource consumption vary substantially even when the underlying model is held fixed
+      accessed: '2026-10-10'
       reception:
         checked: false
         retracted: null
@@ -102,12 +99,12 @@ claims:
       url: https://consensus.app/papers/details/43f4d82302df51dfa305fc7c9545c823/?utm_source=unknown
       title: Stop Comparing LLM Agents Without Disclosing the Harness
       type: aggregator
-      resolves_to: null
-      resolves_to_type: null
-      independence_group: null
+      resolves_to: https://arxiv.org/abs/2605.23950
+      resolves_to_type: preprint
+      independence_group: zhang-2026-stop-comparing
       supports: confirms
-      quote: null
-      accessed: null
+      quote: the agent execution harness ... is often a stronger determinant of agent performance than the model it wraps
+      accessed: '2026-10-10'
       reception:
         checked: false
         retracted: null
@@ -129,9 +126,9 @@ claims:
         scite_supporting: null
         scite_contrasting: null
     duplicates: []
-    last_verified: null
-    verified_by: null
-    notes: ''
+    last_verified: '2026-10-10'
+    verified_by: buckminster
+    notes: 'Sweep 2026-10-10: the prose figures (27.4 to 54.3 pp, 19.1% to 73.4%) were not found in s1 or s2. s1 HTML reports a largest fixed-model gap of 24.3 pp (Qwen 3.6-flash, 62.8% vs 38.5%). Owner to decide on the prose figures. s3 (Don''t Blame the Large Language Model) did not resolve by web search; Consensus returned HTTP 403. scite was not usable.'
   ctx.practices-table:
     section: 2
     kind: prose
@@ -214,7 +211,7 @@ claims:
       unverified: false
       cap_reasons:
       - vendor_gt1
-      - lt2_primary
+      - reception_unchecked
       - unretrieved_source
     sources:
     - id: s1
@@ -262,10 +259,40 @@ claims:
         retracted: null
         scite_supporting: null
         scite_contrasting: null
+    - id: s4
+      url: https://platform.claude.com/docs/en/build-with-claude/prompt-caching
+      title: Prompt caching (Claude API documentation)
+      type: vendor
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: anthropic
+      supports: confirms
+      quote: 'The cache follows the hierarchy: tools → system → messages. Changes at each level invalidate that level and all subsequent levels.'
+      accessed: '2026-10-10'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s5
+      url: https://arxiv.org/abs/2601.06007
+      title: 'Don''t Break the Cache: An Evaluation of Prompt Caching for Long-Horizon Agentic Tasks'
+      type: preprint
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: lumer-2026-dont-break-cache
+      supports: confirms
+      quote: placing dynamic content at the end of the system prompt, avoiding dynamic traditional function calling, and excluding dynamic tool results
+      accessed: '2026-10-10'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
     duplicates: []
-    last_verified: null
-    verified_by: null
-    notes: ''
+    last_verified: '2026-10-10'
+    verified_by: buckminster
+    notes: 'Sweep 2026-10-10: s1 returns HTTP 404 (after 301 to platform.claude.com), s2 returns HTTP 404, s3 redirects to the generic https://cursor.com/docs page with no caching statement. s1-s3 are left for the owner to remove or replace. s4 and s5 were retrieved this session.'
   ctx.length-degradation:
     section: 2
     kind: prose
@@ -807,24 +834,23 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: EMERGING
+      cap: CONTESTED
       cap_evidence: SETTLED
       unverified: true
       cap_reasons:
-      - no_countable_sources
-      - aggregator_unresolved
-      - lt2_primary
+      - lt3_independent
+      - reception_unchecked
     sources:
     - id: s1
       url: https://consensus.app/papers/details/b0771d1e67385e0bb6331098ea1ab770/?utm_source=unknown
       title: Prompt Injection Attacks on Agentic Coding Assistants
       type: aggregator
-      resolves_to: null
-      resolves_to_type: null
-      independence_group: null
+      resolves_to: https://arxiv.org/abs/2601.17548
+      resolves_to_type: preprint
+      independence_group: maloyan-2026-pi-coding
       supports: confirms
-      quote: null
-      accessed: null
+      quote: attack success rates against state-of-the-art defenses exceed 85% when adaptive attack strategies are employed
+      accessed: '2026-10-10'
       reception:
         checked: false
         retracted: null
@@ -834,21 +860,21 @@ claims:
       url: https://consensus.app/papers/details/1f22a6682586514aaa8f32ad3e8a9fb5/?utm_source=unknown
       title: InjecAgent
       type: aggregator
-      resolves_to: null
-      resolves_to_type: null
-      independence_group: null
+      resolves_to: https://doi.org/10.18653/v1/2024.findings-acl.624
+      resolves_to_type: peer
+      independence_group: zhan-2024-injecagent
       supports: confirms
-      quote: null
-      accessed: null
+      quote: ReAct-prompted GPT-4 vulnerable to attacks 24% of the time.
+      accessed: '2026-10-10'
       reception:
         checked: false
         retracted: null
         scite_supporting: null
         scite_contrasting: null
     duplicates: []
-    last_verified: null
-    verified_by: null
-    notes: ''
+    last_verified: '2026-10-10'
+    verified_by: buckminster
+    notes: 'Sweep 2026-10-10: the >85% figure comes from s1 only (adaptive attacks). s2 reports 24% on ReAct GPT-4, so it confirms vulnerability but not the >85% figure. scite was not usable, so reception stays unchecked.'
   sec.lethal-trifecta:
     section: 6
     kind: prose
@@ -881,11 +907,7 @@ claims:
       unverified: true
       cap_reasons:
       - aggregator_unresolved
-      - lt3_independent
-      - lt2_primary
-      - independence_unset
       - reception_unchecked
-      - unretrieved_source
     sources:
     - id: s1
       url: https://doi.org/10.48550/arxiv.2601.10338
@@ -893,10 +915,10 @@ claims:
       type: preprint
       resolves_to: null
       resolves_to_type: null
-      independence_group: null
+      independence_group: liu-2026-skills-wild
       supports: confirms
-      quote: null
-      accessed: null
+      quote: Skills bundling executable scripts are 2.12x more likely to contain vulnerabilities than instruction-only skills (OR=2.12, p<0.001)
+      accessed: '2026-10-10'
       reception:
         checked: false
         retracted: null
@@ -906,12 +928,12 @@ claims:
       url: https://consensus.app/papers/details/8a295e8d6d1f5769b75fd915ee2400ce/?utm_source=unknown
       title: Skill-Inject
       type: aggregator
-      resolves_to: null
-      resolves_to_type: null
-      independence_group: null
+      resolves_to: https://arxiv.org/abs/2602.20156
+      resolves_to_type: preprint
+      independence_group: schmotz-2026-skill-inject
       supports: confirms
-      quote: null
-      accessed: null
+      quote: Our results show that today's agents are highly vulnerable with up to 80% attack success rate with frontier models
+      accessed: '2026-10-10'
       reception:
         checked: false
         retracted: null
@@ -921,12 +943,12 @@ claims:
       url: https://consensus.app/papers/details/54dcdfd7a523538ba9ee6f638ad5023b/?utm_source=unknown
       title: ClawGuard
       type: aggregator
-      resolves_to: null
-      resolves_to_type: null
-      independence_group: null
+      resolves_to: https://arxiv.org/abs/2604.11790
+      resolves_to_type: preprint
+      independence_group: zhao-2026-clawguard
       supports: confirms
-      quote: null
-      accessed: null
+      quote: enforces a user-confirmed rule set at every tool-call boundary
+      accessed: '2026-10-10'
       reception:
         checked: false
         retracted: null
@@ -948,9 +970,9 @@ claims:
         scite_supporting: null
         scite_contrasting: null
     duplicates: []
-    last_verified: null
-    verified_by: null
-    notes: ''
+    last_verified: '2026-10-10'
+    verified_by: buckminster
+    notes: 'Sweep 2026-10-10: s4 (AgentForge) did not resolve to a paper by web search; Consensus returned HTTP 403. scite was not usable in this run, so reception stays unchecked.'
   sec.payloadless-sch:
     section: 6
     kind: prose
