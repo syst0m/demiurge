@@ -18,6 +18,10 @@ Thanks for contributing! We accept pull requests, bug reports, and feature reque
 
 ## Before opening a PR
 
+Run `python scripts/gh_minutes_gate.py --status` first. `GITHUB` means open the PR and let Actions
+run. `LOCAL` means GitHub Actions minutes are unavailable: open no PR, and use the local test, merge
+and tag flow. See [docs/STANDING_ORDERS.md](docs/STANDING_ORDERS.md).
+
 Install the pinned tooling first with `python -m pip install -r requirements-dev.txt`.
 
 Run the hooks, then run Vale across the whole repo:
