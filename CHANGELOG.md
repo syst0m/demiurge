@@ -7,7 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-10-30
+
 ### Added
+
+- **Standing Orders & Harness Parity:** Added repository standing orders (`AGENTS.md`, `CLAUDE.md`, `docs/STANDING_ORDERS.md`) enforcing GitHub minutes check and skill parity across harnesses.
+- **GitHub Minutes Gate:** Added `scripts/gh_minutes_gate.py` to gate GitHub actions.
+
+### Fixed
+
+- **Gate Tropes:** Allowed compressed X, not Y contrast patterns in `scripts/gate_tropes.py`.
 
 - **Repo Checks Workflow (`.github/workflows/checks.yml`):** Runs unit tests, the Marcus gate regression suite, G4 validation of Buckminster, the link check, research distribution drift, the Marcus sync check and the superfluous-comment scan on every pull request and push to `main`, plus `pre-commit` with Vale skipped. Dev tooling is pinned in `requirements-dev.txt`.
 - **Unit-Test Runner (`scripts/run_unit_tests.py`):** Finds `test_*.py` under `scripts/`, `evals/` and `skills/`, runs each file in its own interpreter, and exits 1 on any failure or 2 when no file matches the filters.
@@ -44,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Research Sweep Notifications (`scripts/research/sweep_runner.py`):** The weekend runner lives in the repo, with tests in `scripts/research/test_sweep_runner.py`. A failed email raises its own toast and stays in `outbox.json`, and each start sends the outbox again. The first start of each day checks the `claude` and `gws` logins, including the Gmail send scope, and reports a broken login before a weekend attempt depends on it. The owner address comes from `SWEEP_NOTIFY_EMAIL` or the `gws` login user, not from the source.
 - **Eval Runner Limit Detection (`skills/marcus/scripts/eval_runner.py`):** The infrastructure-stub check now matches daily, weekly and monthly usage limits, a dated reset time and the 403 auth error, so the run aborts instead of scoring those attempts as FAIL. Covered by `regression-11b` in the Marcus gate suite. The judge's output gets the same check, so a judge that hits a limit aborts the run instead of scoring UNKNOWN (`regression-11c`).
 - **Deployed Marcus Drift:** Ported the bare-list `suites["regression"]` fix in `skills/marcus/scripts/modify_skill.py` from the deployed copy and recorded it in `PROVENANCE.md`.
 - **`update_marcus.py` Reporting:** Parses the `n/m passing` summary from `run_gate_tests.py` and fails when it cannot. Counts marker variants above the change log only, skipping `[VENDOR]` source tags after links. `--apply` exits 1 while `AGENT_ARCHITECTURE.md` `derived_from` still drifts. Covered by `scripts/test_update_marcus.py`.

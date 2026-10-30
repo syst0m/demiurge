@@ -185,6 +185,26 @@ class ProjectInstallTests(InstallCase):
         self.assertEqual(len(backups), 1)
         self.assertEqual(json.loads(backups[0].read_text(encoding="utf-8")), EXISTING_SETTINGS)
 
+    def test_opencode_harness_links_skill_and_notes_that_hooks_do_not_carry_over(self) -> None:
+        skill = make_skill(self.root, "guarded", "T2", BLOCKING_FRAGMENT)
+        code, out = self.project_install(skill, "opencode", "--yes")
+        self.assertEqual(code, 0, out)
+        link = self.project / ".opencode" / "skills" / "guarded"
+        self.assertTrue(inst.is_link(link))
+        self.assertEqual(os.path.realpath(link), os.path.realpath(skill))
+        self.assertIn("OpenCode: hooks are JavaScript plugins", out)
+        self.assertFalse((self.project / ".opencode" / "plugins").exists())
+        self.assertFalse((self.project / ".claude").exists())
+
+    def test_all_harness_alias_covers_every_harness(self) -> None:
+        skill = make_skill(self.root, "guarded", "T2", BLOCKING_FRAGMENT)
+        code, out = self.project_install(skill, "all", "--antigravity-all-tools", "--yes")
+        self.assertEqual(code, 0, out)
+        for rel in (".claude/skills/guarded", ".agents/skills/guarded", ".opencode/skills/guarded"):
+            self.assertTrue(inst.is_link(self.project / rel), rel)
+        self.assertEqual(inst.parse_harnesses("all"), list(inst.HARNESSES))
+        self.assertEqual(sorted(inst.HARNESSES), ["antigravity", "claude-code", "opencode"])
+
     def test_antigravity_hooks_json_schema(self) -> None:
         skill = make_skill(self.root, "guarded", "T1", BLOCKING_FRAGMENT)
         code, out = self.project_install(skill, "antigravity", "--yes")

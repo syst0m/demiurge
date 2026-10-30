@@ -1,5 +1,6 @@
 #!/bin/bash
-# Deploys the canonical skills in this repo to where Claude Code loads them.
+# Deploys the canonical skills in this repo to where each harness loads them:
+# ~/.claude/skills (Claude Code), ~/.agents/skills (Antigravity), ~/.config/opencode/skills (OpenCode).
 #
 # The repo is the source of truth. ~/.claude/skills/ is a deployment target —
 # never edit there; the next sync overwrites it.
@@ -17,7 +18,22 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 REPO_SKILLS="$ROOT/skills"
-TARGET="${HOME}/.claude/skills"
+PRIMARY_TARGET="${HOME}/.claude/skills"
+# Every harness that loads skills gets the same copy. The primary target is always deployed to;
+# the others only when that harness's home already exists, so a machine without OpenCode or
+# Antigravity is not given empty config directories. A target that resolves to the same
+# directory as an earlier one (a symlinked library) is skipped.
+TARGETS=("$PRIMARY_TARGET")
+for extra in "${HOME}/.agents/skills" "${HOME}/.config/opencode/skills"; do
+    [ -d "$(dirname "$extra")" ] || continue
+    dup=false
+    for have in "${TARGETS[@]}"; do
+        if [ -d "$have" ] && [ -d "$extra" ] && [ "$(cd -P "$have" && pwd)" = "$(cd -P "$extra" && pwd)" ]; then
+            dup=true
+        fi
+    done
+    $dup || TARGETS+=("$extra")
+done
 CHECK_ONLY=false
 REPO_ONLY=false
 
@@ -92,20 +108,24 @@ if $REPO_ONLY && [ -f "$GRADE_CAP" ]; then
     fi
 fi
 
-# Pre-flight before any write to the deploy target: refuse the whole deploy when any target it
-# would replace has uncommitted work, so a refusal never leaves the library half-deployed.
-if ! $CHECK_ONLY && ! $REPO_ONLY && [ -d "$TARGET" ]; then
+# Pre-flight before any write to a deploy target: refuse the whole deploy, across every target,
+# when any target it would replace has uncommitted work, so a refusal never leaves a library
+# half-deployed.
+if ! $CHECK_ONLY && ! $REPO_ONLY; then
     refused=0
-    for skill_dir in "$REPO_SKILLS"/*/; do
-        [ -d "$skill_dir" ] || continue
-        name=$(basename "$skill_dir")
-        [ -d "$TARGET/$name" ] || continue
-        # An in-sync target is never replaced, so only a drifted one can lose work.
-        diff -rq "$skill_dir" "$TARGET/$name" >/dev/null 2>&1 && continue
-        if dirty_target "$TARGET/$name"; then
-            echo "REFUSE   $name: uncommitted changes in target working tree"
-            refused=1
-        fi
+    for TARGET in "${TARGETS[@]}"; do
+        [ -d "$TARGET" ] || continue
+        for skill_dir in "$REPO_SKILLS"/*/; do
+            [ -d "$skill_dir" ] || continue
+            name=$(basename "$skill_dir")
+            [ -d "$TARGET/$name" ] || continue
+            # An in-sync target is never replaced, so only a drifted one can lose work.
+            diff -rq "$skill_dir" "$TARGET/$name" >/dev/null 2>&1 && continue
+            if dirty_target "$TARGET/$name"; then
+                echo "REFUSE   $name: uncommitted changes in target working tree ($TARGET)"
+                refused=1
+            fi
+        done
     done
     if [ "$refused" -ne 0 ]; then
         echo "Nothing was written. Commit or discard those changes, then re-run."
@@ -113,22 +133,26 @@ if ! $CHECK_ONLY && ! $REPO_ONLY && [ -d "$TARGET" ]; then
     fi
 fi
 
+$REPO_ONLY && TARGETS=()
+
+for TARGET in "${TARGETS[@]}"; do
 for skill_dir in "$REPO_SKILLS"/*/; do
-    $REPO_ONLY && break
     [ -d "$skill_dir" ] || continue
     name=$(basename "$skill_dir")
+    sfx=""
+    [ "$TARGET" = "$PRIMARY_TARGET" ] || sfx="  @ $TARGET"
 
     if [ ! -d "$TARGET/$name" ]; then
-        echo "NEW      $name (not yet deployed)"
+        echo "NEW      $name (not yet deployed)$sfx"
         drift=1
         $CHECK_ONLY && continue
         mkdir -p "$TARGET/$name"
     elif ! diff -rq "$skill_dir" "$TARGET/$name" >/dev/null 2>&1; then
-        echo "DRIFT    $name"
+        echo "DRIFT    $name$sfx"
         diff -rq "$skill_dir" "$TARGET/$name" 2>&1 | sed 's/^/         /' || true
         drift=1
     else
-        echo "IN SYNC  $name"
+        echo "IN SYNC  $name$sfx"
         continue
     fi
 
@@ -149,9 +173,11 @@ for skill_dir in "$REPO_SKILLS"/*/; do
             echo "PRESERVE $name eval outputs ($(ls -1 "$preserved" | wc -l) file(s))"
         fi
         rm -rf "$preserved"
-        echo "SYNCED   $name"
+        echo "SYNCED   $name$sfx"
     fi
 done
+done
+
 
 if $grade_cap_failed; then
     exit 1
