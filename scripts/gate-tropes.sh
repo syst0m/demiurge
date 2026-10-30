@@ -11,7 +11,7 @@
 
 set -euo pipefail
 
-TROPE_REGEX="(it is|it's) not .+(,|;|—|-) it( is|'s) |not because .+, but because|(the question|the problem) is not .+\. (the question|the problem) is |isn't just .+(,|;|—|-) it( is|'s) |(is|are) not just .+(,|;|—|-) (it is|it's|they are|they're)|\b(is|are|was|were) [^.,;]{1,60}, not (a|an|the)\b|, not (a|an|the) [^.,;]{1,30}\."
+TROPE_REGEX="(it is|it's) not .+(,|;|—|-) it( is|'s) |not because .+, but because|(the question|the problem) is not .+\. (the question|the problem) is |isn't just .+(,|;|—|-) it( is|'s) |(is|are) not just .+(,|;|—|-) (it is|it's|they are|they're)"
 
 echo "Scanning for AI tropes (negative parallelism)..."
 

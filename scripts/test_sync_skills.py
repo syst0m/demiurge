@@ -239,6 +239,56 @@ class TestSyncSkills(unittest.TestCase):
         self.assertIn("SYNCED   marcus", result.stdout)
         self.assertEqual((evals / "last_run.json").read_text(encoding="utf-8"), '{"ok": true}\n')
 
+    def test_deploys_to_every_harness_whose_home_exists(self):
+        self.deploy_identical()
+        agents = self.home / ".agents"
+        opencode = self.home / ".config" / "opencode"
+        agents.mkdir()
+        opencode.mkdir(parents=True)
+        result = self.run_sync()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        for target in (self.target, agents / "skills", opencode / "skills"):
+            self.assertTrue((target / "marcus" / "references" / "RESEARCH.md").is_file(), str(target))
+
+    def test_skips_harnesses_that_are_not_installed(self):
+        self.deploy_identical()
+        result = self.run_sync()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertFalse((self.home / ".agents").exists())
+        self.assertFalse((self.home / ".config").exists())
+
+    def test_check_reports_a_missing_harness_copy_as_drift(self):
+        self.deploy_identical()
+        (self.home / ".config" / "opencode").mkdir(parents=True)
+        result = self.run_sync("--check")
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        self.assertIn("NEW      marcus (not yet deployed)  @ ", result.stdout)
+        self.assertIn("opencode", result.stdout)
+        self.assertFalse((self.home / ".config" / "opencode" / "skills").exists())
+
+    def test_dirty_second_target_refuses_before_any_write(self):
+        self.deploy_identical()
+        agents_skills = self.home / ".agents" / "skills"
+        shutil.copytree(self.root / "skills" / "marcus", agents_skills / "marcus")
+        (agents_skills / "marcus" / "SKILL.md").write_text("local edit\n", encoding="utf-8")
+        git = ["git", "-C", str(agents_skills)]
+        subprocess.run([*git, "init", "-q"], check=True, capture_output=True)
+        (self.root / "skills" / "marcus" / "SKILL.md").write_text("changed\n", encoding="utf-8")
+        result = self.run_sync()
+        self.assertEqual(result.returncode, 3, result.stdout + result.stderr)
+        self.assertIn("REFUSE   marcus", result.stdout)
+        self.assertFalse((self.target / "marcus" / "SKILL.md").exists())
+
+    def test_symlinked_duplicate_target_is_deployed_once(self):
+        self.deploy_identical()
+        (self.home / ".agents").mkdir()
+        try:
+            os.symlink(self.target, self.home / ".agents" / "skills", target_is_directory=True)
+        except (OSError, NotImplementedError):
+            self.skipTest("symlinks unavailable")
+        result = self.run_sync("--check")
+        self.assertEqual(result.stdout.count("IN SYNC  marcus"), 1, result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()
