@@ -4,7 +4,7 @@
 Run it; do not read it.
 
     python install_skill.py <skill-dir> --describe [--json]
-    python install_skill.py <skill-dir> --scope project --project <dir> [--harness claude-code,antigravity]
+    python install_skill.py <skill-dir> --scope project --project <dir> [--harness claude-code,antigravity,opencode | all]
                             [--antigravity-all-tools] [--yes]
     python install_skill.py <skill-dir> --scope global [--library <dir>] [--i-know] [--trust-provenance] [--yes]
     python install_skill.py <skill-dir> --scope staging [--yes]
@@ -12,7 +12,8 @@ Run it; do not read it.
 
 Every mode is a dry run until --yes. Scopes (references/SPEC.md section 6.1, Rule G-13):
 
-    project  links <dir>/.claude/skills/<name> and/or <dir>/.agents/skills/<name> to the
+    project  links <dir>/.claude/skills/<name>, <dir>/.agents/skills/<name> and/or
+             <dir>/.opencode/skills/<name> to the
              skill's canonical source, backs up and merges the skill's settings.fragment.json
              hooks into <dir>/.claude/settings.json and <dir>/.agents/hooks.json as new array
              entries, and merges its permissions.deny entries into <dir>/.claude/settings.json.
@@ -65,8 +66,10 @@ SCOPES = ("project", "global", "staging")
 HARNESSES: Dict[str, Dict[str, str]] = {
     "claude-code": {"skills": ".claude/skills", "hooks": ".claude/settings.json"},
     "antigravity": {"skills": ".agents/skills", "hooks": ".agents/hooks.json"},
+    "opencode": {"skills": ".opencode/skills", "hooks": ".opencode/plugins"},
 }
 DEFAULT_HARNESS = "claude-code"
+ALL_HARNESSES = "all"
 DEFAULT_LIBRARY = "~/.claude/skills"
 INSTALLS_ENV = "DEMIURGE_INSTALLS_FILE"
 
@@ -942,6 +945,11 @@ def plan_install(ctx: Context) -> Dict[str, Any]:
                          "for the rest of that session; this script does not copy them anywhere.")
     if ctx.scope == "project" and (ctx.fragment.get("hooks") or ctx.fragment.get("deny")):
         for harness in ctx.harnesses:
+            if harness == "opencode":
+                ctx.notes.append("OpenCode: hooks are JavaScript plugins (.opencode/plugins), which this "
+                                 "script does not generate; only the skill link is installed. Hooks and "
+                                 "permissions.deny entries reach Claude Code and Antigravity only.")
+                continue
             path = ctx.target / HARNESSES[harness]["hooks"]
             if harness == "claude-code":
                 entries = claude_entries(ctx.fragment, ctx.skill_dir)
@@ -1222,9 +1230,12 @@ def run_remove(ctx: Context, record: Dict[str, Any], guard: Guard, apply: bool) 
 
 def parse_harnesses(raw: str) -> List[str]:
     names = [part.strip() for part in raw.split(",") if part.strip()]
+    if ALL_HARNESSES in names:
+        return list(HARNESSES)
     unknown = [n for n in names if n not in HARNESSES]
     if unknown or not names:
-        raise Refusal(f"unknown harness {', '.join(unknown) or raw!r}; choose from {', '.join(HARNESSES)}")
+        raise Refusal(f"unknown harness {', '.join(unknown) or raw!r}; choose from "
+                      f"{', '.join(HARNESSES)} or {ALL_HARNESSES}")
     return list(dict.fromkeys(names))
 
 
@@ -1255,7 +1266,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--scope", choices=SCOPES)
     parser.add_argument("--project", help="project root for --scope project")
     parser.add_argument("--harness", default=DEFAULT_HARNESS,
-                        help="comma-separated: claude-code, antigravity (project scope)")
+                        help="comma-separated: claude-code, antigravity, opencode, or all (project scope)")
     parser.add_argument("--library", help=f"skill library for --scope global (default {DEFAULT_LIBRARY})")
     parser.add_argument("--remove", action="store_true", help="undo the recorded install")
     parser.add_argument("--describe", action="store_true",
