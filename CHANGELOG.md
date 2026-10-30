@@ -7,7 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-10-30
+
 ### Added
+
+- **Standing Orders & Harness Parity:** Added repository standing orders (`AGENTS.md`, `CLAUDE.md`, `docs/STANDING_ORDERS.md`) enforcing GitHub minutes check and skill parity across harnesses.
+- **GitHub Minutes Gate:** Added `scripts/gh_minutes_gate.py` to gate GitHub actions.
+
+### Fixed
+
+- **Gate Tropes:** Allowed compressed X, not Y contrast patterns in `scripts/gate_tropes.py`.
 
 - **Repo Checks Workflow (`.github/workflows/checks.yml`):** Runs unit tests, the Marcus gate regression suite, G4 validation of Buckminster, the link check, research distribution drift, the Marcus sync check and the superfluous-comment scan on every pull request and push to `main`, plus `pre-commit` with Vale skipped. Dev tooling is pinned in `requirements-dev.txt`.
 - **Unit-Test Runner (`scripts/run_unit_tests.py`):** Finds `test_*.py` under `scripts/`, `evals/` and `skills/`, runs each file in its own interpreter, and exits 1 on any failure or 2 when no file matches the filters.
