@@ -43,3 +43,11 @@ repos:
         entry: python scripts/verify_release.py --pre-commit
         language: system
         pass_filenames: true
+
+      - id: harness-parity
+        name: Every skill is deployed in every installed harness
+        entry: python scripts/check_harness_parity.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
