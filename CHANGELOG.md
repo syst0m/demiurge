@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-10-31
+
+### Added
+
+- **Hermes slash commands for demiurge skills:** New `demiurge-skills` Hermes plugin at `%LOCALAPPDATA%/hermes/plugins/demiurge-skills/` exposing `/buckminster` and `/marcus` slash commands in Hermes Agent Desktop (skills are not auto-mapped to slash commands in Hermes, unlike Claude Code/Antigravity/OpenCode).
+- **Skill-to-command sync script:** `scripts/sync-hermes-commands.py` reads each skill's `SKILL.md` frontmatter (`name`, `description`) and regenerates `plugin.yaml` + `commands/<name>.toml`; removes stale commands for deleted skills; `--check` reports drift without writing.
+
 ## [0.13.0] - 2026-10-30
 
 ### Added
