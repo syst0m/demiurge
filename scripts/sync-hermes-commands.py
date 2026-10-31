@@ -61,6 +61,7 @@ def plugin_yaml(names: list[str]) -> str:
         f"name: demiurge-skills\n"
         f"version: 1.0.0\n"
         f"description: Hermes slash commands for demiurge skills ({', '.join(names)}). Synced from scripts/sync-hermes-commands.py — do not edit by hand.\n"
+        f"provides_hooks:\n  - pre_gateway_dispatch\n"
         f"provides_commands:\n{commands}\n"
         f"provides_skills:\n{commands}\n"
     )
@@ -127,33 +128,47 @@ def _read_toml_command(path: Path) -> tuple[str, str, str] | None:
     return path.stem, description, prompt
 
 
-def _make_handler(prompt: str):
-    def handler(raw_args: str, ctx: Any = None) -> str:
-        if ctx is not None:
-            try:
-                ctx.inject_message(prompt)
-                return "Queued for the agent."
-            except Exception:
-                pass
-        return prompt
-    return handler
+def _skill_prompt(command: str, args: str = "") -> str:
+    tail = args.strip()
+    target = f"\\n\\nUser arguments: {tail}" if tail else ""
+    for path in sorted(COMMANDS_DIR.glob("*.toml")):
+        parsed = _read_toml_command(path)
+        if parsed and parsed[0] == command:
+            desc = parsed[1]
+            return f"Load and follow the Hermes plugin skill `demiurge-skills:{command}`. {desc}{target}"
+    return f"Run the {command} skill from the demiurge repo.{target}"
+
+
+def _slash_access_denied(event: Any, gateway: Any, command: str) -> bool:
+    if gateway is None or event is None:
+        return False
+    checker = getattr(gateway, "_check_slash_access", None)
+    source = getattr(event, "source", None)
+    if checker is None or source is None:
+        return False
+    try:
+        return checker(source, command) is not None
+    except Exception:
+        return True
+
+
+def rewrite_gateway_command(event: Any = None, gateway: Any = None, **_: Any) -> dict[str, str] | None:
+    """Rewrite authorized gateway /buckminster and /marcus commands into skill prompts."""
+    text = str(getattr(event, "text", "") or "").strip()
+    if not text.startswith("/"):
+        return None
+    head, _, rest = text[1:].partition(" ")
+    command = head.replace("_", "-").lower()
+    if not any(p.stem == command for p in COMMANDS_DIR.glob("*.toml")):
+        return None
+    if _slash_access_denied(event, gateway, command):
+        return None
+    return {"action": "rewrite", "text": _skill_prompt(command, rest)}
 
 
 def register(ctx: Any) -> None:
-    """Register each commands/<name>.toml as a Hermes slash command."""
-    if not COMMANDS_DIR.is_dir():
-        return
-    for path in sorted(COMMANDS_DIR.glob("*.toml")):
-        parsed = _read_toml_command(path)
-        if not parsed:
-            continue
-        name, description, prompt = parsed
-        ctx.register_command(
-            name,
-            _make_handler(prompt),
-            description=description,
-            args_hint="[target or notes]",
-        )
+    """Register the pre_gateway_dispatch hook that exposes /buckminster and /marcus."""
+    ctx.register_hook("pre_gateway_dispatch", rewrite_gateway_command)
 '''
     if not init_py.exists() or init_py.read_text(encoding="utf-8") != init_text:
         drift = True
