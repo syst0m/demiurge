@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.1] - 2026-10-31
+
+### Fixed
+
+- **Hermes plugin `__init__.py`:** `scripts/sync-hermes-commands.py` now writes a proper `register()` function that calls `ctx.register_command()` for each `commands/<name>.toml`, so `/buckminster` and `/marcus` slash commands are actually registered with Hermes (the previous docstring-only `__init__.py` passed discovery but registered zero commands).
+
 ## [0.14.0] - 2026-10-31
 
 ### Added
