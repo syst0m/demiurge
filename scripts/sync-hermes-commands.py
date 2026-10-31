@@ -95,6 +95,71 @@ def main(argv: list[str] | None = None) -> int:
 
     # commands/*.toml
     COMMANDS_DIR.mkdir(parents=True, exist_ok=True)
+    # __init__.py marks the plugin dir as a Python package (required by the
+    # Hermes plugin loader); keep it in sync too.
+    init_py = PLUGIN_DIR / "__init__.py"
+    init_text = '''"""Hermes plugin for demiurge skills: /buckminster and /marcus slash commands."""
+
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Any
+
+ROOT = Path(__file__).resolve().parent
+COMMANDS_DIR = ROOT / "commands"
+
+
+def _read_toml_command(path: Path) -> tuple[str, str, str] | None:
+    """Parse a minimal commands/*.toml: description and prompt on lines 1-2."""
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
+        return None
+    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+    description = prompt = ""
+    for ln in lines:
+        if ln.startswith("description ="):
+            description = ln.split("=", 1)[1].strip().strip('"')
+        elif ln.startswith("prompt ="):
+            prompt = ln.split("=", 1)[1].strip().strip('"')
+    if not description or not prompt:
+        return None
+    return path.stem, description, prompt
+
+
+def _make_handler(prompt: str):
+    def handler(raw_args: str, ctx: Any = None) -> str:
+        if ctx is not None:
+            try:
+                ctx.inject_message(prompt)
+                return "Queued for the agent."
+            except Exception:
+                pass
+        return prompt
+    return handler
+
+
+def register(ctx: Any) -> None:
+    """Register each commands/<name>.toml as a Hermes slash command."""
+    if not COMMANDS_DIR.is_dir():
+        return
+    for path in sorted(COMMANDS_DIR.glob("*.toml")):
+        parsed = _read_toml_command(path)
+        if not parsed:
+            continue
+        name, description, prompt = parsed
+        ctx.register_command(
+            name,
+            _make_handler(prompt),
+            description=description,
+            args_hint="[target or notes]",
+        )
+'''
+    if not init_py.exists() or init_py.read_text(encoding="utf-8") != init_text:
+        drift = True
+        if not args.check:
+            init_py.write_text(init_text, encoding="utf-8")
+            print(f"WRITE {init_py}")
     expected: set[str] = set()
     for p in parsed:
         expected.add(p["name"] + ".toml")
