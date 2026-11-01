@@ -1,3 +1,5 @@
+# Vendored upstream files stay byte-identical to their pin (scripts/vendor_sync.py); no hook may rewrite them.
+exclude: ^skills/[^/]+/references/[^/]+/(SKILL\.upstream\.md|LICENSE)$
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
@@ -43,6 +45,13 @@ repos:
         entry: python scripts/verify_release.py --pre-commit
         language: system
         pass_filenames: true
+
+      - id: vendor-pins
+        name: Vendored upstream files match their pins
+        entry: python scripts/vendor_sync.py --check
+        language: system
+        pass_filenames: false
+        always_run: true
 
       - id: harness-parity
         name: Every skill is deployed in every installed harness
