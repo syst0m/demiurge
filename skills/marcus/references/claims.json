@@ -1,9 +1,9 @@
 {
   "schema": "demiurge.claims.compiled.v1",
   "research_version": "1.3.3",
-  "sources_sha256": "9d1cc6feeaabfd5b70a78c47fa96da8be1bba40080f35619edbaf92fd2efc890",
-  "research_sha256": "aecf54a00b901890be5eb2702a000fd46d0041d96d0c2f7810f39bd67d26a1c3",
-  "snapshot_sha256": "23a01fe276a556e90aa983d6953f326b18a0d8d550306ed44e5d80ded620a842",
+  "sources_sha256": "2d873aec0da4d0a66bd08b42fd147c3f2504df7e371f70c289cf14215c2c88b5",
+  "research_sha256": "7fe7722e2ed1f7850a4a77145cf7f17e0707ccdf582cd55db13dcdb4911abbca",
+  "snapshot_sha256": "773027194d867cf3d682a3b64a8de7b2ccb83ee2b451ed11c114c693cb6e59c7",
   "enforced": false,
   "claims": [
     {
@@ -1083,12 +1083,26 @@
       "grades": [
         {
           "scope": null,
-          "asserted": "CONTESTED",
-          "effective": "CONTESTED",
-          "unverified": true
+          "asserted": "EMERGING",
+          "effective": "EMERGING",
+          "unverified": false
         }
       ],
-      "claim_sha256": "06bbae891618e653d8eea409018ee94248e2d119ee254a4d5020a10d10b57b8f",
+      "claim_sha256": "bb8707376c6e308102fa3624713468c1693597315a207ffe802ed03dfcd8d95b",
+      "rules": []
+    },
+    {
+      "id": "disc.felix-rieseberg",
+      "section": 12,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "EMERGING",
+          "effective": "EMERGING",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "655800a457b7ae9898d4507d096b3c8913e12ef1a4ab8042cc3ee2882faf39fc",
       "rules": []
     }
   ],
@@ -1265,9 +1279,9 @@
   ],
   "counts": {
     "SETTLED": 47,
-    "CONTESTED": 12,
-    "EMERGING": 11,
+    "CONTESTED": 11,
+    "EMERGING": 13,
     "VENDOR": 4,
-    "UNVERIFIED": 57
+    "UNVERIFIED": 56
   }
 }
