@@ -54,8 +54,8 @@ from pathlib import Path
 import ledger_lib
 
 SKILL_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_RUNNER = "hermes -z {prompt}"
-DEFAULT_JUDGE = "hermes -z {prompt}"
+DEFAULT_RUNNER = "claude -p {prompt}"
+DEFAULT_JUDGE = "claude -p {prompt}"
 TIMEOUT_SECONDS = 600   # a long-horizon agent task can legitimately take minutes
 DEFAULT_ALPHA = 0.05
 SIGNIFICANCE_MIN_CASES = 20   # below this, G5 is directional and says so
