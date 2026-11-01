@@ -20,6 +20,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`verify_release.py --cut`:** A `gh release create` that fails because `release.yml` created the release first counts as success.
 - **Minutes Gate:** `run_gh` takes `cwd` directly, and the `TypeError` fallback that could query the wrong repository is gone.
 
+## [0.16.0] - 2026-11-01
+
+### Added
+
+- **Buckminster ambition-evidence claims** (`research/RESEARCH.md` v1.3.3, `research/sources.yaml`): `eval.persona-prompting` `[SETTLED]` (Zheng et al. EMNLP 2024; Basil et al. Wharton 2025; Luz de Araujo & Roth PLOS ONE 2025), `eval.visible-heldout-gap`, `fail.escalation-channel`, `fail.pressure-exploit`, `goal.clarification-timing`, `pushbench.quant-goal-persistence`, `goal.learning-vs-outcome` (all `[CONTESTED]`); new Section 12 Goal setting and clarification. Reception unchecked via Smart Citations.
+- **Imhotep overlay re-based on graded claims**: OVERLAY.md rules O1–O4, O6, O8, O9 cite RESEARCH.md claim ids instead of "Judgement"; `PROVENANCE.md` research_claims expanded to 13 ids; research_snapshot v1.3.3.
+
+### Changed
+
+- **Hermes harness sync:** `scripts/sync-skills.sh` deploys skills to `~/.hermes/skills/agent-skills` and `%LOCALAPPDATA%/hermes/skills/agent-skills`; enables the run-ledger hook (`install-hook` step). Harness parity now clean.
+- **`eval_runner.py` defaults:** runner/judge reverted to `claude -p {prompt}` (Hermes CLI `hermes -z` is an interactive agent and fails on long eval prompts); `--runner-model/--runner-provider/--judge-model/--judge-provider` flags added.
+- **Release notification:** `release.yml` adds a `notify` job that files a `release-failure` GitHub issue when a Release run on main fails.
+- **Ledger hook:** installed to `%LOCALAPPDATA%/hermes/demiurge-ledger/` and merged into `.claude/settings.json` (PostToolUse + UserPromptSubmit).
+
 ## [0.15.0] - 2026-11-01
 
 ### Added

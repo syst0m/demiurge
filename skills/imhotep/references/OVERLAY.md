@@ -11,12 +11,12 @@ it is signed off.
 
 | # | Upstream says | Imhotep does | Basis |
 |---|---|---|---|
-| O1 | An outside judge decides; a tool you can run is best | The judge has **two** parts: visible checks and held-out checks written by a fresh-context subagent that the builder never reads | Claim `fail.self-eval`, `eval.judge-bias`; judgement: SpecBench (Zhao et al., 2026) visible/held-out gap grows ~28 pp per 10x code size |
-| O2 | Treat the hard target as reasonable; keep going | Same, plus an **escalation channel**: a defective judge or an unreachable target is reported, never gamed. `judge_guard.py` fails a build that edits the judge | Claim `fail.reward-hacking`; judgement: escalation channels cut reward hacking from 23.6 % to 5.3 % across 8 models (Gómez, 2026) |
-| O3 | If the model balks, say the goal is solvable | Push on **effort and method**, never on the score. Every Build Brief carries the fixed anti-exploit clause | Judgement: user pressure on a score moved first exploit from round 19.7 to 4.1; explicit anti-exploit wording cut exploitation from 100 % to 8.3 % (AgentPressureBench, Chen et al., 2026) |
-| O4 | Specific hard goals beat "do your best" | For novel work, set a **learning goal** first, then the numeric target | Judgement: goal effects shrink on complex tasks (Wood, Mento & Locke, 1987); learning goals beat outcome goals there (Seijts & Latham, 2001). Transfer to LLMs is untested |
+| O1 | An outside judge decides; a tool you can run is best | The judge has **two** parts: visible checks and held-out checks written by a fresh-context subagent that the builder never reads | Claim `fail.self-eval`, `eval.judge-bias`, `eval.visible-heldout-gap` |
+| O2 | Treat the hard target as reasonable; keep going | Same, plus an **escalation channel**: a defective judge or an unreachable target is reported, never gamed. `judge_guard.py` fails a build that edits the judge | Claim `fail.reward-hacking`, `fail.escalation-channel` |
+| O3 | If the model balks, say the goal is solvable | Push on **effort and method**, never on the score. Every Build Brief carries the fixed anti-exploit clause | Claim `fail.pressure-exploit` |
+| O4 | Specific hard goals beat "do your best" | For novel work, set a **learning goal** first, then the numeric target | Claim `goal.learning-vs-outcome` |
 | O5 | Give each field its own subagent if you can | Range subagents are **read-only** and return findings. One writer. No debate rounds | Claim `ma.value` [CONTESTED], `ma.cognition-stance`, rule R-MA-1 |
-| O6 | Ask what the user wants to happen next | Ask the goal question **once, at intake**, only if ambiguous. Never mid-run | Judgement: goal clarification loses nearly all value after ~10 % of execution (Gulati et al., 2026) |
+| O6 | Ask what the user wants to happen next | Ask the goal question **once, at intake**, only if ambiguous. Never mid-run | Claim `goal.clarification-timing` |
 | O7 | Durable workflows take the human out of the loop | Rung-3 loops are **proposed** as `routines/*.md` for the user to approve | Demiurge governance (human sign-off), README |
-| O8 | Do what the expert does, not how they talk | Unchanged, and the crew is chosen from **registry skills** where a measured one exists | Judgement: persona prompts do not reliably raise accuracy (Zheng et al., 2023; Basil et al., 2025) |
-| O9 | (none) | Progress is a **verified backlog**: a unit counts as done only when its check passes | Judgement: state-tracking controllers reach 69–78 % where completion-gated ones reach 0 % (PushBench, Cai et al., 2026); false completion and premature stops in SWE-Marathon (Desai et al., 2026) |
+| O8 | Do what the expert does, not how they talk | Unchanged, and the crew is chosen from **registry skills** where a measured one exists | Claim `eval.persona-prompting` |
+| O9 | (none) | Progress is a **verified backlog**: a unit counts as done only when its check passes | Claim `pushbench.quant-goal-persistence` |
