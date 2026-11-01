@@ -1,6 +1,6 @@
 <div align="center">
   <h1>Demiurge</h1>
-  <p><b>Two autonomous agents in an empirical feedback loop. One researches; one designs.</b></p>
+  <p><b>A Pantheon of three autonomous agents in an empirical feedback loop. One researches; one designs; one builds.</b></p>
 </div>
 
 <div align="center">
@@ -13,8 +13,9 @@ Demiurge isolates empirical research from agent synthesis. Self-contained, depen
 |---|---|---|
 | **Marcus** | Designs, scaffolds, audits, and proves agent skills. | Refuses to ship any agent without measured evidence. |
 | **Buckminster** | Researches agentic engineering and standards. | Every claim requires 3 verified, hyperlinked sources. |
+| **Imhotep** | Builds the user's real deliverables at the ambitious level, with Marcus's measured skills. | Ambition on the target, conservatism on the judge: held-out checks it never reads. |
 
-Named for Marcus Aurelius (wrote guidance, then followed it) and Buckminster Fuller (comprehensive anticipatory design science).
+Named for Marcus Aurelius (wrote guidance, then followed it), Buckminster Fuller (comprehensive anticipatory design science) and Imhotep (architect of the first stone pyramid, the first engineer known by name).
 
 ---
 
@@ -26,9 +27,14 @@ Buckminster ──proposes diff──> Operator Sign-Off ──merges──> res
                                                                    read by
                                                                       │
 Agent Packages <──emits & proves── Marcus ──checks gates (G0-G6) <────┘
+      │
+   equips
+      ▼
+   Imhotep ──builds real work──> held-out judge ──outcomes──> run ledger ──> Buckminster & Marcus
 ```
 
-- **Strict One-Way Flow:** Buckminster researches; Marcus designs. Marcus ignores claims unlisted in `research/RESEARCH.md`.
+- **Strict One-Way Flow:** Buckminster researches; Marcus designs; Imhotep builds. Marcus and Imhotep ignore claims unlisted in `research/RESEARCH.md`.
+- **Closed Loop:** Imhotep's build outcomes go to the run ledger, where failed cases become Marcus's regression cases and field evidence for Buckminster.
 - **Human Governance:** Knowledge base updates require explicit operator approval.
 - **Tiered Deterministic Gates:** Invariants execute via automated operating system processes across three mechanical tiers: agent synthesis validation gates, repository-level pre-commit linters, and empirical benchmark regression harnesses.
 
@@ -44,6 +50,7 @@ Agent Packages <──emits & proves── Marcus ──checks gates (G0-G6) <�
 | [Design Manual](docs/AGENT_DESIGN.md) | Human companion guide: structural layers, decision trees, and checklists. |
 | [Benchmarks Guide](docs/BENCHMARKS.md) | Independent evaluation (SWE-bench, GAIA, Tau-bench) and metrics engine. |
 | [Self-Harness Spec](docs/SELF_HARNESS.md) | `[EMERGING]` opt-in loop for diagnosing, proposing, and gating harness-surface candidates. |
+| [Imhotep Evaluation](docs/IMHOTEP_EVALUATION.md) | Evidence review of the ambition tenets and the vendored be-ambitious procedure behind Imhotep. |
 | [Research Methodology](skills/buckminster/references/RESEARCH_METHODOLOGY.md) | Tri-source verification protocols, search disciplines, and evidence grading. |
 | [Empirical Knowledge Base](research/RESEARCH.md) | Canonical empirical research: benchmarks, failure modes, and primitives. |
 | [Agent Architecture Spec](skills/marcus/AGENT_ARCHITECTURE.md) | Progressive disclosure specifications and mechanical gate enforcement (G0–G6). |

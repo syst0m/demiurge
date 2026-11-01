@@ -16,6 +16,8 @@ DEFAULT_TARGETS = [
     "skills/marcus/references/EVIDENCE.md",
     "skills/marcus/AGENT_ARCHITECTURE.md",
     "skills/buckminster/references/RESEARCH_METHODOLOGY.md",
+    "skills/imhotep/references/OVERLAY.md",
+    "docs/IMHOTEP_EVALUATION.md",
     "docs/DOCUMENTATION.md",
     "docs/OPERATING_GUIDE.md",
     "docs/AGENT_DESIGN.md",
