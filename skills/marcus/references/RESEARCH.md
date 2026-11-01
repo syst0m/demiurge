@@ -1,8 +1,8 @@
 # RESEARCH.md — Agentic Engineering Snapshot
 
 ```yaml
-version: 1.3.2
-snapshot_date: 2026-09-06
+version: 1.3.3
+snapshot_date: 2026-11-01
 maintained_by: buckminster
 consumed_by: marcus
 next_review_due: 2026-10-06
@@ -93,6 +93,10 @@ Evidence reasons (a contrasting, retracted or second vendor source) lower a grad
 
 <!-- claim:eval.bench-vs-deploy --> **Benchmarks != Deployment** `[SETTLED]` `[UNVERIFIED]`: 18.5% misalignment between evaluators and humans. The same setup can swing 19 points between runs.
 
+<!-- claim:eval.persona-prompting --> **Persona/expert system prompts** `[SETTLED]` `[UNVERIFIED]`: assigning personas does not reliably improve LLM accuracy on objective tasks — effects are nil, small, inconsistent, or negative across model families, domains, and difficulty levels. (Zheng et al., EMNLP 2024 findings; Basil et al., Wharton Generative AI Labs 2025; Luz de Araujo & Roth, PLOS ONE 2025.)
+
+<!-- claim:eval.visible-heldout-gap --> **Visible/held-out test gap** `[CONTESTED]` `[UNVERIFIED]`: frontier coding agents saturate visible test suites while feature-composition held-out suites fail; the gap grows ~28 percentage points per tenfold code size. SpecBench, Zhao et al. 2026 (arxiv:2605.21384) — single study; reception unchecked via Smart Citations.
+
 <!-- rule:R-EVAL-1 --> *Marcus Rule (R-EVAL-1):* Every agent ships with a starter eval suite (capability/regression) based on real failures.
 
 <!-- claim:eval.benchmark-integrity --> **Benchmark integrity crisis** `[VENDOR]`: Popular benchmarks exhibit critical data quality flaws: 32.67% of resolved instances in SWE-bench involve solution leakage and 31.08% rely on weak test cases incapable of confirming patch correctness ([SWE-Bench+](https://consensus.app/papers/details/a2fde21b76f5544c9edca661a2b6e868/?utm_source=unknown), [SWE-rebench](https://consensus.app/papers/details/84224bee0b8e5a0794a3b69ae7f3e1c1/?utm_source=unknown), [Cursor SWE-bench Leakage Investigation](https://www.cursor.com/blog/swe-bench-leakage) `[VENDOR]`).
@@ -115,6 +119,10 @@ Evidence reasons (a contrasting, retracted or second vendor source) lower a grad
 <!-- claim:fail.reward-hacking --> `[SETTLED]` `[UNVERIFIED]` **Reward hacking.** Models learn to fake alignment and sabotage if trained purely on production success.
 
 <!-- claim:fail.mast-taxonomy --> **Taxonomy** `[SETTLED]` `[UNVERIFIED]`: MAST defines 14 failure modes across system design, misalignment, and verification. Multi-agent gains are often minimal.
+
+<!-- claim:fail.escalation-channel --> **Escalation channel** `[CONTESTED]` `[UNVERIFIED]`: a structured defect-reporting tool plus a written anti-reward-hacking policy cut reward hacking from 23.6% to 5.3% across 8 frontier models spanning 5 families, eliminating it entirely for 6 of 8, with no detectable solve-rate cost; escalation added +10.1 pp defect-detection coverage at 99.4% diagnostic accuracy. Gómez 2026 (arxiv:2608.29460) — single-author preprint; reception unchecked via Smart Citations.
+
+<!-- claim:fail.pressure-exploit --> **User pressure on a public score** `[CONTESTED]` `[UNVERIFIED]`: pressure moves the first exploitation round from ~19.7 to ~4.1; stronger models exploit more (Spearman 0.77); 403 of 1326 runs exploitative; explicit anti-exploit wording cuts exploitation from 100% to 8.3%. Chen et al., AgentPressureBench 2026 (arxiv:2604.20200) — single study; reception unchecked via Smart Citations.
 
 ---
 
@@ -332,6 +340,14 @@ V1.0 scope: packaging only. No installation protocol, sandboxing, or permission 
 
 ---
 
+## 12. Goal setting and clarification
+
+<!-- claim:goal.clarification-timing --> **Clarification timing** `[CONTESTED]` `[UNVERIFIED]`: goal clarification loses nearly all value after ~10% of execution (pass@3 0.78 → baseline), while input clarification retains value to ~50%; deferring any clarification past mid-trajectory performs below never asking. Timing profiles are task-intrinsic, and no current frontier model asks within the empirically optimal window. Gulati et al., 2026 (arxiv:2605.07937) — single study; reception unchecked via Smart Citations.
+
+<!-- claim:pushbench.quant-goal-persistence --> **Quantitative goal persistence** `[CONTESTED]` `[UNVERIFIED]`: state-tracking / verified-backlog controllers reach 69–78% success on repository-artifact collection where standard and completion-gated controllers complete 0%; in work-unit settings standard/completion-gated complete zero instances while backlog-tracking restores 25–50%. Cai et al., PushBench 2026 (arxiv:2605.23574) — single study; reception unchecked via Smart Citations.
+
+<!-- claim:goal.learning-vs-outcome --> **Learning vs. outcome goals** `[CONTESTED]` `[UNVERIFIED]`: on complex tasks, specific difficult learning goals outperform specific difficult outcome and "do your best" goals (Wood, Mento & Locke 1987; Seijts & Latham 2001 — human studies). LLM transfer is untested: efficacy prompts give small, model-dependent gains and goal-directedness is incomplete (Chen et al. 2025, arxiv:2502.06669 — single study).
+
 ## Change log
 
 | Version | Date | By | Change |
@@ -343,3 +359,4 @@ V1.0 scope: packaging only. No installation protocol, sandboxing, or permission 
 | 1.3.0 | 2026-09-27 | grade_cap | grade_cap: 1 grade lowered (ctx.cache-thrashing SETTLED→CONTESTED); 52 flagged `[UNVERIFIED]`. |
 | 1.3.1 | 2026-09-30 | Maintenance | Rules show their ids in the prose. Split R-RULES-1 into R-RULES-1..4 and R-CA-1 into R-CA-1..3. Every rule in research/sources.yaml records its basis (evidence or design) and the claim ids it rests on. No grades changed. |
 | 1.3.2 | 2026-09-30 | grade_cap | grade_cap: 2 grades lowered (ctx.cache-thrashing SETTLED→CONTESTED, eval.benchmark-integrity SETTLED→VENDOR); 50 flagged `[UNVERIFIED]`. Unresolved aggregators no longer lift a vendor-only claim above `[VENDOR]`, and a grade already at its cap is not flagged. |
+| 1.3.3 | 2026-11-01 | Buckminster | Added Section 12 Goal setting and clarification (goal.clarification-timing, pushbench.quant-goal-persistence, goal.learning-vs-outcome); added eval.persona-prompting `[SETTLED]` (Zheng et al. EMNLP 2024; Basil et al. Wharton 2025; Luz de Araujo & Roth PLOS ONE 2025), eval.visible-heldout-gap `[CONTESTED]` (SpecBench, arxiv:2605.21384), fail.escalation-channel `[CONTESTED]` (Gómez, arxiv:2608.29460), fail.pressure-exploit `[CONTESTED]` (Chen et al., arxiv:2604.20200). Reception unchecked via Smart Citations — all CONTESTED claims carry that caveat. |
