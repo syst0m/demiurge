@@ -96,6 +96,12 @@ finding that only holds at team scale must say so.
 **Connector Availability & Graceful Degradation:**
 The four scholarly connectors ([Undermind](https://undermind.ai), [scite](https://scite.ai/mcp), [Consensus](https://consensus.app), [PubMed](https://pubmed.ncbi.nlm.nih.gov)) are optional high-fidelity instruments. When running on a fresh clone without connectors, do not attempt to invoke missing MCP tools; degrade gracefully to standard web search and open-access repositories, explicitly noting unverified reception status in your diff proposal.
 
+## Pitfalls (session-laundered)
+
+- When adding source titles to ``sources.yaml`` that contain colons (e.g. ``"How to be more ambitious: A tutorial..."``), quote the title value. YAML interprets the first colon as the key-value separator, so unquoted titles split at the colon and cause mapping errors that prevent ``grade_cap.py`` from loading the sidecar.
+- In ``RESEARCH.md``, ensure each ``<!-- claim:id -->`` anchor occupies its own line and is not merged with adjacent text or another anchor. The research parser counts anchors per line; merged anchors trigger ``"more than one anchor on the line"`` errors and block grade propagation.
+- After running ``grade_cap.py --write``, immediately run ``grade_cap.py --check`` to confirm all caps, markers, and ``claims.json`` are consistent. ``grade_cap.py`` can lower grades based on source coverage; if unverified changes were introduced, a second ``--write`` pass may be needed to resolve stale marker/cap fields.
+
 ## Output: a diff proposal
 
 Never edit `RESEARCH.md` directly. A proposal is a diff of two files, always together:

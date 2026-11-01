@@ -76,7 +76,6 @@ claims:
       cap_evidence: SETTLED
       unverified: true
       cap_reasons:
-      - aggregator_unresolved
       - lt3_independent
       - reception_unchecked
     sources:
@@ -114,21 +113,21 @@ claims:
       url: https://consensus.app/papers/details/f4b46f0c169756078f5c8de629846665/?utm_source=unknown
       title: Don't Blame the Large Language Model
       type: aggregator
-      resolves_to: null
-      resolves_to_type: null
-      independence_group: null
-      supports: confirms
-      quote: null
-      accessed: null
+      resolves_to: https://arxiv.org/abs/2607.03691
+      resolves_to_type: preprint
+      independence_group: bensghaier-2026-dont-blame
+      supports: mentions
+      quote: We trace the resulting quality fluctuations to specific development patterns and architectural components
+      accessed: '2026-11-01'
       reception:
         checked: false
         retracted: null
         scite_supporting: null
         scite_contrasting: null
     duplicates: []
-    last_verified: '2026-10-10'
+    last_verified: '2026-11-01'
     verified_by: buckminster
-    notes: 'Sweep 2026-10-10: the prose figures (27.4 to 54.3 pp, 19.1% to 73.4%) were not found in s1 or s2. s1 HTML reports a largest fixed-model gap of 24.3 pp (Qwen 3.6-flash, 62.8% vs 38.5%). Owner to decide on the prose figures. s3 (Don''t Blame the Large Language Model) did not resolve by web search; Consensus returned HTTP 403. scite was not usable.'
+    notes: 'Sweep 2026-10-10: the prose figures (27.4 to 54.3 pp, 19.1% to 73.4%) were not found in s1 or s2. s1 HTML reports a largest fixed-model gap of 24.3 pp (Qwen 3.6-flash, 62.8% vs 38.5%). Owner to decide on the prose figures. s3 (Don''t Blame the Large Language Model) did not resolve by web search; Consensus returned HTTP 403. scite was not usable. Sweep 2026-11-01: s3 resolved through the arXiv API to arXiv:2607.03691 (Ben Sghaier, Li, Adams, Hassan, 2026). It holds the model fixed and varies only the harness over 35 Qwen Code releases. It shows harness changes alone shift quality, but it does not compare harness variance with model variance, so it is recorded as mentions, not confirms. The prose figures are still an owner decision. scite returned a paid-plan error, so reception stays unchecked.'
   ctx.practices-table:
     section: 2
     kind: prose
@@ -290,9 +289,9 @@ claims:
         scite_supporting: null
         scite_contrasting: null
     duplicates: []
-    last_verified: '2026-10-10'
+    last_verified: '2026-11-01'
     verified_by: buckminster
-    notes: 'Sweep 2026-10-10: s1 returns HTTP 404 (after 301 to platform.claude.com), s2 returns HTTP 404, s3 redirects to the generic https://cursor.com/docs page with no caching statement. s1-s3 are left for the owner to remove or replace. s4 and s5 were retrieved this session.'
+    notes: 'Sweep 2026-10-10: s1 returns HTTP 404 (after 301 to platform.claude.com), s2 returns HTTP 404, s3 redirects to the generic https://cursor.com/docs page with no caching statement. s1-s3 are left for the owner to remove or replace. s4 and s5 were retrieved this session. Sweep 2026-11-01: re-checked. s1 now redirects to https://platform.claude.com/docs/en/claude-code/rules, which returns HTTP 404. s2 still returns HTTP 404. s3 still redirects to the generic https://cursor.com/docs page. The owner decision on s1-s3 is still open. scite returned a paid-plan error, so s5 reception stays unchecked.'
   ctx.length-degradation:
     section: 2
     kind: prose
@@ -906,7 +905,6 @@ claims:
       cap_evidence: SETTLED
       unverified: true
       cap_reasons:
-      - aggregator_unresolved
       - reception_unchecked
     sources:
     - id: s1
@@ -958,21 +956,21 @@ claims:
       url: https://consensus.app/papers/details/a745a1c7313b56d8a9bc4b145486b0c3/?utm_source=unknown
       title: AgentForge
       type: aggregator
-      resolves_to: null
-      resolves_to_type: null
-      independence_group: null
-      supports: confirms
+      resolves_to: https://arxiv.org/abs/2601.13383
+      resolves_to_type: preprint
+      independence_group: anbarjafari-2026-agentforge
+      supports: mentions
       quote: null
-      accessed: null
+      accessed: '2026-11-01'
       reception:
         checked: false
         retracted: null
         scite_supporting: null
         scite_contrasting: null
     duplicates: []
-    last_verified: '2026-10-10'
+    last_verified: '2026-11-01'
     verified_by: buckminster
-    notes: 'Sweep 2026-10-10: s4 (AgentForge) did not resolve to a paper by web search; Consensus returned HTTP 403. scite was not usable in this run, so reception stays unchecked.'
+    notes: 'Sweep 2026-10-10: s4 (AgentForge) did not resolve to a paper by web search; Consensus returned HTTP 403. scite was not usable in this run, so reception stays unchecked. Sweep 2026-11-01: s4 resolved to arXiv:2601.13383 (Anbar Jafari, Ozcinar, Anbarjafari, 2026), a general framework for building LLM agents. Its abstract does not mention security, sandboxing, hooks or tool-call boundary enforcement, so s4 is recorded as mentions and is removed as support from the prose. scite returned a paid-plan error, so reception stays unchecked.'
   sec.payloadless-sch:
     section: 6
     kind: prose
@@ -1781,6 +1779,283 @@ claims:
       - no_countable_sources
       - lt2_primary
     sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
+  eval.persona-prompting:
+    section: 4
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: Persona prompting settled across three independent teams; reception unchecked via Smart Citations.
+  eval.visible-heldout-gap:
+    section: 4
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: CONTESTED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: SpecBench single study (arxiv:2605.21384); reception unchecked via Smart Citations.
+  fail.escalation-channel:
+    section: 5
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: CONTESTED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: Gómez single-author preprint (arxiv:2608.29460); reception unchecked via Smart Citations.
+  fail.pressure-exploit:
+    section: 5
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: CONTESTED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: Chen et al. AgentPressureBench single study (arxiv:2604.20200); reception unchecked via Smart Citations.
+  goal.clarification-timing:
+    section: 12
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: CONTESTED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: Gulati et al. single study (arxiv:2605.07937); reception unchecked via Smart Citations.
+  pushbench.quant-goal-persistence:
+    section: 12
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: CONTESTED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: Cai et al. PushBench single study (arxiv:2605.23574); reception unchecked via Smart Citations.
+  goal.learning-vs-outcome:
+    section: 12
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: EMERGING
+      cap: CONTESTED
+      cap_evidence: SETTLED
+      unverified: false
+      cap_reasons:
+      - lt3_independent
+      - lt2_primary
+      - independence_unset
+      - unretrieved_source
+    sources:
+    - id: s1
+      url: https://felixrieseberg.com/how-to-be-more-ambitious-a-tutorial-for-humans-with-models/
+      title: 'How to be more ambitious: A tutorial for humans with models'
+      type: practitioner
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: '2026-11-01'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s2
+      url: https://felixrieseberg.com/hunger-beats-tenure-advice-for-junior-engineers/
+      title: 'Hunger beats tenure: Advice for junior engineers'
+      type: practitioner
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: '2026-11-01'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s3
+      url: https://felixrieseberg.com/made-by-mechanical-means/
+      title: Made by mechanical means
+      type: practitioner
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: '2026-11-01'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    disc.felix-rieseberg: null
+    notes: ''
+  disc.felix-rieseberg:
+    section: 12
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: EMERGING
+      cap: CONTESTED
+      cap_evidence: SETTLED
+      unverified: false
+      cap_reasons:
+      - lt3_independent
+      - lt2_primary
+      - independence_unset
+      - unretrieved_source
+    sources:
+    - id: s1
+      url: https://felixrieseberg.com/how-to-be-more-ambitious-a-tutorial-for-humans-with-models/
+      title: 'How to be more ambitious: A tutorial for humans with models'
+      type: practitioner
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: '2026-11-01'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s2
+      url: https://felixrieseberg.com/hunger-beats-tenure-advice-for-junior-engineers/
+      title: 'Hunger beats tenure: Advice for junior engineers'
+      type: practitioner
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: '2026-11-01'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s3
+      url: https://felixrieseberg.com/made-by-mechanical-means/
+      title: Made by mechanical means
+      type: practitioner
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: '2026-11-01'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s4
+      url: https://felixrieseberg.com/introducing-electron-fiddle/
+      title: Introducing Electron Fiddle
+      type: practitioner
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: '2026-11-01'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s5
+      url: https://felixrieseberg.com/things-people-get-wrong-about-electron/
+      title: Things people get wrong about Electron
+      type: practitioner
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: '2026-11-01'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
     duplicates: []
     last_verified: null
     verified_by: null
