@@ -1906,18 +1906,162 @@ claims:
     polarity: affirm
     grades:
     - scope: null
-      asserted: CONTESTED
-      cap: EMERGING
+      asserted: EMERGING
+      cap: CONTESTED
       cap_evidence: SETTLED
-      unverified: true
+      unverified: false
       cap_reasons:
-      - no_countable_sources
+      - lt3_independent
       - lt2_primary
-    sources: []
+      - independence_unset
+      - unretrieved_source
+    sources:
+    - id: s1
+      url: https://felixrieseberg.com/how-to-be-more-ambitious-a-tutorial-for-humans-with-models/
+      title: 'How to be more ambitious: A tutorial for humans with models'
+      type: practitioner
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: '2026-11-01'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s2
+      url: https://felixrieseberg.com/hunger-beats-tenure-advice-for-junior-engineers/
+      title: 'Hunger beats tenure: Advice for junior engineers'
+      type: practitioner
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: '2026-11-01'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s3
+      url: https://felixrieseberg.com/made-by-mechanical-means/
+      title: Made by mechanical means
+      type: practitioner
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: '2026-11-01'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
     duplicates: []
     last_verified: null
     verified_by: null
-    notes: Human studies settled; LLM transfer untested (Chen et al. 2025 single study); reception unchecked via Smart Citations.
+    disc.felix-rieseberg: null
+    notes: ''
+  disc.felix-rieseberg:
+    section: 12
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: EMERGING
+      cap: CONTESTED
+      cap_evidence: SETTLED
+      unverified: false
+      cap_reasons:
+      - lt3_independent
+      - lt2_primary
+      - independence_unset
+      - unretrieved_source
+    sources:
+    - id: s1
+      url: https://felixrieseberg.com/how-to-be-more-ambitious-a-tutorial-for-humans-with-models/
+      title: 'How to be more ambitious: A tutorial for humans with models'
+      type: practitioner
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: '2026-11-01'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s2
+      url: https://felixrieseberg.com/hunger-beats-tenure-advice-for-junior-engineers/
+      title: 'Hunger beats tenure: Advice for junior engineers'
+      type: practitioner
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: '2026-11-01'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s3
+      url: https://felixrieseberg.com/made-by-mechanical-means/
+      title: Made by mechanical means
+      type: practitioner
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: '2026-11-01'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s4
+      url: https://felixrieseberg.com/introducing-electron-fiddle/
+      title: Introducing Electron Fiddle
+      type: practitioner
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: '2026-11-01'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s5
+      url: https://felixrieseberg.com/things-people-get-wrong-about-electron/
+      title: Things people get wrong about Electron
+      type: practitioner
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: null
+      supports: confirms
+      quote: null
+      accessed: '2026-11-01'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: ''
 rules:
   R-CTX-1:
     section: 2
