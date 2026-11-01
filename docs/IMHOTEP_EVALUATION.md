@@ -62,7 +62,7 @@ rules apply before any of these findings reaches RESEARCH.md.
 
 ## 4. Council deliberation
 
-**Architect.** Position: the article gives a procedure, not a system. Imhotep needs fixed
+**Architect.** Position: the article gives a procedure. A system also needs fixed
 interfaces: RESEARCH.md in, registry skills in, ledger rows out. Risk: a persona with no contract
 drifts. Check: if the registry and ledger cannot be read from the skill, the loop does not close.
 
@@ -83,7 +83,7 @@ nobody asked for. Check: if the overlay grows past one page, it is becoming a se
 cases and Buckminster's field evidence, so the Pantheon learns from use. Risk: upstream drift.
 Check: a monthly fetch that only proposes.
 
-**Ethicist.** Position: ambition raises the standard, not the permissions. Rung-3 loops,
+**Ethicist.** Position: ambition raises the standard and leaves the permissions as they are. Rung-3 loops,
 spending and irreversible steps wait for the user. Risk: a vendored file is third-party
 instructions loaded into context. Check: tier T3 handling and an operator-signed update path.
 
@@ -124,7 +124,7 @@ sub-two-hour marathon example is dated to April 2026 in the article and was not 
 - **Fidelity:** high. It keeps the article's types, the three-rung ladder, the four-question Depth
   prompt and the warnings, with attribution.
 - **Strengths:** short, procedural, a task-or-prompt switch, an explicit "Next" step, and a hard
-  line that ambition raises the standard, not the permissions.
+  line that ambition raises the standard and leaves the permissions as they are.
 - **Gaps against the evidence:** no held-out judge, no escalation channel, no clarification-timing
   rule, no skill selection, no ledger, no progress tracking.
 - **Decision:** vendor it byte-identical as the ambition procedure. Pin it with sha256 in
@@ -147,7 +147,7 @@ invent the instruments, keep an outside check, ship.
 
 | Name | Figure | Fit | Watch-out |
 |---|---|---|---|
-| **Imhotep** (chosen) | Architect of Djoser's step pyramid, c. 2650 BC; first engineer known by name | Stacked six mastabas into the first monumental stone building: a new method, not a bigger task. Also physician and scribe (Range). | Popular-culture associations |
+| **Imhotep** (chosen) | Architect of Djoser's step pyramid, c. 2650 BC; first engineer known by name | Stacked six mastabas into the first monumental stone building: a new method at a new scale. Also physician and scribe (Range). | Popular-culture associations |
 | Filippo | Filippo Brunelleschi, Florence Cathedral dome | Built the dome experts called unbuildable after he measured the Roman Pantheon; invented his own hoists | Less known outside Europe |
 | Daedalus | Mythic master craftsman | Icarus is the persona's safety rule: ambition without a judge falls | Myth, not a record |
 | Kelly | Kelly Johnson, Lockheed Skunk Works | Small team, 14 rules, audacious targets, flight test as the judge | Military context |
