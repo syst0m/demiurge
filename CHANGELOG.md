@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Release on merge:** `release.yml` also runs on every push to `main`. When `CHANGELOG.md` has a version with no tag, it creates the tag and the GitHub Release. In `LOCAL` mode, `python scripts/verify_release.py --cut` does the same and then verifies; `.agents/local-ci.json` names it for the minutes gate. `verify_release.py` adds `--latest-version` and `--notes <version>`.
+- **Vale fails the job on errors:** `prose-lint.yml` sets `fail_on_error: true`; before, reviewdog only annotated. `.vale.ini` skips vendored `SKILL.upstream.md` files.
 - README, DOCUMENTATION, INSTALLATION and OPERATING_GUIDE describe a three-persona Pantheon. CI runs G4 on imhotep and the vendor pin check. Pre-commit hooks exclude vendored files from rewriting.
 
 ## [0.14.2] - 2026-10-31
