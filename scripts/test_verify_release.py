@@ -172,5 +172,21 @@ class TestCutRelease(unittest.TestCase):
         self.assertEqual(run_cmd.call_count, 1)
 
 
+    @patch("scripts.verify_release.get_remote_tags", return_value=["v1.2.0"])
+    @patch("scripts.verify_release.get_local_tags", return_value=["v1.2.0"])
+    @patch("scripts.verify_release.run_cmd")
+    def test_release_made_by_workflow_first_is_success(self, run_cmd, _local, _remote):
+        # view: missing; create: "already exists"; view again: present.
+        run_cmd.side_effect = [(1, "", "not found"), (1, "", "already exists"), (0, "", "")]
+        with patch("scripts.verify_release.release_notes", return_value="notes"):
+            self.assertEqual(vr.cut_release("v1.2.0"), [])
+
+    @patch("scripts.verify_release.get_remote_tags", return_value=["v1.2.0"])
+    @patch("scripts.verify_release.get_local_tags", return_value=["v1.2.0"])
+    @patch("scripts.verify_release.run_cmd", return_value=(1, "", "denied"))
+    def test_failed_create_with_no_release_fails(self, run_cmd, _local, _remote):
+        with patch("scripts.verify_release.release_notes", return_value="notes"):
+            self.assertEqual(vr.cut_release("v1.2.0"), ["gh release create v1.2.0 failed: denied"])
+
 if __name__ == "__main__":
     unittest.main()
