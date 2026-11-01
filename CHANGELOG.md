@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Benchmark Cost Change:** An arm that resolves no task reports `n/a` for the cost change instead of -100% or 0%, and an unpriced model raises an error instead of using Sonnet 3.5 prices.
 - **Secret Scanner:** `scan_security_and_pii.py` exits 2 when `git ls-files` fails, instead of reporting a clean scan of no files.
 - **`verify_release.py --cut`:** A `gh release create` that fails because `release.yml` created the release first counts as success.
+- **G5 Pairing with `--runner-model`:** `eval_runner.py` records the runner command with its `-m` and `--provider` flags as `runner_template`, the same value the treated run compares, so a baseline pairs again (`regression-19`).
 - **Minutes Gate:** `run_gh` takes `cwd` directly, and the `TypeError` fallback that could query the wrong repository is gone.
 
 ## [0.16.0] - 2026-11-01
