@@ -1,0 +1,12 @@
+repo: https://github.com/robonuggets/be-ambitious
+commit: dc116a3ebd8cf772e4d0930626f67369bd60399d
+fetched: '2026-11-01'
+license: MIT
+trust_tier: T3
+files:
+  SKILL.md:
+    as: SKILL.upstream.md
+    sha256: b180b90b55f1bb3b6100a9558929480197e3c1c68b59de7d96b00f7ca2ec3c5b
+  LICENSE:
+    as: LICENSE
+    sha256: 210b65e17b4241e0fa3e952d1dde87d40fa7f89c62b237483e6c39870b45e550

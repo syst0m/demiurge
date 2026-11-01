@@ -6,6 +6,7 @@ description: "Demiurge Agent Security & Red-Teaming Suite"
 prompts:
   - "file://skills/marcus/SKILL.md"
   - "file://skills/buckminster/SKILL.md"
+  - "file://skills/imhotep/SKILL.md"
 
 providers:
   - id: "openai:chat:gpt-4o-mini"

@@ -132,5 +132,45 @@ class TestPreCommitMode(unittest.TestCase):
         self.assertEqual(ret, 1)
 
 
+class TestReleaseNotes(unittest.TestCase):
+    def setUp(self):
+        import tempfile
+        self.tmp = tempfile.TemporaryDirectory()
+        self.path = Path(self.tmp.name) / "CHANGELOG.md"
+        self.path.write_text(
+            "# Changelog\n\n## [Unreleased]\n\n## [1.1.0] - 2026-11-01\n\n### Added\n\n- new\n\n"
+            "## [1.0.0] - 2026-10-01\n\n### Fixed\n\n- old\n",
+            encoding="utf-8",
+        )
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_middle_section(self):
+        self.assertEqual(vr.release_notes("1.1.0", self.path), "### Added\n\n- new\n")
+
+    def test_last_section(self):
+        self.assertEqual(vr.release_notes("1.0.0", self.path), "### Fixed\n\n- old\n")
+
+    def test_missing_version_is_empty(self):
+        self.assertEqual(vr.release_notes("9.9.9", self.path), "")
+
+
+class TestCutRelease(unittest.TestCase):
+    @patch("scripts.verify_release.get_remote_tags", return_value=["v1.0.0"])
+    @patch("scripts.verify_release.get_local_tags", return_value=["v1.0.0"])
+    @patch("scripts.verify_release.run_cmd", return_value=(0, "", ""))
+    def test_done_release_runs_nothing_but_the_view(self, run_cmd, _local, _remote):
+        self.assertEqual(vr.cut_release("v1.0.0"), [])
+        run_cmd.assert_called_once_with(["gh", "release", "view", "v1.0.0"])
+
+    @patch("scripts.verify_release.get_remote_tags", return_value=[])
+    @patch("scripts.verify_release.get_local_tags", return_value=[])
+    @patch("scripts.verify_release.run_cmd", return_value=(1, "", "denied"))
+    def test_failed_tag_stops_before_push(self, run_cmd, _local, _remote):
+        self.assertEqual(vr.cut_release("v1.1.0"), ["git tag failed: denied"])
+        self.assertEqual(run_cmd.call_count, 1)
+
+
 if __name__ == "__main__":
     unittest.main()
