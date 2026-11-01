@@ -10,7 +10,8 @@ Run `python scripts/gh_minutes_gate.py --status` before `gh pr create`, `gh pr m
 
 - `GITHUB`: GitHub workflows are preferred. Open the PR and let Actions run.
 - `LOCAL`: minutes are exhausted or cannot be confirmed. Open no PR. Run the repo's local checks,
-  merge locally with `git merge --no-ff`, tag with `git tag`, and run the local release script.
+  merge locally with `git merge --no-ff`, and run `python scripts/verify_release.py --cut` (tags, pushes the tag, creates the GitHub release,
+  then verifies). In `GITHUB` mode the merge to `main` does this through `release.yml`.
 
 A hook enforces this where the harness has the user-level hook installed. The order stands even
 where it does not.

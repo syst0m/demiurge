@@ -1,0 +1,4 @@
+{
+  "test": "python scripts/run_unit_tests.py && python skills/marcus/evals/run_gate_tests.py --library skills",
+  "release": "python scripts/verify_release.py --cut"
+}
