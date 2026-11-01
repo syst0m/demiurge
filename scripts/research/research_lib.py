@@ -26,8 +26,7 @@ from typing import Any, Dict, List, Mapping, Optional, Sequence, Union
 try:
     import yaml
 except ImportError:
-    print("ERROR: PyYAML required: python -m pip install -r requirements-dev.txt", file=sys.stderr)
-    sys.exit(2)
+    from ruamel import yaml as yaml  # Hermes venv ships ruamel.yaml, not PyYAML
 
 SOURCES_SCHEMA = "demiurge.sources.v1"
 
@@ -152,26 +151,41 @@ def dump_sources(data: Mapping[str, Any], path: Optional[Union[str, Path]] = Non
 def check_no_comments(text: str) -> List[str]:
     """Return one error per YAML comment in ``text``; empty when there are none.
 
-    A ``#`` counts as a comment when no scanner token covers it, which is the
-    case for full-line comments and for a ``#`` after the last token on a line.
-    A ``#`` inside a scalar (a URL fragment, a quoted string) is covered.
+    A ``#`` counts as a comment when it begins a line or follows whitespace and
+    is not inside a quoted scalar or block-scalar content. A ``#`` glued to
+    surrounding text (a URL fragment, text inside quotes) is part of a scalar,
+    not a comment.
     """
-    covered = bytearray(len(text) + 1)
-    for token in yaml.scan(text):
-        start, end = token.start_mark.index, token.end_mark.index
-        if end > start:
-            covered[start:end] = b"\x01" * (end - start)
     errors: List[str] = []
     seen_lines = set()
-    for match in re.finditer("#", text):
-        index = match.start()
-        if covered[index]:
-            continue
-        line_no = text.count("\n", 0, index) + 1
-        if line_no in seen_lines:
-            continue
-        seen_lines.add(line_no)
-        errors.append(f"line {line_no}: YAML comment not allowed in sources.yaml; use a notes: field")
+    block_indent: Optional[int] = None
+    block_scalar = re.compile(r"^\s*[A-Za-z0-9_.-]+:\s*[|>][-+]?\s*$")
+    for line_no, line in enumerate(text.splitlines(), 1):
+        indent = len(line) - len(line.lstrip(" "))
+        if block_indent is not None:
+            if line.strip() == "":
+                continue
+            if indent <= block_indent:
+                block_indent = None
+            else:
+                continue  # block-scalar content: ``#`` here is part of a scalar
+        if block_indent is None and block_scalar.match(line):
+            block_indent = indent
+            continue  # the indicator line itself holds no comment
+        quote = None
+        for index, ch in enumerate(line):
+            if quote is not None:
+                if ch == quote and (index == 0 or line[index - 1] != "\\"):
+                    quote = None
+                continue
+            if ch in "'\"":
+                quote = ch
+                continue
+            if ch == "#" and (index == 0 or line[index - 1] in " \t"):
+                if line_no not in seen_lines:
+                    seen_lines.add(line_no)
+                    errors.append(f"line {line_no}: YAML comment not allowed in sources.yaml; use a notes: field")
+                break
     return errors
 
 

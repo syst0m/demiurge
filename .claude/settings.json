@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python scripts/verify_release.py --cut)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "timeout": 2,
+            "command": "python \"/c/Users/User/AppData/Local/hermes/demiurge-ledger/ledger_hook.py\" --event post-tool || true"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "timeout": 2,
+            "command": "python \"/c/Users/User/AppData/Local/hermes/demiurge-ledger/ledger_hook.py\" --event prompt || true"
+          }
+        ]
+      }
+    ]
+  }
+}
