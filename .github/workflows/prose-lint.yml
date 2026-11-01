@@ -22,5 +22,7 @@ jobs:
         uses: errata-ai/vale-action@reviewdog
         with:
           vale_flags: "--no-wrap"
+          # reviewdog only annotates by default; fail the job on an error in the added lines.
+          fail_on_error: true
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
