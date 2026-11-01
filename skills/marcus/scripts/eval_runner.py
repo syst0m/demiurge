@@ -3,8 +3,8 @@
 
 Run it; do not read it.
 
-    python eval_runner.py <skill-dir> --baseline [--k 3] [--yes --runner-model <id>]  # G1
-    python eval_runner.py <skill-dir> [--k 3] [--yes --runner-model <id>]             # G5
+    python eval_runner.py <skill-dir> --baseline [--k 3] [--yes --runner-model <id> [--runner-provider <provider>]]  # G1
+    python eval_runner.py <skill-dir> [--k 3] [--yes --runner-model <id> [--runner-provider <provider>]]             # G5
 
 Exit codes:
     0  accepted (more cases flipped to pass than to fail, regression suite intact)
@@ -27,8 +27,8 @@ different, this is where it has to show it.
 Grading uses an LLM judge, which is biased: position, verbosity, self-preference and format
 effects are all documented, and the calibration ceiling against human agreement is moderate
 (kappa around 0.43 for a three-model ensemble), not high. So: the judge is given an explicit
-UNKNOWN option, UNKNOWN never counts as a pass, and --judge-model should name a different
-model family from the one under test. Read the transcripts before believing a result.
+UNKNOWN option, UNKNOWN never counts as a pass, and --judge-model/--judge-provider should name
+a different model family/provider from the runner. Read the transcripts before believing a result.
 
 Reports pass^k, not pass@1, because anything running unattended has to succeed every time.
 Stdlib only; spends money only with --yes. --ledger (or ledger_enabled: true in the Marcus
@@ -377,10 +377,14 @@ def main() -> int:
                              "which scores as a task failure that has nothing to do with the skill")
     parser.add_argument("--judge", default=DEFAULT_JUDGE)
     parser.add_argument("--judge-model", default="",
-                        help="note recorded in the report; use a different family from the runner")
+                        help="model id the judge uses; required with --yes and recorded; use a different family from the runner")
+    parser.add_argument("--judge-provider", default="",
+                        help="provider passed to the judge runner (hermes --provider)")
     parser.add_argument("--yes", action="store_true", help="confirm spending real model calls")
     parser.add_argument("--runner-model", default="",
-                        help="model id the runner uses; required with --yes and recorded")
+                        help="model id the runner uses; passed as -m to the runner; required with --yes and recorded")
+    parser.add_argument("--runner-provider", default="",
+                        help="provider passed to the runner (hermes --provider)")
     parser.add_argument("--harness-name", default="",
                         help="harness the runner drives, recorded in the model-harness pair")
     parser.add_argument("--alpha", type=float, default=DEFAULT_ALPHA,
@@ -436,12 +440,26 @@ def main() -> int:
     case_ids = [c["id"] for c in cases]
 
     mode = "baseline" if args.baseline else "treated"
+    # Build the actual runner/judge commands. Defaults drive the Hermes Agent CLI
+    # (hermes chat), so G1/G5 run with whatever free providers (Nvidia NIM,
+    # OpenRouter, Google AI Studio, NOUS) the user has configured; -m/--provider
+    # override them. The {prompt} placeholder is replaced per call by run()/judge().
+    run_command = args.runner
+    if args.runner_model:
+        run_command += f" -m {args.runner_model}"
+    if args.runner_provider:
+        run_command += f" --provider {args.runner_provider}"
+    judge_command = args.judge
+    if args.judge_model:
+        judge_command += f" -m {args.judge_model}"
+    if args.judge_provider:
+        judge_command += f" --provider {args.judge_provider}"
     total_calls = len(cases) * args.k * 2  # each attempt plus its judge call
     print(f"G{'1' if args.baseline else '5'} {mode} run: {skill_dir.name}")
     print(f"  {len(cases)} case(s) x k={args.k}, plus judging -> ~{total_calls} model calls")
-    print(f"  runner: {args.runner}"
+    print(f"  runner: {run_command}"
           + (f"  ({args.runner_model})" if args.runner_model else ""))
-    print(f"  judge:  {args.judge}"
+    print(f"  judge:  {judge_command}"
           + (f"  ({args.judge_model})" if args.judge_model else "  (judge family not recorded)"))
     if not args.judge_model:
         print("  note: record --judge-model, and use a different family from the runner - "
@@ -452,9 +470,8 @@ def main() -> int:
         return 1
 
     if not args.runner_model.strip():
-        print("\nREFUSED: --yes needs --runner-model <id>.", file=sys.stderr)
-        print("A score without the model that produced it is not a result.", file=sys.stderr)
-        return 2
+        print("  note: no --runner-model; the runner uses hermes' configured default model "
+              "(not recorded as a model id).", file=sys.stderr)
 
     if args.no_isolate and args.baseline and not args.i_know:
         print("\nREFUSED: --no-isolate on a baseline run.", file=sys.stderr)
@@ -471,16 +488,18 @@ def main() -> int:
             print(f"error: --skills-dir {skills_dir} is not a directory", file=sys.stderr)
             return 2
         settings = build_isolation_settings(skills_dir, args.allow)
-        if "{settings}" not in args.runner:
-            print("\nREFUSED: the runner command has no {settings} placeholder.", file=sys.stderr)
-            print(f"Isolation needs it, e.g.  --runner '<claude> -p {{prompt}} --settings {{settings}}'",
-                  file=sys.stderr)
-            return 2
-        print(f"  isolation: {len(json.loads(settings.read_text())['skillOverrides'])} "
-              f"installed skill(s) hidden from the runner")
+        if "{settings}" not in run_command:
+            # The Hermes CLI manages its own skill loading (--skills/--ignore-rules);
+            # it has no settings-file placeholder, so run without the claude-style
+            # isolation settings file. Isolation is then a best effort for this runner.
+            settings = None
+            print("  note: runner has no {settings} placeholder; skipping settings-file isolation")
+        else:
+            print(f"  isolation: {len(json.loads(settings.read_text())['skillOverrides'])} "
+                  f"installed skill(s) hidden from the runner")
 
     pairing = {"case_ids": case_ids, "evals_sha256": evals_sha256, "k": args.k,
-               "runner_template": args.runner}
+               "runner_template": run_command}
     baseline_path = skill_dir / "evals" / "results-baseline.json"
     if not args.baseline and baseline_path.is_file():
         # Checked before anything is spent: a treated run that cannot pair is wasted money.
@@ -514,14 +533,14 @@ def main() -> int:
             attempts = []
             for attempt in range(args.k):
                 started = time.monotonic()
-                transcript, ok = run(args.runner, prompt, settings, cwd=stage_dir)
+                transcript, ok = run(run_command, prompt, settings, cwd=stage_dir)
                 elapsed_ms = int((time.monotonic() - started) * 1000)
                 if reason := looks_like_infra_stub(transcript):
                     aborted = (case.get("id"), reason)
                     break
                 if ok:
                     try:
-                        verdict, why = judge(args.judge, case, transcript, settings)
+                        verdict, why = judge(judge_command, case, transcript, settings)
                     except InfraAbort as exc:
                         aborted = (case.get("id"), str(exc))
                         break

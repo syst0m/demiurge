@@ -1,9 +1,9 @@
 {
   "schema": "demiurge.claims.compiled.v1",
-  "research_version": "1.3.2",
-  "sources_sha256": "c52654b2a36300e420a59c81d93f79fa5aa2b475098fe6b9cab4e08485c65133",
-  "research_sha256": "085e50e7f6de52a683ce1bd9c28b96d0b893510bc671346847a54132c6fa2d27",
-  "snapshot_sha256": "54eebb7339166c3a4aa547f7c76c1990de56cc54c4b21374139cf61e5fd1924c",
+  "research_version": "1.3.3",
+  "sources_sha256": "d74e6a757032ace3c6bd32870616f133cd8a75d453bd3cd6a544adc58cb3870b",
+  "research_sha256": "8aeb3c21bde5a6a47d1dc719b67c45de0870d1b34b6f31c5febfe15636ec4aee",
+  "snapshot_sha256": "d0ddf0307a0697171daeb61672d44cbabb5ee6909e7250957475704397a3f04a",
   "enforced": false,
   "claims": [
     {
@@ -51,7 +51,7 @@
           "unverified": true
         }
       ],
-      "claim_sha256": "942b8b511a85e80f10d768c51d5bde285aac1bb17bb151cac2f99a14dc5694d4",
+      "claim_sha256": "5c9df6d410c9617377c14bc609e90aea1d1c4498e9d94ced14ac0617d485a0ba",
       "rules": [
         "R-HARNESS-1"
       ]
@@ -429,7 +429,7 @@
           "unverified": true
         }
       ],
-      "claim_sha256": "7f82ad4935d1134dea0e29629e2194083f5b39bb4fb20d18b46e38e2470c81fa",
+      "claim_sha256": "7465efa45f661626ece5660e016817f31ed191d72495aa7d9c0f7f18bfde8bdf",
       "rules": [
         "R-SEC-4",
         "R-SEC-5"
@@ -992,6 +992,118 @@
       "rules": [
         "R-CA-2"
       ]
+    },
+    {
+      "id": "eval.persona-prompting",
+      "section": 4,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "SETTLED",
+          "effective": "SETTLED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "2cfb5ca2ff6ed6ea74217542320f6cb2bdac7fb8155126ede0d3e9f151cdfb35",
+      "rules": []
+    },
+    {
+      "id": "eval.visible-heldout-gap",
+      "section": 4,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "CONTESTED",
+          "effective": "CONTESTED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "3b34a478673a2dbe469615fbadb840a1a4a54ae80fd73d292e419c277fa9be52",
+      "rules": []
+    },
+    {
+      "id": "fail.escalation-channel",
+      "section": 5,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "CONTESTED",
+          "effective": "CONTESTED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "bce23be4202d86f484320a061c083e4e88958377c2cff2cac2bbce9e40283ddc",
+      "rules": []
+    },
+    {
+      "id": "fail.pressure-exploit",
+      "section": 5,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "CONTESTED",
+          "effective": "CONTESTED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "a7c601fc7bef3a27c722bae108c725ed35b2fb331f1a942757ca2c92024aaa29",
+      "rules": []
+    },
+    {
+      "id": "goal.clarification-timing",
+      "section": 12,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "CONTESTED",
+          "effective": "CONTESTED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "f884818a4f1b4e89acaaaab2f7230b93733bcecafed9a773fc764bdc854c0f09",
+      "rules": []
+    },
+    {
+      "id": "pushbench.quant-goal-persistence",
+      "section": 12,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "CONTESTED",
+          "effective": "CONTESTED",
+          "unverified": true
+        }
+      ],
+      "claim_sha256": "3c39bcb45ab3ae21088acc4a87762f8a1f7dd48b78016fdf793b2560d76c6d61",
+      "rules": []
+    },
+    {
+      "id": "goal.learning-vs-outcome",
+      "section": 12,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "EMERGING",
+          "effective": "EMERGING",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "bb8707376c6e308102fa3624713468c1693597315a207ffe802ed03dfcd8d95b",
+      "rules": []
+    },
+    {
+      "id": "disc.felix-rieseberg",
+      "section": 12,
+      "grades": [
+        {
+          "scope": null,
+          "asserted": "EMERGING",
+          "effective": "EMERGING",
+          "unverified": false
+        }
+      ],
+      "claim_sha256": "655800a457b7ae9898d4507d096b3c8913e12ef1a4ab8042cc3ee2882faf39fc",
+      "rules": []
     }
   ],
   "rules": [
@@ -1166,10 +1278,10 @@
     }
   ],
   "counts": {
-    "SETTLED": 46,
-    "CONTESTED": 6,
-    "EMERGING": 11,
+    "SETTLED": 47,
+    "CONTESTED": 11,
+    "EMERGING": 13,
     "VENDOR": 4,
-    "UNVERIFIED": 50
+    "UNVERIFIED": 56
   }
 }
