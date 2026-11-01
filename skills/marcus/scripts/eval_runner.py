@@ -589,7 +589,7 @@ def main() -> int:
         "model_harness_pair": {"runner": args.runner, "runner_model": args.runner_model,
                                "harness": args.harness_name or "unrecorded",
                                "judge": args.judge_model or "unrecorded"},
-        "runner_template": args.runner,
+        "runner_template": run_command,  # what pairing compares; includes -m and --provider
         "runner_model": args.runner_model,
         "harness_name": args.harness_name or None,
         "evals_sha256": evals_sha256,
