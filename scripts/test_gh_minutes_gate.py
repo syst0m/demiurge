@@ -20,7 +20,7 @@ def iso(offset_seconds: float) -> str:
 
 def fake_gh(routes):
     """routes: list of (substring-of-args, response). First match wins; no match is None."""
-    def run(args, timeout=0):
+    def run(args, timeout=0, cwd=None):
         joined = " ".join(args)
         for needle, response in routes:
             if needle in joined:

@@ -73,8 +73,10 @@ def main():
         import subprocess
         try:
             files = subprocess.check_output(['git', 'ls-files'], encoding='utf-8').splitlines()
-        except Exception:
-            files = []
+        except (OSError, subprocess.CalledProcessError) as e:
+            # An empty file list would report a clean repo that was never scanned.
+            print(f"ERROR: could not list tracked files with git ls-files: {e}", file=sys.stderr)
+            sys.exit(2)
 
     all_findings = []
     for filepath in files:

@@ -11,67 +11,13 @@ Calculates:
 from __future__ import annotations
 
 import json
+import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-# Standard pricing models (per million tokens) for cost calculation
-PRICING_PER_MILLION = {
-    "claude-3-5-sonnet-20241022": {
-        "input": 3.00,
-        "output": 15.00,
-        "cache_write": 3.75,
-        "cache_read": 0.30,
-    },
-    "gpt-4o": {
-        "input": 2.50,
-        "output": 10.00,
-        "cache_write": 2.50,
-        "cache_read": 1.25,
-    },
-    "gemini-3-flash-preview": {
-        "input": 0.15,
-        "output": 0.60,
-        "cache_write": 0.15,
-        "cache_read": 0.0375,
-    },
-    "gemini-3.0-flash": {
-        "input": 0.15,
-        "output": 0.60,
-        "cache_write": 0.15,
-        "cache_read": 0.0375,
-    },
-    "gemini-3.1-pro-preview": {
-        "input": 1.25,
-        "output": 5.00,
-        "cache_write": 1.25,
-        "cache_read": 0.3125,
-    },
-    "gemini-3.0-pro": {
-        "input": 1.25,
-        "output": 5.00,
-        "cache_write": 1.25,
-        "cache_read": 0.3125,
-    },
-    "gemini-3.8-flash": {
-        "input": 0.15,
-        "output": 0.60,
-        "cache_write": 0.15,
-        "cache_read": 0.0375,
-    },
-    "gemini-3.1-flash-lite-preview": {
-        "input": 0.075,
-        "output": 0.30,
-        "cache_write": 0.075,
-        "cache_read": 0.01875,
-    },
-    "gemini-3.1-flash-lite": {
-        "input": 0.075,
-        "output": 0.30,
-        "cache_write": 0.075,
-        "cache_read": 0.01875,
-    },
-}
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from common import compute_cost, cost_change_percent, format_percent  # noqa: E402
 
 
 @dataclass
@@ -109,31 +55,9 @@ class BenchmarkComparison:
     bare: ArmSummary
     demiurge: ArmSummary
     resolution_delta: float
-    cost_delta_percentage: float
+    cost_delta_percentage: Optional[float]  # None when either arm resolved nothing
     cache_savings_percentage: float
     simulated: bool = False
-
-
-def compute_cost(
-    model: str,
-    prompt_tokens: int,
-    completion_tokens: int,
-    cache_read_tokens: int,
-    cache_write_tokens: int,
-) -> float:
-    """Calculate USD cost based on token usage and model pricing."""
-    pricing = PRICING_PER_MILLION.get(
-        model,
-        {"input": 3.00, "output": 15.00, "cache_write": 3.75, "cache_read": 0.30},
-    )
-    base_prompt = max(0, prompt_tokens - cache_read_tokens - cache_write_tokens)
-    cost = (
-        (base_prompt / 1_000_000.0) * pricing["input"]
-        + (completion_tokens / 1_000_000.0) * pricing["output"]
-        + (cache_write_tokens / 1_000_000.0) * pricing["cache_write"]
-        + (cache_read_tokens / 1_000_000.0) * pricing["cache_read"]
-    )
-    return round(cost, 6)
 
 
 def summarize_arm(arm_name: str, results: List[TaskResult]) -> ArmSummary:
@@ -189,15 +113,10 @@ def compare_arms(
 
     delta = round(demiurge.pass_rate - bare.pass_rate, 4)
 
-    if bare.cost_per_resolved_task > 0:
-        cost_delta = round(
-            ((demiurge.cost_per_resolved_task - bare.cost_per_resolved_task)
-             / bare.cost_per_resolved_task)
-            * 100.0,
-            2,
-        )
-    else:
-        cost_delta = 0.0
+    cost_delta = cost_change_percent(
+        bare.cost_per_resolved_task, bare.resolved_count,
+        demiurge.cost_per_resolved_task, demiurge.resolved_count,
+    )
 
     savings = round((demiurge.cache_hit_ratio - bare.cache_hit_ratio) * 100.0, 2)
     is_simulated = bare.simulated or demiurge.simulated
@@ -238,7 +157,7 @@ def render_markdown_report(comparison: BenchmarkComparison) -> str:
 | **Pass Rate** | {comparison.bare.pass_rate * 100:.2f}% | {comparison.demiurge.pass_rate * 100:.2f}% | {delta_symbol}{comparison.resolution_delta * 100:.2f}% |
 | **Mean Turns to Solution** | {comparison.bare.mean_turns:.2f} | {comparison.demiurge.mean_turns:.2f} | {comparison.demiurge.mean_turns - comparison.bare.mean_turns:+.2f} |
 | **Total Cost (USD)** | ${comparison.bare.total_cost_usd:.4f} | ${comparison.demiurge.total_cost_usd:.4f} | ${comparison.demiurge.total_cost_usd - comparison.bare.total_cost_usd:+.4f} |
-| **Cost per Resolved Task** | ${comparison.bare.cost_per_resolved_task:.4f} | ${comparison.demiurge.cost_per_resolved_task:.4f} | {comparison.cost_delta_percentage:+.2f}% |
+| **Cost per Resolved Task** | ${comparison.bare.cost_per_resolved_task:.4f} | ${comparison.demiurge.cost_per_resolved_task:.4f} | {format_percent(comparison.cost_delta_percentage)} |
 | **Prompt-Cache Hit Ratio** | {comparison.bare.cache_hit_ratio * 100:.2f}% | {comparison.demiurge.cache_hit_ratio * 100:.2f}% | {comparison.cache_savings_percentage:+.2f}% |
 
 ### Interpretation
