@@ -24,7 +24,7 @@ PRIMARY_TARGET="${HOME}/.claude/skills"
 # Antigravity is not given empty config directories. A target that resolves to the same
 # directory as an earlier one (a symlinked library) is skipped.
 TARGETS=("$PRIMARY_TARGET")
-for extra in "${HOME}/.agents/skills" "${HOME}/.config/opencode/skills"; do
+for extra in "${HOME}/.agents/skills" "${HOME}/.config/opencode/skills" "${HOME}/.hermes/skills/agent-skills" "${LOCALAPPDATA}/hermes/skills/agent-skills"; do
     [ -d "$(dirname "$extra")" ] || continue
     dup=false
     for have in "${TARGETS[@]}"; do
@@ -99,7 +99,7 @@ if $REPO_ONLY && [ -f "$GRADE_CAP" ]; then
     if [ -z "$PY" ]; then
         echo "FAIL     grade_cap --check: python not found (set PYTHON)"
         grade_cap_failed=true
-    elif grade_out=$("$PY" "$GRADE_CAP" --check --repo "$ROOT" 2>&1); then
+    elif grade_out="$(cd "$ROOT" && "$PY" scripts/research/grade_cap.py --check --repo . 2>&1)"; then
         echo "CHECKED  grade_cap: $(printf '%s\n' "$grade_out" | tail -n 1)"
     else
         printf '%s\n' "$grade_out" | sed 's/^/         /'

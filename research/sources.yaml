@@ -1785,6 +1785,139 @@ claims:
     last_verified: null
     verified_by: null
     notes: ''
+  eval.persona-prompting:
+    section: 4
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: SETTLED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: Persona prompting settled across three independent teams; reception unchecked via Smart Citations.
+  eval.visible-heldout-gap:
+    section: 4
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: CONTESTED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: SpecBench single study (arxiv:2605.21384); reception unchecked via Smart Citations.
+  fail.escalation-channel:
+    section: 5
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: CONTESTED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: Gómez single-author preprint (arxiv:2608.29460); reception unchecked via Smart Citations.
+  fail.pressure-exploit:
+    section: 5
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: CONTESTED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: Chen et al. AgentPressureBench single study (arxiv:2604.20200); reception unchecked via Smart Citations.
+  goal.clarification-timing:
+    section: 12
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: CONTESTED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: Gulati et al. single study (arxiv:2605.07937); reception unchecked via Smart Citations.
+  pushbench.quant-goal-persistence:
+    section: 12
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: CONTESTED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: Cai et al. PushBench single study (arxiv:2605.23574); reception unchecked via Smart Citations.
+  goal.learning-vs-outcome:
+    section: 12
+    kind: prose
+    population: any
+    polarity: affirm
+    grades:
+    - scope: null
+      asserted: CONTESTED
+      cap: EMERGING
+      cap_evidence: SETTLED
+      unverified: true
+      cap_reasons:
+      - no_countable_sources
+      - lt2_primary
+    sources: []
+    duplicates: []
+    last_verified: null
+    verified_by: null
+    notes: Human studies settled; LLM transfer untested (Chen et al. 2025 single study); reception unchecked via Smart Citations.
 rules:
   R-CTX-1:
     section: 2
