@@ -157,6 +157,44 @@ def verify_github_release(tag: str) -> List[str]:
     return findings
 
 
+def release_notes(version: str, changelog_path: Path = CHANGELOG_PATH) -> str:
+    """Returns the body of the CHANGELOG.md section for version, without its heading."""
+    body: Optional[List[str]] = None
+    for line in changelog_path.read_text(encoding="utf-8").splitlines():
+        if line.startswith("## ["):
+            if body is not None:
+                break
+            if line.startswith(f"## [{version}]"):
+                body = []
+        elif body is not None:
+            body.append(line)
+    return "\n".join(body).strip() + "\n" if body else ""
+
+
+def cut_release(tag: str) -> List[str]:
+    """Tags HEAD, pushes the tag and creates the GitHub Release, skipping steps already done.
+
+    The LOCAL-mode release path (AGENTS.md order 1). In GITHUB mode a merge to main does this
+    through .github/workflows/release.yml.
+    """
+    if tag not in get_local_tags():
+        code, _, err = run_cmd(["git", "tag", "-a", tag, "-m", tag])
+        if code:
+            return [f"git tag failed: {err}"]
+    if tag not in get_remote_tags():
+        code, _, err = run_cmd(["git", "push", "origin", tag])
+        if code:
+            return [f"git push origin {tag} failed: {err}"]
+    if run_cmd(["gh", "release", "view", tag])[0]:
+        notes = Path(".release_notes.md")
+        notes.write_text(release_notes(tag.lstrip("v")), encoding="utf-8")
+        code, _, err = run_cmd(["gh", "release", "create", tag, "--title", tag, "--verify-tag", "-F", str(notes)])
+        notes.unlink()
+        if code:
+            return [f"gh release create {tag} failed: {err}"]
+    return []
+
+
 def run_pre_commit_check(files: List[str]) -> int:
     """Pre-commit hook mode: checks staged files for release integrity."""
     findings: List[str] = []
@@ -185,6 +223,9 @@ def main() -> int:
     parser.add_argument("--local", action="store_true", help="Perform local validation only (no network)")
     parser.add_argument("--remote", action="store_true", help="Perform full validation including remote git & GitHub Releases")
     parser.add_argument("--tag", type=str, default=None, help="Explicit tag to verify (defaults to latest in CHANGELOG.md)")
+    parser.add_argument("--latest-version", action="store_true", help="Print the latest CHANGELOG.md version and exit")
+    parser.add_argument("--notes", metavar="VERSION", default=None, help="Print the CHANGELOG.md notes for VERSION and exit")
+    parser.add_argument("--cut", action="store_true", help="Tag HEAD, push the tag and create the GitHub Release, then verify --remote")
     parser.add_argument("files", nargs="*", help="Files passed by pre-commit")
 
     args = parser.parse_args()
@@ -209,12 +250,27 @@ def main() -> int:
     if args.pre_commit:
         return run_pre_commit_check(args.files)
 
+    if args.latest_version:
+        print(get_latest_changelog_version() or "")
+        return 0 if get_latest_changelog_version() else 1
+    if args.notes:
+        notes = release_notes(args.notes)
+        print(notes, end="")
+        return 0 if notes else 1
+
     target_ver = get_latest_changelog_version()
     if not target_ver and not args.tag:
         print("[FAIL] Could not determine target release version from CHANGELOG.md", file=sys.stderr)
         return 1
 
     target_tag = args.tag if args.tag else f"v{target_ver}"
+    if args.cut:
+        cut_findings = cut_release(target_tag)
+        if cut_findings:
+            for err in cut_findings:
+                print(f"[FAIL] {err}", file=sys.stderr)
+            return 1
+        args.remote = True
     print(f"Auditing release gate for [{target_tag}]...")
 
     all_findings: List[str] = []
