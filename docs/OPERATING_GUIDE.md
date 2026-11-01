@@ -1,4 +1,4 @@
-# Demiurge Operating Guide: Marcus & Buckminster
+# Demiurge Operating Guide: Marcus, Buckminster & Imhotep
 
 ```yaml
 version: 1.0.0
@@ -7,7 +7,7 @@ maintained_by: demiurge
 canonical_path: docs/OPERATING_GUIDE.md
 ```
 
-This guide details operating procedures, workflows, concrete examples, gotchas, and best practices for Marcus and Buckminster.
+This guide details operating procedures, workflows, concrete examples, gotchas, and best practices for Marcus, Buckminster and Imhotep.
 
 ---
 
@@ -34,13 +34,24 @@ flowchart LR
         M3 --> M4[Emitted Agent Packages]
     end
 
+    subgraph Build [Imhotep]
+        direction TB
+        I1[Ambition Pass & Build Brief] --> I2[Judge First: Visible + Held-Out]
+        I2 --> I3[Single-Writer Build]
+        I3 --> I4[Verify & Honest Report]
+    end
+
     Research -->|Proposal| Governance
     Governance -->|Merged RESEARCH.md| Synthesis
+    Synthesis -->|Measured Skills| Build
+    Build -->|Outcomes via Run Ledger| Research
+    Build -->|Skill Gaps & Failed Cases| Synthesis
 ```
 
 - **Buckminster** gathers empirical evidence, benchmarks, standards, and security findings. Buckminster proposes updates to `research/RESEARCH.md`. Buckminster never writes agent code.
 - **Operator** verifies diffs, confirms source links, and signs off on changes to `research/RESEARCH.md`.
 - **Marcus** reads `research/RESEARCH.md` exclusively. Marcus drafts, audits, tests, and emits agent packages. Marcus refuses claims absent from `research/RESEARCH.md`.
+- **Imhotep** builds the user's real deliverables. It runs the vendored be-ambitious procedure, grounds each choice in `research/RESEARCH.md`, takes skills from Marcus's registry, and writes visible and held-out checks before it builds. Invoke it with `/imhotep <task>`. Imhotep never researches and never writes skills.
 
 ---
 
@@ -220,6 +231,34 @@ it on every Antigravity tool call. A global install of a skill outside the Marcu
 `--trust-provenance`, because such a skill writes its own tier. Full rules: `skills/marcus/references/SPEC.md` §6.1.
 
 ---
+
+## 3b. Imhotep: Building at the Ambitious Level
+
+Imhotep turns a task into the best version of its outcome, then builds it against a judge it cannot soften.
+
+### When to Activate Imhotep
+
+- You want something built, fixed, analysed or shipped, and done properly rather than literally.
+- You want a prompt rewritten at a higher level of ambition (Imhotep stops after the rewrite).
+- A one-off task should become a durable loop (Imhotep proposes a routine; you approve it).
+
+### Imhotep Example Workflow
+
+```text
+/imhotep the marcus PROVENANCE research snapshot is behind claims.json
+```
+
+1. Writes a one-screen Build Brief: goal beyond the goal, the ambition types that fit, the rung ladder, the judge and the backlog.
+2. Tags each brief line with a RESEARCH.md claim id, or labels it as judgement.
+3. Picks registry skills for each method; writes a build request for Marcus where none exists.
+4. Commits visible checks, and has a fresh-context subagent commit held-out checks under `.judge/heldout/`.
+5. Builds as the single writer, then runs both suites and `judge_guard.py`.
+6. Reports real numbers for both suites, with an Escalations section if a check is defective.
+
+### Gotchas
+
+- **The vendored procedure is read-only.** `skills/imhotep/references/be-ambitious/SKILL.upstream.md` is pinned by sha256. Change Imhotep's behaviour in `references/OVERLAY.md`, never in the vendored file. Upstream updates arrive through `python scripts/vendor_sync.py --fetch`, then an operator-approved `--apply <commit> be-ambitious`.
+- **A missed target is a valid result.** Imhotep reports it with numbers. A gamed check is the only failure it treats as worse than a miss.
 
 ## 4. Caveats & Gotchas
 

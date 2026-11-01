@@ -35,10 +35,11 @@ canonical_path: docs/DOCUMENTATION.md
 
 ## 1. Introduction & System Philosophy
 
-Demiurge is a dual-agent engineering system designed to research, synthesize, and maintain autonomous agents. The project separates **empirical observation** from **agent synthesis**.
+Demiurge is a three-agent engineering system (the Pantheon) designed to research, synthesize, and maintain autonomous agents. The project separates **empirical observation** from **agent synthesis**.
 
 - **Marcus** is named for Marcus Aurelius (who wrote guidance, then adhered to it). Marcus designs and generates agents, emitting installable packages validated against deterministic quality gates.
 - **Buckminster** is named for Buckminster Fuller (comprehensive anticipatory design science). Buckminster monitors empirical research, benchmarks, and security vulnerabilities, proposing graded updates to the system knowledge base.
+- **Imhotep** is named for Imhotep (architect of the first stone pyramid). Imhotep builds the user's real deliverables at the ambitious level, following the vendored [be-ambitious](https://github.com/robonuggets/be-ambitious) procedure plus an evidence overlay ([OVERLAY.md](../skills/imhotep/references/OVERLAY.md)). It takes skills from Marcus's registry, writes held-out checks before it builds, and records outcomes in the run ledger. See [IMHOTEP_EVALUATION.md](IMHOTEP_EVALUATION.md).
 
 ---
 
@@ -194,12 +195,12 @@ The repository is organized to isolate research, skills, tools, and rules:
 | `docs/` | Human-facing guides: Installation, Operating Guide, Design Manual, Master Documentation, Claims Ledger (`CLAIMS_LEDGER.md`), Research Pipeline (`RESEARCH_PIPELINE.md`), Skill Registry (`SKILL_REGISTRY.md`) and Run Ledger (`RUN_LEDGER.md`). |
 | `evals/` | Deterministic gate regression tests and independent industry benchmark adapters. |
 | `research/` | Master empirical knowledge base (`RESEARCH.md`), updated solely through reviewed proposals, and its sources sidecar (`sources.yaml`). |
-| `routines/` | Prompts for the scheduled research sweep and the fresh-context verifier ([RESEARCH_PIPELINE.md](RESEARCH_PIPELINE.md)). |
+| `routines/` | Prompts for the scheduled research sweep, the fresh-context verifier ([RESEARCH_PIPELINE.md](RESEARCH_PIPELINE.md)) and the monthly vendor sync (`vendor-sync.md`). |
 | `scripts/` | Deterministic verification harnesses, security linters, link checkers, and sync tools. |
 | `scripts/research/` | Claims ledger tooling: `grade_cap.py` and `check_rule_citations.py` ([CLAIMS_LEDGER.md](CLAIMS_LEDGER.md)), plus the pull request pipeline scripts `sweep_pr.py`, `claims_diff.py`, `check_verifications.py` and `check_upgrade_approval.py` ([RESEARCH_PIPELINE.md](RESEARCH_PIPELINE.md)). |
 | `scripts/registry/` | Local skill registry builder ([SKILL_REGISTRY.md](SKILL_REGISTRY.md)). |
 | `scripts/ledger/` | Run ledger hook and command line: `ledger_hook.py` and `ledger.py` ([RUN_LEDGER.md](RUN_LEDGER.md)). |
-| `skills/` | Source code and manifests for [Marcus](../skills/marcus/) and [Buckminster](../skills/buckminster/). |
+| `skills/` | Source code and manifests for [Marcus](../skills/marcus/), [Buckminster](../skills/buckminster/) and [Imhotep](../skills/imhotep/). Vendored upstream files sit in `skills/<skill>/references/<name>/` with an `UPSTREAM.yaml` pin, checked by `scripts/vendor_sync.py`. |
 
 *Note: Edit files in `skills/` directly. Never edit deployed skill directories manually.*
 
@@ -341,8 +342,12 @@ Execute the full suite of mechanical gates:
 # 1. Validate Marcus format, line-level security, and progressive disclosure (Gate G4)
 python skills/marcus/scripts/validate_skill.py skills/marcus
 
-# 2. Validate Buckminster format and security (Gate G4)
+# 2. Validate Buckminster and Imhotep format and security (Gate G4)
 python skills/marcus/scripts/validate_skill.py skills/buckminster
+python skills/marcus/scripts/validate_skill.py skills/imhotep
+
+# 2b. Vendored upstream files match their pins
+python scripts/vendor_sync.py --check
 
 # 3. Execute deterministic gate regression tests
 python skills/marcus/evals/run_gate_tests.py

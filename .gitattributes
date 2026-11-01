@@ -29,3 +29,7 @@
 *.zip   binary
 *.woff  binary
 *.woff2 binary
+
+# Vendored upstream files: byte-identical to their pin (scripts/vendor_sync.py). No conversion.
+skills/*/references/*/SKILL.upstream.md -text
+skills/*/references/*/LICENSE           -text
