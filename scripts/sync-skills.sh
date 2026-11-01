@@ -24,7 +24,7 @@ PRIMARY_TARGET="${HOME}/.claude/skills"
 # Antigravity is not given empty config directories. A target that resolves to the same
 # directory as an earlier one (a symlinked library) is skipped.
 TARGETS=("$PRIMARY_TARGET")
-for extra in "${HOME}/.agents/skills" "${HOME}/.config/opencode/skills" "${HOME}/.hermes/skills/agent-skills" "${LOCALAPPDATA}/hermes/skills/agent-skills"; do
+for extra in "${HOME}/.agents/skills" "${HOME}/.config/opencode/skills" "${HOME}/.hermes/skills/agent-skills" "${LOCALAPPDATA:-}/hermes/skills/agent-skills"; do
     [ -d "$(dirname "$extra")" ] || continue
     dup=false
     for have in "${TARGETS[@]}"; do
@@ -181,6 +181,15 @@ done
 
 if $grade_cap_failed; then
     exit 1
+fi
+
+# Enable the run ledger hook so skill runs are recorded in .demiurge/ledger/.
+# Copies ledger_hook.py + ledger_lib.py into a Hermes-ledger dir; the printed
+# settings snippet must be merged into .claude/settings.json by the user.
+if ! $CHECK_ONLY; then
+    LEDGER_DEST="${LOCALAPPDATA:-}/hermes/demiurge-ledger"
+    echo "LEDGER  installing run-ledger hook to $LEDGER_DEST"
+    python scripts/ledger/ledger.py install-hook --dest "$LEDGER_DEST" || true
 fi
 
 if $CHECK_ONLY && [ "$drift" -ne 0 ]; then
