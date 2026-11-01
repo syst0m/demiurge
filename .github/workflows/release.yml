@@ -47,3 +47,22 @@ jobs:
           target_commitish: ${{ github.sha }}
           body_path: release_notes.md
           generate_release_notes: true
+
+  notify:
+    # A failed Release run on main otherwise goes unseen: auto-fix watches PRs,
+    # not main. Actions minutes are free on this public repo, so notify cheaply.
+    needs: [release]
+    if: ${{ failure() }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+    steps:
+      - name: File a release-failure issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "Release failed: ${{ github.run_id }}" \
+            --body "Release run ${{ github.run_id }} failed on a push to main. ${{ github.run_url }}" \
+            --label release-failure
