@@ -10,8 +10,8 @@ baseline_score: null    # G1 - fill from eval_runner.py --baseline
 treated_score: null     # G5 - fill from eval_runner.py
 delta: null
 model_harness_pair: null
-research_snapshot: {version: "1.3.2", snapshot_sha256: "54eebb7339166c3a4aa547f7c76c1990de56cc54c4b21374139cf61e5fd1924c"}
-research_claims: [fail.self-eval, fail.self-correction, fail.reward-hacking, eval.judge-bias, ma.value, ma.cognition-stance]
+research_snapshot: {version: "1.3.3", snapshot_sha256: "23a01fe276a556e90aa983d6953f326b18a0d8d550306ed44e5d80ded620a842"}
+research_claims: [fail.self-eval, fail.self-correction, fail.reward-hacking, eval.judge-bias, ma.value, ma.cognition-stance, eval.persona-prompting, eval.visible-heldout-gap, fail.escalation-channel, fail.pressure-exploit, goal.clarification-timing, pushbench.quant-goal-persistence, goal.learning-vs-outcome]
 vendored: {repo: "https://github.com/robonuggets/be-ambitious", commit: "dc116a3", license: MIT, trust_tier: T3, pin: references/be-ambitious/UPSTREAM.yaml}
 ```
 
