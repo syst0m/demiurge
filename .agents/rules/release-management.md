@@ -26,14 +26,12 @@ Do not assume a release is needed for minor typographical fixes or internal tool
 When executing a release:
 
 1. **Never suppress CI:** NEVER include `[skip ci]`, `[ci skip]`, `[skip actions]`, or `[no ci]` in a release commit message. This silences GitHub Actions `release.yml` on tag push.
-2. **Explicit Tag Push:** Always push the release tag explicitly: `git push origin v<version>`.
-3. **Verify GitHub Release:** Create or verify the release object on GitHub via GitHub CLI:
-
-   ```bash
-   gh release create v<version> --title "v<version>" -F <notes.md>
-   ```
-
-4. **Pass the Release Gate:** Run the mechanical verification script before marking release complete:
+2. **Tag and release follow the changelog:** A release is a new `## [x.y.z]` heading in `CHANGELOG.md`.
+   - `GITHUB` mode: merging it to `main` runs `.github/workflows/release.yml`, which creates the tag
+     `v<version>` and the GitHub Release. Do not tag by hand.
+   - `LOCAL` mode: run `python scripts/verify_release.py --cut`. It tags `HEAD`, pushes the tag,
+     creates the release from the changelog section, and skips any step already done.
+3. **Pass the Release Gate:** Run the mechanical verification script before marking release complete:
 
    ```bash
    python scripts/verify_release.py --remote
