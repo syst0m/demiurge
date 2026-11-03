@@ -139,12 +139,12 @@ The Demiurge documentation suite is structured into focused guides addressing sp
 ### 3.5 Independent Benchmarking Summary
 
 - **Target File:** [docs/BENCHMARKS.md](BENCHMARKS.md)
-- **Latest Benchmark Report:** [docs/reports/swebench_v020_summary.md](reports/swebench_v020_summary.md)
+- **Run Registry:** [BENCHMARKS.md section 4](BENCHMARKS.md#4-benchmark-run-registry) lists only live runs with a `results.json`.
 - **Scope:** Independent industry benchmarking (SWE-bench, GAIA, Tau-bench) comparing Demiurge against bare foundation models.
 - **Key Concepts:**
   - Two-arm evaluation: Arm A (Bare Foundation Model) vs Arm B (Demiurge Architecture).
   - Telemetry formulas: Resolution Lift ($\Delta$), Prompt-Cache Hit Ratio, Cost per Resolved Task, Turn Economy.
-  - Latest Run Metrics (`v0.2.0`): $+40.00\%$ resolution lift ($\Delta$), $82.0\%$ prompt-cache hit ratio, $74\%$ lower cost per resolved task.
+  - Latest live run (`v0.7.0`): 2 tasks, no difference between the arms. No lift is measured.
   - Multi-benchmark roadmap (SWE-bench, GAIA, Tau-bench, BIPIA, BFCL) and execution cadences.
 
 ### 3.6 Claims Ledger Summary

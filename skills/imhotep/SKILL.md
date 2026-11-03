@@ -97,7 +97,9 @@ not count a unit twice. Push on effort and method, never on the score.
 
 **7 Verify.** Run the visible and the held-out checks. Run
 `python scripts/judge_guard.py --base <commit> --paths <judge paths>`; a non-zero exit fails the
-build. Report numbers for both suites and the gap between them. If a check looks defective or the
+build. Run `python scripts/heldout_gap.py --visible "<cmd>" --heldout "<cmd>"` (each command prints
+`passed/total`); a gap above 10 points fails the build. Run `python scripts/brief_check.py <brief>` on the
+Build Brief before step 3. Report numbers for both suites and the gap between them. If a check looks defective or the
 target looks unreachable, add an **Escalations** section that names the defect and the evidence.
 
 **8 Feed back.** When the ledger hook is installed, record the outcome with

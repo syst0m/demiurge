@@ -62,6 +62,7 @@ class TaskResult:
     cache_read_tokens: int
     cache_write_tokens: int
     cost_usd: float
+    simulated: bool = False
     error: Optional[str] = None
 
 
@@ -79,6 +80,7 @@ class ArmSummary:
     total_cost_usd: float
     cost_per_resolved_task: float
     cache_hit_ratio: float
+    simulated: bool = False
 
 
 @dataclass
@@ -92,6 +94,7 @@ class BenchmarkComparison:
     poc_delta: float
     cost_reduction_percent: Optional[float]  # None when either arm resolved nothing
     cache_hit_delta: float
+    simulated: bool = False
 
 
 def summarize_arm(arm_name: str, results: List[TaskResult]) -> ArmSummary:
@@ -110,6 +113,7 @@ def summarize_arm(arm_name: str, results: List[TaskResult]) -> ArmSummary:
             total_cost_usd=0.0,
             cost_per_resolved_task=0.0,
             cache_hit_ratio=0.0,
+            simulated=False,
         )
 
     total_tasks = len(results)
@@ -143,6 +147,7 @@ def summarize_arm(arm_name: str, results: List[TaskResult]) -> ArmSummary:
         total_cost_usd=total_cost,
         cost_per_resolved_task=cost_per_resolved,
         cache_hit_ratio=cache_hit_ratio,
+        simulated=any(r.simulated for r in results),
     )
 
 
@@ -176,6 +181,7 @@ def compare_arms(
         poc_delta=poc_delta,
         cost_reduction_percent=None if change is None else -change,
         cache_hit_delta=cache_hit_delta,
+        simulated=bare_summary.simulated or demiurge_summary.simulated,
     )
 
 
@@ -185,10 +191,20 @@ def render_markdown_report(comp: BenchmarkComparison) -> str:
     loc_delta_str = f"+{comp.localization_delta * 100:.2f}%" if comp.localization_delta >= 0 else f"{comp.localization_delta * 100:.2f}%"
     poc_delta_str = f"+{comp.poc_delta * 100:.2f}%" if comp.poc_delta >= 0 else f"{comp.poc_delta * 100:.2f}%"
 
+    simulated_banner = ""
+    if comp.simulated:
+        simulated_banner = (
+            "> [!WARNING]\n"
+            "> **SIMULATION BASELINE**: This run was generated using `--dry-run` simulation mode.\n"
+            "> Token counts, turn counts, and resolution outcomes are synthetic mock estimates and DO NOT represent live API benchmark results.\n\n"
+        )
+    mode = "Simulated (Dry-Run)" if comp.simulated else "Live Benchmark"
+
     return rf"""# CyberGym Cybersecurity Benchmark Telemetry Report
 
-- **Model Backbone:** `{comp.model}`
+{simulated_banner}- **Model Backbone:** `{comp.model}`
 - **Dataset Suite:** `{comp.dataset}`
+- **Execution Mode:** `{mode}`
 - **Evaluation Arm A:** Bare Model Baseline (Minimal ReAct Scaffolding)
 - **Evaluation Arm B:** Demiurge Architecture (Rules Cache Prefix + Marcus Skills + Security Gates)
 

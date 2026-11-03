@@ -13,6 +13,7 @@ canonical_path: docs/BENCHMARKS.md
 3. [Metrics & Telemetry Formulas](#3-metrics--telemetry-formulas)
 4. [Benchmark Run Registry](#4-benchmark-run-registry)
 5. [Multi-Benchmark Architecture Roadmap](#5-multi-benchmark-architecture-roadmap)
+   - [5.0 Recommended test tracks](#50-recommended-test-tracks)
    - [5.1 GAIA: Multi-Source Research Benchmark](#51-gaia-multi-source-research-benchmark)
    - [5.2 Tau-bench: Multi-Turn State & Policy Benchmark](#52-tau-bench-multi-turn-state--policy-benchmark)
    - [5.3 BIPIA: Indirect Injection & Boundary Defense](#53-bipia-indirect-injection--boundary-defense)
@@ -96,7 +97,7 @@ A valid production release requires $\Delta > 0$ on targeted capability slices.
 ### 3.2 Prompt-Cache Hit Ratio
 
 $$\text{Cache Hit Ratio} = \frac{\text{Tokens Read From Cache}}{\text{Total Prompt Tokens}}$$
-Demiurge isolates static rules at the prompt prefix, yielding typical cache read ratios above $75\%$, which substantially cuts API billing.
+Demiurge places static rules at the prompt prefix so a provider can cache them. No live run has yet measured the ratio.
 
 ### 3.3 Cost per Resolved Task
 
@@ -112,25 +113,41 @@ Measures average interaction cycles required to produce a valid resolution patch
 
 ## 4. Benchmark Run Registry
 
-All empirical evaluation runs are tracked with persistent telemetry artifacts:
+A row belongs in this table only when its `results.json` exists and records `"simulated": false`. `python scripts/check_benchmark_claims.py` enforces this in CI. A simulated run is not evidence. A dry run tests the runner and nothing else.
 
-| Run ID | Date | Model Backbone | Benchmark Suite | Tasks | Bare Pass | Demiurge Pass | Delta ($\Delta$) | Cache Hit | Cost / Fix (Bare vs Demiurge) | Report Artifact |
-|---|---|---|---|---|---|---|---|---|---|---|
-| `v0.2.0-swebench-001` | 2026-09-06 | `claude-3-5-sonnet-20241022` | SWE-bench Lite | 5 | 40.0% | **80.0%** | **+40.00%** | 82.0% | $0.2050 vs **$0.0533** (-74.0%) | [Summary Report](reports/swebench_v020_summary.md) |
-| `v0.3.0-swebench-full` | 2026-09-06 | `claude-3-5-sonnet-20241022` | Full SWE-bench | 2,294 | 39.97% | **60.03%** | **+20.06%** | 82.0% | $0.2069 vs **$0.0721** (-65.1%) | [Summary Report](reports/swebench_full_2294_summary.md) |
-| `v0.4.0-gemini-live` | 2026-09-06 | `gemini-3.1-flash-lite-preview` | SWE-bench Lite (Live) | 5 | 80.0%* | 20.0%* | Refusal / G0 | 0.0% | $0.0001 vs $0.0015 | [Summary Report](reports/swebench_gemini_v040_summary.md) |
-| `v0.5.0-cybergym-001` | 2026-09-08 | `gemini-3.0-flash` | CyberGym Subset (Live) | 5 | 0.00% | **0.00%** | **+0.00%** | 0.0% | $0.0004 vs **$0.0028** (4 vs 6 turns) | [Summary Report](../eval_results/cybergym/report.md) |
-| `v0.6.0-exploitbench-001` | 2026-09-08 | `gemini-3.0-flash` | ExploitBench Flagship (Live) | 5 | 0.00% | **0.00%** | **+0.00%** | 0.0% | $0.0004 vs **$0.0026** (4 vs 6 turns) | [Summary Report](../eval_results/exploitbench/report.md) |
-| `v0.7.0-swebench-live` | n/a | `gemini-3.1-flash-lite-preview` | SWE-bench Lite (Live) | 2 | 100.0% | **100.0%** | **+0.00%** | n/a | $0.0002 vs **$0.0005** (6 vs 4 turns) | [Summary Report](../eval_results/swebench/report.md) |
-| `v0.8.0-deepswe-001` | 2026-09-09 | `gemini-3.0-flash` | DeepSWE Subset (Dry-Run) | 10 | 0.00% | **100.0%** | **+100.00%** | 76.0% | $0.0000 vs **$0.0013** (6 vs 4 turns) | [Summary Report](../eval_results/deepswe/report.md) |
+| Run ID | Date | Model Backbone | Benchmark Suite | Tasks | Bare Pass | Demiurge Pass | Delta ($\Delta$) | Mode | Results |
+|---|---|---|---|---|---|---|---|---|---|
+| `v0.7.0-swebench-live` | 2026-09-08 | `gemini-3.1-flash-lite-preview` | SWE-bench Lite | 2 | 100.0% | 100.0% | +0.00% | LIVE | [results.json](../eval_results/live/swebench-v0.7.0/results.json) |
 
-*\*Note on Gemini 3.1 Flash-Lite: The bare model achieved 80% through ungrounded compliance (inventing non-existent code), whereas Demiurge strictly enforced Gate G0, refusing to synthesize patches absent genuine repository context and local failure traces.*
+**What this table shows:** one live run of 2 tasks with no difference between the arms. Demiurge has no measured performance lift. Two tasks cannot detect one.
 
----
+### Unverified and withdrawn runs
+
+| Run ID | Status | Reason |
+|---|---|---|
+| `v0.5.0-cybergym-001`, `v0.6.0-exploitbench-001` | Unverified | The local `results.json` is not tracked and has no `simulated` field. Both show 0 of 5 for each arm. The runners cannot write that field, and their live path falls back to a mock when an API call fails. These two suites cannot qualify until that is fixed. |
+| `v0.4.0-gemini-live` | Unverified | No `results.json`. The report was deleted. It counted diff structure, not resolved tasks. It showed that gate G0 refused to invent code. It did not show lift. |
+| `v0.2.0-swebench-001`, `v0.3.0-swebench-full`, `v0.8.0-deepswe-001` | Withdrawn | Produced by `--dry-run`. These figures were never measurements. The SWE-bench mock draws a resolve outcome from a hash of the task id, near 40% (bare) and 60% (Demiurge). The DeepSWE mock never resolves for bare and always resolves for Demiurge. |
 
 ## 5. Multi-Benchmark Architecture Roadmap
 
-Beyond SWE-bench, Demiurge incorporates six domain-specific benchmark adapters:
+### 5.0 Recommended test tracks
+
+Run the tracks in this order. Track 1 tests the core claim of Demiurge and has no measurement yet.
+
+| # | Track | Metric | Why | Rough cost |
+|---|---|---|---|---|
+| 1 | Imhotep visible-vs-held-out gap | Gap in points with a paired bootstrap interval | 50+ tasks, bare against Imhotep, fresh-context held-out tests. This is the core claim and it is unmeasured. | Not estimated |
+| 2 | Marcus G5 paired replay | Delta with a McNemar test | 30+ cases per skill, 3 attempts each. Reuse `eval_runner.py` in `skills/marcus/scripts`. | Not estimated |
+| 3 | Real SWE-bench Lite paired run | Resolve rate and cost per resolved task | 100 tasks, same model, bare against Demiurge, official Docker harness. | $60 to $100 (section 7 gives $15 to $25 for 25 tasks) |
+| 4 | Niccolo claim calibration | Precision and citation validity | Re-verify 30 SETTLED and 30 CONTESTED claims blind against primary sources. | Not estimated |
+| 5 | Boundary defense (BIPIA or promptfoo injection payloads) | Block rate and false-block rate of the `PreToolUse` hooks | Tests the runtime defense in [skills/marcus/HARNESS.md](../skills/marcus/HARNESS.md). | Not estimated |
+
+GAIA, Tau-bench and BFCL (5.1 to 5.4) test the model more than the Demiurge mechanism. Run them last.
+
+A result enters the section 4 registry only with a tracked `results.json` that records `"simulated": false`. Store it under `eval_results/live/`.
+
+Beyond SWE-bench, Demiurge incorporates seven domain-specific benchmark adapters:
 
 ### 5.1 GAIA: Multi-Source Research Benchmark
 
