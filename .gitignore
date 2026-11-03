@@ -44,3 +44,7 @@ Thumbs.db
 # Claude Code personal settings - never committed (may reference private repos)
 .claude/settings.local.json
 .hermes/
+
+# Personal health protocols (see SECURE.md)
+protocols/auadhd-burnout/
+routines/auadhd-burnout-loop.md
