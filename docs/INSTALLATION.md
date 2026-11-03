@@ -1,6 +1,6 @@
 # Installing Demiurge
 
-Demiurge is highly portable. Because it is fundamentally a system of prompts and knowledge files, it works by injecting Marcus and Buckminster into your preferred AI agent environment.
+Demiurge is highly portable. Because it is fundamentally a system of prompts and knowledge files, it works by injecting Marcus and Niccolo into your preferred AI agent environment.
 
 Below are the setup instructions organized by the three major frontier model ecosystems, covering Web, CLI, and IDE usage.
 
@@ -11,27 +11,27 @@ Below are the setup instructions organized by the three major frontier model eco
 ### Google AI Studio (Web & API)
 
 1. Create a new **System Instruction** prompt in Google AI Studio.
-2. Paste the contents of `skills/marcus/SKILL.md` (or Buckminster).
+2. Paste the contents of `skills/marcus/SKILL.md` (or Niccolo).
 3. Append the contents of `research/RESEARCH.md` below the instructions to ensure the agent has the correct foundational knowledge.
 4. Save the prompt to use via the Gemini API or chat directly in the studio.
 
 ### Gemini Spark (Web)
 
 1. Create a new **Gem** in Gemini.
-2. Copy the contents of `skills/marcus/SKILL.md`, `skills/buckminster/SKILL.md` and `skills/imhotep/SKILL.md` into the Gem's instructions.
+2. Copy the contents of `skills/marcus/SKILL.md`, `skills/niccolo/SKILL.md` and `skills/imhotep/SKILL.md` into the Gem's instructions.
 3. Paste the contents of `research/RESEARCH.md` so the Gem has the baseline knowledge.
 
 ### Antigravity (IDE & CLI)
 
 Antigravity is natively integrated with the Gemini ecosystem.
 
-- **Antigravity IDE**: Open the Demiurge repository. The IDE automatically discovers the `.agents` and `skills` directories. Simply mention `@marcus`, `@buckminster` or `@imhotep` in your chat.
+- **Antigravity IDE**: Open the Demiurge repository. The IDE automatically discovers the `.agents` and `skills` directories. Simply mention `@marcus`, `@niccolo` or `@imhotep` in your chat.
 - **Antigravity CLI (`agy`)**:
   In your terminal, navigate to the project and install the skills locally:
 
   ```bash
   npx skills add path/to/demiurge/skills/marcus
-  npx skills add path/to/demiurge/skills/buckminster
+  npx skills add path/to/demiurge/skills/niccolo
   npx skills add path/to/demiurge/skills/imhotep
   ```
 
@@ -44,9 +44,9 @@ Antigravity is natively integrated with the Gemini ecosystem.
 ### Claude (Web)
 
 1. Create a **Project** in the Claude web interface.
-2. Upload `skills/marcus/SKILL.md`, `skills/buckminster/SKILL.md`, `skills/imhotep/SKILL.md`, and `research/RESEARCH.md` to the Project Knowledge.
+2. Upload `skills/marcus/SKILL.md`, `skills/niccolo/SKILL.md`, `skills/imhotep/SKILL.md`, and `research/RESEARCH.md` to the Project Knowledge.
 3. In the Custom Instructions, specify:
-   > "You have access to three agent personas: Marcus, Buckminster and Imhotep. Read their respective SKILL.md files to assume their roles."
+   > "You have access to three agent personas: Marcus, Niccolo and Imhotep. Read their respective SKILL.md files to assume their roles."
 
 ### Claude Code (CLI)
 
@@ -77,8 +77,8 @@ Antigravity is natively integrated with the Gemini ecosystem.
 ### ChatGPT (Web)
 
 1. Create a **Custom GPT**.
-2. Upload `RESEARCH.md`, `skills/marcus/SKILL.md`, `skills/buckminster/SKILL.md`, and `skills/imhotep/SKILL.md` to the Knowledge base.
-3. In the GPT instructions, tell it to adopt the Marcus, Buckminster and Imhotep personas by reading the attached files when requested.
+2. Upload `RESEARCH.md`, `skills/marcus/SKILL.md`, `skills/niccolo/SKILL.md`, and `skills/imhotep/SKILL.md` to the Knowledge base.
+3. In the GPT instructions, tell it to adopt the Marcus, Niccolo and Imhotep personas by reading the attached files when requested.
 
 ### Codex (CLI / API)
 
@@ -97,12 +97,12 @@ Antigravity is natively integrated with the Gemini ecosystem.
 
 ---
 
-## 5. Optional Tooling: Research Connectors (For Buckminster)
+## 5. Optional Tooling: Research Connectors (For Niccolo)
 
 Demiurge decouples synthesis from empirical research:
 
 - **Marcus** (agent design, generation, and gate validation) is **fully offline and deterministic**. It executes via Python 3 standard library scripts and local reference documentation without external network access or tool dependencies.
-- **Buckminster** surveys academic and empirical literature to propose updates to `research/RESEARCH.md`.
+- **Niccolo** surveys academic and empirical literature to propose updates to `research/RESEARCH.md`.
 
 Fresh clones operate out-of-the-box without external connectors. Connecting scholarly Model Context Protocol (MCP) integrations improves research quality, verification depth, and retraction screening.
 
@@ -118,8 +118,8 @@ Fresh clones operate out-of-the-box without external connectors. Connecting scho
 ### Dependency Status and Fallback Behavior
 
 - **Non-Breaking Dependency**: Missing connectors will not break Demiurge, Marcus, or repository test suites.
-- **Graceful Degradation**: When connectors are unavailable in an agent runtime, Buckminster falls back to standard web search engines and open-access archives (arXiv, IETF, vendor engineering portals).
-- **Audit Requirement**: When connectors are absent, Buckminster explicitly notes in diff proposals that citation reception and retraction notices could not be validated via Smart Citations. Findings without reception verification cannot be promoted to `[SETTLED]`.
+- **Graceful Degradation**: When connectors are unavailable in an agent runtime, Niccolo falls back to standard web search engines and open-access archives (arXiv, IETF, vendor engineering portals).
+- **Audit Requirement**: When connectors are absent, Niccolo explicitly notes in diff proposals that citation reception and retraction notices could not be validated via Smart Citations. Findings without reception verification cannot be promoted to `[SETTLED]`.
 
 ### Official Connector Documentation
 

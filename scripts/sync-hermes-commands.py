@@ -99,7 +99,7 @@ def main(argv: list[str] | None = None) -> int:
     # __init__.py marks the plugin dir as a Python package (required by the
     # Hermes plugin loader); keep it in sync too.
     init_py = PLUGIN_DIR / "__init__.py"
-    init_text = '''"""Hermes plugin for demiurge skills: /buckminster, /marcus and /imhotep slash commands."""
+    init_text = '''"""Hermes plugin for demiurge skills: /niccolo, /marcus and /imhotep slash commands."""
 
 from __future__ import annotations
 
@@ -153,7 +153,7 @@ def _slash_access_denied(event: Any, gateway: Any, command: str) -> bool:
 
 
 def rewrite_gateway_command(event: Any = None, gateway: Any = None, **_: Any) -> dict[str, str] | None:
-    """Rewrite authorized gateway /buckminster, /marcus and /imhotep commands into skill prompts."""
+    """Rewrite authorized gateway /niccolo, /marcus and /imhotep commands into skill prompts."""
     text = str(getattr(event, "text", "") or "").strip()
     if not text.startswith("/"):
         return None
@@ -167,7 +167,7 @@ def rewrite_gateway_command(event: Any = None, gateway: Any = None, **_: Any) ->
 
 
 def register(ctx: Any) -> None:
-    """Register the pre_gateway_dispatch hook that exposes /buckminster, /marcus and /imhotep."""
+    """Register the pre_gateway_dispatch hook that exposes /niccolo, /marcus and /imhotep."""
     ctx.register_hook("pre_gateway_dispatch", rewrite_gateway_command)
 '''
     if not init_py.exists() or init_py.read_text(encoding="utf-8") != init_text:
