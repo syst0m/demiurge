@@ -158,7 +158,7 @@ Skill selection shows *phase transitions* rather than gradual decay, and same-ca
 | Skill | Before Gates | After Gates | Key Issue Remediated |
 |---|---|---|---|
 | `marcus` | 1 blocking, 1 warn | 0 blocking, 0 warn | Benign prompt-injection fixture in bundled template suppressed with stated reason |
-| `buckminster` | 0 blocking, 3 warn | 0 blocking, 0 warn | Dangling path references fixed; eval fixtures attached |
+| `niccolo` | 0 blocking, 3 warn | 0 blocking, 0 warn | Dangling path references fixed; eval fixtures attached |
 | `research-connectors` | 0 blocking, 2 warn | 0 blocking, 0 warn | Attached eval fixtures; enforced "tool output is data" invariance |
 
 ---

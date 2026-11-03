@@ -7,7 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Personas Guide (`docs/PERSONAS.md`):** Commands, prompts, integrations and a quote for each of Demiurge, Niccolo, Marcus and Imhotep. The README shows a small card for each.
+- **Portable Pre-Commit Hook (`scripts/install-git-hook.sh`):** Installs a hook that finds its interpreter at run time, so it works from Git Bash and WSL.
+
 ### Changed
+
+- **Buckminster Renamed to Niccolo:** The research skill is `skills/niccolo`, invoked with `/niccolo`. Names in code, docs, routines and the research ledger changed. `RESEARCH.md` moved to 1.3.4 to record it. Entries for earlier releases below keep the old name.
+- **Slimmer README:** The README keeps the persona cards, a quick start and the architecture diagram. The docs index, research brief and evidence rules moved to `docs/`.
 
 - **Shared Benchmark Helpers (`evals/benchmarks/common.py`):** The price table, `compute_cost`, `load_rules` and `load_marcus_skill` live in one module instead of four copies. Covered by `evals/benchmarks/test_common.py`.
 - **Pinned Workflow Actions:** Every `uses:` in `.github/workflows/` names a commit SHA, so a moved tag cannot change what runs with a write token or a secret.

@@ -1,4 +1,4 @@
-"""Weekend runner for the Buckminster research sweep.
+"""Weekend runner for the Niccolo research sweep.
 
 Windows Task Scheduler starts this script at six weekend slots (Saturday and Sunday,
 09:00, 14:00 and 20:00), at logon, and when a missed slot becomes available. The script

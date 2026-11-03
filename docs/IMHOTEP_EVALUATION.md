@@ -17,7 +17,7 @@ Date: 2026-11-01. Scope: the operating model of Imhotep, the third Pantheon pers
 ## 1. Question and sources
 
 Can Felix Rieseberg's tenets of ambition serve as the operating model for a persona that builds
-from Buckminster's research with Marcus's skills? And how much of the robonuggets implementation
+from Niccolo's research with Marcus's skills? And how much of the robonuggets implementation
 should Imhotep reuse?
 
 - Article: [How to be more ambitious: a tutorial for humans with models](https://felixrieseberg.com/how-to-be-more-ambitious-a-tutorial-for-humans-with-models/)
@@ -42,7 +42,7 @@ should Imhotep reuse?
    what the tenet asserts, and grade the transfer from humans to models separately.
 
 **Limit.** Every literature finding below comes from abstracts and metadata, not full texts.
-Reception (citing support or contrast) was not checked. Buckminster's tri-source and reception
+Reception (citing support or contrast) was not checked. Niccolo's tri-source and reception
 rules apply before any of these findings reaches RESEARCH.md.
 
 ## 3. Evidence by tenet
@@ -80,7 +80,7 @@ overlay. Add two scripts only: a pin check and a judge guard. Risk: an orchestra
 nobody asked for. Check: if the overlay grows past one page, it is becoming a second skill.
 
 **Strategist.** Position: the value is the closed loop. Build outcomes feed Marcus's regression
-cases and Buckminster's field evidence, so the Pantheon learns from use. Risk: upstream drift.
+cases and Niccolo's field evidence, so the Pantheon learns from use. Risk: upstream drift.
 Check: a monthly fetch that only proposes.
 
 **Ethicist.** Position: ambition raises the standard and leaves the permissions as they are. Rung-3 loops,
@@ -137,7 +137,7 @@ sub-two-hour marathon example is dated to April 2026 in the article and was not 
 
 Adopt the tenets with the nine overlay rules in
 [OVERLAY.md](../skills/imhotep/references/OVERLAY.md). Rules that rest on this review's abstracts
-stay labelled *judgement* until Buckminster grades them. Imhotep stays at trust tier T2 until G5
+stay labelled *judgement* until Niccolo grades them. Imhotep stays at trust tier T2 until G5
 shows a measured delta.
 
 ## 8. Avatar options

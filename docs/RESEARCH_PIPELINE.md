@@ -2,11 +2,11 @@
 
 ```yaml
 version: 1.0.0
-audience: operators, Buckminster, maintainers
+audience: operators, Niccolo, maintainers
 canonical_path: docs/RESEARCH_PIPELINE.md
 ```
 
-Every change to `research/RESEARCH.md` and `research/sources.yaml` reaches `main` through a pull request. The scheduled Buckminster sweep opens it, CI shows the grade diff and checks the mechanics, a separate verifier run re-retrieves the sources behind any upgrade, and the owner approves and merges. The claim data model is in [CLAIMS_LEDGER.md](CLAIMS_LEDGER.md).
+Every change to `research/RESEARCH.md` and `research/sources.yaml` reaches `main` through a pull request. The scheduled Niccolo sweep opens it, CI shows the grade diff and checks the mechanics, a separate verifier run re-retrieves the sources behind any upgrade, and the owner approves and merges. The claim data model is in [CLAIMS_LEDGER.md](CLAIMS_LEDGER.md).
 
 ---
 
