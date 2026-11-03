@@ -9,11 +9,26 @@
 
 Demiurge isolates empirical research from agent synthesis. Self-contained, dependency-free, and anchored on deterministic quality gates.
 
-| Agent | Responsibility | Core Principle |
-|---|---|---|
-| **Marcus** | Designs, scaffolds, audits, and proves agent skills. | Refuses to ship any agent without measured evidence. |
-| **Buckminster** | Researches agentic engineering and standards. | Every claim requires 3 verified, hyperlinked sources. |
-| **Imhotep** | Builds the user's real deliverables at the ambitious level, with Marcus's measured skills. | Ambition on the target, conservatism on the judge: held-out checks it never reads. |
+<table>
+  <tr>
+    <td width="200"><img src="assets/demiurge.jpg" width="200" alt="Demiurge"></td>
+    <td><b>Demiurge</b><br><i>"The world is a fabrication of an error."</i><br>— The Gospel of Philip (Nag Hammadi)<br>The system around the agents: deterministic gates, releases, a run ledger and benchmarks that make every agent prove its work.</td>
+  </tr>
+  <tr>
+    <td width="200"></td>
+    <td><b>Niccolo</b><br><i>"For this can be said about men in general: that they are ungrateful, fickle, dissembling, hypocritical, cowardly, and greedy for gain."</i><br>— The Prince (Chapter XVII)<br>Researches agentic engineering and proposes graded updates to the knowledge base, accepting no claim without 3 verified, hyperlinked sources.</td>
+  </tr>
+  <tr>
+    <td width="200"><img src="assets/marcus.jpg" width="200" alt="Marcus"></td>
+    <td><b>Marcus</b><br><i>"Of each particular thing, ask: What is it in itself, in its own constitution? What is its substance and material?"</i><br>— Meditations (Book 8.11)<br>Designs, audits and proves agent skills through gates G0 to G6, and refuses to ship any skill without measured evidence.</td>
+  </tr>
+  <tr>
+    <td width="200"><img src="assets/imhotep.jpg" width="200" alt="Imhotep"></td>
+    <td><b>Imhotep</b><br><i>"If you do not make yourself equal to God, you cannot understand God: for the like is not intelligible save to the like."</i><br>— Corpus Hermeticum (Book XI)<br>Builds your real deliverables at the ambitious level with Marcus's measured skills, scored by held-out checks it never reads.</td>
+  </tr>
+</table>
+
+Commands, prompts and integrations for each persona: [Personas](docs/PERSONAS.md).
 
 ## Quick start
 
@@ -23,7 +38,7 @@ Demiurge isolates empirical research from agent synthesis. Self-contained, depen
 ## How it works
 
 ```
-Buckminster ──proposes diff──> Operator Sign-Off ──merges──> research/RESEARCH.md
+Niccolo     ──proposes diff──> Operator Sign-Off ──merges──> research/RESEARCH.md
                                                                       │
                                                                    read by
                                                                       │
@@ -31,16 +46,17 @@ Agent Packages <──emits & proves── Marcus ──checks gates (G0-G6) <�
       │
    equips
       ▼
-   Imhotep ──builds real work──> held-out judge ──outcomes──> run ledger ──> Buckminster & Marcus
+   Imhotep ──builds real work──> held-out judge ──outcomes──> run ledger ──> Niccolo & Marcus
 ```
 
-Research flows one way: Buckminster researches, Marcus designs, Imhotep builds. A human approves every knowledge base update. Full design: [Master Documentation](docs/DOCUMENTATION.md).
+Research flows one way: Niccolo researches, Marcus designs, Imhotep builds. A human approves every knowledge base update. Full design: [Master Documentation](docs/DOCUMENTATION.md).
 
 ## Documentation
 
 | Guide | Scope |
 |---|---|
 | [Installation Guide](docs/INSTALLATION.md) | Deployment across harnesses and optional research connectors. |
+| [Personas](docs/PERSONAS.md) | What each persona does, with slash commands, prompts, and integrations. |
 | [Operating Guide](docs/OPERATING_GUIDE.md) | Workflows, prompt templates, and best practices. |
 | [Master Documentation](docs/DOCUMENTATION.md) | Full system design and specification. |
 | [Benchmarks](docs/BENCHMARKS.md) | Evaluation method and the Benchmark Run Registry. |

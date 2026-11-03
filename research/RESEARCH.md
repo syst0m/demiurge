@@ -1,9 +1,9 @@
 # RESEARCH.md — Agentic Engineering Snapshot
 
 ```yaml
-version: 1.3.3
-snapshot_date: 2026-11-01
-maintained_by: buckminster
+version: 1.3.4
+snapshot_date: 2026-11-03
+maintained_by: niccolo
 consumed_by: marcus
 next_review_due: 2026-10-06
 ```
@@ -20,7 +20,7 @@ next_review_due: 2026-10-06
 | `[CONTESTED]` | Conflicting sources, or a single study | Offer as an option. State the conflict. |
 | `[VENDOR]` | Source sells the solution | Do not encode. Cite with conflict warning. |
 | `[EMERGING]` | Real, but untested | Design notes only. |
-| `[UNVERIFIED]` | The ledger lacks sources the methodology requires. Marcus still acts on the grade shown until enforcement. | Buckminster sources it from the debt queue. |
+| `[UNVERIFIED]` | The ledger lacks sources the methodology requires. Marcus still acts on the grade shown until enforcement. | Niccolo sources it from the debt queue. |
 
 Evidence reasons (a contrasting, retracted or second vendor source) lower a grade at once. Missing records only add the `[UNVERIFIED]` flag until `meta.enforced` is true in `research/sources.yaml`.
 
@@ -355,10 +355,11 @@ V1.0 scope: packaging only. No installation protocol, sandboxing, or permission 
 | Version | Date | By | Change |
 |---|---|---|---|
 | 1.0.0 | 2026-08-30 | Extraction | Initial extract (Anthropic, Cognition, METR, MAST, ACE). See `RESEARCH_METHODOLOGY.md`. |
-| 1.1.0 | 2026-09-01 | Buckminster | Added Lilian Weng framework, OWASP Agentic Top 10, Payload-less skill attacks (Semantic Compliance Hijacking), and Trajectory-grounded security evals. |
-| 1.2.0 | 2026-09-06 | Buckminster | Comprehensive 7-primitive taxonomy pass. New: Rule syntax convergence table, prompt-cache thrashing/instruction decay `[SETTLED]`, context dump fallacy `[SETTLED]`, FrontierCode + SWE-CI benchmarks `[EMERGING]`, benchmark integrity crisis `[CONTESTED]`, worktree failure modes + catastrophic deletion `[SETTLED]`, STORM `[EMERGING]`, Agent Plugins 1.0 `[SETTLED]`, MCP 2026-07-28 stateless spec update `[SETTLED]`, A2A split (governance `[SETTLED]` / solo-operator `[EMERGING]`), METR 2026 methodology failure note, code review overhead (+91%) finding. Reclassifications: write-gating reclassified to `[VENDOR]`; skill security updated to 26-36% range; A2A governance reclassified. New Section 10 Primitive Taxonomy with Marcus rules for all 7 primitives. |
+| 1.1.0 | 2026-09-01 | Niccolo | Added Lilian Weng framework, OWASP Agentic Top 10, Payload-less skill attacks (Semantic Compliance Hijacking), and Trajectory-grounded security evals. |
+| 1.2.0 | 2026-09-06 | Niccolo | Comprehensive 7-primitive taxonomy pass. New: Rule syntax convergence table, prompt-cache thrashing/instruction decay `[SETTLED]`, context dump fallacy `[SETTLED]`, FrontierCode + SWE-CI benchmarks `[EMERGING]`, benchmark integrity crisis `[CONTESTED]`, worktree failure modes + catastrophic deletion `[SETTLED]`, STORM `[EMERGING]`, Agent Plugins 1.0 `[SETTLED]`, MCP 2026-07-28 stateless spec update `[SETTLED]`, A2A split (governance `[SETTLED]` / solo-operator `[EMERGING]`), METR 2026 methodology failure note, code review overhead (+91%) finding. Reclassifications: write-gating reclassified to `[VENDOR]`; skill security updated to 26-36% range; A2A governance reclassified. New Section 10 Primitive Taxonomy with Marcus rules for all 7 primitives. |
 | 1.2.1 | 2026-09-27 | Maintenance | Renumbered Primitive Taxonomy to Section 11; fixed typo; aligned the [SETTLED] legend with RESEARCH_METHODOLOGY.md. No grades changed. |
 | 1.3.0 | 2026-09-27 | grade_cap | grade_cap: 1 grade lowered (ctx.cache-thrashing SETTLED→CONTESTED); 52 flagged `[UNVERIFIED]`. |
 | 1.3.1 | 2026-09-30 | Maintenance | Rules show their ids in the prose. Split R-RULES-1 into R-RULES-1..4 and R-CA-1 into R-CA-1..3. Every rule in research/sources.yaml records its basis (evidence or design) and the claim ids it rests on. No grades changed. |
 | 1.3.2 | 2026-09-30 | grade_cap | grade_cap: 2 grades lowered (ctx.cache-thrashing SETTLED→CONTESTED, eval.benchmark-integrity SETTLED→VENDOR); 50 flagged `[UNVERIFIED]`. Unresolved aggregators no longer lift a vendor-only claim above `[VENDOR]`, and a grade already at its cap is not flagged. |
-| 1.3.3 | 2026-11-01 | Buckminster | Added Section 12 Goal setting and clarification (goal.clarification-timing, pushbench.quant-goal-persistence, goal.learning-vs-outcome); added eval.persona-prompting `[SETTLED]` (Zheng et al. EMNLP 2024; Basil et al. Wharton 2025; Luz de Araujo & Roth PLOS ONE 2025), eval.visible-heldout-gap `[CONTESTED]` (SpecBench, arxiv:2605.21384), fail.escalation-channel `[CONTESTED]` (Gómez, arxiv:2608.29460), fail.pressure-exploit `[CONTESTED]` (Chen et al., arxiv:2604.20200). Reception unchecked via Smart Citations — all CONTESTED claims carry that caveat. |
+| 1.3.3 | 2026-11-01 | Niccolo | Added Section 12 Goal setting and clarification (goal.clarification-timing, pushbench.quant-goal-persistence, goal.learning-vs-outcome); added eval.persona-prompting `[SETTLED]` (Zheng et al. EMNLP 2024; Basil et al. Wharton 2025; Luz de Araujo & Roth PLOS ONE 2025), eval.visible-heldout-gap `[CONTESTED]` (SpecBench, arxiv:2605.21384), fail.escalation-channel `[CONTESTED]` (Gómez, arxiv:2608.29460), fail.pressure-exploit `[CONTESTED]` (Chen et al., arxiv:2604.20200). Reception unchecked via Smart Citations — all CONTESTED claims carry that caveat. |
+| 1.3.4 | 2026-11-03 | Niccolo | Renamed the research agent from Buckminster to Niccolo in `maintained_by`, this log and the claim ledger. No claim or grade changed. |
