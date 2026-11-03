@@ -126,7 +126,7 @@ claims:
         scite_contrasting: null
     duplicates: []
     last_verified: '2026-11-01'
-    verified_by: buckminster
+    verified_by: niccolo
     notes: 'Sweep 2026-10-10: the prose figures (27.4 to 54.3 pp, 19.1% to 73.4%) were not found in s1 or s2. s1 HTML reports a largest fixed-model gap of 24.3 pp (Qwen 3.6-flash, 62.8% vs 38.5%). Owner to decide on the prose figures. s3 (Don''t Blame the Large Language Model) did not resolve by web search; Consensus returned HTTP 403. scite was not usable. Sweep 2026-11-01: s3 resolved through the arXiv API to arXiv:2607.03691 (Ben Sghaier, Li, Adams, Hassan, 2026). It holds the model fixed and varies only the harness over 35 Qwen Code releases. It shows harness changes alone shift quality, but it does not compare harness variance with model variance, so it is recorded as mentions, not confirms. The prose figures are still an owner decision. scite returned a paid-plan error, so reception stays unchecked.'
   ctx.practices-table:
     section: 2
@@ -290,7 +290,7 @@ claims:
         scite_contrasting: null
     duplicates: []
     last_verified: '2026-11-01'
-    verified_by: buckminster
+    verified_by: niccolo
     notes: 'Sweep 2026-10-10: s1 returns HTTP 404 (after 301 to platform.claude.com), s2 returns HTTP 404, s3 redirects to the generic https://cursor.com/docs page with no caching statement. s1-s3 are left for the owner to remove or replace. s4 and s5 were retrieved this session. Sweep 2026-11-01: re-checked. s1 now redirects to https://platform.claude.com/docs/en/claude-code/rules, which returns HTTP 404. s2 still returns HTTP 404. s3 still redirects to the generic https://cursor.com/docs page. The owner decision on s1-s3 is still open. scite returned a paid-plan error, so s5 reception stays unchecked.'
   ctx.length-degradation:
     section: 2
@@ -872,7 +872,7 @@ claims:
         scite_contrasting: null
     duplicates: []
     last_verified: '2026-10-10'
-    verified_by: buckminster
+    verified_by: niccolo
     notes: 'Sweep 2026-10-10: the >85% figure comes from s1 only (adaptive attacks). s2 reports 24% on ReAct GPT-4, so it confirms vulnerability but not the >85% figure. scite was not usable, so reception stays unchecked.'
   sec.lethal-trifecta:
     section: 6
@@ -969,7 +969,7 @@ claims:
         scite_contrasting: null
     duplicates: []
     last_verified: '2026-11-01'
-    verified_by: buckminster
+    verified_by: niccolo
     notes: 'Sweep 2026-10-10: s4 (AgentForge) did not resolve to a paper by web search; Consensus returned HTTP 403. scite was not usable in this run, so reception stays unchecked. Sweep 2026-11-01: s4 resolved to arXiv:2601.13383 (Anbar Jafari, Ozcinar, Anbarjafari, 2026), a general framework for building LLM agents. Its abstract does not mention security, sandboxing, hooks or tool-call boundary enforcement, so s4 is recorded as mentions and is removed as support from the prose. scite returned a paid-plan error, so reception stays unchecked.'
   sec.payloadless-sch:
     section: 6

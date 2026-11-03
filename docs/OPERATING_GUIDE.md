@@ -1,4 +1,4 @@
-# Demiurge Operating Guide: Marcus, Buckminster & Imhotep
+# Demiurge Operating Guide: Marcus, Niccolo & Imhotep
 
 ```yaml
 version: 1.0.0
@@ -7,7 +7,7 @@ maintained_by: demiurge
 canonical_path: docs/OPERATING_GUIDE.md
 ```
 
-This guide details operating procedures, workflows, concrete examples, gotchas, and best practices for Marcus, Buckminster and Imhotep.
+This guide details operating procedures, workflows, concrete examples, gotchas, and best practices for Marcus, Niccolo and Imhotep.
 
 ---
 
@@ -17,7 +17,7 @@ Demiurge operates on a strict separation between **empirical research** and **ag
 
 ```mermaid
 flowchart LR
-    subgraph Research [Buckminster]
+    subgraph Research [Niccolo]
         direction TB
         B1[Empirical Search] --> B2[Tri-Source Verification]
         B2 --> B3[Graded Diff Proposal]
@@ -48,18 +48,18 @@ flowchart LR
     Build -->|Skill Gaps & Failed Cases| Synthesis
 ```
 
-- **Buckminster** gathers empirical evidence, benchmarks, standards, and security findings. Buckminster proposes updates to `research/RESEARCH.md`. Buckminster never writes agent code.
+- **Niccolo** gathers empirical evidence, benchmarks, standards, and security findings. Niccolo proposes updates to `research/RESEARCH.md`. Niccolo never writes agent code.
 - **Operator** verifies diffs, confirms source links, and signs off on changes to `research/RESEARCH.md`.
 - **Marcus** reads `research/RESEARCH.md` exclusively. Marcus drafts, audits, tests, and emits agent packages. Marcus refuses claims absent from `research/RESEARCH.md`.
 - **Imhotep** builds the user's real deliverables. It runs the vendored be-ambitious procedure, grounds each choice in `research/RESEARCH.md`, takes skills from Marcus's registry, and writes visible and held-out checks before it builds. Invoke it with `/imhotep <task>`. Imhotep never researches and never writes skills.
 
 ---
 
-## 2. Buckminster: Research & Evidence Harness
+## 2. Niccolo: Research & Evidence Harness
 
-Buckminster maintains the empirical ground truth of the system.
+Niccolo maintains the empirical ground truth of the system.
 
-### When to Activate Buckminster
+### When to Activate Niccolo
 
 - Checking the validity of an agentic engineering claim or benchmark.
 - Researching new agent standards (MCP, AAIF Agent Skills, Agent Plugins, A2A).
@@ -68,7 +68,7 @@ Buckminster maintains the empirical ground truth of the system.
 
 ### The Tri-Source Verification Standard (Rule K-6)
 
-Every fact, finding, or recommendation proposed by Buckminster must be confirmed by **at least 3 independent, hyperlinked sources**:
+Every fact, finding, or recommendation proposed by Niccolo must be confirmed by **at least 3 independent, hyperlinked sources**:
 
 1. **Source Hierarchy:** High-reputation peer-reviewed literature > Formal open specifications > Vendor research.
 2. **Vendor Limitation:** Vendor-origin sources (e.g., OpenAI, Anthropic, Cognition) may comprise at most **1 of the 3** required citations.
@@ -76,23 +76,23 @@ Every fact, finding, or recommendation proposed by Buckminster must be confirmed
 
 ### Confidence Grading Taxonomy
 
-Buckminster assigns every finding one of four mandatory markers:
+Niccolo assigns every finding one of four mandatory markers:
 
 | Marker | Definition | Operational Rule for Marcus |
 |---|---|---|
-| `[SETTLED]` | At least 3 independent sources confirm it, at most 1 is a vendor, and reception of every paper source is checked (see [RESEARCH_METHODOLOGY.md](../skills/buckminster/references/RESEARCH_METHODOLOGY.md) Step 4). | Encode as default architecture and behavior. |
+| `[SETTLED]` | At least 3 independent sources confirm it, at most 1 is a vendor, and reception of every paper source is checked (see [RESEARCH_METHODOLOGY.md](../skills/niccolo/references/RESEARCH_METHODOLOGY.md) Step 4). | Encode as default architecture and behavior. |
 | `[CONTESTED]` | Conflicting empirical findings, or a single isolated study. | Surface as a user choice; document the conflict. |
 | `[VENDOR]` | Originates from an entity selling the product or service. | Exclude from defaults; cite commercial conflict. |
 | `[EMERGING]` | Sound theoretical mechanism; lacks longitudinal production data. | Record in design notes; keep out of primary gates. |
 
-### Buckminster Example Workflows
+### Niccolo Example Workflows
 
 #### Example 1: Verifying a Technical Claim
 
 **Prompt:**
 
 ```text
-/buckminster
+/niccolo
 Verify whether storing conversation state in vector stores improves long-horizon
 agent task completion compared to plain markdown files.
 Cross-reference empirical benchmarks and return a graded finding.
@@ -103,14 +103,14 @@ Cross-reference empirical benchmarks and return a graded finding.
 1. Searches empirical databases (`scite`, `Consensus`, arXiv) when connectors are configured, or degrades to web search and open archives.
 2. Filters out commercial sales collateral.
 3. Evaluates replication status (e.g., finding that vector memory degrades long-horizon tasks across models).
-4. Generates a markdown diff with explicit citations and confidence tags (see [Installation Guide](INSTALLATION.md#5-optional-tooling-research-connectors-for-buckminster) for connector details).
+4. Generates a markdown diff with explicit citations and confidence tags (see [Installation Guide](INSTALLATION.md#5-optional-tooling-research-connectors-for-niccolo) for connector details).
 
 #### Example 2: Scheduled Research Sweep Proposal
 
 **Prompt:**
 
 ```text
-/buckminster /goal
+/niccolo /goal
 Execute the scheduled research routine. Inspect recent developments in:
 1. Agent Skills execution security and prompt injection.
 2. Context window degradation and prompt cache optimization.
@@ -182,7 +182,7 @@ Target platforms: Antigravity and Claude Code.
 
 ```text
 /marcus
-Run deterministic Gate G4 validation on skills/marcus and skills/buckminster.
+Run deterministic Gate G4 validation on skills/marcus and skills/niccolo.
 Verify route collision against existing skills.
 ```
 

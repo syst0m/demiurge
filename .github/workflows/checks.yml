@@ -22,9 +22,9 @@ jobs:
         run: python scripts/run_unit_tests.py
       - name: Marcus gate regression suite
         run: python skills/marcus/evals/run_gate_tests.py --library skills
-      - name: G4 validation (buckminster, imhotep; marcus runs inside update_marcus)
+      - name: G4 validation (niccolo, imhotep; marcus runs inside update_marcus)
         run: |
-          for skill in buckminster imhotep; do
+          for skill in niccolo imhotep; do
             rc=0
             python skills/marcus/scripts/validate_skill.py "skills/$skill" || rc=$?
             [ "$rc" -le 1 ] || exit "$rc"

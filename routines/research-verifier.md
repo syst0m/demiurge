@@ -106,7 +106,7 @@ Write one record per claim at
 
 - `claim_id`, and `claim_sha256` in full
 - `verdict`: `pass` or `fail`
-- `verifier`: `buckminster-verifier`
+- `verifier`: `niccolo-verifier`
 - `proposer`: the claim's `verified_by` value at the pull request head. If it equals `verifier`,
   write no record and report the conflict.
 - `verifier_session_sha256`: the SHA-256 of this session's id. Never write the raw id.
