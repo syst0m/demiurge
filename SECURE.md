@@ -32,7 +32,7 @@ data.
 
 | Category | Examples |
 | --- | --- |
-| Health regimens | REDACTED protocols, symptom logs, medication matrices |
+| Health regimens | personal health protocols, symptom logs, medication matrices |
 | Clinical contacts | prescriber, therapist, crisis line, safe contacts, emergency plan |
 | Identity/history | names, addresses, phone, email, local `C:\Users\...` |
 | Session artifacts | transcripts, eval results, `.judge` notes holding personal prompts |

@@ -47,8 +47,8 @@ Thumbs.db
 
 
 # Personal health protocols (see SECURE.md)
-protocols/auadhd-REDACTED/
-routines/auadhd-REDACTED-loop.md
+protocols/personal-*/
+routines/personal-*.md
 
 # Session artifacts (personal prompts, eval results)
 .judge/
