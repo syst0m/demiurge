@@ -33,6 +33,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 # Support local imports within package
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from common import load_marcus_skill, load_rules  # noqa: E402
 from metrics import (
     BenchmarkComparison,
     TaskResult,
@@ -45,32 +47,6 @@ DEFAULT_DATASET = "datacurve-ai/deep-swe"
 DEFAULT_MODEL = "gemini-3.0-flash"
 DEFAULT_OUTPUT_DIR = Path("eval_results/deepswe")
 TOTAL_CORPUS_SIZE = 113
-
-
-def load_rules(repo_root: Path) -> str:
-    """Load canonical workspace rules from .agents/rules/ for prompt-cache prefix."""
-    rules_dir = repo_root / ".agents" / "rules"
-    if not rules_dir.is_dir():
-        return ""
-
-    contents = []
-    for p in sorted(rules_dir.glob("*.md")):
-        text = p.read_text(encoding="utf-8", errors="replace")
-        contents.append(f"<!-- RULE: {p.name} -->\n{text.strip()}")
-    return "\n\n".join(contents)
-
-
-def load_marcus_skill(repo_root: Path) -> str:
-    """Load Marcus progressive disclosure skill."""
-    skill_path = repo_root / "skills" / "marcus" / "SKILL.md"
-    if not skill_path.is_file():
-        return ""
-    text = skill_path.read_text(encoding="utf-8", errors="replace")
-    if text.startswith("---"):
-        end = text.find("\n---", 3)
-        if end != -1:
-            return text[end + 4:].strip()
-    return text.strip()
 
 
 def build_system_prompt(arm: str, repo_root: Path) -> str:

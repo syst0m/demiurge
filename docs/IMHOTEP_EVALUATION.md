@@ -109,8 +109,8 @@ on an outcome. For agents whose outcome signal is a test suite, that pressure pr
 
 **Important issues.**
 
-- The goal-setting evidence is human, from tasks unlike software builds. The transfer is an
-  analogy, not a finding. Remedy: learning goal first for novel work (O4), labelled as judgement.
+- The goal-setting evidence is human, from tasks unlike software builds. The transfer to agents is an
+  analogy that no study has tested. Remedy: learning goal first for novel work (O4), labelled as judgement.
 - The examples (crash-free apps, QBR redesign) are single-practitioner reports with no comparison.
   They show possibility, not effect size.
 - Range through multi-agent crews conflicts with budget-matched results. Remedy: read-only fan-out

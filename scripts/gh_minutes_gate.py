@@ -59,9 +59,8 @@ def cache_path() -> Path:
     return root / "state.json"
 
 
-def run_gh(args: List[str], timeout: int = GH_TIMEOUT_SECONDS, **kwargs) -> Optional[Any]:
+def run_gh(args: List[str], timeout: int = GH_TIMEOUT_SECONDS, cwd: Optional[Path | str] = None) -> Optional[Any]:
     """Run gh and return parsed JSON, or None on any failure, timeout or non-JSON output."""
-    cwd = kwargs.get("cwd")
     try:
         proc = subprocess.run(["gh", *args], capture_output=True, text=True, timeout=timeout, cwd=str(cwd) if cwd else None)
     except (OSError, subprocess.TimeoutExpired):
@@ -100,19 +99,10 @@ def write_cache(key: str, mode: str, reason: str, now: float) -> None:
         pass
 
 
-def _call_run_gh(args: List[str], cwd: Optional[Path | str] = None) -> Optional[Any]:
-    if cwd is not None:
-        try:
-            return run_gh(args, cwd=cwd)
-        except TypeError:
-            return run_gh(args)
-    return run_gh(args)
-
-
 def quota_signal(owner: str, cwd: Optional[Path | str] = None) -> Optional[Tuple[str, str]]:
     """Legacy quota endpoint: authoritative when it answers, absent for many accounts."""
     for path in (f"/users/{owner}/settings/billing/actions", f"/orgs/{owner}/settings/billing/actions"):
-        data = _call_run_gh(["api", path], cwd=cwd)
+        data = run_gh(["api", path], cwd=cwd)
         if isinstance(data, dict) and "included_minutes" in data and "total_minutes_used" in data:
             left = float(data["included_minutes"]) - float(data["total_minutes_used"])
             if left <= 0:
@@ -122,15 +112,15 @@ def quota_signal(owner: str, cwd: Optional[Path | str] = None) -> Optional[Tuple
 
 
 def run_evidence(repo: str, cwd: Optional[Path | str] = None) -> Optional[Tuple[str, str]]:
-    runs = _call_run_gh(["run", "list", "--repo", repo, "--limit", "3",
-                        "--json", "databaseId,conclusion,createdAt"], cwd=cwd)
+    runs = run_gh(["run", "list", "--repo", repo, "--limit", "3",
+                  "--json", "databaseId,conclusion,createdAt"], cwd=cwd)
     if not isinstance(runs, list) or not runs:
         return None
     latest = runs[0]
     if latest.get("conclusion") == "failure":
-        jobs = _call_run_gh(["api", f"repos/{repo}/actions/runs/{latest['databaseId']}/jobs"], cwd=cwd)
+        jobs = run_gh(["api", f"repos/{repo}/actions/runs/{latest['databaseId']}/jobs"], cwd=cwd)
         for job in (jobs or {}).get("jobs", []):
-            notes = _call_run_gh(["api", f"repos/{repo}/check-runs/{job['id']}/annotations"], cwd=cwd) or []
+            notes = run_gh(["api", f"repos/{repo}/check-runs/{job['id']}/annotations"], cwd=cwd) or []
             if any(BILLING_TEXT.search(str(n.get("message", ""))) for n in notes):
                 return "local", "latest Actions run failed with a billing annotation"
     for item in runs:
@@ -150,7 +140,7 @@ def detect(refresh: bool = False, now: Optional[float] = None, cwd: Optional[Pat
     forced = os.environ.get("GH_MINUTES_MODE", "").strip().lower()
     if forced in MODES:
         return {"mode": forced, "reason": "GH_MINUTES_MODE override", "source": "env"}
-    info = _call_run_gh(["repo", "view", "--json", "nameWithOwner,isPrivate"], cwd=cwd)
+    info = run_gh(["repo", "view", "--json", "nameWithOwner,isPrivate"], cwd=cwd)
     if not isinstance(info, dict) or "nameWithOwner" not in info:
         return {"mode": "local", "reason": "no GitHub repo or gh unavailable (fail closed)", "source": "default"}
     repo = info["nameWithOwner"]
