@@ -1,4 +1,4 @@
-# RESEARCH_METHODOLOGY.md
+# Research methodology
 
 This is a method. The point of writing it down is that the same method produces
 comparable snapshots over time — so version-to-version diffs in `RESEARCH.md` mean something.
