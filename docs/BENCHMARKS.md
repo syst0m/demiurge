@@ -121,6 +121,7 @@ All empirical evaluation runs are tracked with persistent telemetry artifacts:
 | `v0.4.0-gemini-live` | 2026-09-06 | `gemini-3.1-flash-lite-preview` | SWE-bench Lite (Live) | 5 | 80.0%* | 20.0%* | Refusal / G0 | 0.0% | $0.0001 vs $0.0015 | [Summary Report](reports/swebench_gemini_v040_summary.md) |
 | `v0.5.0-cybergym-001` | 2026-09-08 | `gemini-3.0-flash` | CyberGym Subset (Live) | 5 | 0.00% | **0.00%** | **+0.00%** | 0.0% | $0.0004 vs **$0.0028** (4 vs 6 turns) | [Summary Report](../eval_results/cybergym/report.md) |
 | `v0.6.0-exploitbench-001` | 2026-09-08 | `gemini-3.0-flash` | ExploitBench Flagship (Live) | 5 | 0.00% | **0.00%** | **+0.00%** | 0.0% | $0.0004 vs **$0.0026** (4 vs 6 turns) | [Summary Report](../eval_results/exploitbench/report.md) |
+| `v0.7.0-swebench-live` | n/a | `gemini-3.1-flash-lite-preview` | SWE-bench Lite (Live) | 2 | 100.0% | **100.0%** | **+0.00%** | n/a | $0.0002 vs **$0.0005** (6 vs 4 turns) | [Summary Report](../eval_results/swebench/report.md) |
 | `v0.8.0-deepswe-001` | 2026-09-09 | `gemini-3.0-flash` | DeepSWE Subset (Dry-Run) | 10 | 0.00% | **100.0%** | **+100.00%** | 76.0% | $0.0000 vs **$0.0013** (6 vs 4 turns) | [Summary Report](../eval_results/deepswe/report.md) |
 
 *\*Note on Gemini 3.1 Flash-Lite: The bare model achieved 80% through ungrounded compliance (inventing non-existent code), whereas Demiurge strictly enforced Gate G0, refusing to synthesize patches absent genuine repository context and local failure traces.*
