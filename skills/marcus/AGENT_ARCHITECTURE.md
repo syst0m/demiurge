@@ -1,4 +1,4 @@
-# AGENT_ARCHITECTURE.md
+# Agent architecture
 
 ```yaml
 version: 2.0.0
