@@ -346,8 +346,6 @@ V1.0 scope: packaging only. No installation protocol, sandboxing, or permission 
 
 <!-- claim:pushbench.quant-goal-persistence --> **Quantitative goal persistence** `[CONTESTED]` `[UNVERIFIED]`: state-tracking / verified-backlog controllers reach 69–78% success on repository-artifact collection where standard and completion-gated controllers complete 0%; in work-unit settings standard/completion-gated complete zero instances while backlog-tracking restores 25–50%. Cai et al., PushBench 2026 (arxiv:2605.23574) — single study; reception unchecked via Smart Citations.
 
-
-
 <!-- claim:disc.felix-rieseberg --> **Felix Rieseberg on ambition.** `[EMERGING]` Felix Rieseberg's types of ambition (Speed, Altitude, Depth, Range) and how to be more ambitious when using models. Based on his tutorial [How to be more ambitious: A tutorial for humans with models](https://felixrieseberg.com/how-to-be-more-ambitious-a-tutorial-for-humans-with-models/) (13 Oct 2026). Types: Speed (same work in less time), Altitude (outcome vs. task), Depth (work like a field-leading expert), Range (draw on multiple fields).
 
 <!-- claim:goal.learning-vs-outcome --> **Learning vs. outcome goals** `[EMERGING]`: on complex tasks, specific difficult learning goals outperform specific difficult outcome and "do your best" goals (Wood, Mento & Locke 1987; Seijts & Latham 2001 — human studies). LLM transfer is untested: efficacy prompts give small, model-dependent gains and goal-directedness is incomplete (Chen et al. 2025, arxiv:2502.06669 — single study).

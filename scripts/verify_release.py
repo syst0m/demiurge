@@ -190,7 +190,8 @@ def cut_release(tag: str) -> List[str]:
         notes.write_text(release_notes(tag.lstrip("v")), encoding="utf-8")
         code, _, err = run_cmd(["gh", "release", "create", tag, "--title", tag, "--verify-tag", "-F", str(notes)])
         notes.unlink()
-        if code:
+        # The tag push also starts release.yml, which can create the release first.
+        if code and run_cmd(["gh", "release", "view", tag])[0]:
             return [f"gh release create {tag} failed: {err}"]
     return []
 
