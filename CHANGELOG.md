@@ -24,6 +24,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Shared Benchmark Helpers (`evals/benchmarks/common.py`):** The price table, `compute_cost`, `load_rules` and `load_marcus_skill` live in one module instead of four copies. Covered by `evals/benchmarks/test_common.py`.
 - **Pinned Workflow Actions:** Every `uses:` in `.github/workflows/` names a commit SHA, so a moved tag cannot change what runs with a write token or a secret.
 
+### Removed
+
+- **Simulated Benchmark Claims:** Deleted `docs/reports/swebench_v020_summary.md`, `swebench_full_2294_summary.md`, `swebench_gemini_v040_summary.md` and `eval_results/deepswe/report.md`. The registry rows `v0.2.0-swebench-001`, `v0.3.0-swebench-full` and `v0.8.0-deepswe-001` came from `--dry-run`, where the mock runners decide the outcome (a task-id hash near 40% and 60% for SWE-bench; never and always for DeepSWE). They were never measurements. The earlier entries below that cite a lift of +40.00%, +20.06% or a 74% cost cut are withdrawn.
+- **Unmeasured Cache Claim:** Removed the "above 75%" cache-hit claim from `docs/BENCHMARKS.md`. No live run has measured it.
+
 ### Fixed
 
 - **Vale on `main`:** The vendored-file exclusion in `.vale.ini` also matches the `.claude/skills/` symlinks, and `docs/IMHOTEP_EVALUATION.md` no longer trips `Foundry.NegativeParallelism`.
@@ -306,7 +311,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Live Google Gemini Benchmark Engine:** Integrated live API execution via `google-genai` with automated exponential backoff and retry recovery in `evals/benchmarks/swebench/run_swebench_eval.py`.
 - **Multi-Model Token Pricing:** Added token pricing profiles for `gemini-3.0-flash`, `gemini-3.1-pro-preview`, `gemini-3.8-flash`, and `gemini-3.1-flash-lite-preview` into `evals/benchmarks/swebench/metrics.py`.
 - **Centralized Benchmark Run Registry:** Added historical benchmark run tracking in [docs/BENCHMARKS.md](docs/BENCHMARKS.md) and [README.md](README.md) recording runs `v0.2.0-swebench-001`, `v0.3.0-swebench-full`, and `v0.4.0-gemini-live`.
-- **Benchmark Run Reports:** Added [docs/reports/swebench_full_2294_summary.md](docs/reports/swebench_full_2294_summary.md) (Full 2,294-task SWE-bench report, +20.06% lift) and [docs/reports/swebench_gemini_v040_summary.md](docs/reports/swebench_gemini_v040_summary.md) (Live Gemini 3.1 Flash-Lite run documenting Gate G0 compliance).
+- **Benchmark Run Reports:** Added `docs/reports/swebench_full_2294_summary.md` (deleted) (Full 2,294-task SWE-bench report, +20.06% lift) and `docs/reports/swebench_gemini_v040_summary.md` (deleted) (Live Gemini 3.1 Flash-Lite run documenting Gate G0 compliance).
 - **Full SWE-bench Scale Execution:** Validated adapter execution on the complete 2,294-instance SWE-bench dataset (`princeton-nlp/SWE-bench`) emitting official Princeton prediction artifacts.
 
 ## [0.3.0] - 2026-09-06
@@ -324,7 +329,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **SWE-bench Independent Benchmarking Suite:** Implemented native benchmarking adapter (`evals/benchmarks/swebench/run_swebench_eval.py`) comparing Arm A (Bare Foundation Model) against Arm B (Demiurge Dual-Agent Architecture) on SWE-bench Lite. Supports dry-run simulation and live API execution guarded by `--yes`.
 - **Comparative Telemetry & Metrics Engine:** Added `evals/benchmarks/swebench/metrics.py` calculating Resolution Lift ($\Delta$), Prompt-Cache Hit Ratio, Cost per Resolved Task (USD), and Turn Economy.
 - **Benchmarking Guide & Multi-Benchmark Roadmap:** Added [docs/BENCHMARKS.md](docs/BENCHMARKS.md) detailing architecture, metrics formulas, execution guides, and implementation roadmaps for GAIA, Tau-bench, BIPIA, and BFCL alongside periodic execution cadences.
-- **Benchmark Run Telemetry & Reports:** Added [docs/reports/swebench_v020_summary.md](docs/reports/swebench_v020_summary.md) recording run `v0.2.0-swebench-001` results (+40.00% resolution lift, 82.0% prompt-cache hit ratio, 74% cost reduction per resolved fix).
+- **Benchmark Run Telemetry & Reports:** Added `docs/reports/swebench_v020_summary.md` (deleted) recording run `v0.2.0-swebench-001` results (+40.00% resolution lift, 82.0% prompt-cache hit ratio, 74% cost reduction per resolved fix).
 - **Independent Benchmarking Section:** Added dedicated benchmarking section to `README.md` and `docs/DOCUMENTATION.md` linking to `docs/BENCHMARKS.md` and performance summaries.
 
 ### Changed
