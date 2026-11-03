@@ -43,7 +43,7 @@ flowchart TD
     subgraph Treatment_Arm [Arm B: Demiurge Architecture]
         DM[Identical Model Backbone]
         PR[Static Rules Cache Prefix]
-        SK[Marcus / Buckminster Progressive Skills]
+        SK[Marcus / Niccolo Progressive Skills]
         GT[Deterministic Verification Gates]
         DM --> PR --> SK --> GT
     end
@@ -134,7 +134,7 @@ Beyond SWE-bench, Demiurge incorporates six domain-specific benchmark adapters:
 
 ### 5.1 GAIA: Multi-Source Research Benchmark
 
-- **Target:** Evaluates [Buckminster](../skills/buckminster/) on complex multi-hop research, document synthesis, and factual grounding.
+- **Target:** Evaluates [Niccolo](../skills/niccolo/) on complex multi-hop research, document synthesis, and factual grounding.
 - **Dataset:** [HuggingFace GAIA](https://huggingface.co/spaces/gaia-benchmark/leaderboard) (Levels 1, 2, and 3).
 - **Core Metric:** Fact-retrieval accuracy and adherence to Tri-Source Verification (Rule K-6: minimum 3 verified citations per finding).
 
@@ -279,5 +279,5 @@ To balance testing rigor with compute expenditure, benchmark runs follow a tiere
 |---|---|---|---|---|
 | **Every Commit / PR** | Local Deterministic Gates (AST scans, security, tropes, links) | Syntax & Safety | $0.00 | Pre-commit Hook & GitHub Actions |
 | **Weekly** | Promptfoo Adversarial Red-Teaming & Route Collision Matrix | Boundary Defense & Routing | < $1.00 | Scheduled GitHub Actions Workflow |
-| **Bi-Weekly / Milestone** | SWE-bench Lite (25-task micro-slice) + GAIA Sample | Marcus Coding & Buckminster Research | $15–$25 | Developer Run (`scripts/run_benchmark_slice.sh`) |
+| **Bi-Weekly / Milestone** | SWE-bench Lite (25-task micro-slice) + GAIA Sample | Marcus Coding & Niccolo Research | $15–$25 | Developer Run (`scripts/run_benchmark_slice.sh`) |
 | **Major Release (v0.2.0)** | Full SWE-bench Lite (300 tasks) + Tau-bench Suite | Architecture-Wide Comparison | $50–$150 | Release Candidate Verification Gate |
