@@ -45,6 +45,7 @@ Thumbs.db
 .claude/settings.local.json
 .hermes/
 
+
 # Personal health protocols (see SECURE.md)
 protocols/auadhd-REDACTED/
 routines/auadhd-REDACTED-loop.md
