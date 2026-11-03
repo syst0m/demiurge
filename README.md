@@ -4,7 +4,7 @@
 </div>
 
 <div align="center">
-  <img src="assets/demiurge_photo.jpg" width="400" alt="Demiurge Photo">
+  <img src="assets/archon_tetrad.jpg" width="400" alt="Archon Tetrad">
 </div>
 
 Demiurge isolates empirical research from agent synthesis. Self-contained, dependency-free, and anchored on deterministic quality gates.
