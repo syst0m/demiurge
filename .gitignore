@@ -5,6 +5,9 @@ node_modules/
 scratch/
 eval_results/**/*.json
 !eval_results/**/report.md
+# Live-run evidence cited by the registry in docs/BENCHMARKS.md; no runner writes here by default.
+!eval_results/live/
+!eval_results/live/**/results.json
 
 # Written by skills/marcus/scripts/eval_runner.py after every measurement; transcripts
 # can hold prompt text and local paths.

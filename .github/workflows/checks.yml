@@ -35,6 +35,8 @@ jobs:
         run: python scripts/check_links.py --strict
       - name: Research distribution drift
         run: bash scripts/sync-skills.sh --check --repo-only
+      - name: Benchmark registry rows are live
+        run: python scripts/check_benchmark_claims.py
       - name: Claims ledger caps
         run: python scripts/research/grade_cap.py --check
       - name: Claims change log is append-only
