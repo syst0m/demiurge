@@ -162,7 +162,7 @@ attack success against state-of-the-art defences, most defences under 50%" is.
 
 ## 4. Producing an update
 
-Buckminster generates a **diff proposal** for human review before updating `RESEARCH.md`:
+Niccolo generates a **diff proposal** for human review before updating `RESEARCH.md`:
 
 1. **New findings** — with grade, source, and which section they belong in.
 2. **Reclassifications** — a `[CONTESTED]` claim that has become `[SETTLED]`, or the reverse.
@@ -187,7 +187,7 @@ kind of accumulated knowledge those findings describe.
 each grade at what the recorded sources support. A claim whose asserted grade sits above its cap for
 lack of records is source debt: `RESEARCH.md` shows `[UNVERIFIED]` beside the grade. Every sweep
 starts with `grade_cap.py --debt --limit 10` and pays down the top of that queue before any new
-topic. For each source on a debt claim, Buckminster:
+topic. For each source on a debt claim, Niccolo:
 
 1. **Resolves aggregator links.** A consensus.app link only points at a paper. Follow it to the
    paper, set `resolves_to` to the DOI or publisher URL, and set `resolves_to_type` from the tiers

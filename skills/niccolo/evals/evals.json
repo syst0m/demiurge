@@ -1,6 +1,6 @@
 {
-  "skill": "buckminster",
-  "notes": "Regression cases are drawn from the anti-patterns in references/RESEARCH_METHODOLOGY.md §5, satisfying Gate G0 criteria via empirical failure cases. Two more (r6, r7) come from the skill's own non-negotiables. Regression must hold at 100%. Capability cases are aspirational. Grading evaluates the proposal Buckminster produces directly.",
+  "skill": "niccolo",
+  "notes": "Regression cases are drawn from the anti-patterns in references/RESEARCH_METHODOLOGY.md §5, satisfying Gate G0 criteria via empirical failure cases. Two more (r6, r7) come from the skill's own non-negotiables. Regression must hold at 100%. Capability cases are aspirational. Grading evaluates the proposal Niccolo produces directly.",
   "cases": [
     {
       "id": "regression-1",

@@ -1,6 +1,6 @@
 # Research sweep routine
 
-Prompt for the scheduled Buckminster sweep. It runs Buckminster against the demiurge checkout,
+Prompt for the scheduled Niccolo sweep. It runs Niccolo against the demiurge checkout,
 pays down source debt first, and opens a pull request for the user to review. The human merge is
 the control, and the sweep only proposes changes.
 
@@ -56,14 +56,14 @@ Repeat the directory check before every later write, including after any `cd`.
   session, and before any other Undermind tool. When it is absent, call no Undermind tool.
 - **Missing scholarly connectors:** when scite, Undermind or Consensus is absent, follow
   "Connector Availability and Fresh Clone Fallbacks" in
-  [RESEARCH_METHODOLOGY.md](../skills/buckminster/references/RESEARCH_METHODOLOGY.md). Put its
+  [RESEARCH_METHODOLOGY.md](../skills/niccolo/references/RESEARCH_METHODOLOGY.md). Put its
   disclaimer, word for word, in the pull request body, and raise no grade to `[SETTLED]`.
-- **PubMed:** follow `skills/buckminster/SKILL.md`. PubMed indexes biomedicine only, so do not
+- **PubMed:** follow `skills/niccolo/SKILL.md`. PubMed indexes biomedicine only, so do not
   use it for agentic-engineering topics.
 
 ## Sweep
 
-1. **Load Buckminster** and its `references/RESEARCH_METHODOLOGY.md`, including "Source debt".
+1. **Load Niccolo** and its `references/RESEARCH_METHODOLOGY.md`, including "Source debt".
 2. **Work the debt queue first:**
 
    ```bash
@@ -106,7 +106,7 @@ place, and report the violations it printed.
    header and append the change-log row that this command prints:
 
    ```bash
-   python scripts/research/grade_cap.py --changelog-row --version "$NEW_VERSION" --by buckminster
+   python scripts/research/grade_cap.py --changelog-row --version "$NEW_VERSION" --by niccolo
    ```
 
    Re-run the checks above after this edit.

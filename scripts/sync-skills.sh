@@ -69,7 +69,7 @@ dirty_target() {
         && [ -n "$(git -C "$1" status --porcelain -- . "${EVAL_OUTPUT_EXCLUDES[@]}" 2>/dev/null)" ]
 }
 
-# RESEARCH.md is written by Buckminster and consumed by Marcus. It lives canonically
+# RESEARCH.md is written by Niccolo and consumed by Marcus. It lives canonically
 # in research/ so there is exactly ONE writable copy; Marcus receives it as a skill
 # reference. Distributed BEFORE the comparison below, so a stale copy surfaces as
 # drift rather than shipping silently.

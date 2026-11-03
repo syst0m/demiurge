@@ -46,7 +46,7 @@ harness improved both splits, by up to 132% relative.
 
 This document specifies the equivalent loop for Demiurge itself. The object under optimization is
 Demiurge's own harness: the static rules in `.agents/rules/`, the instructions in
-`skills/marcus/SKILL.md` and `skills/buckminster/SKILL.md`, the gate logic in `scripts/*.py`, and
+`skills/marcus/SKILL.md` and `skills/niccolo/SKILL.md`, the gate logic in `scripts/*.py`, and
 the treated-arm scaffolding inside each `evals/benchmarks/*/run_*_eval.py`. The evaluator is the
 existing benchmark suite set (`swebench`, `cybergym`, `exploitbench`, `deepswe`, with GAIA,
 Tau-bench, BIPIA, and BFCL on the roadmap in `docs/BENCHMARKS.md` §5). The model backbone stays
@@ -80,7 +80,7 @@ baseline and treated runs per case, with an exact McNemar test at 20 or more cas
 | Self-Harness stage           | Upstream reference                                             | Demiurge asset (existing)                                                                                                              | Demiurge asset (new)                             |
 |----------------------------|----------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------|
 | Fixed model + evaluator    | —                                                              | Fixed model backbone; `evals/benchmarks/*` suites                                                                                      | —                                                |
-| Harness under optimization | `harnesses/qwen_tb2_final/`                                    | `.agents/rules/*.md`, `skills/marcus/SKILL.md`, `skills/buckminster/SKILL.md`, `scripts/*.py`, the Arm B code in each `run_*_eval.py` | —                                                |
+| Harness under optimization | `harnesses/qwen_tb2_final/`                                    | `.agents/rules/*.md`, `skills/marcus/SKILL.md`, `skills/niccolo/SKILL.md`, `scripts/*.py`, the Arm B code in each `run_*_eval.py` | —                                                |
 | Weakness Mining            | `diagnosis/src/self_harness_diagnosis/integrated.py`           | `eval_results/<suite>/results.json`                                                                                                    | `scripts/self_harness/diagnose_failures.py`      |
 | Harness Proposal           | `proposer/src/self_harness_proposer/{hooks,multi_proposer}.py` | Marcus (`skills/marcus/`), running inside a supervised session                                                                         | `scripts/self_harness/propose_candidate.py`      |
 | Materialize                | `proposer/src/self_harness_proposer/materialize.py`            | Git (Demiurge is already a git repository with a PR flow)                                                                              | `scripts/self_harness/materialize_candidate.py`  |

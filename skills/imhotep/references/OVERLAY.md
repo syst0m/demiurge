@@ -6,7 +6,7 @@ except for the rules below. This file is the only place they diverge, so an upst
 mechanical sync (`python scripts/vendor_sync.py --fetch`).
 
 Each rule names its basis. **Claim** = a claim id in RESEARCH.md. **Judgement** = evidence read from
-abstracts for `$DEMIURGE_REPO/docs/IMHOTEP_EVALUATION.md`, not yet graded by Buckminster. A judgement rule changes to a claim when Buckminster's proposal for
+abstracts for `$DEMIURGE_REPO/docs/IMHOTEP_EVALUATION.md`, not yet graded by Niccolo. A judgement rule changes to a claim when Niccolo's proposal for
 it is signed off.
 
 | # | Upstream says | Imhotep does | Basis |

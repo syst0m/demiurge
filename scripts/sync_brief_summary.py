@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Syncs the executive gist of skills/marcus/human-only/demiurge-brief.html into README.md.
+"""Syncs the executive gist of skills/marcus/human-only/demiurge-brief.html into docs/BRIEF.md.
 
 Usage:
     python scripts/sync_brief_summary.py [--check]
 
 Extracts headline metrics and findings from the HTML brief and embeds them
 between '<!-- BEGIN DEMIURGE BRIEF GIST -->' and '<!-- END DEMIURGE BRIEF GIST -->'
-in README.md.
+in docs/BRIEF.md.
 """
 from __future__ import annotations
 
@@ -69,14 +69,14 @@ def generate_gist_markdown(html_content: str) -> str:
     ]
 
     if clean_figs:
-        lines.append("#### Four Empirical Constants That Shaped the Design")
+        lines.append("## Four Empirical Constants That Shaped the Design")
         lines.append("")
         for num, label in clean_figs:
             lines.append(f"- **{num}**: {label}")
         lines.append("")
 
     lines.extend([
-        "#### Core Architectural Takeaways",
+        "## Core Architectural Takeaways",
         "",
         "- **Rejection Outweighs Generation:** Methods that achieve real performance lift (e.g., SkillCAT +49.7%) succeed by ruthlessly discarding candidates through contrastive test replay, not through speculative prompt generation.",
         "- **The Harness Dominates the Model:** Model×harness pairing varies completion and efficiency dramatically across execution trajectories—enough to invert raw model leaderboard rankings.",
@@ -91,7 +91,7 @@ def generate_gist_markdown(html_content: str) -> str:
 
 def update_readme(repo_root: Path, check_only: bool = False) -> int:
     brief_path = repo_root / "skills" / "marcus" / "human-only" / "demiurge-brief.html"
-    readme_path = repo_root / "README.md"
+    readme_path = repo_root / "docs" / "BRIEF.md"
 
     if not brief_path.is_file():
         print(f"Error: {brief_path} not found.", file=sys.stderr)
@@ -106,7 +106,7 @@ def update_readme(repo_root: Path, check_only: bool = False) -> int:
 
     if START_MARKER not in readme_content or END_MARKER not in readme_content:
         print(
-            f"Error: Markers {START_MARKER} and {END_MARKER} missing in README.md",
+            f"Error: Markers {START_MARKER} and {END_MARKER} missing in docs/BRIEF.md",
             file=sys.stderr,
         )
         return 1
@@ -121,26 +121,26 @@ def update_readme(repo_root: Path, check_only: bool = False) -> int:
 
     if check_only:
         if updated_readme != readme_content:
-            print("README.md executive brief gist is out of date with demiurge-brief.html.")
+            print("docs/BRIEF.md executive brief gist is out of date with demiurge-brief.html.")
             return 1
-        print("README.md executive brief gist is up to date.")
+        print("docs/BRIEF.md executive brief gist is up to date.")
         return 0
 
     if updated_readme != readme_content:
         readme_path.write_text(updated_readme, encoding="utf-8")
-        print("Updated README.md with the latest brief gist from demiurge-brief.html.")
+        print("Updated docs/BRIEF.md with the latest brief gist from demiurge-brief.html.")
     else:
-        print("README.md is already up to date.")
+        print("docs/BRIEF.md is already up to date.")
 
     return 0
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Sync brief summary into README.md")
+    parser = argparse.ArgumentParser(description="Sync brief summary into docs/BRIEF.md")
     parser.add_argument(
         "--check",
         action="store_true",
-        help="Check if README.md gist is up to date without modifying",
+        help="Check if docs/BRIEF.md gist is up to date without modifying",
     )
     args = parser.parse_args()
 

@@ -1,6 +1,6 @@
-# Buckminster diff proposal: ambition-evidence claims
+# Niccolo diff proposal: ambition-evidence claims
 
-Proposed session: “Buckminster: propose ambition-evidence claims”. Date: 2026-11-01.
+Proposed session: “Niccolo: propose ambition-evidence claims”. Date: 2026-11-01.
 Method: RESEARCH_METHODOLOGY.md six-step method; tri-source rule applied; sources are primary papers (arXiv/DOI/peer-reviewed findings) located via web search.
 
 **Connector availability:** scholarly connectors (scite, Undermind, Consensus) were not available in this environment, so per Step 3 I disclose: citation reception (retraction checks, supporting vs contrasting Smart Citations) could not be verified. No claim resting on a single unverified study is marked [SETTLED]; those are [CONTESTED].

@@ -5,7 +5,7 @@ description: "Demiurge Agent Security & Red-Teaming Suite"
 
 prompts:
   - "file://skills/marcus/SKILL.md"
-  - "file://skills/buckminster/SKILL.md"
+  - "file://skills/niccolo/SKILL.md"
   - "file://skills/imhotep/SKILL.md"
 
 providers:

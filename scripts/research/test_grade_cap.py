@@ -45,7 +45,7 @@ version: 1.3.0
 | Version | Date | By | Change |
 |---|---|---|---|
 | 1.0.0 | 2026-08-30 | Extraction | Initial extract. |
-| 1.1.0 | 2026-09-01 | Buckminster | Added things. |
+| 1.1.0 | 2026-09-01 | Niccolo | Added things. |
 """
 
 
