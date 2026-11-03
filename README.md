@@ -1,5 +1,6 @@
 <div align="center">
   <h1>Demiurge</h1>
+  <p><i>"The world is a fabrication of an error."</i><br>— The Gospel of Philip (Nag Hammadi)</p>
   <p><b>A Pantheon of three autonomous agents in an empirical feedback loop. One researches; one designs; one builds.</b></p>
 </div>
 
@@ -12,19 +13,19 @@ Demiurge isolates empirical research from agent synthesis. Self-contained, depen
 <table>
   <tr>
     <td width="200"><img src="assets/demiurge.jpg" width="200" alt="Demiurge"></td>
-    <td><b>Demiurge</b><br><i>"The world is a fabrication of an error."</i><br>— The Gospel of Philip (Nag Hammadi)<br>The system around the agents: deterministic gates, releases, a run ledger and benchmarks that make every agent prove its work.</td>
+    <td><b>Demiurge</b><br>The system around the agents: deterministic gates, releases, a run ledger and benchmarks that make every agent prove its work.</td>
   </tr>
   <tr>
     <td width="200"></td>
-    <td><b>Niccolo</b><br><i>"For this can be said about men in general: that they are ungrateful, fickle, dissembling, hypocritical, cowardly, and greedy for gain."</i><br>— The Prince (Chapter XVII)<br>Researches agentic engineering and proposes graded updates to the knowledge base, accepting no claim without 3 verified, hyperlinked sources.</td>
+    <td><b>Niccolo</b><br>Researches agentic engineering and proposes graded updates to the knowledge base, accepting no claim without 3 verified, hyperlinked sources.</td>
   </tr>
   <tr>
     <td width="200"><img src="assets/marcus.jpg" width="200" alt="Marcus"></td>
-    <td><b>Marcus</b><br><i>"Of each particular thing, ask: What is it in itself, in its own constitution? What is its substance and material?"</i><br>— Meditations (Book 8.11)<br>Designs, audits and proves agent skills through gates G0 to G6, and refuses to ship any skill without measured evidence.</td>
+    <td><b>Marcus</b><br>Designs, audits and proves agent skills through gates G0 to G6, and refuses to ship any skill without measured evidence.</td>
   </tr>
   <tr>
     <td width="200"><img src="assets/imhotep.jpg" width="200" alt="Imhotep"></td>
-    <td><b>Imhotep</b><br><i>"If you do not make yourself equal to God, you cannot understand God: for the like is not intelligible save to the like."</i><br>— Corpus Hermeticum (Book XI)<br>Builds your real deliverables at the ambitious level with Marcus's measured skills, scored by held-out checks it never reads.</td>
+    <td><b>Imhotep</b><br>Builds your real deliverables at the ambitious level with Marcus's measured skills, scored by held-out checks it never reads.</td>
   </tr>
 </table>
 
