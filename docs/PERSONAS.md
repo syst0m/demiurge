@@ -70,6 +70,8 @@ Demiurge is the system around the three agents. It has no slash command and no `
 
 ## Niccolo
 
+![Niccolo](../assets/niccolo.jpg)
+
 > "For this can be said about men in general: that they are ungrateful, fickle, dissembling, hypocritical, cowardly, and greedy for gain."
 >
 > — *The Prince* (Chapter XVII)
