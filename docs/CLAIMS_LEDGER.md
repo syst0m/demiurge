@@ -2,13 +2,13 @@
 
 ```yaml
 version: 1.0.0
-audience: operators, Buckminster, maintainers
+audience: operators, Niccolo, maintainers
 canonical_path: docs/CLAIMS_LEDGER.md
 ```
 
 The claims ledger ties every graded claim in `research/RESEARCH.md` to the sources behind it. RESEARCH.md stays the canonical prose. `research/sources.yaml` records the sources, and `scripts/research/grade_cap.py` checks each grade against them. A grade can go down when its sources fall short. Only a human-reviewed PR raises one.
 
-Source discipline itself lives in [RESEARCH_METHODOLOGY.md](../skills/buckminster/references/RESEARCH_METHODOLOGY.md). This page covers the data model and the tooling.
+Source discipline itself lives in [RESEARCH_METHODOLOGY.md](../skills/niccolo/references/RESEARCH_METHODOLOGY.md). This page covers the data model and the tooling.
 
 ---
 
@@ -191,7 +191,7 @@ CI runs `--check` on every push and pull request, and `--check-changelog --base 
 
 ## 6. Debt Workflow
 
-Step 0 of every Buckminster sweep is the debt queue:
+Step 0 of every Niccolo sweep is the debt queue:
 
 ```bash
 python scripts/research/grade_cap.py --debt --limit 10

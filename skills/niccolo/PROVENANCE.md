@@ -1,7 +1,7 @@
-# PROVENANCE — buckminster
+# PROVENANCE — niccolo
 
 ```yaml
-skill: buckminster
+skill: niccolo
 created: 2026-08-30
 trust_tier: T2
 gate_reached: G4
@@ -14,7 +14,7 @@ research_claims: []
 
 ## Current Specification
 
-Buckminster researches agentic engineering and proposes graded changes to `research/RESEARCH.md`
+Niccolo researches agentic engineering and proposes graded changes to `research/RESEARCH.md`
 and `research/sources.yaml` as a diff for the user to approve. It maintains the snapshot Marcus
 builds from, so it records no `research_snapshot` of its own and cites no claims.
 

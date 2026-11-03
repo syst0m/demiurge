@@ -58,7 +58,7 @@ upstream rules, 5 from the overlay and standing orders) and must hold at 100%.
   installed globally until `eval_runner.py` shows b > c per case; McNemar p < alpha at 20 or more
   cases; regression at 100% against the G1 baseline.
 - Overlay rules O1–O4, O6, O8 and O9 rest on abstracts read for `docs/IMHOTEP_EVALUATION.md`, not on
-  graded RESEARCH.md claims. They stay marked *judgement* until Buckminster's proposal is signed off.
+  graded RESEARCH.md claims. They stay marked *judgement* until Niccolo's proposal is signed off.
 
 ## Trifecta position
 
