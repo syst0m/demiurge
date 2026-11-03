@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Personas Guide (`docs/PERSONAS.md`):** Commands, prompts, integrations and a quote for each of Demiurge, Niccolo, Marcus and Imhotep. The README shows a small card for each.
+- **One-Command Upgrade Approval (`scripts/research/approve_upgrade.py`):** Shows the pull request, asks `[y/N]` in a terminal, posts `/approve-upgrade` for the head SHA and re-runs the failed `research-approval` job. It refuses to run without a terminal or as a user other than the approver. Covered by `scripts/research/test_approve_upgrade.py`.
 - **Portable Pre-Commit Hook (`scripts/install-git-hook.sh`):** Installs a hook that finds its interpreter at run time, so it works from Git Bash and WSL.
 
 ### Changed

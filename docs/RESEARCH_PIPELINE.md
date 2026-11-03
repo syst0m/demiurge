@@ -105,6 +105,21 @@ A new push changes the head SHA and voids every earlier approval. The order is:
 3. The owner re-runs the failed job, with `gh run rerun <run-id> --failed` or from the Actions page.
 4. The owner merges.
 
+Steps 2 and 3 have a one-command shortcut. Run it in your own terminal:
+
+```bash
+python scripts/research/approve_upgrade.py <pr-number>
+```
+
+The script prints the title, the head SHA and the changed files. It then asks `[y/N]`. On `y` it posts the comment with the full head SHA and re-runs the failed `research-approval` job. It refuses to run in these cases:
+
+- Standard input or output is not a terminal, so an agent or a pipe cannot answer.
+- The signed-in `gh` user is not the approver. Use `--approver <login>` to name a user other than the repository owner.
+- The pull request is not open.
+- The head SHA changed after you answered `y`.
+
+The terminal check stops a script. It does not stop an agent that drives your terminal and types `y`. Option (a) in the table below is the strong control.
+
 Downgrade and sourcing pull requests pass the check automatically and still need the owner's merge.
 
 ---
@@ -159,4 +174,5 @@ The routines' own Claude Code settings can deny the commands the hard rules alre
 | `scripts/research/claims_diff.py` | Classifies a diff as `upgrade` or `downgrade-or-sourcing` and writes the pull request report. |
 | `scripts/research/check_verifications.py` | Checks the verification records for every upgraded or new claim. |
 | `scripts/research/check_upgrade_approval.py` | Checks for the owner's `/approve-upgrade` comment on the head SHA. |
+| `scripts/research/approve_upgrade.py` | Asks the owner to confirm, then posts `/approve-upgrade` and re-runs the failed job. |
 | `.github/workflows/research-pr.yml` | Runs the `research-approval` check. |
