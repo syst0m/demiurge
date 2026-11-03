@@ -10,8 +10,7 @@ data.
   symptom logs, medication details, clinician contacts, crisis lines, emergency
   plans, names, addresses, phone numbers, emails, and local Windows `C:\Users\...`
   paths.
-- **Private data + a writable public repo in one place is exploitable.** The
-  REDACTED REDACTED protocol committed here is personal health information. It was
+- **Private data + a writable public repo in one place is exploitable.** Personal health protocols committed here are personal health information. It was
   pushed to the public repo and indexed on GitHub. Removing it from GitHub's
   index/history is a separate operation; do not assume it is gone because this
   file is untracked.
@@ -26,8 +25,8 @@ data.
   markers to close this incident's gap.
 - The health markers are a heuristic. Human review of any health/clinic-specific
   content that touches this repo remains the final gate.
-- `.gitignore` keeps `protocols/auadhd-REDACTED/` and
-  `routines/auadhd-REDACTED-loop.md` out of version control.
+- `.gitignore` keeps `protocols/<personal-health-protocol>/` and
+  `routines/<personal-health-loop>.md` out of version control.
 
 ## What NOT to commit
 

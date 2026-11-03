@@ -49,3 +49,6 @@ Thumbs.db
 # These are the user's private health documentation, not product.
 protocols/auadhd-REDACTED/
 routines/auadhd-REDACTED-loop.md
+
+# Session artifacts (personal prompts, eval results)
+.judge/
