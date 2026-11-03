@@ -1,0 +1,89 @@
+{
+  "timestamp": "2026-09-08T22:11:52.291597+00:00",
+  "comparison": {
+    "model": "gemini-3.1-flash-lite-preview",
+    "dataset": "princeton-nlp/SWE-bench_Lite",
+    "bare": {
+      "arm": "bare",
+      "total_tasks": 2,
+      "resolved_count": 2,
+      "pass_rate": 1.0,
+      "mean_turns": 6.0,
+      "total_cost_usd": 0.0004,
+      "cost_per_resolved_task": 0.0002,
+      "cache_hit_ratio": 0.0,
+      "simulated": false
+    },
+    "demiurge": {
+      "arm": "demiurge",
+      "total_tasks": 2,
+      "resolved_count": 2,
+      "pass_rate": 1.0,
+      "mean_turns": 4.0,
+      "total_cost_usd": 0.001,
+      "cost_per_resolved_task": 0.0005,
+      "cache_hit_ratio": 0.0,
+      "simulated": false
+    },
+    "resolution_delta": 0.0,
+    "cost_delta_percentage": 150.0,
+    "cache_savings_percentage": 0.0,
+    "simulated": false
+  },
+  "bare_tasks": [
+    {
+      "instance_id": "astropy__astropy-12907",
+      "arm": "bare",
+      "resolved": true,
+      "turns": 6,
+      "prompt_tokens": 569,
+      "completion_tokens": 613,
+      "cache_read_tokens": 0,
+      "cache_write_tokens": 0,
+      "cost_usd": 0.000227,
+      "simulated": false,
+      "error": null
+    },
+    {
+      "instance_id": "astropy__astropy-14182",
+      "arm": "bare",
+      "resolved": true,
+      "turns": 6,
+      "prompt_tokens": 835,
+      "completion_tokens": 474,
+      "cache_read_tokens": 0,
+      "cache_write_tokens": 0,
+      "cost_usd": 0.000205,
+      "simulated": false,
+      "error": null
+    }
+  ],
+  "demiurge_tasks": [
+    {
+      "instance_id": "astropy__astropy-12907",
+      "arm": "demiurge",
+      "resolved": true,
+      "turns": 4,
+      "prompt_tokens": 3870,
+      "completion_tokens": 655,
+      "cache_read_tokens": 0,
+      "cache_write_tokens": 0,
+      "cost_usd": 0.000487,
+      "simulated": false,
+      "error": null
+    },
+    {
+      "instance_id": "astropy__astropy-14182",
+      "arm": "demiurge",
+      "resolved": true,
+      "turns": 4,
+      "prompt_tokens": 4136,
+      "completion_tokens": 536,
+      "cache_read_tokens": 0,
+      "cache_write_tokens": 0,
+      "cost_usd": 0.000471,
+      "simulated": false,
+      "error": null
+    }
+  ]
+}

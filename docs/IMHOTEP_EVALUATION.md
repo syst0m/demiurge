@@ -140,6 +140,18 @@ Adopt the tenets with the nine overlay rules in
 stay labelled *judgement* until Niccolo grades them. Imhotep stays at trust tier T2 until G5
 shows a measured delta.
 
+### 7.1 Gates and pass criteria
+
+Three scripts in `skills/imhotep/scripts/` check a build. Each exits 1 on failure.
+
+- `judge_guard.py` exits 1 if a judge path changed since the base commit.
+- `heldout_gap.py` exits 1 if the visible pass rate minus the held-out pass rate exceeds 10
+  points. Each command prints passed/total.
+- `brief_check.py` exits 1 if the Build Brief lacks a required part.
+
+Imhotep stays at tier T2 until `eval_runner.py` records a G5 delta. The council in section 4 is
+one model. It adds no independent evidence.
+
 ## 8. Avatar options
 
 The operating model: aim at an outcome others call impossible, study the raw material first,
