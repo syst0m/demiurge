@@ -16,7 +16,7 @@ Demiurge isolates empirical research from agent synthesis. Self-contained, depen
     <td><b>Demiurge</b><br>The system around the agents: deterministic gates, releases, a run ledger and benchmarks that make every agent prove its work.</td>
   </tr>
   <tr>
-    <td width="200"></td>
+    <td width="200"><img src="assets/niccolo.jpg" width="200" alt="Niccolo"></td>
     <td><b>Niccolo</b><br>Researches agentic engineering and proposes graded updates to the knowledge base, accepting no claim without 3 verified, hyperlinked sources.</td>
   </tr>
   <tr>
