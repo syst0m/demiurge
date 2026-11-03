@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **README Quotes:** The Demiurge quote sits under the title. The persona table keeps only the summaries. Each persona's quote stays in `docs/PERSONAS.md`.
 - **Buckminster Renamed to Niccolo:** The research skill is `skills/niccolo`, invoked with `/niccolo`. Names in code, docs, routines and the research ledger changed. `RESEARCH.md` moved to 1.3.4 to record it. Entries for earlier releases below keep the old name.
 - **Slimmer README:** The README keeps the persona cards, a quick start and the architecture diagram. The docs index, research brief and evidence rules moved to `docs/`.
 
