@@ -1,4 +1,4 @@
-# RESEARCH.md — Agentic Engineering Snapshot
+# Agentic Engineering Snapshot
 
 ```yaml
 version: 1.3.4
