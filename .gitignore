@@ -45,7 +45,7 @@ Thumbs.db
 .claude/settings.local.json
 .hermes/
 
-# Personal / confidential health regimens — never commit to this public repo.
-# These are the user's private health documentation, not product.
+
+# Personal health protocols (see SECURE.md)
 protocols/auadhd-REDACTED/
 routines/auadhd-REDACTED-loop.md
