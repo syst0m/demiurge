@@ -38,7 +38,7 @@ canonical_path: docs/DOCUMENTATION.md
 Demiurge is a three-agent engineering system (the Pantheon) designed to research, synthesize, and maintain autonomous agents. The project separates **empirical observation** from **agent synthesis**.
 
 - **Marcus** is named for Marcus Aurelius (who wrote guidance, then adhered to it). Marcus designs and generates agents, emitting installable packages validated against deterministic quality gates.
-- **Buckminster** is named for Buckminster Fuller (comprehensive anticipatory design science). Buckminster monitors empirical research, benchmarks, and security vulnerabilities, proposing graded updates to the system knowledge base.
+- **Niccolo** is named for Niccolo Machiavelli (who judged rulers by what they did, not by what they claimed). Niccolo monitors empirical research, benchmarks, and security vulnerabilities, proposing graded updates to the system knowledge base.
 - **Imhotep** is named for Imhotep (architect of the first stone pyramid). Imhotep builds the user's real deliverables at the ambitious level, following the vendored [be-ambitious](https://github.com/robonuggets/be-ambitious) procedure plus an evidence overlay ([OVERLAY.md](../skills/imhotep/references/OVERLAY.md)). It takes skills from Marcus's registry, writes held-out checks before it builds, and records outcomes in the run ledger. See [IMHOTEP_EVALUATION.md](IMHOTEP_EVALUATION.md).
 
 ---
@@ -55,7 +55,7 @@ flowchart TD
         L3[Reproducible Benchmarks]
     end
 
-    subgraph Research_Phase [Buckminster]
+    subgraph Research_Phase [Niccolo]
         B1[Search & Discovery]
         B2[Tri-Source Verification]
         B3[Graded Diff Proposal]
@@ -89,7 +89,7 @@ flowchart TD
 
 ### High-Level Information Flow Principles
 
-1. **Strict One-Way Information Flow:** Buckminster produces empirical evidence; Marcus consumes it. Marcus never synthesizes an agent from claims absent from `research/RESEARCH.md`.
+1. **Strict One-Way Information Flow:** Niccolo produces empirical evidence; Marcus consumes it. Marcus never synthesizes an agent from claims absent from `research/RESEARCH.md`.
 2. **Immutable Production Pinning:** Generated agents pin to the specific `derived_from` snapshot of `RESEARCH.md` used during their synthesis. Updating `RESEARCH.md` flags drift; production agents remain immutable until deliberately upgraded.
 3. **Deterministic Superiority over Prompts:** Invariants run as deterministic OS processes and scripts (hooks, regex validators, AST scans). Prompt guidelines degrade over long sessions; deterministic gates maintain constant enforcement.
 
@@ -102,17 +102,17 @@ The Demiurge documentation suite is structured into focused guides addressing sp
 ### 3.1 Installation Guide Summary
 
 - **Target File:** [docs/INSTALLATION.md](INSTALLATION.md)
-- **Scope:** Complete deployment instructions for Marcus and Buckminster across multiple environments.
+- **Scope:** Complete deployment instructions for Marcus and Niccolo across multiple environments.
 - **Platforms Covered:** Claude Code (`~/.claude/skills/`), Google Antigravity (`~/.gemini/antigravity-ide/skills/`), Gemini CLI, OpenAI / Codex, and local IDEs.
 - **Key Commands:** Automated synchronization via `scripts/sync-skills.sh`.
-- **Optional Tooling:** Scholarly MCP connectors for Buckminster ([Undermind](https://undermind.ai), [scite](https://scite.ai/mcp), [Consensus](https://consensus.app), [PubMed](https://pubmed.ncbi.nlm.nih.gov)).
+- **Optional Tooling:** Scholarly MCP connectors for Niccolo ([Undermind](https://undermind.ai), [scite](https://scite.ai/mcp), [Consensus](https://consensus.app), [PubMed](https://pubmed.ncbi.nlm.nih.gov)).
 
 ### 3.2 Operating Guide Summary
 
 - **Target File:** [docs/OPERATING_GUIDE.md](OPERATING_GUIDE.md)
 - **Scope:** Operational procedures, interactive workflows, concrete prompt examples, and execution gotchas.
 - **Key Concepts:**
-  - When and how to activate Buckminster vs. Marcus.
+  - When and how to activate Niccolo vs. Marcus.
   - Prompt templates for claim verification and scheduled research sweeps.
   - Detailed breakdown of 8 operational gotchas: prompt-cache thrashing, lethal trifecta, multi-agent worktree locks, negative parallelism bans, and global hooks that reach every session.
   - Choosing an install scope (Rule G-13): the G6 question *"Where should `<skill>` and its hooks live?"*, the Project, Global and Staging options, and `skills/marcus/scripts/install_skill.py`, which applies the answer and records it.
@@ -129,7 +129,7 @@ The Demiurge documentation suite is structured into focused guides addressing sp
 
 ### 3.4 Research Methodology Summary
 
-- **Target File:** [skills/buckminster/references/RESEARCH_METHODOLOGY.md](../skills/buckminster/references/RESEARCH_METHODOLOGY.md)
+- **Target File:** [skills/niccolo/references/RESEARCH_METHODOLOGY.md](../skills/niccolo/references/RESEARCH_METHODOLOGY.md)
 - **Scope:** Scientific and research discipline governing all entries in `research/RESEARCH.md`.
 - **Key Protocols:**
   - Tri-Source Verification (Rule K-6): Minimum of 3 independent, hyperlinked sources per claim.
@@ -154,7 +154,7 @@ The Demiurge documentation suite is structured into focused guides addressing sp
 - **Key Concepts:**
   - Claim and rule anchors, the sidecar schema and the compiled `skills/marcus/references/claims.json`.
   - The `grade_cap` algorithm: evidence reasons lower a grade, debt reasons flag it `[UNVERIFIED]` until enforcement.
-  - The debt queue that opens every Buckminster sweep.
+  - The debt queue that opens every Niccolo sweep.
 
 ### 3.7 Skill Registry Summary
 
@@ -200,7 +200,7 @@ The repository is organized to isolate research, skills, tools, and rules:
 | `scripts/research/` | Claims ledger tooling: `grade_cap.py` and `check_rule_citations.py` ([CLAIMS_LEDGER.md](CLAIMS_LEDGER.md)), plus the pull request pipeline scripts `sweep_pr.py`, `claims_diff.py`, `check_verifications.py` and `check_upgrade_approval.py` ([RESEARCH_PIPELINE.md](RESEARCH_PIPELINE.md)). |
 | `scripts/registry/` | Local skill registry builder ([SKILL_REGISTRY.md](SKILL_REGISTRY.md)). |
 | `scripts/ledger/` | Run ledger hook and command line: `ledger_hook.py` and `ledger.py` ([RUN_LEDGER.md](RUN_LEDGER.md)). |
-| `skills/` | Source code and manifests for [Marcus](../skills/marcus/), [Buckminster](../skills/buckminster/) and [Imhotep](../skills/imhotep/). Vendored upstream files sit in `skills/<skill>/references/<name>/` with an `UPSTREAM.yaml` pin, checked by `scripts/vendor_sync.py`. |
+| `skills/` | Source code and manifests for [Marcus](../skills/marcus/), [Niccolo](../skills/niccolo/) and [Imhotep](../skills/imhotep/). Vendored upstream files sit in `skills/<skill>/references/<name>/` with an `UPSTREAM.yaml` pin, checked by `scripts/vendor_sync.py`. |
 
 *Note: Edit files in `skills/` directly. Never edit deployed skill directories manually.*
 
@@ -342,8 +342,8 @@ Execute the full suite of mechanical gates:
 # 1. Validate Marcus format, line-level security, and progressive disclosure (Gate G4)
 python skills/marcus/scripts/validate_skill.py skills/marcus
 
-# 2. Validate Buckminster and Imhotep format and security (Gate G4)
-python skills/marcus/scripts/validate_skill.py skills/buckminster
+# 2. Validate Niccolo and Imhotep format and security (Gate G4)
+python skills/marcus/scripts/validate_skill.py skills/niccolo
 python skills/marcus/scripts/validate_skill.py skills/imhotep
 
 # 2b. Vendored upstream files match their pins

@@ -13,4 +13,4 @@ Architectural decisions anchor exclusively in verifiable empirical data:
 | `[VENDOR]` | Produced by commercial vendor. | Opt-in requirement; flagged commercial interest. |
 | `[EMERGING]` | Mechanistically sound; unverified in production. | Documented in research notes; excluded from gating. |
 
-See also: [Research Methodology](../skills/buckminster/references/RESEARCH_METHODOLOGY.md) and [Executive Research Brief](BRIEF.md).
+See also: [Research Methodology](../skills/niccolo/references/RESEARCH_METHODOLOGY.md) and [Executive Research Brief](BRIEF.md).
