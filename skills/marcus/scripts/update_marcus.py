@@ -206,6 +206,11 @@ def main() -> int:
     parser.add_argument("--check", action="store_true", help="Check drift without modifying files (exit 1 if drift detected)")
     parser.add_argument("--apply", action="store_true", help="Synchronize references and verify gates")
     parser.add_argument("--repo-root", type=str, default=None, help="Explicit repository root path")
+    parser.add_argument(
+        "--strict-design",
+        action="store_true",
+        help="Treat a lagging docs/AGENT_DESIGN.md derived_from as drift (release gate; the research sweep cannot edit docs/)",
+    )
     args = parser.parse_args()
 
     mode = "check" if args.check or not args.apply else "apply"
@@ -357,7 +362,8 @@ def main() -> int:
     if design_doc.is_file() and arch_text is not None:
         arch_ver, _ = extract_metadata(arch_text)
         for warning in design_doc_warnings(design_doc.read_text(encoding="utf-8"), canon_ver, arch_ver):
-            print(f"WARNING: {warning}.")
+            print(f"{'DRIFT' if args.strict_design else 'WARNING'}: {warning}.")
+            drift_detected = drift_detected or args.strict_design
 
     # 6. Deterministic regression suite (run_gate_tests.py)
     if gate_tests.exists():

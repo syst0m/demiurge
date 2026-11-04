@@ -5,7 +5,7 @@ version: 1.3.4
 snapshot_date: 2026-11-03
 maintained_by: niccolo
 consumed_by: marcus
-next_review_due: 2026-10-06
+next_review_due: 2026-12-03
 ```
 
 > **Grades are checked against `research/sources.yaml` by `scripts/research/grade_cap.py`.** Edit prose and sources together.
