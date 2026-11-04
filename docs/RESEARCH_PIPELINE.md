@@ -51,7 +51,7 @@ sequenceDiagram
         P->>GH: fast-forward push to the PR branch
         GH->>CI: synchronize
         CI-->>GH: fail, approval missing
-        O->>GH: comment /approve-upgrade with the final head SHA
+        O->>GH: click Review deployments
         O->>CI: re-run the failed job
         CI-->>GH: pass
     end
@@ -91,34 +91,19 @@ The verifier writes one record per claim at `research/verifications/<claim-id>/<
 
 ## 4. Approving an Upgrade
 
-`check_upgrade_approval.py` reads the pull request's issue comments through `gh api` and passes only on a comment where:
-
-- `user.login` is the approver and `user.type` is `User`. The approver is the `RESEARCH_APPROVER_LOGIN` repository variable, or the repository owner when a user owns the repository. An organization-owned repository without the variable fails the check with an error.
-- `user.login` differs from the `RESEARCH_BOT_LOGIN` repository variable. An approver equal to it is a configuration error. When it is unset, the job prints a warning that the check is advisory.
-- the comment was never edited: `created_at` equals `updated_at`. Anyone with write access can edit another user's comment, so an edited approval does not count.
-- one line reads `/approve-upgrade <sha>`, with the full 40-character head SHA
-
-A new push changes the head SHA and voids every earlier approval. The order is:
+An upgrade adds a job named `approve` to the Research PR workflow. The job uses the `research-approval` environment. The environment lists the owner as its required reviewer.
 
 1. The verifier pushes its records.
-2. The owner reads the diff and the records, then comments `/approve-upgrade <final head SHA>`.
-3. The owner re-runs the failed job, with `gh run rerun <run-id> --failed` or from the Actions page.
-4. The owner merges.
+2. The workflow runs and the `approve` job waits.
+3. The owner reads the diff and the records.
+4. The owner opens the pull request and clicks **Review deployments**, then **Approve and deploy**.
+5. The `research-approval` check passes. The owner merges.
 
-Steps 2 and 3 have a one-command shortcut. Run it in your own terminal:
+A new push starts a new workflow run. It needs a new click, so an earlier approval never carries over. To change the approver, edit the reviewers of the `research-approval` environment in the repository settings.
 
-```bash
-python scripts/research/approve_upgrade.py <pr-number>
-```
+`check_upgrade_approval.py` and `approve_upgrade.py` are no longer called by the workflow. The `RESEARCH_APPROVER_LOGIN` and `RESEARCH_BOT_LOGIN` variables have no effect.
 
-The script prints the title, the head SHA and the changed files. It then asks `[y/N]`. On `y` it posts the comment with the full head SHA and re-runs the failed `research-approval` job. It refuses to run in these cases:
-
-- Standard input or output is not a terminal, so an agent or a pipe cannot answer.
-- The signed-in `gh` user is not the approver. Use `--approver <login>` to name a user other than the repository owner.
-- The pull request is not open.
-- The head SHA changed after you answered `y`.
-
-The terminal check stops a script. It does not stop an agent that drives your terminal and types `y`. Option (a) in the table below is the strong control.
+An agent that uses the owner's `gh` login can still approve through the GitHub API. Option (a) in the table below is the strong control.
 
 Downgrade and sourcing pull requests pass the check automatically and still need the owner's merge.
 
@@ -131,7 +116,7 @@ The approval check can only tell accounts apart. How much it proves depends on w
 | Option | Setup | What the approval check proves |
 |---|---|---|
 | **(a) Bot identity (recommended)** | The sweep and the verifier push through a bot, either the Claude GitHub App or a machine user, with contents and pull request write access only. Set the `RESEARCH_BOT_LOGIN` repository variable to its login, and `RESEARCH_APPROVER_LOGIN` to the owner's login when an organization owns the repository. | A comment from the routine fails the check, because the bot is not the owner and its login is denied. Only the owner's own account can approve. |
-| **(b) Owner credentials** | The routines use the owner's local `gh` login. | Nothing about identity. The routine can post `/approve-upgrade` as the owner, so the check is advisory. The owner's review before merge and the deny rules are what remain. |
+| **(b) Owner credentials** | The routines use the owner's local `gh` login. | Nothing about identity. The routine can approve the deployment as the owner, so the check is advisory. The owner's review before merge and the deny rules are what remain. |
 
 Under either option, a ruleset on `main` is the control against a direct push: require a pull request, require the `checks`, `pre-commit` and `research-approval` checks, block force-push and deletion, and leave the bypass list empty. Setting up the ruleset, the bot and the variable is an operator step.
 
@@ -173,6 +158,6 @@ The routines' own Claude Code settings can deny the commands the hard rules alre
 | `scripts/research/sweep_pr.py` | `prepare` creates the sweep worktree and branch; `publish` is the sweep's only push path, `push-verification` the verifier's; `check-scope` is the scope guard CI runs. |
 | `scripts/research/claims_diff.py` | Classifies a diff as `upgrade` or `downgrade-or-sourcing` and writes the pull request report. |
 | `scripts/research/check_verifications.py` | Checks the verification records for every upgraded or new claim. |
-| `scripts/research/check_upgrade_approval.py` | Checks for the owner's `/approve-upgrade` comment on the head SHA. |
-| `scripts/research/approve_upgrade.py` | Asks the owner to confirm, then posts `/approve-upgrade` and re-runs the failed job. |
+| `scripts/research/check_upgrade_approval.py` | Unused. It checked for the owner's `/approve-upgrade` comment. |
+| `scripts/research/approve_upgrade.py` | Unused. It posted the `/approve-upgrade` comment. |
 | `.github/workflows/research-pr.yml` | Runs the `research-approval` check. |
