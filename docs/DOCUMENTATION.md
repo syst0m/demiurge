@@ -170,7 +170,7 @@ The Demiurge documentation suite is structured into focused guides addressing sp
 - **Scope:** How research changes reach `main`: the sweep opens a pull request, a fresh-context verifier re-retrieves the sources behind any upgrade, and the owner approves the head SHA and merges.
 - **Key Concepts:**
   - The `research-approval` check runs the gate scripts from the base ref and classifies each diff as `upgrade` or `downgrade-or-sourcing`.
-  - An upgrade needs verification records and an owner `/approve-upgrade <sha>` comment; a new push voids earlier approvals.
+  - An upgrade needs verification records and an owner click on **Review deployments** (the `research-approval` environment); a new push needs a new click.
   - Bot versus owner-credential identity, and deny rules as defense in depth under a ruleset on `main`.
 
 ### 3.9 Run Ledger Summary
