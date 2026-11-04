@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Changelog Release Gate (`scripts/check_changelog_gate.py`):** Fails a pull request unless it adds a new version heading, the new version is greater than the base's, and `[Unreleased]` is empty. Skip on purpose with a commit message line `Changelog: none`. Replaying PRs 29, 30 and 31 against it fails all three. Wired into `checks.yml` on pull requests.
 - **Personas Guide (`docs/PERSONAS.md`):** Commands, prompts, integrations and a quote for each of Demiurge, Niccolo, Marcus and Imhotep. The README shows a small card for each.
 - **One-Command Upgrade Approval (`scripts/research/approve_upgrade.py`):** Shows the pull request, asks `[y/N]` in a terminal, posts `/approve-upgrade` for the head SHA and re-runs the failed `research-approval` job. It refuses to run without a terminal or as a user other than the approver. Covered by `scripts/research/test_approve_upgrade.py`.
 - **Portable Pre-Commit Hook (`scripts/install-git-hook.sh`):** Installs a hook that finds its interpreter at run time, so it works from Git Bash and WSL.
