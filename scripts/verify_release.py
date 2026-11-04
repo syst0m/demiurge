@@ -171,12 +171,20 @@ def release_notes(version: str, changelog_path: Path = CHANGELOG_PATH) -> str:
     return "\n".join(body).strip() + "\n" if body else ""
 
 
+def design_gate() -> List[str]:
+    """Fail when docs/AGENT_DESIGN.md lags the research snapshot (the sweep cannot edit docs/)."""
+    code, out, err = run_cmd([sys.executable, "skills/marcus/scripts/update_marcus.py", "--check", "--strict-design"])
+    return [f"update_marcus.py --check --strict-design failed:\n{out or err}"] if code else []
+
+
 def cut_release(tag: str) -> List[str]:
     """Tags HEAD, pushes the tag and creates the GitHub Release, skipping steps already done.
 
     The LOCAL-mode release path (AGENTS.md order 1). In GITHUB mode a merge to main does this
     through .github/workflows/release.yml.
     """
+    if findings := design_gate():
+        return findings
     if tag not in get_local_tags():
         code, _, err = run_cmd(["git", "tag", "-a", tag, "-m", tag])
         if code:
