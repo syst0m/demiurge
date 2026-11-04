@@ -37,9 +37,9 @@ flowchart TD
 
 ## Four Empirical Constants That Shaped the Design
 
-- **7,560**: runs in the only large controlled test of generated skills — which found no improvement over no skill at all
+- **7,560**: runs in the only large controlled test of generated skills, which found no improvement over no skill at all
 - **2.12×**: more likely to carry a vulnerability when a skill bundles executable scripts
-- **~15,000**: deployed examples before automated design paid for itself — and only on two datasets of those tested
+- **~15,000**: deployed examples before automated design paid for itself, and only on two datasets of those tested
 - **7–33%**: unsafe-action rate across fully scaffolded agents, uncorrelated with their task success
 
 ## Core Architectural Takeaways

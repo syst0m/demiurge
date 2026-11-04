@@ -1,6 +1,6 @@
 # Installing Demiurge
 
-Demiurge is highly portable. Because it is fundamentally a system of prompts and knowledge files, it works by injecting Marcus and Niccolo into your preferred AI agent environment.
+Demiurge is highly portable. Because it is fundamentally a system of prompts and knowledge files, it works by injecting Marcus, Niccolo and Imhotep into your preferred AI agent environment.
 
 Below are the setup instructions organized by the three major frontier model ecosystems, covering Web, CLI, and IDE usage.
 

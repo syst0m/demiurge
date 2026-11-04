@@ -147,7 +147,7 @@ GAIA, Tau-bench and BFCL (5.1 to 5.4) test the model more than the Demiurge mech
 
 A result enters the section 4 registry only with a tracked `results.json` that records `"simulated": false`. Store it under `eval_results/live/`.
 
-Beyond SWE-bench, Demiurge incorporates seven domain-specific benchmark adapters:
+Sections 5.1 to 5.4 are roadmap items with no runner yet. Sections 5.5 to 5.7 have runners in `evals/benchmarks/`.
 
 ### 5.1 GAIA: Multi-Source Research Benchmark
 
@@ -296,5 +296,5 @@ To balance testing rigor with compute expenditure, benchmark runs follow a tiere
 |---|---|---|---|---|
 | **Every Commit / PR** | Local Deterministic Gates (AST scans, security, tropes, links) | Syntax & Safety | $0.00 | Pre-commit Hook & GitHub Actions |
 | **Weekly** | Promptfoo Adversarial Red-Teaming & Route Collision Matrix | Boundary Defense & Routing | < $1.00 | Scheduled GitHub Actions Workflow |
-| **Bi-Weekly / Milestone** | SWE-bench Lite (25-task micro-slice) + GAIA Sample | Marcus Coding & Niccolo Research | $15–$25 | Developer Run (`scripts/run_benchmark_slice.sh`) |
+| **Bi-Weekly / Milestone** | SWE-bench Lite (25-task micro-slice) + GAIA Sample | Marcus Coding & Niccolo Research | $15–$25 | Developer Run (`run_swebench_eval.py --slice 0:25 --yes`) |
 | **Major Release (v0.2.0)** | Full SWE-bench Lite (300 tasks) + Tau-bench Suite | Architecture-Wide Comparison | $50–$150 | Release Candidate Verification Gate |

@@ -39,7 +39,7 @@ Demiurge is a three-agent engineering system (the Pantheon) designed to research
 
 - **Marcus** is named for Marcus Aurelius (who wrote guidance, then adhered to it). Marcus designs and generates agents, emitting installable packages validated against deterministic quality gates.
 - **Niccolo** is named for Niccolo Machiavelli (who judged rulers by what they did, not by what they claimed). Niccolo monitors empirical research, benchmarks, and security vulnerabilities, proposing graded updates to the system knowledge base.
-- **Imhotep** is named for Imhotep (architect of the first stone pyramid). Imhotep builds the user's real deliverables at the ambitious level, following the vendored [be-ambitious](https://github.com/robonuggets/be-ambitious) procedure plus an evidence overlay ([OVERLAY.md](../skills/imhotep/references/OVERLAY.md)). It takes skills from Marcus's registry, writes held-out checks before it builds, and records outcomes in the run ledger. See [IMHOTEP_EVALUATION.md](IMHOTEP_EVALUATION.md).
+- **Imhotep** is named for Imhotep (architect of the first stone pyramid). Imhotep builds the user's real deliverables and aims at the goal behind the request, following the vendored [be-ambitious](https://github.com/robonuggets/be-ambitious) procedure plus an evidence overlay ([OVERLAY.md](../skills/imhotep/references/OVERLAY.md)). It takes skills from Marcus's registry, writes held-out checks before it builds, and records outcomes in the run ledger. See [IMHOTEP_EVALUATION.md](IMHOTEP_EVALUATION.md).
 
 ---
 
@@ -102,8 +102,8 @@ The Demiurge documentation suite is structured into focused guides addressing sp
 ### 3.1 Installation Guide Summary
 
 - **Target File:** [docs/INSTALLATION.md](INSTALLATION.md)
-- **Scope:** Complete deployment instructions for Marcus and Niccolo across multiple environments.
-- **Platforms Covered:** Claude Code (`~/.claude/skills/`), Google Antigravity (`~/.gemini/antigravity-ide/skills/`), Gemini CLI, OpenAI / Codex, and local IDEs.
+- **Scope:** Complete deployment instructions for Marcus, Niccolo and Imhotep across multiple environments.
+- **Platforms Covered:** Claude Code (`~/.claude/skills/`), Google Antigravity (`~/.agents/skills/`), Gemini CLI, OpenAI / Codex, and local IDEs.
 - **Key Commands:** Automated synchronization via `scripts/sync-skills.sh`.
 - **Optional Tooling:** Scholarly MCP connectors for Niccolo ([Undermind](https://undermind.ai), [scite](https://scite.ai/mcp), [Consensus](https://consensus.app), [PubMed](https://pubmed.ncbi.nlm.nih.gov)).
 
@@ -290,7 +290,7 @@ Deterministic tools running across git commits and CI pipelines:
 - **Negative Parallelism Defense:** `scripts/gate_tropes.py` and Vale RE2 engine (`.vale/styles/Foundry/NegativeParallelism.yml`) eliminating rhetorical antithesis tropes across markdown documentation.
 - **Superfluous Comment Scanner:** `scripts/scan_superfluous.py` preventing chat transcripts, migration war stories, and session diaries from polluting code comments.
 - **Strict Reference Verification:** `scripts/check_links.py --strict` ensuring 100% hyperlink resolution across all canonical documentation targets.
-- **AST Security & PII Linter:** Semgrep security gate (`.semgrep/rules.yaml`) scanning code and YAML configs.
+- **AST Security & PII Linter:** Semgrep security gate (`.semgrep/agent-security.yml`) scanning code and YAML configs.
 - **Format & Syntax Linters:** `markdownlint`, `check-yaml`, `end-of-file-fixer`, and `trim-trailing-whitespace`.
 
 #### Tier 3: Benchmark & Evaluation Regression Gates
