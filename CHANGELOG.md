@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-11-04
+
 ### Added
 
 - **Personas Guide (`docs/PERSONAS.md`):** Commands, prompts, integrations and a quote for each of Demiurge, Niccolo, Marcus and Imhotep. The README shows a small card for each.
