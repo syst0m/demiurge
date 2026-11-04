@@ -7,8 +7,10 @@ permissions:
   pull-requests: read
   issues: read
 jobs:
-  research-approval:
+  analyze:
     runs-on: ubuntu-latest
+    outputs:
+      upgrade: ${{ steps.diff.outputs.rc == '10' }}
     env:
       BASE_REF: ${{ github.base_ref }}
     steps:
@@ -59,22 +61,28 @@ jobs:
           python gate/scripts/research/claims_diff.py --repo . --base "origin/$BASE_REF" --head HEAD --json > diff.json || rc=$?
           [ "$rc" -eq 0 ] || [ "$rc" -eq 10 ] || exit "$rc"
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
-      - name: Upgrade gate
+      - name: Upgrade verification records
         if: steps.diff.outputs.rc == '10'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PR: ${{ github.event.pull_request.number }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          # An organization login can never approve, so an org-owned repository must name its approver.
-          OWNER: ${{ vars.RESEARCH_APPROVER_LOGIN || (github.event.repository.owner.type == 'User' && github.repository_owner || '') }}
-          DENY_LOGIN: ${{ vars.RESEARCH_BOT_LOGIN }}
+        run: python gate/scripts/research/check_verifications.py --repo . --diff diff.json --claims skills/marcus/references/claims.json --dir research/verifications
+
+  # The owner approves on the pull request with "Review deployments". Only a reviewer listed on the
+  # research-approval environment can click it, and a new push starts a new run that needs a new click.
+  approve:
+    needs: analyze
+    if: needs.analyze.outputs.upgrade == 'true'
+    runs-on: ubuntu-latest
+    environment: research-approval
+    steps:
+      - run: echo "Owner approved this upgrade for ${{ github.event.pull_request.head.sha }}."
+
+  research-approval:
+    needs: [analyze, approve]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          ANALYZE: ${{ needs.analyze.result }}
+          APPROVE: ${{ needs.approve.result }}
         run: |
-          if [ -z "$OWNER" ]; then
-            echo "::error::Set the RESEARCH_APPROVER_LOGIN repository variable to the login whose approval counts."
-            exit 1
-          fi
-          if [ -z "$DENY_LOGIN" ]; then
-            echo "::warning::RESEARCH_BOT_LOGIN is unset, so nothing tells the routine apart from the owner and this approval check is advisory."
-          fi
-          python gate/scripts/research/check_verifications.py --repo . --diff diff.json --claims skills/marcus/references/claims.json --dir research/verifications
-          python gate/scripts/research/check_upgrade_approval.py --pr "$PR" --head-sha "$HEAD_SHA" --owner "$OWNER" --deny-login "$DENY_LOGIN"
+          [ "$ANALYZE" = success ] || { echo "::error::analysis $ANALYZE"; exit 1; }
+          [ "$APPROVE" = success ] || [ "$APPROVE" = skipped ] || { echo "::error::owner approval $APPROVE"; exit 1; }
