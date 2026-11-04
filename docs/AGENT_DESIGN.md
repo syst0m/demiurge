@@ -2,7 +2,7 @@
 
 ```yaml
 version: 1.1.0
-derived_from: RESEARCH.md v1.1.0 · AGENT_ARCHITECTURE.md v1.1.0
+derived_from: RESEARCH.md v1.3.4 · AGENT_ARCHITECTURE.md v2.0.0
 audience: human
 maintained_by: marcus
 ```
@@ -262,7 +262,7 @@ When revising an existing skill or adding a feature:
 perception and measurement, in the flattering direction. It applies to agents assessing their own
 output too — which is the entire reason for the fresh-context review step.
 
-**Six months is not long enough to have best practices.** The term "agentic engineering" was coined
-in February 2026. The techniques in this document are real and evidenced; the *codification* is new.
+**Less than a year is not long enough to have best practices.** The term "agentic engineering" was
+coined in February 2026. The techniques in this document are real and evidenced; the *codification* is new.
 Where the evidence is thin, this document says so, and `RESEARCH.md` grades every claim. Treat
 anything marked `[CONTESTED]` as a live question.
