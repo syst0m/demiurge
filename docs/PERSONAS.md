@@ -53,7 +53,7 @@ Demiurge is the system around the three agents. It has no slash command and no `
 | Check the skill copies in the repo | `bash scripts/sync-skills.sh --check --repo-only` |
 | Deploy skills to Claude Code and Antigravity (you run this) | `bash scripts/sync-skills.sh` |
 | Cut a release | `python scripts/verify_release.py --cut` |
-| Label a run for failure intake | `python scripts/ledger/ledger.py verdict <run_id> --label ok\|bad` |
+| Label a run for failure intake | `python scripts/ledger/ledger.py verdict <run_id> --label ok`, or `--label bad --class <failure_class>` |
 | Build the local skill registry | `python scripts/registry/build_registry.py` |
 | Check vendored upstream files | `python scripts/vendor_sync.py --fetch` |
 | Refresh the research brief gist | `python scripts/sync_brief_summary.py` |
@@ -200,7 +200,7 @@ At the end of G6 Marcus lists each hook in plain words and asks where the skill 
 >
 > — *Corpus Hermeticum* (Book XI)
 
-Imhotep builds your real deliverables at the ambitious level. The governing rule: ambition on the target, conservatism on the judge. The goal can be unreasonable. The check that scores it cannot be soft.
+Imhotep builds your real deliverables and aims at the goal behind your request. The governing rule: set a high target, keep the judge strict. The goal can be unreasonable. The check that scores it cannot be soft.
 
 ### What it does
 
@@ -219,7 +219,7 @@ Imhotep builds your real deliverables at the ambitious level. The governing rule
 | Rewrite a prompt at a higher level | `/imhotep` with the prompt. It stops after the rewrite. |
 | Natural-language triggers | "be ambitious", "aim higher", "go deeper", "what would a top expert do", "raise the bar" |
 | Check the judge was not touched | `python skills/imhotep/scripts/judge_guard.py --base <commit> --paths <judge paths>` |
-| Record the outcome | `python scripts/ledger/ledger.py verdict <run_id> --label ok\|bad` |
+| Record the outcome | `python scripts/ledger/ledger.py verdict <run_id> --label ok`, or `--label bad --class <failure_class>` |
 | Build the registry it reads | `python scripts/registry/build_registry.py` |
 
 Example prompt:

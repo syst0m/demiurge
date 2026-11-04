@@ -64,7 +64,7 @@ Niccolo maintains the empirical ground truth of the system.
 - Checking the validity of an agentic engineering claim or benchmark.
 - Researching new agent standards (MCP, AAIF Agent Skills, Agent Plugins, A2A).
 - Investigating runtime failure modes, context economics, or security vulnerabilities.
-- Executing the scheduled research sweep routine (`agentic-research-sweep`).
+- Executing the scheduled research sweep routine (`routines/research-sweep.md`).
 
 ### The Tri-Source Verification Standard (Rule K-6)
 
@@ -232,7 +232,7 @@ it on every Antigravity tool call. A global install of a skill outside the Marcu
 
 ---
 
-## 3b. Imhotep: Building at the Ambitious Level
+## 3b. Imhotep: Building Toward the Real Goal
 
 Imhotep turns a task into the best version of its outcome, then builds it against a judge it cannot soften.
 
@@ -262,7 +262,7 @@ Imhotep turns a task into the best version of its outcome, then builds it agains
 
 ## 4. Caveats & Gotchas
 
-### Gotcha 1: Ungrounded Research Rejection (Gate G0 / G11)
+### Gotcha 1: Ungrounded Research Rejection (Rule K-6)
 
 Submitting a claim with fewer than 3 hyperlinked sources causes immediate mechanical rejection. Proving a concept requires verifiable links to academic literature, official specs, or reproducible benchmarks.
 
