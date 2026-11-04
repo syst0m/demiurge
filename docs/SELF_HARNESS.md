@@ -13,7 +13,7 @@ canonical_path: docs/SELF_HARNESS.md
 ```
 
 > **Status banner.** This subsystem rests on a single, un-replicated preprint. Demiurge's own
-> confidence taxonomy (`README.md`) marks `[EMERGING]` findings as "excluded from gating" until
+> confidence taxonomy ([EVIDENCE.md](EVIDENCE.md)) marks `[EMERGING]` findings as "excluded from gating" until
 > tri-source verification (Rule K-6). Every part of this spec follows from that constraint: the
 > loop ships as an opt-in tool an operator runs by hand, never as a new mandatory gate, and every
 > accepted candidate still waits for a human merge decision.
@@ -62,7 +62,7 @@ Three pieces of this loop already exist in Demiurge, independently of this spec:
   acceptance criterion, written into Demiurge's own gate table before this spec existed.
 - **The comparison arms.** Every benchmark runner in `evals/benchmarks/` already produces a bare-model
   arm and a Demiurge arm, scored with the Resolution Lift formula in `docs/BENCHMARKS.md` §3.1
-  ($\Delta = \text{Pass Rate}*{\text{Demiurge}} - \text{Pass Rate}*{\text{Bare}}$).
+  (`Delta = Pass Rate (Demiurge) - Pass Rate (Bare)`).
 - **The evidence entry.** `skills/marcus/references/EVIDENCE.md:149-153` already cites the paper
   under `[EMERGING]`, with the same summary used above.
 
@@ -93,8 +93,7 @@ Two deliberate deviations from upstream, both traced to an existing Demiurge pri
    reviews changes through pull requests, and a git branch keeps candidates inside that review
    surface.
 2. **Merge requires a human.** Upstream's acceptance gate is described as sufficient on its own.
-   Demiurge's README states "Human Governance: Knowledge base updates require explicit operator
-   approval," and the `[EMERGING]` status of the underlying paper raises the bar further: an
+   Demiurge's README states "A human approves every knowledge base update," and the `[EMERGING]` status of the underlying paper raises the bar further: an
    automated merge would let a single un-replicated finding rewrite Demiurge's own harness
    unsupervised.
 
@@ -125,7 +124,7 @@ candidate are comparable.
 
 ## 5. Directory Layout & Script Responsibilities
 
-> **Implementation status.** Built and tested. `scripts/self_harness/` exists with the seven files
+> **Implementation status.** Built and tested. `scripts/self_harness/` exists with the eight files
 > below; `python scripts/self_harness/test_self_harness.py` (19 cases) and
 > `python scripts/self_harness/validate_self_harness_scripts.py` both pass.
 

@@ -9,7 +9,7 @@ canonical_path: docs/BENCHMARKS.md
 ## Table of Contents
 
 1. [Overview & Evaluation Philosophy](#1-overview--evaluation-philosophy)
-2. [SWE-bench Integration (v0.2.0)](#2-swe-bench-integration-v020)
+2. [SWE-bench Integration](#2-swe-bench-integration)
 3. [Metrics & Telemetry Formulas](#3-metrics--telemetry-formulas)
 4. [Benchmark Run Registry](#4-benchmark-run-registry)
 5. [Multi-Benchmark Architecture Roadmap](#5-multi-benchmark-architecture-roadmap)
@@ -71,9 +71,9 @@ flowchart TD
 
 ---
 
-## 2. SWE-bench Integration (v0.2.0)
+## 2. SWE-bench Integration
 
-For the `v0.2.0` release, Demiurge implements a native benchmarking adapter for [SWE-bench Lite](https://www.swebench.com/) (300 curated real GitHub issues).
+Demiurge implements a native benchmarking adapter for [SWE-bench Lite](https://www.swebench.com/) (300 curated real GitHub issues).
 
 ### Architecture
 
@@ -147,7 +147,7 @@ GAIA, Tau-bench and BFCL (5.1 to 5.4) test the model more than the Demiurge mech
 
 A result enters the section 4 registry only with a tracked `results.json` that records `"simulated": false`. Store it under `eval_results/live/`.
 
-Beyond SWE-bench, Demiurge incorporates seven domain-specific benchmark adapters:
+Sections 5.1 to 5.4 are roadmap items with no runner yet. Sections 5.5 to 5.7 have runners in `evals/benchmarks/`.
 
 ### 5.1 GAIA: Multi-Source Research Benchmark
 
@@ -180,20 +180,21 @@ Beyond SWE-bench, Demiurge incorporates seven domain-specific benchmark adapters
 - **Core Metric:** Vulnerability localization rate, PoC verification pass rate, resolution lift ($\Delta$), and prompt-cache hit economy.
 - **Academic Citations & Attribution:**
 
-  > Shi, T., Rheem, R., Jiang, D., Wang, M., De La Riega, F., Wang, Z., Jiang, J., Cheung, A., & Tai, S. (2026). _CyberGym-E2E: Scalable Real-World Benchmark for AI Agents' End-to-End Cybersecurity Capabilities_. arXiv preprint arXiv:2606.02548.
+  > Shi, T., et al. (2026). _CyberGym-E2E: Scalable Real-World Benchmark for AI Agents' End-to-End Cybersecurity Capabilities_. arXiv preprint arXiv:2606.04460.
   >
   > Wang, Z., Shi, T., He, J., Cai, M., Zhang, J., & Song, D. (2025). _CyberGym: Evaluating AI Agents' Real-World Cybersecurity Capabilities at Scale_. arXiv preprint arXiv:2506.02548.
 
   ```bibtex
-  @inproceedings{shi2026cybergyme2e,
+  @article{shi2026cybergyme2e,
     title={CyberGym-E2E: Scalable Real-World Benchmark for AI Agents' End-to-End Cybersecurity Capabilities},
-    author={Shi, Tianneng and Rheem, Robin and Jiang, Dongwei and Wang, Mona and De La Riega, Francisco and Wang, Zhun and Jiang, Jingzhi and Cheung, Alexander and Tai, Sean},
+    author={Shi, Tianneng and others},
+    journal={arXiv preprint arXiv:2606.04460},
     year={2026}
   }
 
   @article{wang2025cybergym,
     title={CyberGym: Evaluating AI Agents' Real-World Cybersecurity Capabilities at Scale},
-    author={Wang, Zhun and Shi, Tianneng and He, Jiacen and Cai, Minghao and Zhang, Junhua and Song, Dawn},
+    author={Wang, Zhun and Shi, Tianneng and He, Jingxuan and Cai, Matthew and Zhang, Jialin and Song, Dawn},
     journal={arXiv preprint arXiv:2506.02548},
     year={2025}
   }
@@ -201,18 +202,18 @@ Beyond SWE-bench, Demiurge incorporates seven domain-specific benchmark adapters
 
 ### 5.6 ExploitBench: Capability Ladder Benchmark for LLM Security Agents
 
-- **Target:** Evaluates AI agents across a 4-tier capability ladder (Tier 0 reachability, Tier 1 crash trigger, Tier 2 exploit primitive, Tier 3 payload execution verification).
-- **Dataset:** [exploitbench/exploitbench](https://github.com/exploitbench/exploitbench) (Carnegie Mellon University & Bugcrowd Research).
+- **Target:** Evaluates AI agents on a capability ladder. The paper defines 16 measurable flags. This adapter scores a simplified four-tier ladder (Tier 0 reachability, Tier 1 crash trigger, Tier 2 exploit primitive, Tier 3 payload execution verification).
+- **Dataset:** [exploitbench/exploitbench](https://github.com/exploitbench/exploitbench) (Carnegie Mellon University).
 - **Core Metric:** Capability ladder progression rates ($T_0$ to $T_3$), turn economy, resolution lift ($\Delta$), and token cost economy.
 - **Academic Citations & Attribution:**
 
-  > Carnegie Mellon University & Bugcrowd Research. (2026). _ExploitBench: A Capability Ladder Benchmark for LLM Cybersecurity Agents_. arXiv preprint arXiv:2605.14820.
+  > Lee, S., & Brumley, D. (2026). _ExploitBench: A Capability Ladder Benchmark for LLM Cybersecurity Agents_. arXiv preprint arXiv:2605.14153.
 
   ```bibtex
   @article{exploitbench2026,
     title={ExploitBench: A Capability Ladder Benchmark for LLM Cybersecurity Agents},
-    author={ExploitBench Research Team},
-    journal={arXiv preprint arXiv:2605.14820},
+    author={Lee, Seunghyun and Brumley, David},
+    journal={arXiv preprint arXiv:2605.14153},
     year={2026}
   }
   ```
@@ -240,9 +241,10 @@ Simulates task executions, creates official prediction manifests, and calculates
 python evals/benchmarks/swebench/run_swebench_eval.py --slice 0:5 --dry-run
 python evals/benchmarks/cybergym/run_cybergym_eval.py --slice 0:5 --dry-run
 python evals/benchmarks/exploitbench/run_exploitbench_eval.py --slice 0:5 --dry-run
+python evals/benchmarks/deepswe/run_deepswe_eval.py --slice 0:5 --dry-run
 ```
 
-Output files are written to `eval_results/swebench/`, `eval_results/cybergym/`, or `eval_results/exploitbench/`:
+Output files are written to `eval_results/swebench/`, `eval_results/cybergym/`, `eval_results/exploitbench/`, or `eval_results/deepswe/`:
 
 - `results.json`: Full machine-readable telemetry per task.
 - `report.md`: Formatted comparative Markdown table.
@@ -257,6 +259,7 @@ Executes the deterministic runner test suite:
 python evals/benchmarks/swebench/test_swebench_runner.py
 python evals/benchmarks/cybergym/test_cybergym_runner.py
 python evals/benchmarks/exploitbench/test_exploitbench_runner.py
+python evals/benchmarks/deepswe/test_deepswe_runner.py
 ```
 
 ### 6.3 Live Benchmark Execution (Requires `--yes`)
@@ -267,24 +270,26 @@ Executes live evaluation against target models:
 python evals/benchmarks/swebench/run_swebench_eval.py \
     --dataset princeton-nlp/SWE-bench_Lite \
     --slice 0:25 \
-    --model claude-3-5-sonnet-20241022 \
+    --model gemini-3.1-flash-lite-preview \
     --output-dir eval_results/swebench_run1 \
     --yes
 
 python evals/benchmarks/cybergym/run_cybergym_eval.py \
     --dataset sunblaze-ucb/cybergym \
     --slice 0:25 \
-    --model claude-3-5-sonnet-20241022 \
+    --model gemini-3.1-flash-lite-preview \
     --output-dir eval_results/cybergym_run1 \
     --yes
 
 python evals/benchmarks/exploitbench/run_exploitbench_eval.py \
     --dataset exploitbench/exploitbench \
     --slice 0:25 \
-    --model claude-3-5-sonnet-20241022 \
+    --model gemini-3.1-flash-lite-preview \
     --output-dir eval_results/exploitbench_run1 \
     --yes
 ```
+
+The DeepSWE runner has no live path yet. With `--yes` and no `--dry-run`, it raises `NotImplementedError`. Use `--dry-run` for DeepSWE.
 
 ---
 
@@ -296,5 +301,5 @@ To balance testing rigor with compute expenditure, benchmark runs follow a tiere
 |---|---|---|---|---|
 | **Every Commit / PR** | Local Deterministic Gates (AST scans, security, tropes, links) | Syntax & Safety | $0.00 | Pre-commit Hook & GitHub Actions |
 | **Weekly** | Promptfoo Adversarial Red-Teaming & Route Collision Matrix | Boundary Defense & Routing | < $1.00 | Scheduled GitHub Actions Workflow |
-| **Bi-Weekly / Milestone** | SWE-bench Lite (25-task micro-slice) + GAIA Sample | Marcus Coding & Niccolo Research | $15–$25 | Developer Run (`scripts/run_benchmark_slice.sh`) |
-| **Major Release (v0.2.0)** | Full SWE-bench Lite (300 tasks) + Tau-bench Suite | Architecture-Wide Comparison | $50–$150 | Release Candidate Verification Gate |
+| **Bi-Weekly / Milestone** | SWE-bench Lite (25-task micro-slice) + GAIA Sample | Marcus Coding & Niccolo Research | $15–$25 | Developer Run (`run_swebench_eval.py --slice 0:25 --yes`) |
+| **Major Release** | Full SWE-bench Lite (300 tasks) + Tau-bench Suite | Architecture-Wide Comparison | $50–$150 | Release Candidate Verification Gate |

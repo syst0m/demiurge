@@ -7,7 +7,7 @@ Evaluates:
 
 Usage:
     python evals/benchmarks/swebench/run_swebench_eval.py --dry-run
-    python evals/benchmarks/swebench/run_swebench_eval.py --slice 0:5 --model claude-3-5-sonnet-20241022 --yes
+    python evals/benchmarks/swebench/run_swebench_eval.py --slice 0:5 --model gemini-3.1-flash-lite-preview --yes
 
 Exit codes:
     0  benchmark run completed successfully
@@ -42,7 +42,7 @@ from metrics import (
 )
 
 DEFAULT_DATASET = "princeton-nlp/SWE-bench_Lite"
-DEFAULT_MODEL = "claude-3-5-sonnet-20241022"
+DEFAULT_MODEL = "gemini-3.1-flash-lite-preview"
 DEFAULT_OUTPUT_DIR = Path("eval_results/swebench")
 
 

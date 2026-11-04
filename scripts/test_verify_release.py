@@ -157,6 +157,17 @@ class TestReleaseNotes(unittest.TestCase):
 
 
 class TestCutRelease(unittest.TestCase):
+    def setUp(self):
+        gate = patch("scripts.verify_release.design_gate", return_value=[])
+        self.gate = gate.start()
+        self.addCleanup(gate.stop)
+
+    def test_design_drift_blocks_the_cut(self):
+        self.gate.return_value = ["drift"]
+        with patch("scripts.verify_release.run_cmd") as run_cmd:
+            self.assertEqual(vr.cut_release("v1.0.0"), ["drift"])
+            run_cmd.assert_not_called()
+
     @patch("scripts.verify_release.get_remote_tags", return_value=["v1.0.0"])
     @patch("scripts.verify_release.get_local_tags", return_value=["v1.0.0"])
     @patch("scripts.verify_release.run_cmd", return_value=(0, "", ""))
