@@ -50,7 +50,9 @@ Agent Packages <──emits & proves── Marcus ──checks gates (G0-G6) <�
    Imhotep ──builds real work──> held-out judge ──outcomes──> run ledger ──> Niccolo & Marcus
 ```
 
-Research flows one way: Niccolo researches, Marcus designs, Imhotep builds. A human approves every knowledge base update. Full design: [Master Documentation](docs/DOCUMENTATION.md).
+- Research flows one way: Niccolo researches, Marcus designs, Imhotep builds.
+- A human approves every knowledge base update.
+- Full design: [Master Documentation](docs/DOCUMENTATION.md).
 
 ## Documentation
 
@@ -63,4 +65,6 @@ Research flows one way: Niccolo researches, Marcus designs, Imhotep builds. A hu
 | [Benchmarks](docs/BENCHMARKS.md) | Evaluation method and the Benchmark Run Registry. |
 | [Evidence & Confidence Taxonomy](docs/EVIDENCE.md) | How claims are verified and graded. |
 
-All guides: [docs/README.md](docs/README.md). Release history: [CHANGELOG.md](CHANGELOG.md). Agent rules: [Standing Orders](docs/STANDING_ORDERS.md).
+- All guides: [docs/README.md](docs/README.md)
+- Release history: [CHANGELOG.md](CHANGELOG.md)
+- Agent rules: [Standing Orders](docs/STANDING_ORDERS.md)
