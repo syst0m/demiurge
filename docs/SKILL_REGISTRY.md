@@ -16,7 +16,7 @@ The registry lives at `~/.demiurge/registry.yaml` and is never committed.
 
 - **This repo is public.** The registry also scans the installed skill library, and that library holds private skills. Committing the registry would publish their names, tiers and findings.
 - **The builder enforces this.** Every mode that writes refuses a target inside a git working tree and exits 1. The default output path and the default backfill directory, `~/.demiurge/backfill/`, both sit outside every checkout.
-- **CI parses without writing.** `--repo-only --check` reads the two repo skills and prints their findings. It writes nothing, so nothing about the private library reaches a CI log.
+- **CI parses without writing.** `--repo-only --check` reads the three repo skills and prints their findings. It writes nothing, so nothing about the private library reaches a CI log.
 
 Findings for private skills stay in `~/.demiurge/`.
 
@@ -61,7 +61,7 @@ Run every command from the demiurge checkout root. The builder needs PyYAML: `py
 |---|---|
 | `python scripts/registry/build_registry.py` | Scans the repo skills and the installed library, then writes `~/.demiurge/registry.yaml`. |
 | `python scripts/registry/build_registry.py --check` | Exits 1 on a parse failure or when the written registry is out of date. Writes nothing. |
-| `python scripts/registry/build_registry.py --repo-only --check` | The CI mode: prints `OK: 2 repo skills parsed`, or exits 1 on a parse failure. |
+| `python scripts/registry/build_registry.py --repo-only --check` | The CI mode: prints `OK: 3 repo skills parsed`, or exits 1 on a parse failure. |
 | `python scripts/registry/build_registry.py --propose-backfill [DIR]` | Also writes a proposed `PROVENANCE.md` header for each skill with a missing or unstructured `PROVENANCE.md`, no recorded tier or a name mismatch. |
 
 `--library <dir>` points at another installed library, which is only read and may sit inside a git working tree (the default library often does). `--out <path>` points at another output file. The output file and the backfill directory must stay outside every git working tree.

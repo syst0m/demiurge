@@ -37,6 +37,8 @@ jobs:
         run: bash scripts/sync-skills.sh --check --repo-only
       - name: Benchmark registry rows are live
         run: python scripts/check_benchmark_claims.py
+      - name: BRIEF gist is current
+        run: python scripts/sync_brief_summary.py --check
       - name: Claims ledger caps
         run: python scripts/research/grade_cap.py --check
       - name: Claims change log is append-only

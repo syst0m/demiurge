@@ -1,14 +1,14 @@
 <div align="center">
   <h1>Demiurge</h1>
-  <p><i>"The world is a fabrication of an error."</i><br>— The Gospel of Philip (Nag Hammadi)</p>
-  <p><b>A Pantheon of three autonomous agents in an empirical feedback loop. One researches; one designs; one builds.</b></p>
+  <p><i>"The world is a fabrication of an error."</i><br>The Gospel of Philip (Nag Hammadi)</p>
+  <p><b>A Pantheon of three autonomous agents in an empirical feedback loop. One researches, one designs, one builds.</b></p>
 </div>
 
 <div align="center">
   <img src="assets/archon_tetrad.jpg" width="400" alt="Archon Tetrad">
 </div>
 
-Demiurge isolates empirical research from agent synthesis. Self-contained, dependency-free, and anchored on deterministic quality gates.
+Demiurge isolates empirical research from agent synthesis. It has no dependencies, and deterministic quality gates check every change.
 
 <table>
   <tr>
@@ -25,7 +25,7 @@ Demiurge isolates empirical research from agent synthesis. Self-contained, depen
   </tr>
   <tr>
     <td width="200"><img src="assets/imhotep.jpg" width="200" alt="Imhotep"></td>
-    <td><b>Imhotep</b><br>Builds your real deliverables at the ambitious level with Marcus's measured skills, scored by held-out checks it never reads.</td>
+    <td><b>Imhotep</b><br>Builds what you ask for, then checks it against the goal behind the request. It uses Marcus's measured skills and writes its checks before it builds. It hides some of them from itself, so it cannot tune its work to pass them.</td>
   </tr>
 </table>
 

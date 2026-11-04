@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.1] - 2026-11-04
+
+### Added
+
+- **Docs Drift Release Gate:** A release fails if `docs/AGENT_DESIGN.md` lags the research snapshot. `update_marcus.py --check --strict-design` runs in `release.yml` and in `verify_release.py --cut`. Pull requests only warn, because the research sweep cannot edit `docs/`.
+- **BRIEF Gist Check:** `checks.yml` runs `sync_brief_summary.py --check`.
+- **DeepSWE in the Operator Guide:** `docs/BENCHMARKS.md` lists the DeepSWE dry-run and test commands. It notes that DeepSWE has no live path yet.
+
+### Fixed
+
+- **Doc Facts:** The README and `docs/` now match the code. The Imhotep blurb no longer says "ambitious level". The BRIEF gist no longer cites "14/14 Gate Tests" or "T0 to T3".
+- **Citations:** CyberGym-E2E is arXiv:2606.04460. ExploitBench is arXiv:2605.14153, by Lee and Brumley.
+- **Default Model:** The SWE-bench, CyberGym and ExploitBench runners default to `gemini-3.1-flash-lite-preview`. The old Claude id is retired.
+- **Review Date:** `research/RESEARCH.md` `next_review_due` is 2026-12-03. The date is not a new review.
+
 ## [0.17.0] - 2026-11-04
 
 ### Added
