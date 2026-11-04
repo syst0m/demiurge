@@ -44,6 +44,11 @@ jobs:
         env:
           BASE_REF: ${{ github.base_ref }}
         run: python scripts/research/grade_cap.py --check-changelog --base "origin/$BASE_REF"
+      - name: Changelog cuts a release
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: python scripts/check_changelog_gate.py --base "origin/$BASE_REF"
       - name: Rule citations
         run: python scripts/research/check_rule_citations.py
       - name: Repo skill registry parse
