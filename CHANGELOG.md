@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.2] - 2026-11-04
+
+### Added
+
+- **Approve Button on the Pull Request:** A research upgrade waits on the `research-approval` environment. The owner clicks **Review deployments** on the pull request. This replaces the `/approve-upgrade` comment.
+
+### Changed
+
+- **README Layout:** The research summary and the links to the guides, the changelog and the standing orders are stacked lists, not single lines.
+
 ## [0.17.1] - 2026-11-04
 
 ### Added
