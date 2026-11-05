@@ -42,6 +42,8 @@ KINDS = ("invoke", "verdict")
 ORIGINS = ("organic", "replay")
 TRIGGERS = ("slash", "model", "eval")
 ARMS = ("baseline", "treated")
+# What the `skill` field names. A row with no subject_type is a skill row.
+SUBJECT_TYPES = ("skill", "agent", "gate", "harness")
 LABELS = ("ok", "bad", "unknown", "dismissed")
 SOURCES = ("user", "deterministic", "judge", "proxy")
 FAILURE_CLASSES = (
@@ -90,6 +92,7 @@ SCHEMA: Dict[str, Any] = {
     "kind": (True, lambda v: v in KINDS, f"one of {KINDS}"),
     "origin": (True, lambda v: v in ORIGINS, f"one of {ORIGINS}"),
     "skill": (True, _is_str, "non-empty string"),
+    "subject_type": (False, lambda v: v in SUBJECT_TYPES, f"one of {SUBJECT_TYPES}"),
     "trigger": (False, lambda v: v in TRIGGERS, f"one of {TRIGGERS}"),
     "session": (False, lambda v: isinstance(v, str) and bool(_HEX.match(v)),
                 "hex digest from hash_session(), never a raw session id"),
