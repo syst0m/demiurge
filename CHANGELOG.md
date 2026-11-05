@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.6] - 2026-11-05
+
+### Changed
+
+- **Ledger Labeling Docs:** `docs/RUN_LEDGER.md` shows how each harness gets a label, records the Antigravity print-mode and Hermes provider findings, and explains the kill review and its install date.
+
 ## [0.17.5] - 2026-11-05
 
 ### Added
