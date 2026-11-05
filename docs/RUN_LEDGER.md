@@ -74,8 +74,8 @@ A run's label is the label of its latest verdict row. A run with no verdict row 
 | Harness | Capture | Status |
 |---|---|---|
 | Claude Code | the hook entries in section 4 | verified |
-| Hermes | the `demiurge-skills` plugin records each `/niccolo`, `/marcus`, `/imhotep` slash command as a skill run (`pre_gateway_dispatch`, already live) and a harness row at `on_session_end` | both hook names are documented in the installed Hermes (`hooks.md`). `on_session_end` fires at each **turn** end, so it writes one harness row per turn: `ok` if completed, `bad`/`infra` if failed, unlabeled if interrupted. Not yet seen in a live session. |
-| Antigravity | `install-hook` prints a `Stop` entry that records a harness row | the entry follows the documented `hooks.json` schema (flat `Stop` array); **not run** in a live session. Skill capture needs its tool payload and is not built |
+| Hermes | the `demiurge-skills` plugin records each `/niccolo`, `/marcus`, `/imhotep` slash command as a skill run (`pre_gateway_dispatch`, already live) and a harness row at `on_session_end` | both hook names are documented in the installed Hermes (`hooks.md`). `on_session_end` fires at each **turn** end, so it writes one harness row per turn: `ok` if completed, `bad`/`infra` if failed, unlabeled if interrupted. Not yet seen in a live session: a `hermes -z` test on 2026-11-05 stopped at the model provider (HTTP 403, no card on the gateway account). |
+| Antigravity | `install-hook` prints a `Stop` entry that records a harness row | the entry follows the documented `hooks.json` schema (flat `Stop` array). The hook command writes a valid row when run by hand. `agy -p` (print mode) did not fire it on 2026-11-05, so no row came from a live turn. Test in an interactive `agy` session. Skill capture needs its tool payload and is not built |
 | OpenCode | `scripts/ledger/opencode-ledger.js` records each `skill` tool call (copy it to `~/.config/opencode/plugins/demiurge-ledger.js`, an operator step) | the plugin shape matches the live `gh-minutes-gate.js`; the tool name `skill` and its `name` argument are **not verified** |
 
 - **No prompt text is stored.** Text after a `::bad` class is accepted and dropped. An unknown class records `bad` with no class.
@@ -84,6 +84,20 @@ A run's label is the label of its latest verdict row. A run with no verdict row 
 - **Why `::` and not `!`.** In Claude Code, a prompt that starts with `!` runs in bash mode as a shell command. It never reaches `UserPromptSubmit` as a prompt, so `!bad` would run a command named `bad`. `::` has no meaning in the prompt box.
 
 Label a run later from the shell with `ledger.py verdict <run_id> --label bad --class <class>`.
+
+**How each harness gets a label.**
+
+| Harness or subject | Label source | What you do |
+|---|---|---|
+| Claude Code skill | `user`, from `::ok` or `::bad <class>` | Type it as a prompt after the run. It labels the session's last skill run. |
+| Gate (`run-gate`) | `deterministic`, from the exit code | Nothing. Exit 0 is `ok`. Any other code is `bad`, class `other`. |
+| Hermes turn | `deterministic`, from `on_session_end` | Nothing. Completed is `ok`. Failed is `bad`, class `infra`. Interrupted has no label. |
+| Hermes slash command | none | Label by hand from the shell. |
+| Antigravity | none | The `Stop` hook writes a harness row with no label. Label by hand from the shell. |
+| OpenCode | none | The plugin writes a skill row with no label. Label by hand from the shell. |
+| Agent (subagent) | none | `::bad` never targets an agent row. Label by hand from the shell. |
+
+Find the `run_id` in `~/.demiurge/ledger/runs-YYYY-MM.jsonl`. Only a person writes a `user` label. Do not write labels on behalf of a person.
 
 ---
 
@@ -238,6 +252,10 @@ On each date, run `ledger.py check-kill --installed <install date>`. It counts o
 | 2 | no invoke runs at all, or more than 80% of invoke runs unlabeled **and** fewer than 10 `bad` runs from `user` or `deterministic` sources | Capture happens and labeling does not. |
 | 3 | any row with `source: proxy` | Nothing writes proxy labels, so such a row needs an audit. |
 | 4 | a stretch of 14 days or more with no rows | The hook is broken or unused. The line also counts `hook-errors.log` entries. |
+
+The kill review is a check that the ledger earns its cost. It does not repair anything. Criteria 1 and 2 fail until a person labels runs and runs `promote`.
+
+The real install date is the date of the first ledger row. The ledger directory dates from 2026-11-03. With that date, `check-kill` puts the review at 2026-12-29. A run on 2026-11-23 is an early check.
 
 When any criterion fails, `check-kill` prints KILL and exits 1. The operator then removes the two hook entries from the settings file. Scheduling the reviews and removing the hooks are operator steps.
 
