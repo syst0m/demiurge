@@ -180,6 +180,10 @@ The hook never blocks the user, except to swallow a `::` capture prompt.
 
 A change that edits a skill and its own `evals.json` or its own gate in one PR needs human review. An agent that edits its own evaluator can pass any test.
 
+`scripts/check_eval_tamper.py` enforces this rule in the `checks` workflow. It fails a PR that modifies an existing `skills/<name>/evals/evals.json` and also changes another file of the same skill. A new skill is not flagged. A commit message line `Evals: reviewed` skips the gate. The gate prints the skip. It does not cover gate scripts.
+
+`eval_runner.py` does not shuffle case order. Each attempt is a separate process with no shared state, and pairing is by case id. Order cannot change a result.
+
 ---
 
 ## 6. Promote Staging

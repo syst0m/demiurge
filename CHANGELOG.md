@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.5] - 2026-11-05
+
+### Added
+
+- **Eval Tamper Gate:** `scripts/check_eval_tamper.py` fails a PR that edits a skill and its existing `evals.json` together. Skip it after review with a commit line `Evals: reviewed`.
+
 ## [0.17.4] - 2026-11-05
 
 ### Added
