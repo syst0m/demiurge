@@ -581,6 +581,59 @@ def cmd_check_kill(args: argparse.Namespace) -> int:
     return 0 if verdict else 1
 
 
+# --- kill (blocking approval) ------------------------------------------------
+
+def strip_ledger_hooks(settings: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
+    """Return settings without ledger_hook.py entries, and the removed commands."""
+    removed: List[str] = []
+    hooks = settings.get("hooks", {})
+    for event in list(hooks):
+        groups = []
+        for group in hooks[event]:
+            keep = [h for h in group.get("hooks", []) if "ledger_hook.py" not in h.get("command", "")]
+            removed += [h["command"] for h in group.get("hooks", []) if h not in keep]
+            if keep:
+                groups.append({**group, "hooks": keep})
+        if groups:
+            hooks[event] = groups
+        else:
+            del hooks[event]
+    return settings, removed
+
+
+def _at_terminal() -> bool:
+    return sys.stdin.isatty() and sys.stdout.isatty()
+
+
+def cmd_kill(args: argparse.Namespace) -> int:
+    """Remove the ledger hooks, but only after a person types KILL at a terminal."""
+    today = dt.datetime.now(dt.timezone.utc).date()
+    results = evaluate_kill(args.installed, today)
+    for number, passed, detail in results:
+        print(f"criterion {number}: {'PASS' if passed else 'KILL'}  {detail}")
+    if all(passed for _, passed, _ in results):
+        print("PASS: nothing to kill")
+        return 0
+    path = Path(args.settings).expanduser()
+    settings = json.loads(path.read_text(encoding="utf-8"))
+    new, removed = strip_ledger_hooks(json.loads(json.dumps(settings)))
+    if not removed:
+        print(f"no ledger hook entries in {path}")
+        return 0
+    print(f"\nThese entries would be removed from {path}:")
+    for command in removed:
+        print(f"  {command}")
+    if not _at_terminal():
+        raise Refused("approval needs a person at a terminal. Run this command yourself.")
+    if input("Type KILL to remove them: ").strip() != "KILL":
+        print("not approved: nothing changed")
+        return 1
+    shutil.copy2(path, path.with_suffix(path.suffix + ".bak"))
+    path.write_text(json.dumps(new, indent=2) + "\n", encoding="utf-8")
+    print(f"removed {len(removed)} entries; backup at {path.name}.bak")
+    return 0
+
+
 # --- install-hook ------------------------------------------------------------
 
 def cmd_install_hook(args: argparse.Namespace) -> int:
@@ -673,6 +726,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--installed", type=_date, required=True)
     p.add_argument("--today", type=_date)
     p.set_defaults(func=cmd_check_kill)
+
+    p = sub.add_parser("kill", help="remove the ledger hooks after a person approves at a terminal")
+    p.add_argument("--installed", type=_date, required=True)
+    p.add_argument("--settings", required=True, help="settings.json to edit")
+    p.set_defaults(func=cmd_kill)
 
     p = sub.add_parser("install-hook", help="copy the hook to a pinned directory")
     p.add_argument("--dest", required=True)

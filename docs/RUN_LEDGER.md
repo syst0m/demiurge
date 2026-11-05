@@ -177,7 +177,8 @@ The hook never blocks the user, except to swallow a `::` capture prompt.
 | `run-gate [--name <gate>] -- <command>` | Runs a gate, appends a `gate` invoke row and a `deterministic` verdict (exit 0 is `ok`, else `bad`), returns the command's exit code. `skill_sha` is the sha256 of the first `.py` argument. A ledger fault warns and never changes the exit code. |
 | `inventory [--by skill\|harness\|failure_class\|subject_type] [--days 90] [--min-n 20]` | Organic runs per group. Counts only below `--min-n` labeled runs; a 95% Wilson interval at or above it. It never prints a bare rate. |
 | `purge --older-than 180` | Rewrites closed months older than the cutoff under the lock, keeping unpromoted `bad` runs. Temp file, then atomic rename. |
-| `check-kill --installed YYYY-MM-DD [--today YYYY-MM-DD]` | Evaluates the kill criteria (section 8) and prints PASS or KILL. |
+| `check-kill --installed YYYY-MM-DD [--today YYYY-MM-DD]` | Evaluates the kill criteria (section 8) and prints PASS or KILL. It changes nothing. |
+| `kill --installed YYYY-MM-DD --settings <settings.json>` | Runs the criteria. On KILL it lists the `ledger_hook.py` hook entries, then waits for you to type `KILL` at a terminal. Only then does it remove them. It saves a `.bak` copy. It has no `--yes` flag and refuses to run without a terminal, so an agent or a scheduled task cannot approve it. |
 | `install-hook --dest <dir>` | Copies `ledger_hook.py` and `ledger_lib.py` and prints the settings entries. |
 
 `inventory --by skill` and `--by harness` answer the per-skill and per-harness question directly. Read them under the hard rule in section 1.
@@ -257,7 +258,7 @@ The kill review is a check that the ledger earns its cost. It does not repair an
 
 The real install date is the date of the first ledger row. The ledger directory dates from 2026-11-03. With that date, `check-kill` puts the review at 2026-12-29. A run on 2026-11-23 is an early check.
 
-When any criterion fails, `check-kill` prints KILL and exits 1. The operator then removes the two hook entries from the settings file. Scheduling the reviews and removing the hooks are operator steps.
+When any criterion fails, `check-kill` prints KILL and exits 1. The operator then runs `ledger.py kill`, which removes the hook entries from one settings file only after the operator types `KILL`. The command covers the Claude Code settings file you name. It does not edit the Antigravity `hooks.json`, the Hermes plugin or the OpenCode plugin. Remove those by hand. Scheduling the reviews is an operator step.
 
 ---
 
