@@ -41,6 +41,7 @@ The schema, enums and validation live in `skills/marcus/scripts/ledger_lib.py`. 
 | `kind` | yes | `invoke` or `verdict` |
 | `origin` | yes | `organic` (a real session) or `replay` (`eval_runner.py --ledger`) |
 | `skill` | yes | skill name |
+| `subject_type` | no | what `skill` names: `skill` (default when absent), `agent`, `gate` or `harness` |
 | `trigger` | no | `slash`, `model` or `eval` |
 | `session` | no | sha256 prefix of the session id; the raw id is never stored |
 | `skill_sha` | no | sha256 over the skill bundle's files, independent of listing order |
@@ -63,7 +64,19 @@ A run's label is the label of its latest verdict row. A run with no verdict row 
 |---|---|---|
 | `PostToolUse`, matcher `Skill` | a Skill tool call | `invoke`, `trigger: model`, with `skill_sha`, `model_id` and `version` read from the transcript tail |
 | `UserPromptSubmit` | `/<name>` naming an installed skill | `invoke`, `trigger: slash`; the prompt passes through |
-| `UserPromptSubmit` | `::bad [<class>] [text]` or `::ok` | `verdict` with `source: user` on the session's last invoke row; the prompt is blocked |
+| `PostToolUse`, matcher `Agent\|Task` | a subagent call | `invoke`, `subject_type: agent`, `skill` = the `subagent_type` |
+| `UserPromptSubmit` | `::bad [<class>] [text]` or `::ok` | `verdict` with `source: user` on the session's last **skill** invoke row (never an agent row); the prompt is blocked |
+| `Stop` | opt-in: set `DEMIURGE_LEDGER_NUDGE=1` | no row; prints a reminder when the session has unlabeled skill runs |
+| `--event record --harness H --subject-type T --subject N [--trigger X] [--label L --class C]` | no stdin; the caller names the subject | `invoke`, and a `deterministic` verdict when `--label` is given. Use it where the harness payload is not parsed. |
+
+**Other harnesses.**
+
+| Harness | Capture | Status |
+|---|---|---|
+| Claude Code | the hook entries in section 4 | verified |
+| Hermes | the `demiurge-skills` plugin records each `/niccolo`, `/marcus`, `/imhotep` slash command as a skill run (`pre_gateway_dispatch`, already live) and a harness row at `on_session_end` | slash capture uses the live hook; the `on_session_end` name is **not verified** |
+| Antigravity | `install-hook` prints a `Stop` entry that records a harness row | **not verified** in a live session; skill and tool capture need its payload shape |
+| OpenCode | none | **not built**: its plugin event names are not checked |
 
 - **No prompt text is stored.** Text after a `::bad` class is accepted and dropped. An unknown class records `bad` with no class.
 - **The capture prompt never reaches the model.** The hook answers `{"decision":"block","reason":"ledger: recorded <label> for <skill>"}`, so the harness shows the reason and discards the prompt.
@@ -147,12 +160,25 @@ The hook never blocks the user, except to swallow a `::` capture prompt.
 | `verdict <run_id> --label ok\|bad\|unknown [--class <class>] [--note]` | Appends a user verdict. `bad` needs `--class`. |
 | `dismiss <run_id> --reason <text>` | Appends a `dismissed` verdict. |
 | `promote <run_id> --skill <name>` | Stages a regression case (section 6). |
-| `inventory [--by skill\|harness\|failure_class] [--days 90] [--min-n 20]` | Organic runs per group. Counts only below `--min-n` labeled runs; a 95% Wilson interval at or above it. It never prints a bare rate. |
+| `run-gate [--name <gate>] -- <command>` | Runs a gate, appends a `gate` invoke row and a `deterministic` verdict (exit 0 is `ok`, else `bad`), returns the command's exit code. `skill_sha` is the sha256 of the first `.py` argument. A ledger fault warns and never changes the exit code. |
+| `inventory [--by skill\|harness\|failure_class\|subject_type] [--days 90] [--min-n 20]` | Organic runs per group. Counts only below `--min-n` labeled runs; a 95% Wilson interval at or above it. It never prints a bare rate. |
 | `purge --older-than 180` | Rewrites closed months older than the cutoff under the lock, keeping unpromoted `bad` runs. Temp file, then atomic rename. |
 | `check-kill --installed YYYY-MM-DD [--today YYYY-MM-DD]` | Evaluates the kill criteria (section 8) and prints PASS or KILL. |
 | `install-hook --dest <dir>` | Copies `ledger_hook.py` and `ledger_lib.py` and prints the settings entries. |
 
 `inventory --by skill` and `--by harness` answer the per-skill and per-harness question directly. Read them under the hard rule in section 1.
+
+**Gate rows.** A gate that fails is working. A `bad` gate row means the gated change failed. It is not a fault of the gate. A gate run without `run-gate` leaves no row.
+
+**Risk tiers for a change that a failure motivates.** `promote` and `modify_skill.py --evidence` accept skills only. Failures of gates and agents go to a human review.
+
+| Change | Proof before you accept it |
+|---|---|
+| Skill text, memory | G5 repeats on held-out cases, a regression check, a rollback path |
+| Routing, tool policy, gate logic | the above, a constraint check, human sign-off |
+| Code, model, permission | an isolated run, an independent evaluator, a staged release |
+
+A change that edits a skill and its own `evals.json` or its own gate in one PR needs human review. An agent that edits its own evaluator can pass any test.
 
 ---
 
