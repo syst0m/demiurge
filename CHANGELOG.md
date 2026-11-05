@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.4] - 2026-11-05
+
+### Added
+
+- **OpenCode Ledger Plugin:** `scripts/ledger/opencode-ledger.js` records each `skill` tool call in the run ledger.
+- **Agent and Stop Ledger Hooks:** The project `.claude/settings.json` matches `Skill|Agent|Task` and adds the opt-in `Stop` reminder.
+
+### Changed
+
+- **Hermes Turn Rows:** The Hermes plugin writes one harness row per turn from `on_session_end`: `ok` if completed, `bad` with class `infra` if failed, no label if interrupted.
+
 ## [0.17.3] - 2026-11-05
 
 ### Added
