@@ -124,9 +124,17 @@ def _ledger(*args: str) -> None:
         pass
 
 
-def record_session_end(**_: Any) -> None:
-    """Hermes session end: liveness row for the harness. Hook name not verified in a live run."""
-    _ledger("--subject-type", "harness", "--subject", "hermes")
+def record_session_end(completed: Any = None, failed: Any = None, **_: Any) -> None:
+    """Hermes on_session_end fires at each turn finalization: one harness row per turn.
+
+    A failed turn is bad (infra); a completed one is ok; an interrupted one stays unlabeled.
+    """
+    if failed:
+        _ledger("--subject-type", "harness", "--subject", "hermes", "--label", "bad", "--class", "infra")
+    elif completed:
+        _ledger("--subject-type", "harness", "--subject", "hermes", "--label", "ok")
+    else:
+        _ledger("--subject-type", "harness", "--subject", "hermes")
 
 
 def _read_toml_command(path: Path) -> tuple[str, str, str] | None:
