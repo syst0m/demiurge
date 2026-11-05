@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.7] - 2026-11-05
+
+### Added
+
+- **Kill Approval Gate:** `ledger.py kill` removes the ledger hooks from a settings file only after a person types `KILL` at a terminal. It has no `--yes` flag and refuses to run without a terminal.
+
 ## [0.17.6] - 2026-11-05
 
 ### Changed
