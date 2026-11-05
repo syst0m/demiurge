@@ -51,6 +51,11 @@ jobs:
         env:
           BASE_REF: ${{ github.base_ref }}
         run: python scripts/check_changelog_gate.py --base "origin/$BASE_REF"
+      - name: Skill does not edit its own evals
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: python scripts/check_eval_tamper.py --base "origin/$BASE_REF"
       - name: Rule citations
         run: python scripts/research/check_rule_citations.py
       - name: Repo skill registry parse
