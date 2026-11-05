@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.3] - 2026-11-05
+
 ### Added
 
 - **Ledger Subjects:** The run ledger records agents, gates and harnesses as well as skills. `ledger.py run-gate -- <command>` logs a gate pass or fail. The hook records subagent calls, and an opt-in `Stop` reminder lists unlabeled skill runs. `--event record` lets a harness write a row without payload parsing. The Hermes plugin records its slash commands as skill runs.
