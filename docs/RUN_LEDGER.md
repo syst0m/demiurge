@@ -75,8 +75,8 @@ A run's label is the label of its latest verdict row. A run with no verdict row 
 |---|---|---|
 | Claude Code | the hook entries in section 4 | verified |
 | Hermes | the `demiurge-skills` plugin records each `/niccolo`, `/marcus`, `/imhotep` slash command as a skill run (`pre_gateway_dispatch`, already live) and a harness row at `on_session_end` | both hook names are documented in the installed Hermes (`hooks.md`). `on_session_end` fires at each **turn** end, so it writes one harness row per turn: `ok` if completed, `bad`/`infra` if failed, unlabeled if interrupted. Not yet seen in a live session. |
-| Antigravity | `install-hook` prints a `Stop` entry that records a harness row | **not verified** in a live session; skill and tool capture need its payload shape |
-| OpenCode | none | **not built**: its plugin event names are not checked |
+| Antigravity | `install-hook` prints a `Stop` entry that records a harness row | the entry follows the documented `hooks.json` schema (flat `Stop` array); **not run** in a live session. Skill capture needs its tool payload and is not built |
+| OpenCode | `scripts/ledger/opencode-ledger.js` records each `skill` tool call (copy it to `~/.config/opencode/plugins/demiurge-ledger.js`, an operator step) | the plugin shape matches the live `gh-minutes-gate.js`; the tool name `skill` and its `name` argument are **not verified** |
 
 - **No prompt text is stored.** Text after a `::bad` class is accepted and dropped. An unknown class records `bad` with no class.
 - **The capture prompt never reaches the model.** The hook answers `{"decision":"block","reason":"ledger: recorded <label> for <skill>"}`, so the harness shows the reason and discards the prompt.
