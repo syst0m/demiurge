@@ -321,6 +321,45 @@ class TestCheckKill(CliTestCase):
         self.assertIn("early check", out)
 
 
+class TestKill(CliTestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        self.settings = self.root / "settings.json"
+        hook = {"type": "command", "command": 'python "x/ledger_hook.py" --event prompt || true'}
+        other = {"type": "command", "command": "python other.py"}
+        self.settings.write_text(json.dumps({"hooks": {
+            "UserPromptSubmit": [{"hooks": [hook]}],
+            "Stop": [{"hooks": [hook, other]}]}}), encoding="utf-8")
+        self.args = ["kill", "--installed", (self.now - dt.timedelta(days=60)).date().isoformat(),
+                     "--settings", str(self.settings)]
+
+    def hooks(self) -> dict:
+        return json.loads(self.settings.read_text(encoding="utf-8"))["hooks"]
+
+    def test_no_terminal_refuses_and_changes_nothing(self) -> None:
+        code, _, err = self.run_cli(*self.args)
+        self.assertEqual(code, 1)
+        self.assertIn("REFUSED", err)
+        self.assertIn("UserPromptSubmit", self.hooks())
+
+    def test_wrong_answer_changes_nothing(self) -> None:
+        with mock.patch.object(ledger, "_at_terminal", return_value=True), \
+                mock.patch("builtins.input", return_value="yes"):
+            code, _, _ = self.run_cli(*self.args)
+        self.assertEqual(code, 1)
+        self.assertIn("UserPromptSubmit", self.hooks())
+
+    def test_kill_typed_removes_only_ledger_hooks(self) -> None:
+        with mock.patch.object(ledger, "_at_terminal", return_value=True), \
+                mock.patch("builtins.input", return_value="KILL"):
+            code, _, _ = self.run_cli(*self.args)
+        self.assertEqual(code, 0)
+        hooks = self.hooks()
+        self.assertNotIn("UserPromptSubmit", hooks)
+        self.assertEqual(hooks["Stop"][0]["hooks"][0]["command"], "python other.py")
+        self.assertTrue(self.settings.with_suffix(".json.bak").exists())
+
+
 class TestInstallHook(CliTestCase):
     def test_copies_files_and_prints_snippet(self) -> None:
         dest = self.root / "bin"
