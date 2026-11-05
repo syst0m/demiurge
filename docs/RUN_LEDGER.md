@@ -74,7 +74,7 @@ A run's label is the label of its latest verdict row. A run with no verdict row 
 | Harness | Capture | Status |
 |---|---|---|
 | Claude Code | the hook entries in section 4 | verified |
-| Hermes | the `demiurge-skills` plugin records each `/niccolo`, `/marcus`, `/imhotep` slash command as a skill run (`pre_gateway_dispatch`, already live) and a harness row at `on_session_end` | slash capture uses the live hook; the `on_session_end` name is **not verified** |
+| Hermes | the `demiurge-skills` plugin records each `/niccolo`, `/marcus`, `/imhotep` slash command as a skill run (`pre_gateway_dispatch`, already live) and a harness row at `on_session_end` | both hook names are documented in the installed Hermes (`hooks.md`). `on_session_end` fires at each **turn** end, so it writes one harness row per turn: `ok` if completed, `bad`/`infra` if failed, unlabeled if interrupted. Not yet seen in a live session. |
 | Antigravity | `install-hook` prints a `Stop` entry that records a harness row | **not verified** in a live session; skill and tool capture need its payload shape |
 | OpenCode | none | **not built**: its plugin event names are not checked |
 
