@@ -221,7 +221,7 @@ class TestInventory(CliTestCase):
         self.invoke("u1")
         code, out, _ = self.run_cli("inventory", "--by", "skill")
         self.assertEqual(code, 0)
-        self.assertIn("demo: n=13 ok=8 bad=4 dismissed=0 unlabeled=1", out)
+        self.assertIn("demo: n=13 ok=8 bad=4 unsafe=0 dismissed=0 unlabeled=1", out)
         self.assertNotIn("Wilson", out)
         self.assertNotIn("%", out.split("\n", 1)[1])
         self.assertIsNone(re.search(r"\b0\.\d", out))
@@ -331,7 +331,9 @@ class TestInstallHook(CliTestCase):
         self.assertEqual(code, 0, err)
         self.assertTrue((dest / "ledger_hook.py").is_file())
         self.assertTrue((dest / "ledger_lib.py").is_file())
-        snippet = json.loads(out[out.index("{"):])
+        snippet, _ = json.JSONDecoder().raw_decode(out[out.index("{"):])
+        self.assertIn("Stop", snippet["hooks"])
+        self.assertIn("antigravity", out)
         commands = [h["command"] for entries in snippet["hooks"].values()
                     for entry in entries for h in entry["hooks"]]
         self.assertTrue(all(c.endswith("|| true") for c in commands))
@@ -341,6 +343,58 @@ class TestInstallHook(CliTestCase):
             code, _, err = self.run_cli("install-hook", "--dest", str(self.root / "bin"))
         self.assertEqual(code, 2)
         self.assertFalse((self.root / "bin").exists())
+
+
+class TestRunGate(CliTestCase):
+    def gate(self, exit_code: int, *extra: str) -> tuple:
+        return self.run_cli("run-gate", "--name", "demo-gate", *extra, "--", sys.executable,
+                            "-c", f"import sys; sys.exit({exit_code})")
+
+    def test_pass_records_ok_and_returns_zero(self) -> None:
+        code, _, err = self.gate(0)
+        self.assertEqual(code, 0, err)
+        run = next(iter(ledger.load_runs().values()))
+        self.assertEqual((run["subject_type"], run["skill"], run["label"], run["source"]),
+                         ("gate", "demo-gate", "ok", "deterministic"))
+
+    def test_fail_records_bad_and_passes_exit_code_through(self) -> None:
+        code, _, _ = self.gate(3)
+        self.assertEqual(code, 3)
+        run = next(iter(ledger.load_runs().values()))
+        self.assertEqual((run["label"], run["failure_class"], run["note"]),
+                         ("bad", "other", "exit 3"))
+
+    def test_ledger_fault_never_changes_exit_code(self) -> None:
+        with mock.patch.object(ledger_lib, "append", side_effect=OSError("disk full")):
+            code, _, err = self.gate(0)
+        self.assertEqual(code, 0)
+        self.assertIn("not recorded", err)
+
+    def test_missing_command_is_127_and_bad(self) -> None:
+        code, _, _ = self.run_cli("run-gate", "--name", "g", "--", "no-such-command-xyz")
+        self.assertEqual(code, 127)
+        self.assertEqual(next(iter(ledger.load_runs().values()))["label"], "bad")
+
+    def test_no_command_is_usage_error(self) -> None:
+        self.assertEqual(self.run_cli("run-gate", "--")[0], 2)
+
+    def test_inventory_by_subject_type(self) -> None:
+        self.gate(0)
+        self.invoke("a" * 32)
+        _, out, _ = self.run_cli("inventory", "--by", "subject_type")
+        self.assertIn("gate: n=1", out)
+        self.assertIn("skill: n=1", out)
+
+    def test_gate_rows_do_not_mask_unlabeled_skills_in_check_kill(self) -> None:
+        self.invoke("c" * 32, days_ago=2)
+        before = ledger.evaluate_kill(self.now.date() - dt.timedelta(days=3), self.now.date())[1]
+        self.gate(0)
+        after = ledger.evaluate_kill(self.now.date() - dt.timedelta(days=3), self.now.date())[1]
+        self.assertEqual(before[2], after[2])
+
+    def test_old_rows_without_subject_type_read_as_skill(self) -> None:
+        self.invoke("b" * 32)
+        self.assertEqual(ledger.load_runs()["b" * 32]["subject_type"], "skill")
 
 
 if __name__ == "__main__":

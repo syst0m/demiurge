@@ -61,7 +61,7 @@ def plugin_yaml(names: list[str]) -> str:
         f"name: demiurge-skills\n"
         f"version: 1.0.0\n"
         f"description: Hermes slash commands for demiurge skills ({', '.join(names)}). Synced from scripts/sync-hermes-commands.py — do not edit by hand.\n"
-        f"provides_hooks:\n  - pre_gateway_dispatch\n"
+        f"provides_hooks:\n  - pre_gateway_dispatch\n  - on_session_end\n"
         f"provides_commands:\n{commands}\n"
         f"provides_skills:\n{commands}\n"
     )
@@ -103,11 +103,30 @@ def main(argv: list[str] | None = None) -> int:
 
 from __future__ import annotations
 
+import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parent
 COMMANDS_DIR = ROOT / "commands"
+LEDGER_HOOK = ROOT.parent.parent / "demiurge-ledger" / "ledger_hook.py"
+
+
+def _ledger(*args: str) -> None:
+    """Write one run-ledger row through the pinned hook. Fail-open: never raises."""
+    try:
+        if LEDGER_HOOK.is_file():
+            subprocess.run([sys.executable, str(LEDGER_HOOK), "--event", "record",
+                            "--harness", "hermes", *args],
+                           timeout=3, capture_output=True, check=False)
+    except Exception:
+        pass
+
+
+def record_session_end(**_: Any) -> None:
+    """Hermes session end: liveness row for the harness. Hook name not verified in a live run."""
+    _ledger("--subject-type", "harness", "--subject", "hermes")
 
 
 def _read_toml_command(path: Path) -> tuple[str, str, str] | None:
@@ -163,12 +182,17 @@ def rewrite_gateway_command(event: Any = None, gateway: Any = None, **_: Any) ->
         return None
     if _slash_access_denied(event, gateway, command):
         return None
+    _ledger("--subject-type", "skill", "--subject", command, "--trigger", "slash")
     return {"action": "rewrite", "text": _skill_prompt(command, rest)}
 
 
 def register(ctx: Any) -> None:
     """Register the pre_gateway_dispatch hook that exposes /niccolo, /marcus and /imhotep."""
     ctx.register_hook("pre_gateway_dispatch", rewrite_gateway_command)
+    try:
+        ctx.register_hook("on_session_end", record_session_end)
+    except Exception:
+        pass  # an unknown hook name must never break the slash commands
 '''
     if not init_py.exists() or init_py.read_text(encoding="utf-8") != init_text:
         drift = True

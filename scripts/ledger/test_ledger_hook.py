@@ -133,6 +133,57 @@ class HookTestCase(unittest.TestCase):
             hook_event_name="UserPromptSubmit", prompt=text))
 
 
+class TestSubjectsAndNudge(HookTestCase):
+    def agent_call(self, tool: str = "Agent") -> subprocess.CompletedProcess:
+        return self.run_hook("post-tool", self.payload(
+            hook_event_name="PostToolUse", tool_name=tool,
+            tool_input={"subagent_type": "Explore"}))
+
+    def test_agent_call_writes_agent_row(self) -> None:
+        for tool in ("Agent", "Task"):
+            self.assertEqual(self.agent_call(tool).returncode, 0)
+        rows = self.rows()
+        self.assertEqual([(r["skill"], r["subject_type"]) for r in rows],
+                         [("Explore", "agent")] * 2)
+
+    def test_bad_labels_the_skill_not_the_agent_after_it(self) -> None:
+        self.post_tool()
+        self.agent_call()
+        self.prompt("::bad misroute")
+        verdict = [r for r in self.rows() if r["kind"] == "verdict"][0]
+        self.assertEqual(verdict["skill"], "demo")
+
+    def test_record_event_writes_invoke_and_verdict_without_stdin(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(HOOK), "--event", "record", "--harness", "hermes",
+             "--subject-type", "harness", "--subject", "hermes", "--label", "bad",
+             "--class", "infra"], capture_output=True, env=self.env, timeout=30,
+            stdin=subprocess.DEVNULL, check=False)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        invoke, verdict = self.rows()
+        self.assertEqual((invoke["harness"], invoke["subject_type"]), ("hermes", "harness"))
+        self.assertEqual(verdict["outcome"]["failure_class"], "infra")
+
+    def test_record_rejects_bad_subject_type_but_exits_zero(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(HOOK), "--event", "record", "--subject", "x",
+             "--subject-type", "nonsense"], capture_output=True, env=self.env, timeout=30,
+            stdin=subprocess.DEVNULL, check=False)
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(self.rows(), [])
+        self.assertEqual(len(self.error_log()), 1)
+
+    def test_stop_nudge_is_off_by_default_and_counts_unlabeled_when_on(self) -> None:
+        self.post_tool()
+        off = self.run_hook("stop", self.payload())
+        self.assertEqual(off.stdout, b"")
+        self.env["DEMIURGE_LEDGER_NUDGE"] = "1"
+        on = self.run_hook("stop", self.payload())
+        self.assertIn("1 unlabeled", json.loads(on.stdout)["systemMessage"])
+        self.prompt("::ok")
+        self.assertEqual(self.run_hook("stop", self.payload()).stdout, b"")
+
+
 class TestPostTool(HookTestCase):
     def test_post_tool_row_written(self) -> None:
         result = self.post_tool()

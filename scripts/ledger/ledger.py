@@ -38,6 +38,11 @@ is unlabeled.
     check-kill --installed YYYY-MM-DD [--today YYYY-MM-DD]
         Evaluates kill criteria 1-4 from docs/RUN_LEDGER.md and prints PASS or KILL.
 
+    run-gate [--name <gate>] -- <command> [args]
+        Runs the command, appends a gate invoke row and a deterministic verdict row
+        (exit 0 is ok, else bad), and returns the command's exit code. A ledger
+        fault prints a warning and never changes the exit code.
+
     install-hook --dest <dir>
         Copies ledger_hook.py and ledger_lib.py to <dir> and prints the settings
         snippet. It never edits a settings file.
@@ -56,12 +61,15 @@ from __future__ import annotations
 import argparse
 import calendar
 import datetime as dt
+import hashlib
 import json
 import os
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
+import time
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
@@ -130,6 +138,7 @@ def collect_runs(rows: Iterable[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
         run["note"] = latest.get("note") if latest else None
         first = run["invoke"] or run["verdicts"][0]
         run["skill"] = first["skill"]
+        run["subject_type"] = first.get("subject_type", "skill")
         run["origin"] = first["origin"]
         run["harness"] = first.get("harness")
         run["ts"] = first["ts"]
@@ -152,7 +161,7 @@ def verdict_row(run: Dict[str, Any], outcome: Dict[str, Any],
     row: Dict[str, Any] = {"run_id": run["run_id"], "kind": "verdict", "origin": run["origin"],
                            "skill": run["skill"], "outcome": outcome}
     invoke = run["invoke"] or {}
-    for key in ("session", "harness", "model_id", "version", "skill_sha"):
+    for key in ("session", "harness", "model_id", "version", "skill_sha", "subject_type"):
         if key in invoke:
             row[key] = invoke[key]
     if refs:
@@ -338,6 +347,50 @@ def cmd_promote(args: argparse.Namespace) -> int:
     return 0
 
 
+# --- run-gate ----------------------------------------------------------------
+
+def _gate_name(cmd: List[str]) -> str:
+    script = next((a for a in cmd if a.endswith(".py")), cmd[0])
+    return Path(script).stem
+
+
+def cmd_run_gate(args: argparse.Namespace) -> int:
+    """Run a gate command, record pass or fail, and return the command's own exit code.
+
+    A gate that fails is working. A `bad` gate row means the gated change failed.
+    Fail-open: a ledger fault prints a warning and never changes the exit code.
+    """
+    cmd = args.cmd[1:] if args.cmd[:1] == ["--"] else args.cmd
+    if not cmd:
+        print("ERROR: run-gate needs a command after --", file=sys.stderr)
+        return 2
+    name = args.name or _gate_name(cmd)
+    if not SAFE_NAME.match(name):
+        print(f"ERROR: gate name must match {SAFE_NAME.pattern}", file=sys.stderr)
+        return 2
+    started, clock = ledger_lib.now_ts(), time.monotonic()
+    try:
+        code = subprocess.run(cmd).returncode
+    except OSError as exc:
+        print(f"ERROR: cannot run {cmd[0]!r}: {exc}", file=sys.stderr)
+        code = 127
+    millis = int((time.monotonic() - clock) * 1000)
+    row: Dict[str, Any] = {"run_id": ledger_lib.new_run_id(), "origin": "organic",
+                           "skill": name, "subject_type": "gate", "duration_ms": millis}
+    script = next((Path(a) for a in cmd if a.endswith(".py") and Path(a).is_file()), None)
+    if script is not None:  # version boundary: which gate script produced this row
+        row["skill_sha"] = hashlib.sha256(script.read_bytes()).hexdigest()
+    outcome: Dict[str, Any] = {"label": "ok" if code == 0 else "bad", "source": "deterministic"}
+    if code != 0:
+        outcome.update(failure_class="other", note=f"exit {code}")
+    try:
+        ledger_lib.append({**row, "kind": "invoke", "ts": started})
+        ledger_lib.append({**row, "kind": "verdict", "outcome": outcome})
+    except (ledger_lib.LedgerError, ledger_lib.LedgerLockTimeout, OSError) as exc:
+        print(f"ledger: gate row not recorded: {exc}", file=sys.stderr)
+    return code
+
+
 # --- inventory ---------------------------------------------------------------
 
 def _interval(bad: int, labeled: int) -> str:
@@ -372,7 +425,8 @@ def cmd_inventory(args: argparse.Namespace) -> int:
         labels = Counter(run["label"] or "unlabeled" for run in groups[name])
         ok, bad = labels["ok"], labels["bad"]
         labeled = ok + bad
-        line = (f"{name}: n={len(groups[name])} ok={ok} bad={bad} "
+        unsafe = sum(1 for run in groups[name] if run["failure_class"] == "unsafe")
+        line = (f"{name}: n={len(groups[name])} ok={ok} bad={bad} unsafe={unsafe} "
                 f"dismissed={labels['dismissed']} "
                 f"unlabeled={labels['unlabeled'] + labels['unknown']}")
         if labeled >= args.min_n:
@@ -466,7 +520,8 @@ def evaluate_kill(installed: dt.date, today: dt.date) -> List[Tuple[int, bool, s
     start = dt.datetime.combine(installed, dt.time.min, tzinfo=dt.timezone.utc)
     end = dt.datetime.combine(today, dt.time.max, tzinfo=dt.timezone.utc)
     rows = [row for row in ledger_lib.iter_rows()
-            if row["origin"] == "organic" and start <= parse_ts(row["ts"]) <= end]
+            if row["origin"] == "organic" and start <= parse_ts(row["ts"]) <= end
+            and row.get("subject_type", "skill") == "skill"]  # self-labeled gate rows would mask unlabeled skills
     runs = collect_runs(rows)
     results: List[Tuple[int, bool, str]] = []
 
@@ -540,16 +595,28 @@ def cmd_install_hook(args: argparse.Namespace) -> int:
         print(f"copied {source.name} -> {dest / source.name}")
     hook = (dest / HOOK_SOURCE.name).as_posix()
     snippet = {"hooks": {
-        "PostToolUse": [{"matcher": "Skill", "hooks": [{
+        "PostToolUse": [{"matcher": "Skill|Agent|Task", "hooks": [{
             "type": "command", "timeout": 2,
             "command": f'python "{hook}" --event post-tool || true'}]}],
         "UserPromptSubmit": [{"hooks": [{
             "type": "command", "timeout": 2,
             "command": f'python "{hook}" --event prompt || true'}]}],
+        # Opt-in: prints a reminder only when DEMIURGE_LEDGER_NUDGE is set.
+        "Stop": [{"hooks": [{
+            "type": "command", "timeout": 2,
+            "command": f'python "{hook}" --event stop || true'}]}],
     }}
     print("Add each entry below as a new element of the existing hooks arrays in your "
           "settings file. Keep every existing hook:")
     print(json.dumps(snippet, indent=2))
+    # Antigravity: Stop takes a flat command array; its tool names differ, so record a
+    # harness session row instead of parsing its tool payload. Not verified in a live session.
+    antigravity = {"demiurge-ledger": {"Stop": [{
+        "type": "command", "timeout": 2,
+        "command": f'python "{hook}" --event record --harness antigravity '
+                   f'--subject-type harness --subject antigravity || true'}]}}
+    print("Antigravity: merge into ~/.gemini/config/hooks.json as a new group:")
+    print(json.dumps(antigravity, indent=2))
     return 0
 
 
@@ -587,10 +654,16 @@ def build_parser() -> argparse.ArgumentParser:
     p.set_defaults(func=cmd_dismiss)
 
     p = sub.add_parser("inventory", help="counts per skill, harness or failure class")
-    p.add_argument("--by", choices=("skill", "harness", "failure_class"), default="skill")
+    p.add_argument("--by", choices=("skill", "harness", "failure_class", "subject_type"),
+                   default="skill")
     p.add_argument("--days", type=int, default=90)
     p.add_argument("--min-n", type=int, default=20)
     p.set_defaults(func=cmd_inventory)
+
+    p = sub.add_parser("run-gate", help="run a gate command and record its pass or fail")
+    p.add_argument("--name", help="gate name (default: first .py argument, else the command)")
+    p.add_argument("cmd", nargs=argparse.REMAINDER, help="-- <command> [args]")
+    p.set_defaults(func=cmd_run_gate)
 
     p = sub.add_parser("purge", help="drop old rows from closed months")
     p.add_argument("--older-than", type=int, required=True, metavar="DAYS")
