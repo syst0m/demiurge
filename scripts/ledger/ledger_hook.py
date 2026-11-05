@@ -40,6 +40,16 @@ def _event(argv):
     return ""
 
 
+def _arg(argv, name):
+    """Value of `--name value` or `--name=value`, else ''."""
+    for index, arg in enumerate(argv):
+        if arg == name and index + 1 < len(argv):
+            return argv[index + 1]
+        if arg.startswith(name + "="):
+            return arg[len(name) + 1:]
+    return ""
+
+
 def _ordinary_prompt(raw):
     """True only when the prompt value is found and starts with neither '::' nor '/'.
 
@@ -83,7 +93,11 @@ def _log_error(event, exc):
 def main():
     event = _event(sys.argv)
     try:
-        raw = sys.stdin.buffer.read().decode("utf-8", "replace")
+        if event == "stop":
+            import os  # lazy: the prompt fast path must import nothing
+            if not os.environ.get("DEMIURGE_LEDGER_NUDGE"):
+                return 0  # the nudge is opt-in; skip before reading stdin
+        raw = "" if event == "record" else sys.stdin.buffer.read().decode("utf-8", "replace")
         if event == "prompt" and _ordinary_prompt(raw):
             return 0
         _run(event, raw)
@@ -105,7 +119,7 @@ def _run(event, raw):
             sys.path.insert(0, path)
     import ledger_lib
 
-    harness = "claude-code"
+    harness = _arg(sys.argv, "--harness") or "claude-code"
     dedupe_seconds = 60
     tail_bytes = 256 * 1024
     bad_re = re.compile(r"^::bad(?:\s+(\S+))?(?:\s+.*)?$", re.DOTALL)
@@ -113,7 +127,7 @@ def _run(event, raw):
     slash_re = re.compile(r"^/([A-Za-z0-9][A-Za-z0-9_.-]*)(?:\s|$)")
     name_re = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
 
-    payload = json.loads(raw)
+    payload = {} if event == "record" else json.loads(raw)
     if not isinstance(payload, dict):
         raise ValueError("hook input is not a JSON object")
 
@@ -212,11 +226,56 @@ def _run(event, raw):
     session = ledger_lib.hash_session(session_id) \
         if isinstance(session_id, str) and session_id else None
 
+    if event == "record":
+        # Portable entry for harnesses whose payload we do not parse: the caller names the subject.
+        subject, kind = _arg(sys.argv, "--subject"), _arg(sys.argv, "--subject-type") or "skill"
+        if not name_re.match(subject) or kind not in ledger_lib.SUBJECT_TYPES:
+            raise ValueError("record needs a valid --subject and --subject-type")
+        row = {"run_id": ledger_lib.new_run_id(), "kind": "invoke", "origin": "organic",
+               "skill": subject, "subject_type": kind, "harness": harness}
+        trigger = _arg(sys.argv, "--trigger")
+        if trigger:
+            row["trigger"] = trigger
+        ledger_lib.append(row)
+        label = _arg(sys.argv, "--label")
+        if label:
+            outcome = {"label": label, "source": "deterministic"}
+            if _arg(sys.argv, "--class"):
+                outcome["failure_class"] = _arg(sys.argv, "--class")
+            ledger_lib.append({**row, "kind": "verdict", "outcome": outcome,
+                               "run_id": row["run_id"]})
+        return
+
+    if event == "stop":
+        # Opt-in nudge: count this session's unlabeled skill runs. It writes no row.
+        rows = session_rows(session) if session else []
+        runs = {r["run_id"] for r in rows
+                if r["kind"] == "invoke" and r.get("subject_type", "skill") == "skill"}
+        pending = len(runs - {r["run_id"] for r in rows if r["kind"] == "verdict"})
+        if pending:
+            sys.stdout.write(json.dumps({"systemMessage": (
+                f"ledger: {pending} unlabeled skill run(s) this session. "
+                "Type ::ok or ::bad <class> as a prompt.")}) + "\n")
+        return
+
     if event == "post-tool":
-        if payload.get("tool_name", "Skill") != "Skill":
-            return
+        tool = payload.get("tool_name", "Skill")
         tool_input = payload.get("tool_input")
         tool_input = tool_input if isinstance(tool_input, dict) else {}
+        if tool in ("Agent", "Task"):
+            agent = tool_input.get("subagent_type")
+            agent = agent.strip() if isinstance(agent, str) and name_re.match(agent.strip()) \
+                else "unknown"
+            row = {"run_id": ledger_lib.new_run_id(), "kind": "invoke", "origin": "organic",
+                   "skill": agent, "subject_type": "agent", "trigger": "model",
+                   "harness": harness}
+            if session:
+                row["session"] = session
+            row.update(transcript_meta())
+            ledger_lib.append(row)
+            return
+        if tool != "Skill":
+            return
         name = "unknown"
         for key in ("skill", "name"):
             value = tool_input.get(key)
@@ -254,8 +313,9 @@ def _run(event, raw):
         try:
             last = None
             if session:
-                last = next((row for row in session_rows(session) if row["kind"] == "invoke"),
-                            None)
+                # ::bad labels the last skill run, not the subagents it spawned
+                last = next((row for row in session_rows(session) if row["kind"] == "invoke"
+                             and row.get("subject_type", "skill") != "agent"), None)
             if last is None:
                 reason = "ledger: no skill run in this session to label"
             else:
