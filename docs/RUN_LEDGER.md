@@ -65,6 +65,7 @@ A run's label is the label of its latest verdict row. A run with no verdict row 
 | `PostToolUse`, matcher `Skill` | a Skill tool call | `invoke`, `trigger: model`, with `skill_sha`, `model_id` and `version` read from the transcript tail |
 | `UserPromptSubmit` | `/<name>` naming an installed skill | `invoke`, `trigger: slash`; the prompt passes through |
 | `PostToolUse`, matcher `Agent\|Task` | a subagent call | `invoke`, `subject_type: agent`, `skill` = the `subagent_type` |
+| `UserPromptSubmit` | `::help` | Blocks the prompt and shows the cheat-sheet (`ledger_lib.cheatsheet()`). Writes no row. |
 | `UserPromptSubmit` | `::bad [<class>] [text]` or `::ok` | `verdict` with `source: user` on the session's last **skill** invoke row (never an agent row); the prompt is blocked |
 | `Stop` | opt-in: set `DEMIURGE_LEDGER_NUDGE=1` | no row; prints a reminder when the session has unlabeled skill runs |
 | `--event record --harness H --subject-type T --subject N [--trigger X] [--label L --class C]` | no stdin; the caller names the subject | `invoke`, and a `deterministic` verdict when `--label` is given. Use it where the harness payload is not parsed. |
@@ -173,6 +174,15 @@ The hook never blocks the user, except to swallow a `::` capture prompt.
 | `failures <skill> [--last 10] [--source user,deterministic] [--json]` | Runs of a skill whose latest label is `bad` from the listed sources. |
 | `verdict <run_id> --label ok\|bad\|unknown [--class <class>] [--note]` | Appends a user verdict. `bad` needs `--class`. |
 | `dismiss <run_id> --reason <text>` | Appends a `dismissed` verdict. |
+| `cheatsheet` | Prints label syntax for each harness, the failure classes and every command. The class list comes from `FAILURE_CLASSES` in `ledger_lib.py`. |
+
+`::help` shows the same text in each harness:
+
+| Harness | How `::help` works |
+|---|---|
+| Claude Code | The `UserPromptSubmit` hook blocks the prompt and shows the sheet. The model does not run. |
+| Hermes | The `demiurge-skills` plugin runs `ledger_hook.py --event help` and rewrites the message so the agent prints the sheet. Run `python scripts/sync-hermes-commands.py` to deploy it, then restart Hermes. |
+| Antigravity, OpenCode | No prompt hook is verified. `AGENTS.md` tells the agent to run `ledger.py cheatsheet` for a message that is exactly `::help`. This relies on the model. |
 | `promote <run_id> --skill <name>` | Stages a regression case (section 6). |
 | `run-gate [--name <gate>] -- <command>` | Runs a gate, appends a `gate` invoke row and a `deterministic` verdict (exit 0 is `ok`, else `bad`), returns the command's exit code. `skill_sha` is the sha256 of the first `.py` argument. A ledger fault warns and never changes the exit code. |
 | `inventory [--by skill\|harness\|failure_class\|subject_type] [--days 90] [--min-n 20]` | Organic runs per group. Counts only below `--min-n` labeled runs; a 95% Wilson interval at or above it. It never prints a bare rate. |

@@ -4,11 +4,13 @@
 Usage (from a hooks entry in the harness settings):
     python ledger_hook.py --event post-tool   # PostToolUse, matcher "Skill"
     python ledger_hook.py --event prompt      # UserPromptSubmit
+    python ledger_hook.py --event help        # prints the cheat-sheet; reads no stdin
 
 The hook reads the harness event JSON on stdin and never blocks the user:
 
 - ``--event prompt`` reads stdin and exits 0 before any import unless the prompt starts with
-  ``::`` or ``/``. ``::bad [<class>] [...]`` and ``::ok`` record a verdict on the session's
+  ``::`` or ``/``. ``::help`` blocks the prompt and shows the cheat-sheet as the reason.
+  ``::bad [<class>] [...]`` and ``::ok`` record a verdict on the session's
   last invoke row and block the prompt, so the capture never reaches the model. ``/<name>``
   naming an installed skill records an invoke row with ``trigger: slash`` and passes through.
 - ``--event post-tool`` records an invoke row with ``trigger: model`` for a Skill tool call,
@@ -97,7 +99,7 @@ def main():
             import os  # lazy: the prompt fast path must import nothing
             if not os.environ.get("DEMIURGE_LEDGER_NUDGE"):
                 return 0  # the nudge is opt-in; skip before reading stdin
-        raw = "" if event == "record" else sys.stdin.buffer.read().decode("utf-8", "replace")
+        raw = "" if event in ("record", "help") else sys.stdin.buffer.read().decode("utf-8", "replace")
         if event == "prompt" and _ordinary_prompt(raw):
             return 0
         _run(event, raw)
@@ -126,6 +128,11 @@ def _run(event, raw):
     ok_re = re.compile(r"^::ok(?:\s+.*)?$", re.DOTALL)
     slash_re = re.compile(r"^/([A-Za-z0-9][A-Za-z0-9_.-]*)(?:\s|$)")
     name_re = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]*$")
+
+    if event == "help":
+        # Plain text for harnesses whose plugin prints it (Hermes) or whose agent runs it.
+        sys.stdout.write(ledger_lib.cheatsheet() + "\n")
+        return
 
     payload = {} if event == "record" else json.loads(raw)
     if not isinstance(payload, dict):
@@ -299,6 +306,10 @@ def _run(event, raw):
     prompt = payload.get("prompt")
     if not isinstance(prompt, str):
         raise ValueError("prompt missing")
+
+    if re.match(r"^::help\s*$", prompt):
+        sys.stdout.write(json.dumps({"decision": "block", "reason": ledger_lib.cheatsheet()}) + "\n")
+        return
 
     bad = bad_re.match(prompt)
     ok = ok_re.match(prompt)

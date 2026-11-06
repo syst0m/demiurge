@@ -321,6 +321,15 @@ class TestCheckKill(CliTestCase):
         self.assertIn("early check", out)
 
 
+class TestCheatsheet(CliTestCase):
+    def test_lists_every_failure_class(self) -> None:
+        code, out, _ = self.run_cli("cheatsheet")
+        self.assertEqual(code, 0)
+        for name in ledger_lib.FAILURE_CLASSES:
+            self.assertIn(name, out)
+        self.assertIn("::bad <class>", out)
+
+
 class TestKill(CliTestCase):
     def setUp(self) -> None:
         super().setUp()

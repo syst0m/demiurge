@@ -634,6 +634,13 @@ def cmd_kill(args: argparse.Namespace) -> int:
     return 0
 
 
+# --- cheatsheet --------------------------------------------------------------
+
+def cmd_cheatsheet(args: argparse.Namespace) -> int:
+    print(ledger_lib.cheatsheet())
+    return 0
+
+
 # --- install-hook ------------------------------------------------------------
 
 def cmd_install_hook(args: argparse.Namespace) -> int:
@@ -731,6 +738,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--installed", type=_date, required=True)
     p.add_argument("--settings", required=True, help="settings.json to edit")
     p.set_defaults(func=cmd_kill)
+
+    p = sub.add_parser("cheatsheet", help="print label syntax, failure classes and commands")
+    p.set_defaults(func=cmd_cheatsheet)
 
     p = sub.add_parser("install-hook", help="copy the hook to a pinned directory")
     p.add_argument("--dest", required=True)
