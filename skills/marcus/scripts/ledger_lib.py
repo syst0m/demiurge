@@ -57,6 +57,48 @@ FAILURE_CLASSES = (
     "other",
 )
 
+CLASS_HELP = {
+    "misroute": "wrong skill ran, or the right one did not",
+    "wrong_output": "skill ran, result is incorrect",
+    "incomplete": "skill stopped before the task was done",
+    "ignored_rule": "skill broke one of its own rules",
+    "unsafe": "harmful or unapproved action",
+    "tool_error": "a tool call the skill made failed",
+    "infra": "harness or runner failed, not the skill",
+    "other": "none of the above",
+}
+
+
+def cheatsheet() -> str:
+    """The label cheat-sheet. `ledger.py cheatsheet` and the `::help` prompt print this."""
+    lines = [
+        "LABEL A RUN",
+        "  Prompt (Claude Code, Hermes):  ::ok   |   ::bad <class>   (labels the last skill run)",
+        "  Any harness shell:  python scripts/ledger/ledger.py verdict <run_id> "
+        "--label ok|bad [--class <class>] [--note TEXT]",
+        "  Find run_id:        ledger.py failures <skill>   |   ledger.py inventory",
+        "  Gates label themselves (source: deterministic). Hermes turns label themselves.",
+        "  Show this sheet:    ::help   |   ledger.py cheatsheet",
+        "",
+        "FAILURE CLASSES (defined in skills/marcus/scripts/ledger_lib.py)",
+    ]
+    lines += [f"  {name:<13} {CLASS_HELP.get(name, '')}" for name in FAILURE_CLASSES]
+    lines += [
+        "",
+        "OTHER COMMANDS",
+        "  inventory [--by skill|harness|failure_class|subject_type] [--days N] [--min-n N]",
+        "  failures <skill> [--last N] [--source S] [--json]",
+        "  promote <run_id> --skill <skill>     stage a failure as a regression case",
+        "  dismiss <run_id> --reason TEXT",
+        "  run-gate [--name N] -- <cmd>         run a gate and record pass or fail",
+        "  check-kill --installed DATE          kill review; kill --installed DATE --settings F",
+        "  purge --older-than DAYS | install-hook --dest DIR",
+        "",
+        "Rules: counts never gate, score or rank. Full guide: docs/RUN_LEDGER.md",
+    ]
+    return "\n".join(lines)
+
+
 _HEX = re.compile(r"^[0-9a-f]{16,64}$")
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 

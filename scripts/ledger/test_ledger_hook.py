@@ -251,6 +251,19 @@ class TestPrompt(HookTestCase):
                          {"label": "bad", "source": "user", "failure_class": "misroute"})
         self.assertNotIn(" x", json.dumps(verdict))
 
+    def test_help_blocks_with_cheatsheet_and_writes_no_row(self) -> None:
+        result = self.prompt("::help")
+        out = json.loads(result.stdout)
+        self.assertEqual(out["decision"], "block")
+        for name in ledger_lib.FAILURE_CLASSES:
+            self.assertIn(name, out["reason"])
+        self.assertEqual(self.rows(), [])
+
+    def test_help_event_prints_plain_text(self) -> None:
+        result = self.run_hook("help", "")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("::bad <class>", result.stdout.decode("utf-8"))
+
     def test_ok_records_verdict(self) -> None:
         self.post_tool()
         result = self.prompt("::ok")

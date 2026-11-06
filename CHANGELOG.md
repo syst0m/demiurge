@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Ledger Cheat-Sheet:** `ledger.py cheatsheet` prints label syntax per harness, the failure classes and all commands. `AGENTS.md` points to it, so every harness finds it.
+- **Ledger Cheat-Sheet:** `ledger.py cheatsheet` prints label syntax per harness, the failure classes and all commands. `::help` shows the same sheet as a prompt: the Claude Code hook and the Hermes plugin answer it directly, and `AGENTS.md` tells Antigravity and OpenCode agents to run the command.
 
 ## [0.17.7] - 2026-11-05
 
