@@ -634,6 +634,42 @@ def cmd_kill(args: argparse.Namespace) -> int:
     return 0
 
 
+# --- cheatsheet --------------------------------------------------------------
+
+CLASS_HELP = {
+    "misroute": "wrong skill ran, or the right one did not",
+    "wrong_output": "skill ran, result is incorrect",
+    "incomplete": "skill stopped before the task was done",
+    "ignored_rule": "skill broke one of its own rules",
+    "unsafe": "harmful or unapproved action",
+    "tool_error": "a tool call the skill made failed",
+    "infra": "harness or runner failed, not the skill",
+    "other": "none of the above",
+}
+
+
+def cmd_cheatsheet(args: argparse.Namespace) -> int:
+    print("LABEL A RUN")
+    print("  Claude Code prompt:  ::ok   |   ::bad <class>      (labels the last skill run)")
+    print("  Any harness shell:   python scripts/ledger/ledger.py verdict <run_id> "
+          "--label ok|bad [--class <class>] [--note TEXT]")
+    print("  Find run_id:         ledger.py failures <skill>   |   ledger.py inventory")
+    print("  Gates label themselves (source: deterministic). Hermes turns label themselves.")
+    print("\nFAILURE CLASSES (definition: skills/marcus/scripts/ledger_lib.py FAILURE_CLASSES)")
+    for name in ledger_lib.FAILURE_CLASSES:
+        print(f"  {name:<13} {CLASS_HELP.get(name, '')}")
+    print("\nOTHER COMMANDS")
+    print("  inventory [--by skill|harness|failure_class|subject_type] [--days N] [--min-n N]")
+    print("  failures <skill> [--last N] [--source S] [--json]")
+    print("  promote <run_id> --skill <skill>     stage a failure as a regression case")
+    print("  dismiss <run_id> --reason TEXT")
+    print("  run-gate [--name N] -- <cmd>         run a gate and record pass or fail")
+    print("  check-kill --installed DATE          kill review; kill --installed DATE --settings F")
+    print("  purge --older-than DAYS | install-hook --dest DIR")
+    print("\nRules: counts never gate, score or rank. Full guide: docs/RUN_LEDGER.md")
+    return 0
+
+
 # --- install-hook ------------------------------------------------------------
 
 def cmd_install_hook(args: argparse.Namespace) -> int:
@@ -731,6 +767,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--installed", type=_date, required=True)
     p.add_argument("--settings", required=True, help="settings.json to edit")
     p.set_defaults(func=cmd_kill)
+
+    p = sub.add_parser("cheatsheet", help="print label syntax, failure classes and commands")
+    p.set_defaults(func=cmd_cheatsheet)
 
     p = sub.add_parser("install-hook", help="copy the hook to a pinned directory")
     p.add_argument("--dest", required=True)

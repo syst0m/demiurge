@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.8] - 2026-11-06
+
+### Added
+
+- **Ledger Cheat-Sheet:** `ledger.py cheatsheet` prints label syntax per harness, the failure classes and all commands. `AGENTS.md` points to it, so every harness finds it.
+
 ## [0.17.7] - 2026-11-05
 
 ### Added
