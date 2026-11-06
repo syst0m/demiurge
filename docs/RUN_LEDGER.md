@@ -173,6 +173,7 @@ The hook never blocks the user, except to swallow a `::` capture prompt.
 | `failures <skill> [--last 10] [--source user,deterministic] [--json]` | Runs of a skill whose latest label is `bad` from the listed sources. |
 | `verdict <run_id> --label ok\|bad\|unknown [--class <class>] [--note]` | Appends a user verdict. `bad` needs `--class`. |
 | `dismiss <run_id> --reason <text>` | Appends a `dismissed` verdict. |
+| `cheatsheet` | Prints label syntax for each harness, the failure classes and every command. The class list comes from `FAILURE_CLASSES` in `ledger_lib.py`. |
 | `promote <run_id> --skill <name>` | Stages a regression case (section 6). |
 | `run-gate [--name <gate>] -- <command>` | Runs a gate, appends a `gate` invoke row and a `deterministic` verdict (exit 0 is `ok`, else `bad`), returns the command's exit code. `skill_sha` is the sha256 of the first `.py` argument. A ledger fault warns and never changes the exit code. |
 | `inventory [--by skill\|harness\|failure_class\|subject_type] [--days 90] [--min-n 20]` | Organic runs per group. Counts only below `--min-n` labeled runs; a 95% Wilson interval at or above it. It never prints a bare rate. |
