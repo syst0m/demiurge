@@ -144,6 +144,8 @@ The hook runs from a pinned copy, so switching branches or deleting the checkout
     }
     ```
 
+    To show `::help` in every repo, add the same `UserPromptSubmit` entry to your user settings, `~/.claude/settings.json`. Use the pinned command from step 1. Then a branch switch does not change the hook.
+
 3. Before relying on capture, confirm three things in a live session:
     - the field that names the skill in the real `PostToolUse` `tool_input` (the hook reads `skill`, then `name`, else records `unknown`)
     - that `::bad` reaches `UserPromptSubmit` unchanged and is blocked
