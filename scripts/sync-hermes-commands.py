@@ -124,6 +124,18 @@ def _ledger(*args: str) -> None:
         pass
 
 
+def _cheatsheet() -> str:
+    """The ledger cheat-sheet text from the pinned hook, or '' when it is missing."""
+    try:
+        if LEDGER_HOOK.is_file():
+            done = subprocess.run([sys.executable, str(LEDGER_HOOK), "--event", "help"],
+                                  timeout=3, capture_output=True, text=True, check=False)
+            return done.stdout.strip()
+    except Exception:
+        pass
+    return ""
+
+
 def record_session_end(completed: Any = None, failed: Any = None, **_: Any) -> None:
     """Hermes on_session_end fires at each turn finalization: one harness row per turn.
 
@@ -182,6 +194,11 @@ def _slash_access_denied(event: Any, gateway: Any, command: str) -> bool:
 def rewrite_gateway_command(event: Any = None, gateway: Any = None, **_: Any) -> dict[str, str] | None:
     """Rewrite authorized gateway /niccolo, /marcus and /imhotep commands into skill prompts."""
     text = str(getattr(event, "text", "") or "").strip()
+    if text == "::help":
+        sheet = _cheatsheet()
+        if sheet:
+            return {"action": "rewrite", "text": "Show this text to the user exactly as written, in a code block. Add nothing.\\n\\n" + sheet}
+        return None
     if not text.startswith("/"):
         return None
     head, _, rest = text[1:].partition(" ")
