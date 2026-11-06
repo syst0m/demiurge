@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.17.9] - 2026-11-06
+
+### Changed
+
+- **Ledger Cheat-Sheet in Every Repo:** `docs/RUN_LEDGER.md` shows how to add the `::help` hook to user settings, so `::help` answers in any repo, not only this one.
+
 ## [0.17.8] - 2026-11-06
 
 ### Added
