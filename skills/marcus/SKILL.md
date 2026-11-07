@@ -187,6 +187,27 @@ Run `validate_skill.py`, then have the user read every bundled file, then assign
 (`references/SPEC.md` §6). **An unread third-party skill is T4 and is not installed.** No exceptions,
 and no "it looks fine".
 
+## Improving an existing skill: the deterministic gate and the doc/code contract
+
+When the task is to improve a skill rather than generate one, four checks pay for themselves
+before any model run:
+
+1. **Build a one-command deterministic gate first.** Run the unit tests, the held-out judge and
+   every `--test` self-check from a single script. The model eval is a separate arm: it needs an
+   external runner, is host-dependent, and its recorded baseline may not be reproducible. Never
+   let a missing model runner block the deterministic fixes.
+2. **Audit the doc/code contract.** Cross-check every `SKILL.md` claim against the script behavior
+   and the tests. When they disagree, the held-out judge is the source of truth: if a judge locks a
+   behavior the docs contradict, fix the docs rather than the code. A visible test that encodes a defect is
+   still a defect — change the test and say why.
+3. **Exercise the no-dependency fallback.** A script that degrades gracefully (a config parser, an
+   API-key resolver) must be tested on the fallback path; a flattened parser silently ignores nested
+   overrides, and the failure presents as "the config did not apply".
+4. **Ground every empirical claim.** When the skill asserts a mechanism, effect or statistic, grade
+   it against a cited synthesis (effect size, n, replication status) in a graded evidence table under
+   `references/`, and add a test that fails when a finding row loses its grade or source. Pop-science
+   claims creep back in when nothing enforces the citation.
+
 ## When RESEARCH.md changes
 
 Niccolo updates it asynchronously. When its `version` no longer matches `derived_from` in
