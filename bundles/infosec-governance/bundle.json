@@ -1,0 +1,11 @@
+{
+  "name": "infosec-governance",
+  "description": "Technology Risk and InfoSec: supply chain, auth, cost audit, method validation.",
+  "skills": [
+    "secret-scanning",
+    "github-auth",
+    "fleet-auditor",
+    "analytical-method-validation",
+    "experimental-design"
+  ]
+}

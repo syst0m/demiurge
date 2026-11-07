@@ -37,6 +37,24 @@
             "command": "python \"/c/Users/User/AppData/Local/hermes/demiurge-ledger/ledger_hook.py\" --event stop || true"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python C:\\Users\\User\\Documents\\code\\demiurge\\scripts\\testing_matrix_gate.py --json",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python C:\\Users\\User\\Documents\\code\\demiurge\\scripts\\testing_matrix_gate.py --json --hook-format claude-code",
+            "timeout": 30
+          }
+        ]
       }
     ]
   }

@@ -102,6 +102,12 @@ build. Run `python scripts/heldout_gap.py --visible "<cmd>" --heldout "<cmd>"` (
 Build Brief before step 3. Report numbers for both suites and the gap between them. If a check looks defective or the
 target looks unreachable, add an **Escalations** section that names the defect and the evidence.
 
+**Pitfall — a generated fixture looks like a judge change.** A held-out check that writes its own
+fixtures (a behaviour record, a probe output) into `.judge/heldout/` leaves untracked files in the
+judge path, and `judge_guard.py --paths <judge>` reports them as `CHANGED` with a non-zero exit.
+Delete the generated fixtures before running the guard, or run the guard before the held-out suite.
+Never edit the judge to make the guard pass.
+
 **8 Feed back.** When the ledger hook is installed, record the outcome with
 `python scripts/ledger/ledger.py verdict <run_id> --label ok|bad [--class <failure_class>]`. A
 failure caused by a skill is staged for Marcus with `ledger.py promote`. When the goal is durable
@@ -110,7 +116,9 @@ yourself.
 
 ## Feedback loop
 
-`judge_guard.py` fails → restore the judge from the base commit, then escalate if it was wrong.
+`judge_guard.py` fails → check whether the change is the judge or a generated fixture. If it is a
+fixture, delete it and re-run; if it is the judge, restore it from the base commit, then escalate if
+it was wrong.
 Held-out fails while visible passes → treat it as a spec gap, not a test problem, and fix the build.
 Repeat until both pass or the honest report says why not.
 
