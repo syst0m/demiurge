@@ -1,0 +1,15 @@
+{
+  "name": "agent-engineering",
+  "description": "Build, measure and package agents and skills (demiurge's own three).",
+  "skills": [
+    "marcus",
+    "niccolo",
+    "imhotep",
+    "skill-creator",
+    "agent-skills-release",
+    "autoskill",
+    "find-skills",
+    "arbor",
+    "rhadamanthus"
+  ]
+}

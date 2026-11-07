@@ -60,3 +60,10 @@ repos:
         pass_filenames: false
         always_run: true
         stages: [pre-push]
+
+      - id: bundle-parity
+        name: The baseline-coding bundle is materialized and current
+        entry: python scripts/sync_bundles.py --bundle baseline-coding --check
+        language: system
+        pass_filenames: false
+        always_run: true

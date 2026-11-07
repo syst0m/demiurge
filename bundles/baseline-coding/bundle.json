@@ -1,0 +1,21 @@
+{
+  "name": "baseline-coding",
+  "description": "Harness-agnostic coding floor: review, commit, PR, test, debug, plan. Installed everywhere unless a repo opts out.",
+  "skills": [
+    "code-review-and-quality",
+    "concise-commit-gate",
+    "github-pr-workflow",
+    "github-issue-to-pr",
+    "requesting-code-review",
+    "test-driven-development",
+    "systematic-debugging",
+    "simplify-code",
+    "dead-code-removal",
+    "plan",
+    "spike",
+    "setup-pre-commit",
+    "changelog-automation",
+    "secret-scanning"
+  ],
+  "hooks": true
+}
