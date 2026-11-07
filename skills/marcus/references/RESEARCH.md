@@ -287,7 +287,7 @@ skill-name/
 | `Stop` | Turn ends | Yes | 2 |
 | `UserPromptSubmit` | Before model processes prompt | Yes | 2 |
 
-<!-- claim:hooks.deterministic --> `[SETTLED]` `[UNVERIFIED]` Deterministic hooks outperform prompt-based safety gates for critical enforcement. Hooks fire as OS processes independent of model state; prompts decay with session length.
+<!-- claim:hooks.deterministic --> `[SETTLED]` `[UNVERIFIED]` Deterministic hooks outperform prompt-based safety gates for critical enforcement. Hooks fire as OS processes independent of model state; prompts decay with session length. Source: [ClawGuard](https://arxiv.org/abs/2604.11790), [Defeating Prompt Injections by Design](https://arxiv.org/abs/2503.18813), [Progent](https://arxiv.org/abs/2504.11703), [Claude Code hooks guide](https://code.claude.com/docs/en/hooks-guide) `[VENDOR]`. *The session-length decay sentence is not measured by these sources.*
 
 <!-- claim:hooks.camel --> `[EMERGING]` CaMeL-style planning-stage validation: validate entire planned tool sequence before first execution (holistic pre-execution policy check vs. per-call hooks).
 
