@@ -1,4 +1,4 @@
 {
-  "test": "python scripts/run_unit_tests.py && python skills/marcus/evals/run_gate_tests.py --library skills",
+  "test": "python scripts/run_unit_tests.py && python skills/marcus/evals/run_gate_tests.py --library skills && python scripts/sync_bundles.py --bundle baseline-coding --check",
   "release": "python scripts/verify_release.py --cut"
 }

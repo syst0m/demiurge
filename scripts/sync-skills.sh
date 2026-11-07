@@ -13,6 +13,12 @@
 #   --repo-only  touch only the in-repo RESEARCH.md distribution, never the deploy target,
 #                and run scripts/research/grade_cap.py --check (a failure exits 1)
 # Exit codes: 0 ok, 1 drift (--check) or grade_cap failure, 2 usage error, 3 refused (dirty target)
+#
+# NOTE: this script no longer writes into agent-skills/skills. That directory is a
+# symlinked copy of agent-skills repo skills. Cross-repo writes were the defect in §1.2;
+# the new materializer (python scripts/sync_bundles.py) targets each harness's native shape
+# instead. Run `./scripts/sync-skills.sh --check` to report drift only; use the Python
+# materializer for bundle materialization.
 
 set -euo pipefail
 
@@ -24,7 +30,7 @@ PRIMARY_TARGET="${HOME}/.claude/skills"
 # Antigravity is not given empty config directories. A target that resolves to the same
 # directory as an earlier one (a symlinked library) is skipped.
 TARGETS=("$PRIMARY_TARGET")
-for extra in "${HOME}/.agents/skills" "${HOME}/.config/opencode/skills" "${HOME}/.hermes/skills/agent-skills" "${LOCALAPPDATA:-}/hermes/skills/agent-skills"; do
+for extra in "${HOME}/.agents/skills" "${HOME}/.config/opencode/skills"; do
     [ -d "$(dirname "$extra")" ] || continue
     dup=false
     for have in "${TARGETS[@]}"; do
@@ -160,7 +166,7 @@ for skill_dir in "$REPO_SKILLS"/*/; do
         # Preserve local evaluation artifacts (results, transcripts) across directory replacement.
         preserved=$(mktemp -d)
         if [ -d "$TARGET/$name/evals" ]; then
-            find "$TARGET/$name/evals" -maxdepth 1 -type f                 \( -name 'results-*.json' -o -name 'transcripts-*.json' -o -name 'last_run.json' \)                 -exec cp {} "$preserved/" \; 2>/dev/null || true
+            find "$TARGET/$name/evals" -maxdepth 1 -type f \( -name 'results-*.json' -o -name 'transcripts-*.json' -o -name 'last_run.json' \) -exec cp {} "$preserved/" \; 2>/dev/null || true
         fi
         if [ -d "$TARGET/$name" ]; then
             echo "TARGET   $name -> $(cd -P "$TARGET/$name" && pwd)"
@@ -178,18 +184,8 @@ for skill_dir in "$REPO_SKILLS"/*/; do
 done
 done
 
-
 if $grade_cap_failed; then
     exit 1
-fi
-
-# Enable the run ledger hook so skill runs are recorded in .demiurge/ledger/.
-# Copies ledger_hook.py + ledger_lib.py into a Hermes-ledger dir; the printed
-# settings snippet must be merged into .claude/settings.json by the user.
-if ! $CHECK_ONLY; then
-    LEDGER_DEST="${LOCALAPPDATA:-}/hermes/demiurge-ledger"
-    echo "LEDGER  installing run-ledger hook to $LEDGER_DEST"
-    python scripts/ledger/ledger.py install-hook --dest "$LEDGER_DEST" || true
 fi
 
 if $CHECK_ONLY && [ "$drift" -ne 0 ]; then
