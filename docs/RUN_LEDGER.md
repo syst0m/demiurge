@@ -75,7 +75,7 @@ A run's label is the label of its latest verdict row. A run with no verdict row 
 | Harness | Capture | Status |
 |---|---|---|
 | Claude Code | the hook entries in section 4 | verified |
-| Hermes | the `demiurge-skills` plugin records each `/niccolo`, `/marcus`, `/imhotep` slash command as a skill run (`pre_gateway_dispatch`, already live) and a harness row at `on_session_end` | both hook names are documented in the installed Hermes (`hooks.md`). `on_session_end` fires at each **turn** end, so it writes one harness row per turn: `ok` if completed, `bad`/`infra` if failed, unlabeled if interrupted. Not yet seen in a live session: a `hermes -z` test on 2026-11-05 stopped at the model provider (HTTP 403, no card on the gateway account). |
+| Hermes | the `demiurge-skills` plugin records each `/niccolo`, `/marcus`, `/imhotep` slash command as a skill run (`pre_gateway_dispatch`) and a harness row at `on_session_end` | the hook names are documented in the installed Hermes (`hooks.md`). `on_session_end` fires at each **turn** end, so it writes one harness row per turn: `ok` if completed, `bad`/`infra` if failed, unlabeled if interrupted. `pre_gateway_dispatch` never fires for local CLI/TUI/Desktop turns, so slash-command capture is gateway-only. |
 | Antigravity | `install-hook` prints a `Stop` entry that records a harness row | the entry follows the documented `hooks.json` schema (flat `Stop` array). The hook command writes a valid row when run by hand. `agy -p` (print mode) did not fire it on 2026-11-05, so no row came from a live turn. Test in an interactive `agy` session. Skill capture needs its tool payload and is not built |
 | OpenCode | `scripts/ledger/opencode-ledger.js` records each `skill` tool call (copy it to `~/.config/opencode/plugins/demiurge-ledger.js`, an operator step) | the plugin shape matches the live `gh-minutes-gate.js`; the tool name `skill` and its `name` argument are **not verified** |
 
@@ -183,7 +183,7 @@ The hook never blocks the user, except to swallow a `::` capture prompt.
 | Harness | How `::help` works |
 |---|---|
 | Claude Code | The `UserPromptSubmit` hook blocks the prompt and shows the sheet. The model does not run. |
-| Hermes | The `demiurge-skills` plugin runs `ledger_hook.py --event help` and rewrites the message so the agent prints the sheet. Run `python scripts/sync-hermes-commands.py` to deploy it, then restart Hermes. |
+| Hermes | The `demiurge-skills` plugin registers a `pre_llm_call` hook that blocks `::help` with the cheat-sheet and zero model calls. `pre_gateway_dispatch` never fires for local CLI/TUI/Desktop turns, so a block is the only surface-independent path. Run `python scripts/sync-hermes-commands.py` to deploy it, then restart Hermes. |
 | Antigravity, OpenCode | No prompt hook is verified. `AGENTS.md` tells the agent to run `ledger.py cheatsheet` for a message that is exactly `::help`. This relies on the model. |
 | `promote <run_id> --skill <name>` | Stages a regression case (section 6). |
 | `run-gate [--name <gate>] -- <command>` | Runs a gate, appends a `gate` invoke row and a `deterministic` verdict (exit 0 is `ok`, else `bad`), returns the command's exit code. `skill_sha` is the sha256 of the first `.py` argument. A ledger fault warns and never changes the exit code. |

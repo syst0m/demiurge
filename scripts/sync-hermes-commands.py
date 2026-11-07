@@ -61,7 +61,7 @@ def plugin_yaml(names: list[str]) -> str:
         f"name: demiurge-skills\n"
         f"version: 1.0.0\n"
         f"description: Hermes slash commands for demiurge skills ({', '.join(names)}). Synced from scripts/sync-hermes-commands.py — do not edit by hand.\n"
-        f"provides_hooks:\n  - pre_gateway_dispatch\n  - on_session_end\n"
+        f"provides_hooks:\n  - pre_gateway_dispatch\n  - pre_llm_call\n  - on_session_end\n"
         f"provides_commands:\n{commands}\n"
         f"provides_skills:\n{commands}\n"
     )
@@ -88,9 +88,10 @@ def main(argv: list[str] | None = None) -> int:
     drift = False
 
     # plugin.yaml
-    if PLUGIN_YAML.exists() and PLUGIN_YAML.read_text(encoding="utf-8") != yaml_text:
+    if not PLUGIN_YAML.exists() or PLUGIN_YAML.read_text(encoding="utf-8") != yaml_text:
         drift = True
         if not args.check:
+            PLUGIN_DIR.mkdir(parents=True, exist_ok=True)
             PLUGIN_YAML.write_text(yaml_text, encoding="utf-8")
             print(f"WRITE {PLUGIN_YAML}")
 
@@ -134,6 +135,17 @@ def _cheatsheet() -> str:
     except Exception:
         pass
     return ""
+
+
+def block_help_prompt(user_message: Any = None, **_: Any) -> dict[str, str] | None:
+    """Answer ::help with zero model calls; pre_gateway_dispatch never fires on Desktop."""
+    text = user_message if isinstance(user_message, str) else ""
+    if text.strip() != "::help":
+        return None
+    sheet = _cheatsheet()
+    if not sheet:
+        return None
+    return {"action": "block", "message": "```\\n" + sheet + "\\n```"}
 
 
 def record_session_end(completed: Any = None, failed: Any = None, **_: Any) -> None:
@@ -194,11 +206,6 @@ def _slash_access_denied(event: Any, gateway: Any, command: str) -> bool:
 def rewrite_gateway_command(event: Any = None, gateway: Any = None, **_: Any) -> dict[str, str] | None:
     """Rewrite authorized gateway /niccolo, /marcus and /imhotep commands into skill prompts."""
     text = str(getattr(event, "text", "") or "").strip()
-    if text == "::help":
-        sheet = _cheatsheet()
-        if sheet:
-            return {"action": "rewrite", "text": "Show this text to the user exactly as written, in a code block. Add nothing.\\n\\n" + sheet}
-        return None
     if not text.startswith("/"):
         return None
     head, _, rest = text[1:].partition(" ")
@@ -212,8 +219,9 @@ def rewrite_gateway_command(event: Any = None, gateway: Any = None, **_: Any) ->
 
 
 def register(ctx: Any) -> None:
-    """Register the pre_gateway_dispatch hook that exposes /niccolo, /marcus and /imhotep."""
+    """Register the hooks that expose /niccolo, /marcus, /imhotep and ::help."""
     ctx.register_hook("pre_gateway_dispatch", rewrite_gateway_command)
+    ctx.register_hook("pre_llm_call", block_help_prompt)
     try:
         ctx.register_hook("on_session_end", record_session_end)
     except Exception:

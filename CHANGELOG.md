@@ -5,7 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.17.10] - 2026-11-06
+
+### Fixed
+
+- **`::help` in Hermes Desktop:** the `demiurge-skills` plugin answered `::help` in a `pre_gateway_dispatch` hook, which never fires for local CLI/TUI/Desktop turns, so the prompt fell through to the model. The plugin now registers a `pre_llm_call` hook that blocks `::help` with the cheat-sheet and zero model calls. Run `python scripts/sync-hermes-commands.py`, then restart Hermes.
 
 ## [0.17.9] - 2026-11-06
 
