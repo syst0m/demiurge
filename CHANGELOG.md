@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.13] - 2026-11-07
+
+### Added
+
+- **Skill bundle materializer:** `scripts/sync_bundles.py` deploys bundle manifests into each harness's native plugin shape. The `baseline-coding` bundle (14 skills from the agent-skills library) is materialized into the Hermes user plugin, Claude Code settings, and Antigravity hooks, with a `pre_llm_call` testing-matrix gate that blocks source changes without accompanying test changes. `scripts/sync-skills.sh` is now a thin shim; cross-repo writes into agent-skills were removed.
+- **Bundle docs:** `docs/SKILL_BUNDLES.md` documents the bundle format and per-harness wiring.
+- **Tests:** `scripts/test_sync_bundles.py` and `scripts/test_testing_matrix_gate.py` cover the materializer and the gate.
+
 ## [0.17.12] - 2026-11-07
 
 ### Removed
