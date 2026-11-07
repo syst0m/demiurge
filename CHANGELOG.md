@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.11] - 2026-11-07
+
+### Added
+
+- **Weekly Changelog Digest:** `python scripts/changelog_digest.py` reads `CHANGELOG.md` and groups entries into ISO weeks, so a week of merges reads as one summary instead of a flat list. `--week 2026-W44`, `--from`/`--to`, `--format plain`, `--limit` and `--out` cover a named week, a date range, plain text, item length and a file. Covered by `scripts/test_changelog_digest.py`.
+- **Session Summary Artifact:** `skills/marcus/human-only/session-summary-prompt.md` records a finished session summary — failures, root causes and corrective actions — and the `human-only/` index lists it.
+
 ## [0.17.10] - 2026-11-06
 
 ### Fixed
