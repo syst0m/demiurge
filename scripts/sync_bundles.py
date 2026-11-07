@@ -182,7 +182,7 @@ GATE = Path(__file__).resolve().parent / "hooks" / "testing_matrix_gate.py"
 
 
 def register(ctx):
-    def _check(event, payload, **kwargs):
+    def _check(event=None, payload=None, **kwargs):
         repo = os.environ.get("DEMIURGE_REPO") or os.getcwd()
         proc = subprocess.run(
             [sys.executable, str(GATE), "--repo", repo, "--json"],
