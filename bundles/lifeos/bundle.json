@@ -1,0 +1,14 @@
+{
+  "name": "lifeos",
+  "description": "LifeOS task, idea and meeting workflow.",
+  "skills": [
+    "lifeos",
+    "lifeos-jeeves",
+    "lifeos-ideas-triage",
+    "lifeos-tasks-triage",
+    "alfred-butler",
+    "weekly-review-planning",
+    "meeting-action-items",
+    "document-to-action-items"
+  ]
+}
