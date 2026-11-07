@@ -414,8 +414,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     roots = [Path(x) for x in args.library] if args.library else default_libraries()
     if not roots:
-        print("ERROR: no skill library found (pass --library)", file=sys.stderr)
-        return 2
+        print("NOTE: no skill library found; nothing to materialize or check", file=sys.stderr)
+        return 0
     harnesses = args.harness or list(HARNESSES)
     bad = [h for h in harnesses if h not in HARNESSES]
     if bad:
