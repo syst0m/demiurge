@@ -197,7 +197,7 @@ The repository is organized to isolate research, skills, tools, and rules:
 | `research/` | Master empirical knowledge base (`RESEARCH.md`), updated solely through reviewed proposals, and its sources sidecar (`sources.yaml`). |
 | `routines/` | Prompts for the scheduled research sweep, the fresh-context verifier ([RESEARCH_PIPELINE.md](RESEARCH_PIPELINE.md)) and the monthly vendor sync (`vendor-sync.md`). |
 | `scripts/` | Deterministic verification harnesses, security linters, link checkers, and sync tools. |
-| `scripts/research/` | Claims ledger tooling: `grade_cap.py` and `check_rule_citations.py` ([CLAIMS_LEDGER.md](CLAIMS_LEDGER.md)), plus the pull request pipeline scripts `sweep_pr.py`, `claims_diff.py`, `check_verifications.py` and `check_upgrade_approval.py` ([RESEARCH_PIPELINE.md](RESEARCH_PIPELINE.md)). |
+| `scripts/research/` | Claims ledger tooling: `grade_cap.py` and `check_rule_citations.py` ([CLAIMS_LEDGER.md](CLAIMS_LEDGER.md)), plus the pull request pipeline scripts `sweep_pr.py`, `claims_diff.py` and `check_verifications.py` ([RESEARCH_PIPELINE.md](RESEARCH_PIPELINE.md)). |
 | `scripts/registry/` | Local skill registry builder ([SKILL_REGISTRY.md](SKILL_REGISTRY.md)). |
 | `scripts/ledger/` | Run ledger hook and command line: `ledger_hook.py` and `ledger.py` ([RUN_LEDGER.md](RUN_LEDGER.md)). |
 | `skills/` | Source code and manifests for [Marcus](../skills/marcus/), [Niccolo](../skills/niccolo/) and [Imhotep](../skills/imhotep/). Vendored upstream files sit in `skills/<skill>/references/<name>/` with an `UPSTREAM.yaml` pin, checked by `scripts/vendor_sync.py`. |

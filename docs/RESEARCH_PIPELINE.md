@@ -71,7 +71,7 @@ The prompts are `routines/research-sweep.md` and `routines/research-verifier.md`
 3. **Branch scope.** On a `research/*` branch, `sweep_pr.py check-scope` fails any path outside `research/**` and `skills/marcus/references/**`, and any line of `AGENT_ARCHITECTURE.md` other than the `derived_from` pin.
 4. **Mechanics.** `grade_cap.py --check` and `--check-changelog` must pass.
 5. **Class.** `claims_diff.py` exits 0 for `downgrade-or-sourcing` and 10 for `upgrade`. An upgrade is a raised asserted or effective grade, a new claim at `[CONTESTED]` or higher, a removed claim, `meta.enforced` turning false, or a change under `scripts/research/`, `.github/` or to `requirements-dev.txt`.
-6. **Upgrade gate.** `check_verifications.py` needs a passing record for every upgraded or new claim, and `check_upgrade_approval.py` needs the owner's approval of the head SHA.
+6. **Upgrade gate.** `check_verifications.py` needs a passing record for every upgraded or new claim, and the owner approves the head SHA with the pull request's **Review deployments** button (section 4).
 
 A base branch without `scripts/research/claims_diff.py` passes as a bootstrap run. That only applies to the pull request that introduces this pipeline.
 
@@ -101,7 +101,7 @@ An upgrade adds a job named `approve` to the Research PR workflow. The job uses 
 
 A new push starts a new workflow run. It needs a new click, so an earlier approval never carries over. To change the approver, edit the reviewers of the `research-approval` environment in the repository settings.
 
-`check_upgrade_approval.py` and `approve_upgrade.py` are no longer called by the workflow. The `RESEARCH_APPROVER_LOGIN` and `RESEARCH_BOT_LOGIN` variables have no effect.
+The `/approve-upgrade` comment path is retired. The `RESEARCH_APPROVER_LOGIN` and `RESEARCH_BOT_LOGIN` variables have no effect.
 
 An agent that uses the owner's `gh` login can still approve through the GitHub API. Option (a) in the table below is the strong control.
 
@@ -111,14 +111,14 @@ Downgrade and sourcing pull requests pass the check automatically and still need
 
 ## 5. Identity Options
 
-The approval check can only tell accounts apart. How much it proves depends on which account the routines push with.
+The `research-approval` environment's reviewer list decides who can approve. How much that proves depends on which account the routines push with.
 
-| Option | Setup | What the approval check proves |
+| Option | Setup | What the approval proves |
 |---|---|---|
-| **(a) Bot identity (recommended)** | The sweep and the verifier push through a bot, either the Claude GitHub App or a machine user, with contents and pull request write access only. Set the `RESEARCH_BOT_LOGIN` repository variable to its login, and `RESEARCH_APPROVER_LOGIN` to the owner's login when an organization owns the repository. | A comment from the routine fails the check, because the bot is not the owner and its login is denied. Only the owner's own account can approve. |
+| **(a) Bot identity (recommended)** | The sweep and the verifier push through a bot, either the Claude GitHub App or a machine user, with contents and pull request write access only. | The routine cannot approve: the environment's reviewers are people, and only a reviewer can click **Approve and deploy**. |
 | **(b) Owner credentials** | The routines use the owner's local `gh` login. | Nothing about identity. The routine can approve the deployment as the owner, so the check is advisory. The owner's review before merge and the deny rules are what remain. |
 
-Under either option, a ruleset on `main` is the control against a direct push: require a pull request, require the `checks`, `pre-commit` and `research-approval` checks, block force-push and deletion, and leave the bypass list empty. Setting up the ruleset, the bot and the variable is an operator step.
+Under either option, a ruleset on `main` is the control against a direct push: require a pull request, require the `checks`, `pre-commit` and `research-approval` checks, block force-push and deletion, and leave the bypass list empty. Setting up the ruleset, the bot and the environment's reviewers is an operator step.
 
 ---
 
@@ -158,6 +158,4 @@ The routines' own Claude Code settings can deny the commands the hard rules alre
 | `scripts/research/sweep_pr.py` | `prepare` creates the sweep worktree and branch; `publish` is the sweep's only push path, `push-verification` the verifier's; `check-scope` is the scope guard CI runs. |
 | `scripts/research/claims_diff.py` | Classifies a diff as `upgrade` or `downgrade-or-sourcing` and writes the pull request report. |
 | `scripts/research/check_verifications.py` | Checks the verification records for every upgraded or new claim. |
-| `scripts/research/check_upgrade_approval.py` | Unused. It checked for the owner's `/approve-upgrade` comment. |
-| `scripts/research/approve_upgrade.py` | Unused. It posted the `/approve-upgrade` comment. |
 | `.github/workflows/research-pr.yml` | Runs the `research-approval` check. |
