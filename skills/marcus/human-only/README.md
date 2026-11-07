@@ -10,6 +10,7 @@ quoted by an agent.
 |---|---|
 | `demiurge-brief.md` | *The Demiurge Executive Brief* — native GitHub-rendered Markdown report compiling the empirical findings. |
 | `demiurge-brief.html` | *The Demiurge Executive Brief (Interactive)* — standalone interactive HTML report with custom typography, dark mode, and responsive layout. |
+| `session-summary-prompt.md` | *Session Summary — Failures and Fixes* — a finished session summary: failures, root causes and corrective actions, for a human reader. |
 
 ## The convention
 
