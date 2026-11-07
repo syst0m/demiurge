@@ -204,7 +204,8 @@ class TestFunctional(BundleHarness):
         init = self.hermes_home / "plugins" / "b-gated" / "__init__.py"
         self.assertTrue(init.is_file())
         text = init.read_text(encoding="utf-8").replace("\r\n", "\n")
-        self.assertIn("def _check(event, payload, **kwargs)", text)
+        # event/payload are optional because Hermes passes hook data as kwargs
+        self.assertIn("def _check(event=None, payload=None, **kwargs)", text)
         self.assertNotIn("def _check(event, payload):", text)
 
     def test_claude_settings_are_merged_not_replaced(self):
