@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.12] - 2026-11-07
+
+### Removed
+
+- **Retired Approval Scripts:** Deleted `scripts/research/check_upgrade_approval.py`, `scripts/research/approve_upgrade.py` and their tests. The `/approve-upgrade` comment path was replaced by the `research-approval` environment in 0.17.2 and nothing called them. `docs/RESEARCH_PIPELINE.md` and `docs/DOCUMENTATION.md` no longer list them, and the identity-options section now describes the environment's reviewer list.
+
 ## [0.17.11] - 2026-11-07
 
 ### Added
