@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.19] - 2026-11-08
+
+### Changed
+
+- **skill bundles migration:** Migrated canonical skill bundle manifests (`bundles/`), bundle picker (`bundle_picker.py`), and test suites to the `agent-skills` repository. `scripts/sync_bundles.py` dynamically resolves bundle manifests from `agent-skills/bundles` while maintaining seamless compatibility and parity checks across harnesses.
+- **baseline-coding bundle:** Added `implement`, `implement-spec`, and `handoff` skills.
+
 ## [0.17.18] - 2026-11-08
 
 ### Added
