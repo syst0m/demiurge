@@ -16,7 +16,8 @@
 | [Claims Ledger](CLAIMS_LEDGER.md) | Claim anchors, sources, and the `grade_cap` rule. |
 | [Run Ledger](RUN_LEDGER.md) | Failure intake from real skill runs. |
 | [Skill Registry](SKILL_REGISTRY.md) | Local inventory of skills. |
-| [Standing Orders](STANDING_ORDERS.md) | Rules for every agent session in this repository. |
-| [Research Methodology](../skills/niccolo/references/RESEARCH_METHODOLOGY.md) | Tri-source verification protocols, search disciplines, and evidence grading. |
+|| [Standing Orders](STANDING_ORDERS.md) | Rules for every agent session in this repository. |
+|| [Skill Bundles](SKILL_BUNDLES.md) | Bundle format and per-harness wiring for the skill bundle materializer. |
+|| [Research Methodology](../skills/niccolo/references/RESEARCH_METHODOLOGY.md) | Tri-source verification protocols, search disciplines, and evidence grading. |
 | [Empirical Knowledge Base](../research/RESEARCH.md) | Canonical empirical research: benchmarks, failure modes, and primitives. |
 | [Agent Architecture Spec](../skills/marcus/AGENT_ARCHITECTURE.md) | Progressive disclosure specifications and mechanical gate enforcement (G0–G6). |
