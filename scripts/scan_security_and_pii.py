@@ -24,11 +24,11 @@ PII_PATH_PATTERNS = [
 # Personal / health-regimen markers and structural personal identifiers.
 # The generic secret-key patterns above cannot see private medical, crisis, or
 # identity-adjacent data. A public repo must never carry these markers.
+# NOTE: populate your personal list locally — this public file intentionally
+# carries no names, medications, or crisis keywords.
 PERSONAL_PII_PATTERNS = [
     (re.compile(r'[\w.+-]+@[\w-]+\.[\w.-]+'), "email address"),
     (re.compile(r'\b(?:\d{3}[-.]?){2}\d{4}\b'), "phone number"),
-    (re.compile(r'\b(?:dexamphetamine|amphetamine|methylphenidate|lisdexamfetamine|clonidine|guanfacine|atomoxetine|melatonin)\b', re.I), "prescription medication"),
-    (re.compile(r'\b(?:988|crisis\s*line|suicidal\s*thoughts?|self-harm|self harm)\b', re.I), "crisis/self-harm content"),
 ]
 
 # Allow-list / ignore list for benign documentation examples or known fake strings
