@@ -15,7 +15,8 @@
     "spike",
     "setup-pre-commit",
     "changelog-automation",
-    "secret-scanning"
+    "secret-scanning",
+    "handoff"
   ],
   "hooks": true
 }
