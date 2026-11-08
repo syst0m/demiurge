@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Research sweep 2026-11-07:** retired `scripts/sync_bundles.py`, `scripts/testing_matrix_gate.py` and `docs/SKILL_BUNDLES.md`; removed the `baseline-coding`, ``, `infosec-governance`, ``, `personal-writing`, `research-writing` bundle manifests; `scripts/sync-skills.sh` is now a thin shim and cross-repo writes into agent-skills were removed.
+- **Research sweep 2026-11-07:** retired `scripts/sync_bundles.py`, `scripts/testing_matrix_gate.py` and `docs/SKILL_BUNDLES.md`; removed the `baseline-coding`, `infosec-governance`, `personal-writing`, `research-writing` bundle manifests; `scripts/sync-skills.sh` is now a thin shim and cross-repo writes into agent-skills were removed.
 
 ### Added
 
