@@ -1,0 +1,16 @@
+# scripts/local_pii_patterns.py — YOUR personal PII patterns.
+# Copy this file to scripts/local_pii_patterns.py (gitignored) and add your
+# own name, medications, crisis keywords, etc. Never commit the real file.
+#
+# Example:
+#   PATTERNS = [
+#       (re.compile(r'\bTom\b'), "personal name"),
+#       (re.compile(r'\bdexamphetamine\b', re.I), "medication"),
+#       (re.compile(r'\bself-harm\b', re.I), "crisis content"),
+#   ]
+
+PATTERNS = [
+    # (re.compile(r'\bTom\b'), "personal name"),
+    # (re.compile(r'\bdexamphetamine\b', re.I), "medication"),
+    # (re.compile(r'\bself-harm\b', re.I), "crisis content"),
+]
