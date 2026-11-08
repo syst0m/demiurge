@@ -1,11 +1,9 @@
 {
   "name": "personal-writing",
-  "description": "Draft and reshape text in Tom's voice.",
+  "description": "Draft and reshape text in the user's voice.",
   "skills": [
     "my-writing-style",
     "humanize",
-    "unsloppify",
-    "writing-clearly-and-concisely",
-    "i-have-adhd"
+    "unsloppify"
   ]
 }
