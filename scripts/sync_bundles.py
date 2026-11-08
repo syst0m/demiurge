@@ -122,7 +122,11 @@ def link_or_copy(src: Path, dst: Path) -> str:
         dst.unlink() if dst.is_symlink() else shutil.rmtree(dst)
     dst.parent.mkdir(parents=True, exist_ok=True)
     try:
-        dst.symlink_to(src.resolve(), target_is_directory=True)
+        try:
+            target = os.path.relpath(src.resolve(), dst.parent.resolve()).replace("\\", "/")
+        except ValueError:
+            target = src.resolve()
+        dst.symlink_to(target, target_is_directory=True)
         return "link"
     except OSError:
         shutil.copytree(src, dst)
