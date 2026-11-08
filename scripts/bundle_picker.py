@@ -39,6 +39,11 @@ from sync_bundles import (  # noqa: E402
 SCRIPT = Path(__file__).resolve()
 REPO = SCRIPT.parent.parent
 DEFAULT_BUNDLES_DIR = REPO / "bundles"
+if not DEFAULT_BUNDLES_DIR.is_dir():
+    for _c in [REPO.parent / "agent-skills" / "bundles", Path.home() / "Documents" / "code" / "agent-skills" / "bundles"]:
+        if _c.is_dir():
+            DEFAULT_BUNDLES_DIR = _c
+            break
 SYNC_BUNDLES = SCRIPT.parent / "sync_bundles.py"
 
 CLEAR = "\033[2J\033[H"  # ANSI home+clear; falls back gracefully on dumb terminals
@@ -74,6 +79,8 @@ C = (
 
 
 def load_bundles(bundles_dir: Path) -> List[dict]:
+    if not bundles_dir.is_dir():
+        return []
     bundles = []
     for entry in sorted(bundles_dir.iterdir()):
         manifest = entry / "bundle.json"
