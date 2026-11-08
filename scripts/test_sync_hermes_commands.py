@@ -50,7 +50,16 @@ class HelpPromptTest(unittest.TestCase):
             setattr(module, "_cheatsheet", lambda: "SHEET")
             self.assertEqual(
                 module.block_help_prompt("::help"),
-                {"action": "block", "message": "```\nSHEET\n```"},
+                {"action": "block", "message": "SHEET  "},
+            )
+
+    def test_help_keeps_lines_and_backticks_placeholders(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            module = _load(_build_plugin(Path(tmp)))
+            setattr(module, "_cheatsheet", lambda: "A <b> c\n\nD")
+            self.assertEqual(
+                module.block_help_prompt("::help"),
+                {"action": "block", "message": "A `<b>` c  \n\nD  "},
             )
 
     def test_other_prompts_pass_through(self):
