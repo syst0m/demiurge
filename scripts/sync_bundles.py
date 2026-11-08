@@ -44,6 +44,11 @@ from typing import Dict, List, Optional, Sequence, Tuple
 
 REPO = Path(__file__).resolve().parent.parent
 BUNDLES_DIR = REPO / "bundles"
+if not BUNDLES_DIR.is_dir():
+    for _c in [REPO.parent / "agent-skills" / "bundles", Path.home() / "Documents" / "code" / "agent-skills" / "bundles"]:
+        if _c.is_dir():
+            BUNDLES_DIR = _c
+            break
 GATE_SCRIPT = REPO / "scripts" / "testing_matrix_gate.py"
 
 HARNESSES = ("antigravity", "claude-code", "hermes")

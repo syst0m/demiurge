@@ -46,6 +46,8 @@ Thumbs.db
 
 # Claude Code personal settings - never committed (may reference private repos)
 .claude/settings.local.json
+.claude/skills/
+.agents/plugins/
 .hermes/
 
 
