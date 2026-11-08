@@ -104,6 +104,7 @@ def main(argv: list[str] | None = None) -> int:
 
 from __future__ import annotations
 
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -138,14 +139,22 @@ def _cheatsheet() -> str:
 
 
 def block_help_prompt(user_message: Any = None, **_: Any) -> dict[str, str] | None:
-    """Answer ::help with zero model calls; pre_gateway_dispatch never fires on Desktop."""
+    """Answer ::help with zero model calls; pre_gateway_dispatch never fires on Desktop.
+
+    Plain text, not a fenced block: the Desktop renders a fence as a clamped code
+    card (about 7 lines) the user has to scroll, while unfenced text flows full
+    height. Each line keeps a markdown hard break so the sheet stays one item per
+    line, and ``<name>`` placeholders get backticks or markdown drops them as HTML.
+    """
     text = user_message if isinstance(user_message, str) else ""
     if text.strip() != "::help":
         return None
     sheet = _cheatsheet()
     if not sheet:
         return None
-    return {"action": "block", "message": "```\\n" + sheet + "\\n```"}
+    lines = [re.sub(r"<([^<>\\n]+)>", r"`<\\1>`", ln) + "  " if ln.strip() else ln
+             for ln in sheet.splitlines()]
+    return {"action": "block", "message": "\\n".join(lines)}
 
 
 def record_session_end(completed: Any = None, failed: Any = None, **_: Any) -> None:
