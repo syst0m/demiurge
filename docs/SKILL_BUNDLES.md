@@ -91,3 +91,26 @@ CI wiring:
   `agent-skills/skills`, but it has not been reworked into the bundle materializer.
 * `check_harness_parity.py` has not been extended to cover Hermes or to ignore `__pycache__`.
 * `sync_agent_skills.ps1`'s copy-back path (in the agent-skills repo) has not been removed.
+
+## Personal bundles vs public bundles
+
+`demiurge/bundles/` is public — it is published to GitHub with every release. It contains
+only bundles safe to publish. `` is **not** among them and must never be added.
+
+Personal bundles live in a separate directory outside this repo (for example
+`~/bundles/personal/`). The materializer's `--bundles-dir` flag selects the manifest directory:
+
+```
+# Public demiurge bundles (default bundles_dir = this repo's bundles/)
+python scripts/sync_bundles.py --bundle baseline-coding --apply
+
+# Personal bundles (never published)
+python scripts/sync_bundles.py --bundles-dir ~/bundles/personal --bundle ***REMOVED***--apply
+```
+
+The two directories are never mixed. `--bundles-dir` points at exactly one directory, so a
+personal bundle cannot leak into the public set by mistake. The `--check` command reports drift
+for whichever `--bundles-dir` is active, without writing anything.
+
+Rule: if it is personal, it never goes in `demiurge/bundles/`. If it is public, it goes in
+`demiurge/bundles/` and nowhere else.
