@@ -5,17 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.17.16] - 2026-11-08
-
-### Changed
-
-- **Research sweep 2026-11-07:** retired `scripts/sync_bundles.py`, `scripts/testing_matrix_gate.py` and `docs/SKILL_BUNDLES.md`; removed the `baseline-coding`, `infosec-governance`, `personal-writing`, `research-writing` bundle manifests; `scripts/sync-skills.sh` is now a thin shim and cross-repo writes into agent-skills were removed.
+## [0.17.18] - 2026-11-08
 
 ### Added
 
-- **Claims sources:** `hooks.deterministic` cap rises EMERGING → CONTESTED (ClawGuard, Defeating Prompt Injections by Design, Progent preprints; Claude Code hooks guide vendor page). `fail.errors-compound` Cognition post recorded as `mentions` only (no confirming source).
+- **PII scanner with local personal patterns:** `scripts/scan_security_and_pii.py` loads optional personal PII patterns (names, medications, crisis keywords) from gitignored `scripts/local_pii_patterns.py`; public file carries no personal keywords. Added `ACCURACY LIMIT` notice: no scanner guarantees 100% detection; human review remains final gate.
+- **handoff skill in baseline-coding:** Added `handoff` skill to `baseline-coding` bundle for conversation handoffs between agents; synced to Hermes, Antigravity, and Claude Code harnesses.
 
-## [0.17.15] - 2026-11-08
+### Changed
+
+- **lifeos bundle removed:** Removed `bundles/lifeos/` manifest from public tracking; `lifeos` now matched only by local PII patterns. Updated `docs/SKILL_BUNDLES.md` and `CHANGELOG.md` to reflect six public bundles.
+- **docs/SKILL_BUNDLES.md** corrected to accurately list seven manifests and the public vs personal bundle separation rule.
+
+### Security
+
+- **PII purge:** Rewrote git history via `git filter-repo` to remove personal name, medication, and crisis keywords from all commits and blobs. Force-pushed cleaned history; only `main` branch remains.
+
+### Removed
+
+- **dark-strategist:** Removed `dark-strategist` skill from demiurge repository (security cleanup).
+
+## [0.17.17] - 2026-11-08
+
+### Changed
+
+- **Correction:** the 0.17.16 entry incorrectly stated that `scripts/sync_bundles.py`, `scripts/testing_matrix_gate.py`, `docs/SKILL_BUNDLES.md` and the bundle manifests were retired. They were not — the sweep PR's deletions were lost in the squash merge. The bundle system is built and wired into CI.
+- **docs/SKILL_BUNDLES.md** rewritten to accurately describe the built bundle system: seven manifests, the `sync_bundles.py` materializer, the `testing_matrix_gate.py` blocking gate, CI wiring, and what's still pending. The old 306-line doc mixed "proposal", "done" and "as built" for a system that was never fully built; it now describes only what exists.
+
+### Removed
+
+- Nothing. `docs/SKILL_BUNDLES.md`, `sync_bundles.py`, `testing_matrix_gate.py` and all seven bundle manifests remain.
+
+## [0.17.16] - 2026-11-08
 
 ### Fixed
 
