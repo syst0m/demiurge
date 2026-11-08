@@ -6,13 +6,12 @@ library.
 
 ## The bundles
 
-Seven manifests live in `bundles/`:
+Six manifests live in `bundles/`:
 
 | Bundle | Skills |
 | --- | --- |
 | `baseline-coding` | code-review-and-quality, concise-commit-gate, github-pr-workflow, github-issue-to-pr, requesting-code-review, test-driven-development, systematic-debugging, simplify-code, dead-code-removal, plan, spike, setup-pre-commit, changelog-automation, secret-scanning |
 | `agent-engineering` | marcus, niccolo, imhotep, skill-creator, agent-skills-release, autoskill, find-skills, arbor, rhadamanthus |
-| `` |  |
 | `infosec-governance` | secret-scanning, github-auth, fleet-auditor, analytical-method-validation, experimental-design |
 | `lifeos` | lifeos, lifeos-jeeves, lifeos-ideas-triage, lifeos-tasks-triage, alfred-butler, weekly-review-planning, meeting-action-items, document-to-action-items |
 | `personal-writing` | my-writing-style, humanize, unsloppify, writing-clearly-and-concisely, i-have-adhd |
