@@ -7,10 +7,12 @@
 #       (re.compile(r'\bTom\b'), "personal name"),
 #       (re.compile(r'\bdexamphetamine\b', re.I), "medication"),
 #       (re.compile(r'\bself-harm\b', re.I), "crisis content"),
+#       (re.compile(r'\b\b', re.I), "personal project name"),
 #   ]
 
 PATTERNS = [
     # (re.compile(r'\bTom\b'), "personal name"),
     # (re.compile(r'\bdexamphetamine\b', re.I), "medication"),
     # (re.compile(r'\bself-harm\b', re.I), "crisis content"),
+    # (re.compile(r'\b\b', re.I), "personal project name"),
 ]
