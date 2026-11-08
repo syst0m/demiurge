@@ -18,6 +18,11 @@ from pathlib import Path
 
 SCRIPT = Path(__file__).resolve().parent / "sync_bundles.py"
 BUNDLES = Path(__file__).resolve().parent.parent / "bundles"
+if not BUNDLES.is_dir():
+    for _c in [Path(__file__).resolve().parent.parent.parent / "agent-skills" / "bundles", Path.home() / "Documents" / "code" / "agent-skills" / "bundles"]:
+        if _c.is_dir():
+            BUNDLES = _c
+            break
 
 
 def run(args, **kw):
