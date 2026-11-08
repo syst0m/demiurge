@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.15] - 2026-11-08
+
+### Fixed
+
+- **Docs index table:** `docs/SKILL_BUNDLES.md`, `docs/STANDING_ORDERS.md`, and `docs/RESEARCH_METHODOLOGY.md` rows in `docs/README.md` were rendering in the wrong column with no description due to an extra pipe character. Fixed table alignment.
+
 ## [0.17.14] - 2026-11-08
 
 ### Added
