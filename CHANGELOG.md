@@ -5,28 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.17.18] - 2026-11-08
-
-### Added
-
-- **Personal bundles vs public bundles section** in `docs/SKILL_BUNDLES.md`: `demiurge/bundles/` is public (never ); personal bundles live in a separate directory selected with `--bundles-dir`. The two sets are never mixed.
-
-## [0.17.17] - 2026-11-08
-
-### Changed
-
-- **Correction:** the 0.17.16 entry incorrectly stated that `scripts/sync_bundles.py`, `scripts/testing_matrix_gate.py`, `docs/SKILL_BUNDLES.md` and the bundle manifests were retired. They were not — the sweep PR's deletions were lost in the squash merge. The bundle system is built and wired into CI.
-- **docs/SKILL_BUNDLES.md** rewritten to accurately describe the built bundle system: seven manifests, the `sync_bundles.py` materializer, the `testing_matrix_gate.py` blocking gate, CI wiring, and what's still pending. The old 306-line doc mixed "proposal", "done" and "as built" for a system that was never fully built; it now describes only what exists.
-
-### Removed
-
-- Nothing. `docs/SKILL_BUNDLES.md`, `sync_bundles.py`, `testing_matrix_gate.py` and all seven bundle manifests remain.
-
 ## [0.17.16] - 2026-11-08
 
 ### Changed
 
-- **Research sweep 2026-11-07:** retired `scripts/sync_bundles.py`, `scripts/testing_matrix_gate.py` and `docs/SKILL_BUNDLES.md`; removed the `baseline-coding`, `infosec-governance`, ``, `personal-writing`, `research-writing` bundle manifests; `scripts/sync-skills.sh` is now a thin shim and cross-repo writes into agent-skills were removed.
+- **Research sweep 2026-11-07:** retired `scripts/sync_bundles.py`, `scripts/testing_matrix_gate.py` and `docs/SKILL_BUNDLES.md`; removed the `baseline-coding`, ``, `infosec-governance`, ``, `personal-writing`, `research-writing` bundle manifests; `scripts/sync-skills.sh` is now a thin shim and cross-repo writes into agent-skills were removed.
 
 ### Added
 

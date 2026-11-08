@@ -20,9 +20,11 @@ data.
 ## Enforcement
 
 - `scripts/scan_security_and_pii.py` refuses commits that carry the markers below
-  (emails, phones, prescription medication, crisis/self-harm content) as well as
-  local path secrets. It is the pre-commit gate; it is extended with health
-  markers to close this incident's gap.
+  (emails, phones, local Windows/Unix paths, secrets) as well as personal
+  markers loaded from `scripts/local_pii_patterns.py` (gitignored — never
+  committed). Populate that file with your own name, medications, and crisis
+  keywords; the public scanner intentionally carries no personal keywords.
+- `scripts/local_pii_patterns.py.example` shows the format.
 - The health markers are a heuristic. Human review of any health/clinic-specific
   content that touches this repo remains the final gate.
 - `.gitignore` keeps `protocols/<personal-health-protocol>/` and
