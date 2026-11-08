@@ -2,6 +2,11 @@
 """
 Pre-commit hook: Scans files for secrets, PII, local user paths, and agent policy invariants.
 Stdlib-only, cross-platform (Windows / macOS / Linux).
+
+ACCURACY LIMIT: No scanner can guarantee 100% PII detection. Obfuscated,
+split-across-lines, context-dependent, or brand-new identifier formats can
+evade any pattern-based scan. This is a heuristic gate, not a guarantee.
+Human review remains the final gate (see SECURE.md).
 """
 
 import os
@@ -31,6 +36,20 @@ PERSONAL_PII_PATTERNS = [
     (re.compile(r'\b(?:\d{3}[-.]?){2}\d{4}\b'), "phone number"),
 ]
 
+# Optional local patterns — YOUR personal PII (name, medications, crisis
+# keywords). This public file intentionally carries NO personal keywords.
+# Populate scripts/local_pii_patterns.py (gitignored) with your own list:
+#   PATTERNS = [
+#       (re.compile(r'\bTom\b'), "personal name"),
+#       (re.compile(r'\bdexamphetamine\b', re.I), "medication"),
+#   ]
+# Leave it empty or omit the file; the scanner degrades gracefully.
+LOCAL_PII_PATTERNS: list = []
+try:
+    from local_pii_patterns import PATTERNS as LOCAL_PII_PATTERNS  # noqa: E402
+except Exception:
+    LOCAL_PII_PATTERNS = []
+
 # Allow-list / ignore list for benign documentation examples or known fake strings
 ALLOW_PATTERNS = [
     # Test email domains (RFC 2606 reserved + common test fixtures)
@@ -43,6 +62,8 @@ ALLOW_PATTERNS = [
     "-forge@",
     # Schema.org
     "schema.org",
+    # Book author citation (not personal PII) — avoid false positive on name pattern
+    "Tom Kelley",
 ]
 
 
@@ -101,6 +122,18 @@ def check_file(filepath: str) -> list:
                 if any(ap in matched or ap in line for ap in ALLOW_PATTERNS if ap):
                     continue
                 findings.append(f"{filepath}:{line_num}: [PERSONAL] {desc}: '{matched}'")
+
+        # 4. Local personal patterns (name, medications, crisis keywords) from
+        # scripts/local_pii_patterns.py — never hardcoded in this public file.
+        for pattern, desc in LOCAL_PII_PATTERNS:
+            m = pattern.search(line)
+            if m:
+                if "LOCAL_PII_PATTERNS" in line or "scan_security_and_pii.py" in filepath:
+                    continue
+                matched = m.group(0)
+                if any(ap in matched or ap in line for ap in ALLOW_PATTERNS if ap):
+                    continue
+                findings.append(f"{filepath}:{line_num}: [PERSONAL-LOCAL] {desc}: '{matched}'")
 
     return findings
 

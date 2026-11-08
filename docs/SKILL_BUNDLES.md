@@ -89,7 +89,7 @@ three skills:
 
 Verification: recursive normalized comparison of `marcus`, `imhotep`, `niccolo` reports `CLEAN`;
 `validate_skill.py` passes G4 on all three; `skills/marcus/evals/run_gate_tests.py --library skills`
-passes 35/35. Nothing was committed — `agent-skills` carries unrelated uncommitted 
+passes 35/35. Nothing was committed — `agent-skills` carries unrelated uncommitted
 work that must be committed separately.
 
 ### 1.5 Gate and scope mismatches
@@ -228,7 +228,7 @@ Deliberately excluded: `marcus`, `niccolo`, `imhotep` (agent engineering, not co
 | `` |  task and idea workflow | ``, `-jeeves`, `-ideas-triage`, `-tasks-triage`, `alfred-butler`, `weekly-review-planning`, `meeting-action-items`, `document-to-action-items` |
 | `agent-engineering` | building agents and skills | `marcus`, `niccolo`, `imhotep`, `skill-creator`, `agent-skills-release`, `autoskill`, `find-skills`, `arbor`, `rhadamanthus` |
 | `infosec-governance` | Technology Risk & InfoSec work | `secret-scanning`, `github-auth`, `fleet-auditor`, `analytic-method-validation`, `experimental-design` |
-| `personal-writing` | drafting in Tom's voice | `my-writing-style`, `humanize`, `unsloppify`, `writing-clearly-and-concisely`, `i-have-adhd` |
+|| `personal-writing` | drafting in the user's voice | `my-writing-style`, `humanize`, `unsloppify`, `writing-clearly-and-concisely`, `i-have-adhd` |
 | `` | strategy sessions | `` |
 
 ### 4.3 Blocking gate for `baseline-coding`

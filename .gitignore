@@ -53,5 +53,8 @@ Thumbs.db
 protocols/personal-*/
 routines/personal-*.md
 
+# Local personal PII patterns — never committed (contains your personal keywords)
+scripts/local_pii_patterns.py
+
 # Session artifacts (personal prompts, eval results)
 .judge/
