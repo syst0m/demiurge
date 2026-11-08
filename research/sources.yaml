@@ -289,9 +289,9 @@ claims:
         scite_supporting: null
         scite_contrasting: null
     duplicates: []
-    last_verified: '2026-11-01'
+    last_verified: '2026-11-07'
     verified_by: niccolo
-    notes: 'Sweep 2026-10-10: s1 returns HTTP 404 (after 301 to platform.claude.com), s2 returns HTTP 404, s3 redirects to the generic https://cursor.com/docs page with no caching statement. s1-s3 are left for the owner to remove or replace. s4 and s5 were retrieved this session. Sweep 2026-11-01: re-checked. s1 now redirects to https://platform.claude.com/docs/en/claude-code/rules, which returns HTTP 404. s2 still returns HTTP 404. s3 still redirects to the generic https://cursor.com/docs page. The owner decision on s1-s3 is still open. scite returned a paid-plan error, so s5 reception stays unchecked.'
+    notes: 'Sweep 2026-10-10: s1 returns HTTP 404 (after 301 to platform.claude.com), s2 returns HTTP 404, s3 redirects to the generic https://cursor.com/docs page with no caching statement. s1-s3 are left for the owner to remove or replace. s4 and s5 were retrieved this session. Sweep 2026-11-01: re-checked. s1 now redirects to https://platform.claude.com/docs/en/claude-code/rules, which returns HTTP 404. s2 still returns HTTP 404. s3 still redirects to the generic https://cursor.com/docs page. The owner decision on s1-s3 is still open. scite returned a paid-plan error, so s5 reception stays unchecked. Sweep 2026-11-07: re-checked. s1 now redirects to https://platform.claude.com/docs/en/claude-code/rules with HTTP 200, but the fetched HTML is a client-side shell with no caching statement. s2 still returns HTTP 404. s3 still redirects to the generic https://cursor.com/docs page. The owner decision on s1-s3 is still open. scite failed to connect (HTTP 502).'
   ctx.length-degradation:
     section: 2
     kind: prose
@@ -748,11 +748,26 @@ claims:
       cap_reasons:
       - no_countable_sources
       - lt2_primary
-    sources: []
+    sources:
+    - id: s1
+      url: https://cognition.com/blog/dont-build-multi-agents
+      title: Don't Build Multi-Agents
+      type: vendor
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: cognition
+      supports: mentions
+      quote: there are certain things you must do to contain the potential for compounding errors
+      accessed: '2026-11-07'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
     duplicates: []
-    last_verified: null
-    verified_by: null
-    notes: ''
+    last_verified: '2026-11-07'
+    verified_by: niccolo
+    notes: 'Sweep 2026-11-07: s1 retrieved this session (cognition.ai redirects to cognition.com). It names compounding errors in long-running agents, but it says nothing about mutating actions, rollback or verification gates, so it is recorded as mentions. The claim stays without a confirming source.'
   fail.self-correction:
     section: 5
     kind: prose
@@ -1589,17 +1604,76 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: EMERGING
+      cap: CONTESTED
       cap_evidence: SETTLED
       unverified: true
       cap_reasons:
-      - no_countable_sources
-      - lt2_primary
-    sources: []
+      - reception_unchecked
+    sources:
+    - id: s1
+      url: https://arxiv.org/abs/2604.11790
+      title: 'ClawGuard: A Runtime Security Framework for Tool-Augmented LLM Agents Against Indirect Prompt Injection'
+      type: preprint
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: zhao-2026-clawguard
+      supports: confirms
+      quote: transforming unreliable alignment-dependent defense into a deterministic, auditable mechanism that intercepts adversarial tool calls before any real-world effect is produced
+      accessed: '2026-11-07'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s2
+      url: https://arxiv.org/abs/2503.18813
+      title: Defeating Prompt Injections by Design
+      type: preprint
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: debenedetti-2025-camel
+      supports: confirms
+      quote: a robust defense that creates a protective system layer around the LLM, securing it even when underlying models are susceptible to attacks
+      accessed: '2026-11-07'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s3
+      url: https://arxiv.org/abs/2504.11703
+      title: 'Progent: Securing AI Agents with Privilege Control'
+      type: preprint
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: shi-2025-progent
+      supports: confirms
+      quote: Every tool call is checked against such a policy through a deterministic procedure, enforcing the principle of least privilege.
+      accessed: '2026-11-07'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s4
+      url: https://code.claude.com/docs/en/hooks-guide
+      title: Automate workflows with hooks (Claude Code documentation)
+      type: vendor
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: anthropic
+      supports: confirms
+      quote: 'which gives you deterministic control: certain actions always happen rather than relying on the LLM to choose to run them'
+      accessed: '2026-11-07'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
     duplicates: []
-    last_verified: null
-    verified_by: null
-    notes: ''
+    last_verified: '2026-11-07'
+    verified_by: niccolo
+    notes: 'Sweep 2026-11-07: s1-s4 retrieved this session (arXiv API abstracts; s4 page text). s1-s3 support deterministic tool-call enforcement over model-dependent defenses. None of them measures the second sentence (prompts decay with session length); that part stays unsourced. AgentSpec (arXiv:2503.18666) was also read but shares an author (Jun Sun) with s1, so it was not added. scite failed to connect (HTTP 502), so reception stays unchecked.'
   hooks.camel:
     section: 11
     kind: prose

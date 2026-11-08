@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.16] - 2026-11-08
+
+### Changed
+
+- **Research sweep 2026-11-07:** retired `scripts/sync_bundles.py`, `scripts/testing_matrix_gate.py` and `docs/SKILL_BUNDLES.md`; removed the `baseline-coding`, ``, `infosec-governance`, `lifeos`, `personal-writing`, `research-writing` bundle manifests; `scripts/sync-skills.sh` is now a thin shim and cross-repo writes into agent-skills were removed.
+
+### Added
+
+- **Claims sources:** `hooks.deterministic` cap rises EMERGING → CONTESTED (ClawGuard, Defeating Prompt Injections by Design, Progent preprints; Claude Code hooks guide vendor page). `fail.errors-compound` Cognition post recorded as `mentions` only (no confirming source).
+
 ## [0.17.15] - 2026-11-08
 
 ### Fixed
