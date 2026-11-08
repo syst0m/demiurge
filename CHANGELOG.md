@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.14] - 2026-11-08
+
+### Added
+
+- **Doc index blocking gate:** `scripts/check_doc_index.py` fails CI and pre-push when any `docs/` markdown file is not linked from `docs/README.md` (or `docs/DOCUMENTATION.md`). Wired into `.agents/local-ci.json` test command and `.pre-commit-config.yaml` `doc-index` hook.
+- **Standing order:** `AGENTS.md` rule 5 requires every new `docs/` file to be indexed in the same change.
+- **Docs index:** `docs/SKILL_BUNDLES.md` linked from `docs/README.md`.
+
 ## [0.17.13] - 2026-11-07
 
 ### Added
