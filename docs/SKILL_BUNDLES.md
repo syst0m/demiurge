@@ -9,7 +9,7 @@ Seven manifests live in `bundles/`:
 | Bundle | Skills |
 | --- | --- |
 | `agent-engineering` | marcus, niccolo, imhotep, skill-creator, agent-skills-release, autoskill, find-skills, arbor, rhadamanthus |
-| `baseline-coding` | code-review-and-quality, concise-commit-gate, github-pr-workflow, github-issue-to-pr, requesting-code-review, test-driven-development, systematic-debugging, simplify-code, dead-code-removal, plan, spike, setup-pre-commit, changelog-automation, secret-scanning, grill-with-docs |
+|| `baseline-coding` | code-review-and-quality, concise-commit-gate, github-pr-workflow, github-issue-to-pr, requesting-code-review, test-driven-development, systematic-debugging, simplify-code, dead-code-removal, plan, spike, setup-pre-commit, changelog-automation, secret-scanning, handoff |
 | `infosec-governance` | secret-scanning, github-auth, fleet-auditor, analytical-method-validation, experimental-design |
 | `` | , -jeeves, -ideas-triage, -tasks-triage, alfred-butler, weekly-review-planning, meeting-action-items, document-to-action-items |
 | `personal-writing` | my-writing-style, humanize, unsloppify |
