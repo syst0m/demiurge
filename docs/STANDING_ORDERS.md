@@ -55,7 +55,7 @@ Marcus never writes the two user-level hook files itself (SPEC section 6.1). Mer
 | Harness | Skill library | Project directory |
 |---|---|---|
 | Claude Code | `~/.claude/skills` | `.claude/skills` |
-| Antigravity | `~/.agents/skills` | `.agents/skills` |
+| Antigravity | `~/.gemini/config/skills` | `.agents/skills` |
 | OpenCode | `~/.config/opencode/skills` | `.opencode/skills` |
 
 - `install_skill.py --harness all` links the skill into all three project directories. OpenCode
