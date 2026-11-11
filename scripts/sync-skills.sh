@@ -1,9 +1,12 @@
 #!/bin/bash
 # Deploys the canonical skills in this repo to where each harness loads them:
 # ~/.claude/skills (Claude Code), ~/.agents/skills (Antigravity), ~/.config/opencode/skills (OpenCode).
+# Antigravity's global skill library is ~/.gemini/config/skills; check_harness_parity.py checks that path.
 #
 # The repo is the source of truth. ~/.claude/skills/ is a deployment target —
-# never edit there; the next sync overwrites it.
+# never edit there; the next sync overwrites it. Where that path is a link into
+# agent-skills (the current setup), a sync writes into agent-skills. Check the
+# target with --check before a full run.
 #
 # Windows symlinks need Developer Mode and fail silently otherwise, hence a copy.
 #

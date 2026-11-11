@@ -5,8 +5,9 @@ Harness libraries checked (a harness whose home directory does not exist is skip
 scripts/sync-skills.sh skips it):
 
   claude-code   ~/.claude/skills
-  antigravity   ~/.agents/skills
+  antigravity   ~/.gemini/config/skills
   opencode      ~/.config/opencode/skills
+  hermes        ~/.hermes/skills/agent-skills
 
 Exit codes: 0 every installed harness holds a current copy of every skill, 1 a copy is missing or
 stale. A library that resolves to the same directory as an earlier one is reported once.
@@ -26,8 +27,9 @@ from typing import Dict, List, Optional
 
 HARNESS_LIBRARIES = {
     "claude-code": (".claude", "skills"),
-    "antigravity": (".agents", "skills"),
+    "antigravity": (".gemini/config", "skills"),
     "opencode": (".config/opencode", "skills"),
+    "hermes": (".hermes", "skills/agent-skills"),
 }
 IGNORED = ("__pycache__", "*.pyc", "results-*.json", "transcripts-*.json", "last_run.json")
 
