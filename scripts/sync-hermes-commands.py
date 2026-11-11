@@ -104,6 +104,7 @@ def main(argv: list[str] | None = None) -> int:
 
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 import sys
@@ -138,6 +139,22 @@ def _cheatsheet() -> str:
     return ""
 
 
+def _verdict_prompt(text: str) -> dict[str, str] | None:
+    """Send ::ok and ::bad to the ledger's prompt path: it records the verdict and blocks the turn."""
+    if not re.match(r"^::(ok|bad)(\\s|$)", text.strip()) or not LEDGER_HOOK.is_file():
+        return None
+    try:
+        done = subprocess.run([sys.executable, str(LEDGER_HOOK), "--event", "prompt"],
+                              input=json.dumps({"prompt": text}), timeout=5,
+                              capture_output=True, text=True, check=False)
+        data = json.loads(done.stdout)
+    except Exception:
+        return None
+    if data.get("decision") != "block":
+        return None
+    return {"action": "block", "message": str(data.get("reason") or "")}
+
+
 def block_help_prompt(user_message: Any = None, **_: Any) -> dict[str, str] | None:
     """Answer ::help with zero model calls; pre_gateway_dispatch never fires on Desktop.
 
@@ -148,7 +165,7 @@ def block_help_prompt(user_message: Any = None, **_: Any) -> dict[str, str] | No
     """
     text = user_message if isinstance(user_message, str) else ""
     if text.strip() != "::help":
-        return None
+        return _verdict_prompt(text)
     sheet = _cheatsheet()
     if not sheet:
         return None
