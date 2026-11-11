@@ -17,17 +17,6 @@
         ]
       }
     ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "timeout": 2,
-            "command": "python \"/c/Users/User/AppData/Local/hermes/demiurge-ledger/ledger_hook.py\" --event prompt || true"
-          }
-        ]
-      }
-    ],
     "Stop": [
       {
         "hooks": [
@@ -35,15 +24,6 @@
             "type": "command",
             "timeout": 2,
             "command": "python \"/c/Users/User/AppData/Local/hermes/demiurge-ledger/ledger_hook.py\" --event stop || true"
-          }
-        ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python C:\\Users\\User\\Documents\\code\\demiurge\\scripts\\testing_matrix_gate.py --json",
-            "timeout": 30
           }
         ]
       },
