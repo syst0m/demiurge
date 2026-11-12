@@ -86,6 +86,7 @@ class BundleHarness(unittest.TestCase):
                         "hooks": True}), encoding="utf-8")
 
 
+@unittest.skipUnless(BUNDLES.is_dir(), "bundles/ lives in agent-skills; this checkout has none")
 class TestManifests(unittest.TestCase):
     def test_repo_bundles_parse_and_are_unique(self):
         seen = {}
