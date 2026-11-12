@@ -28,10 +28,12 @@ class ParityTest(unittest.TestCase):
         (skill / "SKILL.md").write_text(content, encoding="utf-8")
 
     def states(self):
-        return {(f["harness"], f["state"]) for f in parity.check(self.repo, self.home)}
+        """Non-skipped findings only. Hermes is skipped on a runner with no Hermes home."""
+        return {(f["harness"], f["state"]) for f in parity.check(self.repo, self.home)
+                if f["state"] != "skipped"}
 
     def test_all_installed_harnesses_current_passes(self):
-        for h in (".claude", ".agents", ".config/opencode"):
+        for h in (".claude", ".gemini/config", ".config/opencode"):
             self.deploy(h)
         self.assertEqual(self.states(), {("claude-code", "ok"), ("antigravity", "ok"), ("opencode", "ok")})
         self.assertEqual(parity.main(["--repo", str(self.repo), "--home", str(self.home)]), 0)
@@ -48,7 +50,8 @@ class ParityTest(unittest.TestCase):
 
     def test_uninstalled_harness_is_skipped_not_failed(self):
         self.deploy(".claude")
-        self.assertIn(("opencode", "skipped"), self.states())
+        raw = {(f["harness"], f["state"]) for f in parity.check(self.repo, self.home)}
+        self.assertIn(("opencode", "skipped"), raw)
         self.assertEqual(parity.main(["--repo", str(self.repo), "--home", str(self.home)]), 0)
 
     def test_eval_outputs_and_pycache_do_not_count_as_drift(self):

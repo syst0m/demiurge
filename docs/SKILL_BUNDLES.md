@@ -39,15 +39,21 @@ Targets:
 | claude-code | `<root>/.claude/skills/<skill>` links + `.claude/settings.json` `hooks.Stop` + `enabledPlugins` (see below) |
 | hermes | `%LOCALAPPDATA%/hermes/plugins/<bundle>/plugin.yaml` + `skills/` plus `plugins.enabled` in `config.yaml` |
 
-A `bundle.json` may carry an optional `"claude_plugins"` list of Claude Code plugin ids (for example `"ponytail@ponytail"`). The materializer merges each as `true` into `enabledPlugins` of `<project>/.claude/settings.local.json` (project scope, untracked so the public repo stays clean) or `~/.claude/settings.json` (global scope). It only adds: existing keys are never removed or flipped (a plugin set to `false` stays `false`), other settings survive, and a missing file is created. Invalid JSON in the target is refused (exit 1) and the file is left unchanged. `--check` reports `DRIFT claude-code plugin <id> not enabled`.
+A bundle or profile may carry a `"plugins"` list of names from `agent-skills/plugins/registry.json` (for example `"ponytail"`). The registry gives each plugin's id per harness and the skills it provides. A plugin is used only where its harness supports it and it is installed there (`scripts/plugin_registry.py status`):
+
+- `USE`: installed. Claude Code: the id is merged as `true` into `enabledPlugins` of `<project>/.claude/settings.local.json`, or `~/.claude/settings.json` at global scope. Existing keys are never removed or flipped. Hermes: the id joins `plugins.enabled`. The skills the plugin provides are not deployed standalone (`SKIP`).
+- `FALLBACK`: supported but not installed. The standalone skills are deployed and the install command is printed. Sync never installs plugin code.
+- `UNSUPP`: the harness has no build of the plugin. The standalone skills are deployed.
+
+Machine-wide plugins go in `profiles/global.json` (agent-skills). Apply with `--profile <file> --scope global`. A profile alone enables plugins and deploys no skills. `--check` reports `DRIFT claude-code plugin <id> not enabled`. Invalid settings JSON is refused (exit 1) and the file is left unchanged.
 
 Claude Code does not auto-load `.claude/plugins/<name>/` without a marketplace install record, so there is no bundle directory for it. The Hermes desktop gateway never loads `./.hermes/plugins`, so `--scope project` still targets the user dir for Hermes and says so.
 
 Guards:
 
-* a bundle skill missing from every library is a hard error
-* a target holding different real content is refused, never overwritten
-* `--check` writes nothing and exits 1 on drift
+- a bundle skill missing from every library is a hard error
+- a target holding different real content is refused, never overwritten
+- `--check` writes nothing and exits 1 on drift
 
 Symlinks are preferred; on Windows without Developer Mode the materializer falls back to a recursive copy and reports `copy` instead of `link`.
 
@@ -61,15 +67,15 @@ Reads the working tree (staged, unstaged, untracked), separates source from test
 
 CI wiring:
 
-* .agents/local-ci.json test command runs sync_bundles.py --bundle baseline-coding --check
-* pre-commit bundle-parity hook runs the same check
-* .claude/settings.json registers two Stop hooks (internal + claude-code formats) calling testing_matrix_gate.py --json
+- .agents/local-ci.json test command runs sync_bundles.py --bundle baseline-coding --check
+- pre-commit bundle-parity hook runs the same check
+- .claude/settings.json registers two Stop hooks (internal + claude-code formats) calling testing_matrix_gate.py --json
 
 ## What's still pending
 
-* scripts/sync-skills.sh still exists as a separate deploy script; it no longer writes into agent-skills/skills, but it has not been reworked into the bundle materializer.
-* check_harness_parity.py has not been extended to cover Hermes or to ignore __pycache__.
-* sync_agent_skills.ps1's copy-back path (in the agent-skills repo) has not been removed.
+- scripts/sync-skills.sh still exists as a separate deploy script; it no longer writes into agent-skills/skills, but it has not been reworked into the bundle materializer.
+- check_harness_parity.py has not been extended to cover Hermes or to ignore __pycache__.
+- sync_agent_skills.ps1's copy-back path (in the agent-skills repo) has not been removed.
 
 ## Personal bundles vs public bundles
 
