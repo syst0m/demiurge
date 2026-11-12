@@ -1,0 +1,5 @@
+{
+  "name": "{{BUNDLE_NAME}}",
+  "version": "1.0.0",
+  "description": "{{WHAT_THIS_BUNDLE_IS_FOR}}"
+}

@@ -103,7 +103,7 @@ The Demiurge documentation suite is structured into focused guides addressing sp
 
 - **Target File:** [docs/INSTALLATION.md](INSTALLATION.md)
 - **Scope:** Complete deployment instructions for Marcus, Niccolo and Imhotep across multiple environments.
-- **Platforms Covered:** Claude Code (`~/.claude/skills/`), Google Antigravity (`~/.agents/skills/`), Gemini CLI, OpenAI / Codex, and local IDEs.
+- **Platforms Covered:** Claude Code (`~/.claude/skills/`), Google Antigravity (`~/.gemini/config/skills/`), Gemini CLI, OpenAI / Codex, and local IDEs.
 - **Key Commands:** Automated synchronization via `scripts/sync-skills.sh`.
 - **Optional Tooling:** Scholarly MCP connectors for Niccolo ([Undermind](https://undermind.ai), [scite](https://scite.ai/mcp), [Consensus](https://consensus.app), [PubMed](https://pubmed.ncbi.nlm.nih.gov)).
 
