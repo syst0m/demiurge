@@ -144,12 +144,25 @@ fi
 
 $REPO_ONLY && TARGETS=()
 
+# Skills that an installed harness plugin already provides are not deployed standalone.
+# Only the Claude target maps to a harness with plugins; other targets have none.
+PLUGIN_SKILLS=""
+GLOBAL_PROFILE="${DEMIURGE_AGENT_SKILLS:-$ROOT/../agent-skills}/profiles/global.json"
+if [ -f "$ROOT/scripts/plugin_registry.py" ] && [ -f "$GLOBAL_PROFILE" ]; then
+    PLUGIN_SKILLS=$(python "$ROOT/scripts/plugin_registry.py" exclusions --harness claude-code         --profile "$GLOBAL_PROFILE" 2>/dev/null || true)
+fi
+
 for TARGET in "${TARGETS[@]}"; do
 for skill_dir in "$REPO_SKILLS"/*/; do
     [ -d "$skill_dir" ] || continue
     name=$(basename "$skill_dir")
     sfx=""
     [ "$TARGET" = "$PRIMARY_TARGET" ] || sfx="  @ $TARGET"
+    if [ "$TARGET" = "$PRIMARY_TARGET" ] && printf '%s
+' "$PLUGIN_SKILLS" | grep -qx "$name"; then
+        echo "SKIP     $name (provided by an installed Claude plugin)"
+        continue
+    fi
 
     if [ ! -d "$TARGET/$name" ]; then
         echo "NEW      $name (not yet deployed)$sfx"

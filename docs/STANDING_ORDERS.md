@@ -63,4 +63,10 @@ Marcus never writes the two user-level hook files itself (SPEC section 6.1). Mer
   prints a note.
 - `sync-skills.sh` deploys to each library whose harness home exists, and refuses the whole deploy
   when any target holds uncommitted work.
+- Plugins are used only where the harness supports them and they are installed there. Claude
+  Code, Hermes and Antigravity each have a build of some plugins (`agent-skills/plugins/registry.json`).
+  A skill that an installed plugin provides is not also deployed as a standalone copy, so it is not
+  listed twice. A plugin that is supported but not installed falls back to the standalone skills.
+  Run `python scripts/plugin_registry.py status --harness <name> --profile <file>` to see which.
+  Sync never installs plugin code.
 - `check_harness_parity.py` fails on a missing or stale copy. It runs on `pre-push`.
