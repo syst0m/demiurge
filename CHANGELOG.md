@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.0] - 2026-11-12
+
+### Added
+
+- **Harness plugin registry:** `scripts/plugin_registry.py` decides, per harness, whether a plugin is used, falls back to standalone skills, or is unsupported.
+- **Global profile:** `--profile` applies a plugin-only profile, such as `profiles/global.json`, with `--scope global`.
+- **Library mode:** `scripts/sync_bundles.py --libraries` reports or prunes duplicate skill links per harness.
+
+### Changed
+
+- **Plugins replace `claude_plugins`:** Bundles name plugins from the registry. A plugin in use excludes the skills it provides from standalone deployment.
+- **sync-skills.sh:** Skips skills that an installed plugin provides. Antigravity deploys to `~/.gemini/config/skills`.
+- **Parity check:** Counts a plugin-provided skill as covered. Reports a duplicate as a failure. Uses the Hermes home under `%LOCALAPPDATA%`.
+
+### Fixed
+
+- **Global scope path:** Claude skills write to `~/.claude/skills`, not `~/.claude/.claude/skills`.
+- **Relative links on Windows:** Links use native path separators.
+
 ## [0.17.19] - 2026-11-08
 
 ### Changed
