@@ -177,6 +177,25 @@ record of intent. Then project into the requested targets. Where a target cannot
 **say so in the emitted package** rather than dropping it silently. Web-chat targets flatten
 everything into one block and lose progressive disclosure entirely; that loss gets stated.
 
+**Prefer a harness's own extension unit over a copy.** A bundle is a manifest naming skills;
+the materializer emits each harness's native plugin shape and links skill bodies from the library
+rather than copying them. Copying is what produces two harnesses running two versions of the same
+skill; the old `sync-skills.sh` wrote directly into `agent-skills/skills` (the cross-repo write
+hazard documented in §1.2), which produces diverging copies across repos. The materializer
+pattern in `scripts/sync_bundles.py` avoids this by targeting each harness's native shape.
+Verified shapes, load paths and validator commands: `references/harness-package-targets.md`
+(load before: packaging a skill or bundle for Antigravity, Claude Code or Hermes).
+
+**Run the harness's own validator before claiming a target works.**
+never loaded looks installed and is not. Every target in the reference was confirmed by the
+harness's own tool (`agy plugin validate`, `hermes plugins validate`, `hermes plugins list`), not
+by its documentation — the docs describe a different scope often enough that they will mislead you.
+
+**A blocking hook must speak the harness's dialect.** The dialects are not interchangeable:
+Claude Code stops on `{"decision":"block"}`, Antigravity stops on `{"decision":"continue"}`
+(any other value lets the stop through), Hermes vetoes on `{"action":"block","message":...}`
+from `pre_llm_call`. One gate, three renderings — emit per harness, never one shape for all.
+
 ## Auditing a skill you did not write
 
 Third-party skills are a supply chain: independent scans of 42,447 and 3,984 published skills found
@@ -198,7 +217,7 @@ before any model run:
    let a missing model runner block the deterministic fixes.
 2. **Audit the doc/code contract.** Cross-check every `SKILL.md` claim against the script behavior
    and the tests. When they disagree, the held-out judge is the source of truth: if a judge locks a
-   behavior the docs contradict, fix the docs rather than the code. A visible test that encodes a defect is
+   behavior the docs contradict, fix the docs and leave the code unchanged. A visible test that encodes a defect is
    still a defect — change the test and say why.
 3. **Exercise the no-dependency fallback.** A script that degrades gracefully (a config parser, an
    API-key resolver) must be tested on the fallback path; a flattened parser silently ignores nested
