@@ -11,6 +11,9 @@ Verified targets — each harness's own load path, not a guess:
                Workspace plugins activate for that project (Antigravity docs, "Plugins").
   claude-code  <root>/.claude/skills/<skill>            (project skill scope)
                <root>/.claude/settings.json hooks.Stop    (the gate)
+               <root>/.claude/settings.local.json enabledPlugins (optional "claude_plugins" list
+               in bundle.json; merged as true, never removing or flipping a key). Global scope
+               writes ~/.claude/settings.json instead; project scope keeps the repo clean.
                Claude Code does NOT auto-load .claude/plugins/<name>/ without a marketplace
                install record, so there is no bundle directory for it.
   hermes       %LOCALAPPDATA%/hermes/plugins/<bundle>/    (user scope, always)
@@ -267,6 +270,44 @@ def apply_gate(harness: str, plugin_dir: Path, project: Path, apply: bool) -> bo
     return drift
 
 
+def enable_claude_plugins(plugins: Sequence[str], settings: Path, apply: bool) -> int:
+    """Merge each plugin id as true into enabledPlugins. Never removes or flips existing keys."""
+    data: dict = {}
+    if settings.is_file():
+        try:
+            data = json.loads(settings.read_text(encoding="utf-8"))
+            if not isinstance(data, dict):
+                raise ValueError("top level is not an object")
+        except ValueError as exc:
+            print(f"  REFUSE  claude-code plugins: {settings} is not valid settings JSON ({exc})")
+            return 1
+    enabled = data.get("enabledPlugins")
+    if enabled is None:
+        enabled = {}
+    elif not isinstance(enabled, dict):
+        print(f"  REFUSE  claude-code plugins: enabledPlugins in {settings} is not an object")
+        return 1
+    drift = 0
+    changed = False
+    for plugin in plugins:
+        if enabled.get(plugin) is True:
+            continue
+        if plugin in enabled:
+            continue  # an existing key, even false, is never flipped
+        if not apply:
+            drift = 1
+            print(f"  DRIFT    claude-code plugin {plugin} not enabled")
+            continue
+        enabled[plugin] = True
+        changed = True
+        print(f"  SYNCED  claude-code plugin {plugin} enabled -> {settings}")
+    if changed:
+        data["enabledPlugins"] = enabled
+        settings.parent.mkdir(parents=True, exist_ok=True)
+        settings.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    return drift
+
+
 def plugin_manifests(bundle: dict) -> Dict[str, str]:
     name, desc = bundle["name"], bundle["description"]
     return {
@@ -350,6 +391,10 @@ def materialize_claude(bundle: dict, sources: Dict[str, Path], project: Path,
                           base / ".claude" / "skills" / skill, apply)
     if bundle.get("hooks"):
         drift |= apply_gate("claude-code", base / ".claude", project, apply)
+    if bundle.get("claude_plugins"):
+        settings = (project / ".claude" / "settings.local.json" if scope == "project"
+                    else GLOBAL_ROOTS["claude-code"] / "settings.json")
+        drift |= enable_claude_plugins(bundle["claude_plugins"], settings, apply)
     return drift
 
 
