@@ -36,8 +36,10 @@ Targets:
 | Harness | Target |
 | --- | --- |
 | antigravity | `<root>/.agents/plugins/<bundle>/plugin.json` + `skills/` |
-| claude-code | `<root>/.claude/skills/<skill>` links + `.claude/settings.json` `hooks.Stop` |
+| claude-code | `<root>/.claude/skills/<skill>` links + `.claude/settings.json` `hooks.Stop` + `enabledPlugins` (see below) |
 | hermes | `%LOCALAPPDATA%/hermes/plugins/<bundle>/plugin.yaml` + `skills/` plus `plugins.enabled` in `config.yaml` |
+
+A `bundle.json` may carry an optional `"claude_plugins"` list of Claude Code plugin ids (for example `"ponytail@ponytail"`). The materializer merges each as `true` into `enabledPlugins` of `<project>/.claude/settings.local.json` (project scope, untracked so the public repo stays clean) or `~/.claude/settings.json` (global scope). It only adds: existing keys are never removed or flipped (a plugin set to `false` stays `false`), other settings survive, and a missing file is created. Invalid JSON in the target is refused (exit 1) and the file is left unchanged. `--check` reports `DRIFT claude-code plugin <id> not enabled`.
 
 Claude Code does not auto-load `.claude/plugins/<name>/` without a marketplace install record, so there is no bundle directory for it. The Hermes desktop gateway never loads `./.hermes/plugins`, so `--scope project` still targets the user dir for Hermes and says so.
 
