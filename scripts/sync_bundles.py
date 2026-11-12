@@ -11,9 +11,11 @@ Verified targets — each harness's own load path, not a guess:
                Workspace plugins activate for that project (Antigravity docs, "Plugins").
   claude-code  <root>/.claude/skills/<skill>            (project skill scope)
                <root>/.claude/settings.json hooks.Stop    (the gate)
-               <root>/.claude/settings.local.json enabledPlugins (optional "claude_plugins" list
-               in bundle.json; merged as true, never removing or flipping a key). Global scope
-               writes ~/.claude/settings.json instead; project scope keeps the repo clean.
+               <root>/.claude/settings.local.json enabledPlugins (bundle "plugins" list, names
+               from plugins/registry.json; each installed plugin is merged as true, never
+               removing or flipping a key). Global scope writes ~/.claude/settings.json instead.
+Plugin dedup: a skill that an installed plugin provides (plugins/registry.json) is not deployed
+               as a standalone copy for that harness. A missing plugin falls back to the skill.
                Claude Code does NOT auto-load .claude/plugins/<name>/ without a marketplace
                install record, so there is no bundle directory for it.
   hermes       %LOCALAPPDATA%/hermes/plugins/<bundle>/    (user scope, always)
@@ -53,6 +55,8 @@ if not BUNDLES_DIR.is_dir():
             BUNDLES_DIR = _c
             break
 GATE_SCRIPT = REPO / "scripts" / "testing_matrix_gate.py"
+sys.path.insert(0, str(REPO / "scripts"))
+import plugin_registry as plugreg  # noqa: E402
 
 HARNESSES = ("antigravity", "claude-code", "hermes")
 GLOBAL_ROOTS = {
@@ -98,6 +102,16 @@ def resolve_skill(roots: Sequence[Path], name: str) -> Optional[Path]:
     return None
 
 
+def load_profile(path: Path) -> dict:
+    """A profile is a bundle with no skills: it only enables plugins (e.g. profiles/global.json)."""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    data.setdefault("skills", [])
+    data.setdefault("plugins", [])
+    data.setdefault("name", path.stem)
+    data["dir"] = path.parent
+    return data
+
+
 def load_bundles(bundles_dir: Path, names: Sequence[str]) -> List[dict]:
     bundles = []
     for entry in sorted(bundles_dir.iterdir()):
@@ -126,7 +140,8 @@ def link_or_copy(src: Path, dst: Path) -> str:
     dst.parent.mkdir(parents=True, exist_ok=True)
     try:
         try:
-            target = os.path.relpath(src.resolve(), dst.parent.resolve()).replace("\\", "/")
+            # Native separators: on Windows a forward-slash relative target links to nothing.
+            target = os.path.relpath(src.resolve(), dst.parent.resolve())
         except ValueError:
             target = src.resolve()
         dst.symlink_to(target, target_is_directory=True)
@@ -378,23 +393,59 @@ def sync_one(harness: str, skill: str, src: Path, dst: Path, apply: bool) -> int
 
 
 def materialize_claude(bundle: dict, sources: Dict[str, Path], project: Path,
-                       scope: str, apply: bool) -> int:
+                       scope: str, apply: bool, plugin_ids: Sequence[str] = (),
+                       excluded: frozenset = frozenset()) -> int:
     """Claude Code: project skills under .claude/skills/, hooks in .claude/settings.json.
 
     There is no bundle directory: Claude Code does not load .claude/plugins/<name>/ without a
-    marketplace install record.
+    marketplace install record. Global scope writes to ~/.claude/ itself (not ~/.claude/.claude/).
     """
     drift = 0
-    base = project if scope == "project" else GLOBAL_ROOTS["claude-code"]
+    if scope == "project":
+        skills_dir, claude_dir, settings_root = project / ".claude" / "skills", project / ".claude", project
+    else:
+        home_claude = GLOBAL_ROOTS["claude-code"]
+        skills_dir, claude_dir, settings_root = home_claude / "skills", home_claude, home_claude.parent
     for skill in bundle["skills"]:
-        drift |= sync_one("claude-code", skill, sources[skill],
-                          base / ".claude" / "skills" / skill, apply)
+        if skill in excluded:
+            print(f"  SKIP    claude-code skill {skill} (provided by an installed plugin)")
+            continue
+        drift |= sync_one("claude-code", skill, sources[skill], skills_dir / skill, apply)
     if bundle.get("hooks"):
-        drift |= apply_gate("claude-code", base / ".claude", project, apply)
-    if bundle.get("claude_plugins"):
+        drift |= apply_gate("claude-code", claude_dir, settings_root, apply)
+    if plugin_ids:
         settings = (project / ".claude" / "settings.local.json" if scope == "project"
                     else GLOBAL_ROOTS["claude-code"] / "settings.json")
-        drift |= enable_claude_plugins(bundle["claude_plugins"], settings, apply)
+        drift |= enable_claude_plugins(list(plugin_ids), settings, apply)
+    return drift
+
+
+def prune_libraries(profiles: Sequence[dict], registry: Dict[str, dict], apply: bool) -> int:
+    """--libraries: drop global standalone copies that an installed plugin now provides.
+
+    Report by default. With apply, only symlinks and junctions are removed (never a real
+    directory, whose content is the user's). The target of a link is never touched.
+    """
+    names = [n for prof in profiles for n in prof.get("plugins", [])]
+    drift = 0
+    for harness in ("claude-code",):
+        rows = plugreg.plan(harness, names, registry)
+        excluded = plugreg.exclusions(rows, registry)
+        library = GLOBAL_ROOTS["claude-code"] / "skills"
+        for skill in sorted(excluded):
+            entry = library / skill
+            if not (entry.is_symlink() or entry.exists()):
+                continue
+            if not entry.is_symlink():
+                print(f"  KEEP    {harness} {skill}: real directory, left for the user")
+                drift |= 1
+                continue
+            if not apply:
+                print(f"  PRUNE   {harness} {skill}: link (run with --apply to remove)")
+                drift |= 1
+                continue
+            entry.unlink()
+            print(f"  PRUNED  {harness} {skill}: link removed")
     return drift
 
 
@@ -414,9 +465,29 @@ def run(bundles: Sequence[dict], roots: Sequence[Path], project: Path,
         if len(sources) != len(bundle["skills"]):
             continue
 
+        registry = plugreg.load_registry() if bundle.get("plugins") else {}
         for harness in harnesses:
+            rows = plugreg.plan(harness, bundle.get("plugins", []), registry)
+            for row in rows:
+                if row["status"] == "use":
+                    print(f"  USE     {harness} plugin {row['id']}")
+                elif row["status"] == "fallback":
+                    print(f"  FALLBACK {harness} plugin {row['name']}: standalone skills deployed")
+                    print(f"           {row['hint']}")
+                else:
+                    print(f"  UNSUPP  {harness} plugin {row['name']}: no build for {harness}")
+            excluded = frozenset(plugreg.exclusions(rows, registry))
+            ids = [r["id"] for r in rows if r["status"] == "use" and harness == "claude-code"]
+
             if harness == "claude-code":
-                drift |= materialize_claude(bundle, sources, project, scope, apply)
+                drift |= materialize_claude(bundle, sources, project, scope, apply, ids, excluded)
+                continue
+
+            if not bundle["skills"] and not bundle.get("hooks"):
+                if harness == "hermes":
+                    for r in rows:
+                        if r["status"] == "use":
+                            drift |= enable_hermes_plugin(r["id"], apply)
                 continue
 
             if harness == "hermes":
@@ -435,6 +506,9 @@ def run(bundles: Sequence[dict], roots: Sequence[Path], project: Path,
             drift |= state not in ("ok", "synced")
 
             for skill in bundle["skills"]:
+                if skill in excluded:
+                    print(f"  SKIP    {harness} skill {skill} (provided by an installed plugin)")
+                    continue
                 drift |= sync_one(harness, skill, sources[skill],
                                   plugin_dir / "skills" / skill, apply)
 
@@ -443,6 +517,9 @@ def run(bundles: Sequence[dict], roots: Sequence[Path], project: Path,
 
             if harness == "hermes":
                 drift |= enable_hermes_plugin(bundle["name"], apply)
+                for r in rows:
+                    if r["status"] == "use":
+                        drift |= enable_hermes_plugin(r["id"], apply)
 
     if drift and not apply:
         print("\nDrift detected. Re-run with --apply to materialize.")
@@ -457,12 +534,16 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                    help="bundle manifest directory (default: the repo's bundles/)")
     p.add_argument("--project", type=Path, default=REPO,
                    help="project root (default: the demiurge checkout)")
+    p.add_argument("--profile", action="append", type=Path, default=[],
+                   help="profile JSON (plugins only, e.g. profiles/global.json); repeatable")
     p.add_argument("--scope", choices=["project", "global"], default="project")
     p.add_argument("--harness", action="append", default=[],
                    help="harness name; repeatable (default: all three)")
     p.add_argument("--library", action="append", default=[],
                    help="skill library dir; repeatable")
     p.add_argument("--apply", action="store_true", help="write (default: report only)")
+    p.add_argument("--libraries", action="store_true",
+                   help="report or prune global standalone skills that an installed plugin provides")
     p.add_argument("--check", action="store_true", help="report drift, exit 1 (default behaviour)")
     args = p.parse_args(argv)
 
@@ -477,11 +558,16 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         return 2
 
     try:
-        bundles = load_bundles(args.bundles_dir, args.bundle)
+        # A profile alone runs only the profile; bundles are added by --bundle or by default.
+        bundles = [] if (args.profile and not args.bundle) else load_bundles(args.bundles_dir, args.bundle)
     except SystemExit as exc:
         print(exc, file=sys.stderr)
         return 2
 
+    bundles += [load_profile(x) for x in args.profile]
+    if args.libraries:
+        profiles = [load_profile(x) for x in args.profile]
+        return prune_libraries(profiles, plugreg.load_registry(), args.apply)
     return run(bundles, roots, args.project.resolve(), args.scope,
                args.apply, harnesses)
 
