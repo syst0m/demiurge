@@ -17,5 +17,13 @@ package says so — rule E-1.
 | `gemini-gem.md` | Gemini / Gemini Spark | Medium |
 | `cli-harness.md` | Harness-agnostic CLI | Medium |
 | `web-chat.md` | Pasteable single prompt | Low |
+| `antigravity-plugin/` | Antigravity workspace plugin (`.agents/plugins/<name>/`) | High |
+| `hermes-plugin/` | Hermes user plugin (`%LOCALAPPDATA%/hermes/plugins/<name>/`) | High |
+
+The two plugin templates are bundle manifests, not filled projections: they list skill names and the
+hook wiring. Emit them into the target harness's own load path — see
+`references/harness-package-targets.md` for the verified shapes and the validator command for each.
+Claude Code has no plugin template because `.claude/plugins/<name>/` is not a load path; its
+project skill scope is `.claude/skills/<skill>/` plus a `settings.json` hook.
 
 Rule E-2: the Agent Skills version is emitted **always**, whatever else was asked for.

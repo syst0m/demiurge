@@ -1,6 +1,6 @@
 #!/bin/bash
 # Deploys the canonical skills in this repo to where each harness loads them:
-# ~/.claude/skills (Claude Code), ~/.agents/skills (Antigravity), ~/.config/opencode/skills (OpenCode).
+# ~/.claude/skills (Claude Code), ~/.gemini/config/skills (Antigravity), ~/.config/opencode/skills (OpenCode).
 # Antigravity's global skill library is ~/.gemini/config/skills; check_harness_parity.py checks that path.
 #
 # The repo is the source of truth. ~/.claude/skills/ is a deployment target —
@@ -33,7 +33,7 @@ PRIMARY_TARGET="${HOME}/.claude/skills"
 # Antigravity is not given empty config directories. A target that resolves to the same
 # directory as an earlier one (a symlinked library) is skipped.
 TARGETS=("$PRIMARY_TARGET")
-for extra in "${HOME}/.agents/skills" "${HOME}/.config/opencode/skills"; do
+for extra in "${HOME}/.gemini/config/skills" "${HOME}/.config/opencode/skills"; do
     [ -d "$(dirname "$extra")" ] || continue
     dup=false
     for have in "${TARGETS[@]}"; do
