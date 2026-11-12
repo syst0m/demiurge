@@ -69,6 +69,9 @@ class BundleHarness(unittest.TestCase):
         # Point LOCALAPPDATA at the temp tree so the Hermes user-scope target stays fake.
         env = dict(os.environ)
         env["LOCALAPPDATA"] = str(self.tmp)
+        # Isolate the plugin probe (reads ~/.claude/plugins) and the registry location.
+        env["HOME"] = env["USERPROFILE"] = str(self.tmp / "home")
+        env["DEMIURGE_AGENT_SKILLS"] = str(self.tmp / "agent-skills")
         return run(["--bundles-dir", str(self.bundles), "--library", str(self.library),
                     "--project", str(self.project), *args], env=env)
 
@@ -83,6 +86,7 @@ class BundleHarness(unittest.TestCase):
                         "hooks": True}), encoding="utf-8")
 
 
+@unittest.skipUnless(BUNDLES.is_dir(), "bundles/ lives in agent-skills; this checkout has none")
 class TestManifests(unittest.TestCase):
     def test_repo_bundles_parse_and_are_unique(self):
         seen = {}
@@ -228,25 +232,49 @@ class TestFunctional(BundleHarness):
 
 
 class TestClaudePlugins(BundleHarness):
+    """Plugins are named in the registry. Use needs an install record; otherwise fallback."""
     PLUGIN = "ponytail@ponytail"
 
     def setUp(self):
         super().setUp()
-        make_bundles(self.tmp, {"b-plug": ["alpha"]})
+        reg = self.tmp / "agent-skills" / "plugins" / "registry.json"
+        reg.parent.mkdir(parents=True)
+        reg.write_text(json.dumps({"ponytail": {
+            "provides_skills": ["alpha"],
+            "harness": {"claude-code": self.PLUGIN, "hermes": None, "antigravity": None}}}),
+            encoding="utf-8")
+        make_bundles(self.tmp, {"b-plug": ["alpha", "beta"]})
         (self.bundles / "b-plug" / "bundle.json").write_text(
-            json.dumps({"name": "b-plug", "description": "plug", "skills": ["alpha"],
-                        "claude_plugins": [self.PLUGIN]}), encoding="utf-8")
+            json.dumps({"name": "b-plug", "description": "plug", "skills": ["alpha", "beta"],
+                        "plugins": ["ponytail"]}), encoding="utf-8")
         self.local = self.project / ".claude" / "settings.local.json"
 
-    def test_apply_enables_plugin_in_local_settings(self):
+    def install_plugin(self):
+        rec = self.tmp / "home" / ".claude" / "plugins" / "installed_plugins.json"
+        rec.parent.mkdir(parents=True, exist_ok=True)
+        rec.write_text(json.dumps({"plugins": {self.PLUGIN: [{}]}}), encoding="utf-8")
+
+    def test_installed_plugin_is_enabled_and_its_skill_is_not_deployed(self):
+        self.install_plugin()
         out = self.sync("--bundle", "b-plug", "--harness", "claude-code", "--apply")
         self.assertEqual(out.returncode, 0, out.stderr)
         self.assertIn("claude-code plugin ponytail@ponytail enabled", out.stdout)
         data = json.loads(self.local.read_text(encoding="utf-8"))
         self.assertIs(data["enabledPlugins"][self.PLUGIN], True)
-        self.assertFalse((self.project / ".claude" / "settings.json").exists())
+        self.assertIn("SKIP    claude-code skill alpha", out.stdout)
+        self.assertFalse(os.path.lexists(self.project / ".claude" / "skills" / "alpha"))
+        self.assertTrue(os.path.isdir(self.project / ".claude" / "skills" / "beta"))
+
+    def test_missing_plugin_falls_back_to_standalone_skills(self):
+        out = self.sync("--bundle", "b-plug", "--harness", "claude-code", "--apply")
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertIn("FALLBACK claude-code plugin ponytail", out.stdout)
+        self.assertIn("/plugin install ponytail@ponytail", out.stdout)
+        self.assertFalse(self.local.exists())
+        self.assertTrue(os.path.isdir(self.project / ".claude" / "skills" / "alpha"))
 
     def test_check_reports_drift_then_clean_after_apply(self):
+        self.install_plugin()
         out = self.sync("--bundle", "b-plug", "--harness", "claude-code", "--check")
         self.assertEqual(out.returncode, 1)
         self.assertIn("DRIFT    claude-code plugin ponytail@ponytail not enabled", out.stdout)
@@ -256,6 +284,7 @@ class TestClaudePlugins(BundleHarness):
             self.sync("--bundle", "b-plug", "--harness", "claude-code", "--check").returncode, 0)
 
     def test_existing_keys_survive_merge(self):
+        self.install_plugin()
         self.local.parent.mkdir(parents=True, exist_ok=True)
         self.local.write_text(json.dumps({
             "permissions": {"allow": ["Bash(ls)"]},
@@ -268,12 +297,23 @@ class TestClaudePlugins(BundleHarness):
         self.assertIs(data["enabledPlugins"][self.PLUGIN], True)
 
     def test_invalid_json_is_refused_and_untouched(self):
+        self.install_plugin()
         self.local.parent.mkdir(parents=True, exist_ok=True)
         self.local.write_text("{not json", encoding="utf-8")
         out = self.sync("--bundle", "b-plug", "--harness", "claude-code", "--apply")
         self.assertEqual(out.returncode, 1)
         self.assertIn("REFUSE", out.stdout)
         self.assertEqual(self.local.read_text(encoding="utf-8"), "{not json")
+
+    def test_profile_enables_plugins_without_skills(self):
+        self.install_plugin()
+        profile = self.tmp / "global.json"
+        profile.write_text(json.dumps({"name": "global", "plugins": ["ponytail"], "skills": []}),
+                           encoding="utf-8")
+        out = self.sync("--profile", str(profile), "--harness", "claude-code", "--scope", "project",
+                        "--apply")
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertFalse((self.project / ".claude" / "skills").exists())
 
 
 class TestNonFunctional(BundleHarness):
