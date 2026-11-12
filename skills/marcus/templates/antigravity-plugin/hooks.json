@@ -1,0 +1,12 @@
+{
+  "{{HOOK_NAME}}": {
+    "enabled": true,
+    "Stop": [
+      {
+        "type": "command",
+        "command": "python {{GATE_SCRIPT}} --json --hook-format antigravity",
+        "timeout": 30
+      }
+    ]
+  }
+}
