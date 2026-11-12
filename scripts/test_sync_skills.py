@@ -241,20 +241,20 @@ class TestSyncSkills(unittest.TestCase):
 
     def test_deploys_to_every_harness_whose_home_exists(self):
         self.deploy_identical()
-        agents = self.home / ".agents"
+        gemini = self.home / ".gemini" / "config"
         opencode = self.home / ".config" / "opencode"
-        agents.mkdir()
+        gemini.mkdir(parents=True)
         opencode.mkdir(parents=True)
         result = self.run_sync()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        for target in (self.target, agents / "skills", opencode / "skills"):
+        for target in (self.target, gemini / "skills", opencode / "skills"):
             self.assertTrue((target / "marcus" / "references" / "RESEARCH.md").is_file(), str(target))
 
     def test_skips_harnesses_that_are_not_installed(self):
         self.deploy_identical()
         result = self.run_sync()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertFalse((self.home / ".agents").exists())
+        self.assertFalse((self.home / ".gemini").exists())
         self.assertFalse((self.home / ".config").exists())
 
     def test_check_reports_a_missing_harness_copy_as_drift(self):
@@ -268,7 +268,7 @@ class TestSyncSkills(unittest.TestCase):
 
     def test_dirty_second_target_refuses_before_any_write(self):
         self.deploy_identical()
-        agents_skills = self.home / ".agents" / "skills"
+        agents_skills = self.home / ".gemini" / "config" / "skills"
         shutil.copytree(self.root / "skills" / "marcus", agents_skills / "marcus")
         (agents_skills / "marcus" / "SKILL.md").write_text("local edit\n", encoding="utf-8")
         git = ["git", "-C", str(agents_skills)]
