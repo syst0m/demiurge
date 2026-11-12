@@ -227,6 +227,55 @@ class TestFunctional(BundleHarness):
         self.assertTrue(any("testing_matrix_gate" in c for c in commands))
 
 
+class TestClaudePlugins(BundleHarness):
+    PLUGIN = "ponytail@ponytail"
+
+    def setUp(self):
+        super().setUp()
+        make_bundles(self.tmp, {"b-plug": ["alpha"]})
+        (self.bundles / "b-plug" / "bundle.json").write_text(
+            json.dumps({"name": "b-plug", "description": "plug", "skills": ["alpha"],
+                        "claude_plugins": [self.PLUGIN]}), encoding="utf-8")
+        self.local = self.project / ".claude" / "settings.local.json"
+
+    def test_apply_enables_plugin_in_local_settings(self):
+        out = self.sync("--bundle", "b-plug", "--harness", "claude-code", "--apply")
+        self.assertEqual(out.returncode, 0, out.stderr)
+        self.assertIn("claude-code plugin ponytail@ponytail enabled", out.stdout)
+        data = json.loads(self.local.read_text(encoding="utf-8"))
+        self.assertIs(data["enabledPlugins"][self.PLUGIN], True)
+        self.assertFalse((self.project / ".claude" / "settings.json").exists())
+
+    def test_check_reports_drift_then_clean_after_apply(self):
+        out = self.sync("--bundle", "b-plug", "--harness", "claude-code", "--check")
+        self.assertEqual(out.returncode, 1)
+        self.assertIn("DRIFT    claude-code plugin ponytail@ponytail not enabled", out.stdout)
+        self.assertFalse(self.local.exists())
+        self.sync("--bundle", "b-plug", "--harness", "claude-code", "--apply")
+        self.assertEqual(
+            self.sync("--bundle", "b-plug", "--harness", "claude-code", "--check").returncode, 0)
+
+    def test_existing_keys_survive_merge(self):
+        self.local.parent.mkdir(parents=True, exist_ok=True)
+        self.local.write_text(json.dumps({
+            "permissions": {"allow": ["Bash(ls)"]},
+            "enabledPlugins": {"other@other": False}}), encoding="utf-8")
+        out = self.sync("--bundle", "b-plug", "--harness", "claude-code", "--apply")
+        self.assertEqual(out.returncode, 0, out.stderr)
+        data = json.loads(self.local.read_text(encoding="utf-8"))
+        self.assertEqual(data["permissions"], {"allow": ["Bash(ls)"]})
+        self.assertIs(data["enabledPlugins"]["other@other"], False)
+        self.assertIs(data["enabledPlugins"][self.PLUGIN], True)
+
+    def test_invalid_json_is_refused_and_untouched(self):
+        self.local.parent.mkdir(parents=True, exist_ok=True)
+        self.local.write_text("{not json", encoding="utf-8")
+        out = self.sync("--bundle", "b-plug", "--harness", "claude-code", "--apply")
+        self.assertEqual(out.returncode, 1)
+        self.assertIn("REFUSE", out.stdout)
+        self.assertEqual(self.local.read_text(encoding="utf-8"), "{not json")
+
+
 class TestNonFunctional(BundleHarness):
     def test_real_file_is_never_clobbered(self):
         self.sync("--bundle", "b-one", "--apply")
