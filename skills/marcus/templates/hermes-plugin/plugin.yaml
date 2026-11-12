@@ -1,0 +1,7 @@
+name: "{{BUNDLE_NAME}}"
+version: "1.0.0"
+description: "{{WHAT_THIS_BUNDLE_IS_FOR}}"
+provides_hooks:
+  - pre_llm_call
+provides_skills:
+  - "{{SKILL_NAME}}"

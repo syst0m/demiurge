@@ -1,9 +1,9 @@
 {
   "schema": "demiurge.claims.compiled.v1",
   "research_version": "1.3.4",
-  "sources_sha256": "e0871918c009e1d048a95530d8bc8bbf53bb1195370baa77abb3bb9ebe91b38b",
-  "research_sha256": "8149c144a0f99cd38794cdc33a0d56d6b9b58e853cc59111a0d349cbc9bc56f0",
-  "snapshot_sha256": "231ebf7d470b2394fa3256e4e907c6635111cb6dd6f8fc07075a91b3ee510450",
+  "sources_sha256": "f18f7acff3ff05cf6b924e34d2b8fd11b9206c1102a86e96952d0f3154e16569",
+  "research_sha256": "2662ea1c72b9df7d36c3f0806a31a51241c307da0eb0dfa27914f5bdf4f4a31c",
+  "snapshot_sha256": "6af60a37a8f2defd6aa80b4d1c2c8cd350a3494e5197828ecf3bec7ad4f913bb",
   "enforced": false,
   "claims": [
     {
@@ -336,7 +336,7 @@
           "unverified": false
         }
       ],
-      "claim_sha256": "997e7bb809fb4a346236b3c966f26c98af38bda693a63148ce520fc1d10bccfb",
+      "claim_sha256": "6850d0f68189649a449258d114829a031853a893a695b00d66437058106eee20",
       "rules": [
         "R-SEC-3",
         "R-HOOKS-1"
@@ -841,7 +841,7 @@
           "unverified": true
         }
       ],
-      "claim_sha256": "02c51515c8c5e92dab53f88d1e97e1bfcc56dc264ed8775293eb5801214e4176",
+      "claim_sha256": "1bd4ebc3a1fefe3a901f5ca91fa3217081da1f03e33ffd3c1389ecaf3bfe664e",
       "rules": [
         "R-SEC-3",
         "R-HOOKS-1"

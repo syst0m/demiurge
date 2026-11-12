@@ -108,6 +108,12 @@ judge path, and `judge_guard.py --paths <judge>` reports them as `CHANGED` with 
 Delete the generated fixtures before running the guard, or run the guard before the held-out suite.
 Never edit the judge to make the guard pass.
 
+**Pitfall — accuracy limits on heuristic scanners.** No pattern-based PII scanner guarantees 100%
+detection. Obfuscated, split-across-lines, context-dependent, or brand-new identifier formats can
+evade any pattern-based scan. The Build Brief for a scanner must include an `ACCURACY LIMIT` notice
+and explicitly state that human review remains the final gate. Do not promise 100% detection in any
+brief or acceptance criteria — it is a heuristic gate. It gives no guarantee.
+
 **8 Feed back.** When the ledger hook is installed, record the outcome with
 `python scripts/ledger/ledger.py verdict <run_id> --label ok|bad [--class <failure_class>]`. A
 failure caused by a skill is staged for Marcus with `ledger.py promote`. When the goal is durable
