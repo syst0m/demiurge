@@ -279,6 +279,10 @@ def write_filtered_manifests(bundles: List[dict], picks: Dict[int, set], tmpdir:
             "description": bundle.get("description", ""),
             "skills": sorted(sel),
         }
+        # Keep the gate and plugin declarations; dropping them silently disables both.
+        for key in ("hooks", "plugins"):
+            if key in bundle:
+                data[key] = bundle[key]
         out = tmpdir / bundle["name"] / "bundle.json"
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
