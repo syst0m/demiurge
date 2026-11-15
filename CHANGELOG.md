@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.2] - 2026-11-15
+
+### Fixed
+
+- **Marcus update check on a symlinked skill:** `update_marcus.py --check` failed with `Canonical research file not found` when `skills/marcus` is a symlink. `SKILL.md` now gives the fix: pass `--repo-root .`.
+
 ## [0.18.1] - 2026-11-15
 
 ### Added
