@@ -164,6 +164,12 @@ similarity per installed skill. High overlap means the description collides with
 skill — classify the build as a revision of that skill. Do not treat it as a new one. No published cutoff;
 use judgment on the scores.
 
+**`update_marcus.py --check` fails when `skills/marcus` is a symlink.** `repo_root` derives from
+`Path(__file__).resolve()`, which follows the symlink into `agent-skills/` where `research/RESEARCH.md`
+does not exist. Error: `Canonical research file not found`. Pass `--repo-root .` so `repo_root` is
+the working checkout:
+`python scripts/update_marcus.py --check --strict-design --repo-root .`
+
 A security finding is suppressed only with a stated reason, inline (`# forge:allow <code> - reason`)
 or in the skill's `.forgeignore` (`path:code # reason`). Every suppression is printed. Silent
 exemptions are what make a supply chain unauditable, so there are none — including for your own
