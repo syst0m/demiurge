@@ -14,6 +14,8 @@ import sys
 from pathlib import Path
 
 DEFAULT = Path.home() / ".claude" / "skills" / "i-have-adhd" / "scripts" / "trope_gate.py"
+# CI runners have no user-level skill link. Fall back to the copy beside this file.
+VENDORED = Path(__file__).resolve().parent / "trope_gate.py"
 
 
 EXCLUDE = Path(__file__).resolve().parent / "trope_exclude.txt"
@@ -33,7 +35,7 @@ def excluded() -> set[str]:
 
 
 def main() -> int:
-    gate = Path(os.environ.get("TROPE_GATE", DEFAULT))
+    gate = Path(os.environ.get("TROPE_GATE") or (DEFAULT if DEFAULT.is_file() else VENDORED))
     if not gate.is_file():
         print(f"Error: trope gate not found at {gate}. Set TROPE_GATE.", file=sys.stderr)
         return 2

@@ -34,7 +34,7 @@ Definitions live in [output-rules/GLOSSARY.md](../output-rules/GLOSSARY.md).
 
 ## Recommendation
 
-**Keep**
+### Keep
 
 - i-have-adhd: always-on chat and file shape. Enforced by the trope gate.
 - ASD-STE100: sentence grammar for chat.
@@ -43,12 +43,12 @@ Definitions live in [output-rules/GLOSSARY.md](../output-rules/GLOSSARY.md).
 - my-writing-style: outgoing messages, on demand.
 - caveman: installed, off. Invoke only when you ask for terse output.
 
-**Remove, after you confirm**
+### Removed
 
-- humanize: external upload of your text, evades detectors.
-- writing-clearly-and-concisely: disabled and duplicates the rules above.
+- humanize: external upload of your text, evades detectors. Removed.
+- writing-clearly-and-concisely: disabled and duplicated the rules above. Removed.
 
-**Use by context**
+### Use by context
 
 | Context | Skills |
 |---|---|

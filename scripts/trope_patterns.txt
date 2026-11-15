@@ -1,0 +1,13 @@
+# Negative-parallelism patterns, one per line: NAME<TAB>REGEX
+# Read by trope_gate.py. Case-insensitive, applied to prose only
+# (fenced code, inline code and block quotes are stripped first).
+# Shared by the Stop hook, the pre-save hook and gate-tropes.sh.
+# Rule: ban every doubled form AND the compressed contrast "X, not Y".
+
+doubled_xy	\b(?:it|this|that|they|these|those)\s?(?:(?:is|are|was|were)\s+not|isn['’]t|aren['’]t|wasn['’]t|weren['’]t|['’]s\s+not|['’]re\s+not)\b[^.!?]{0,120}?[,;—–-]\s*(?:it|this|that|they)\s?(?:is|are|['’]s|['’]re)\b
+doubled_period	\b(?:it|this|that|they)\s?(?:is|are|['’]s|['’]re)\s+not\b[^.!?]{0,120}[.!?]\s+(?:it|this|that|they)\s?(?:is|are|['’]s|['’]re)\b
+not_because	\bnot because\b[^.!?]{0,160}?,\s*but because\b
+not_just	(?:\bnot|n['’]t)\s+just\b[^.!?]{0,120}?(?:[,;—–-]|\bbut\b)
+question_problem	\b(?:the question|the problem)\s+is\s+not\b[^.!?]{0,120}[.!?]\s+(?:the question|the problem)\s+is\b
+compressed_comma	,\s+not\s+(?!(?:sure|yet|all|only|necessarily|quite|really|at all|included|applicable|measured|verified|done|run|found|set|needed|available|known|clear|true|enough|just|too|until|if|because|when|after|before|for)\b)[a-z]
+compressed_dash	\s[—–-]\s*not\s+(?!(?:sure|yet|all|only|necessarily|quite|really|at all|included|applicable|measured|verified|done|run|found|set|needed|available|known|clear|true|enough|just|too|until)\b)[a-z]
