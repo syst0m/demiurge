@@ -1,0 +1,38 @@
+{
+  "skill_name": "git-lifecycle-guard",
+  "note": ">>> Rule V-1/V-2. Regression cases come from failures that ACTUALLY happened — do not invent. Start at 20-50 and grow. Capability cases are aspirational and may fail. All three regression cases below are real failures from the operator's attachment (2026-11-15).",
+  "suites": {
+    "regression": [
+      {
+        "id": "r-case-01",
+        "category": "stale-merge-drop",
+        "prompt": "A branch was merged into main from a stale base and dropped branch-added files (skills/imhotep/SKILL.md 105 lines, skills/marcus/scripts/eval_runner.py 119 lines, skills/marcus/SKILL.md 9 lines). After the merge, verify no branch-added line is missing unless the merge message lists it.",
+        "expected_output": "Run git diff --name-only $(git merge-base <branch> main) <branch> before the merge; after the merge run git diff <branch-tip> HEAD -- <file> for each file. Fail if any branch-added line is missing and not listed in the merge message.",
+        "origin": "Case 01, demiurge 2026-11-03: merge f4e3303 dropped work; restore commit 05a18c1 and conflict commit 5af7ef0 (5 files, 781 insertions, 281 deletions, ~2h40m)."
+      },
+      {
+        "id": "r-case-02",
+        "category": "duplicate-revision-stray-files",
+        "prompt": "Two branches landed the same UI layer; both claimed revision 6 / the same CHANGELOG section, and the branch committed screenshots plus many plugin/tmp/opencode/dsb* build folders. A reconcile commit touched 54 files (1,755 insertions, 2,448 deletions).",
+        "expected_output": "Before merge, search PROVENANCE and CHANGELOG for duplicate headings and scan the tree for plugin/tmp/ and 'Screenshot *.png'. Fail on any duplicate heading or stray file.",
+        "origin": "Case 02, agent-skills 2026-10-29: commit dcdd02f reconciled dual UI-layer landing."
+      },
+      {
+        "id": "r-case-03",
+        "category": "deployed-copy-divergence",
+        "prompt": "A stale deployed copy in ~/.claude/skills/ diverged from the repo lessons.md (deployment held 7 entries the repo lacked; repo held 1 the deployment lacked). A sync in either direction would have destroyed accumulated knowledge.",
+        "expected_output": "Before any sync, diff entries both ways between the repo file and the deployed copy. Block the sync if each side holds entries the other lacks. Recover as a union (11 -> 18 entries), never overwrite.",
+        "origin": "Case 03, alfred 2026-09-04: commit d56a2e4 rebuilt as union; dump-before-delete guard made recovery possible."
+      }
+    ],
+    "capability": [
+      {
+        "id": "c1",
+        "category": "cleanup-sign-off",
+        "prompt": "After a merge to main lands, delete merged branches older than 7 days and remove merged worktrees, but only after operator sign-off, logging each deletion.",
+        "expected_output": "`cleanup --sign-off <merge-sha> --apply` deletes only merged branches and merged-branch worktrees, writes `timestamp | repo | branch | tip-sha | sign-off | action` to the cleanup log, and is a dry-run without `--apply`.",
+        "origin": "Sign-off / log requirement from the operator's cleanup-and-sign-off section."
+      }
+    ]
+  }
+}

@@ -18,5 +18,5 @@ it is signed off.
 | O5 | Give each field its own subagent if you can | Range subagents are **read-only** and return findings. One writer. No debate rounds | Claim `ma.value` [CONTESTED], `ma.cognition-stance`, rule R-MA-1 |
 | O6 | Ask what the user wants to happen next | Ask the goal question **once, at intake**, only if ambiguous. Never mid-run | Claim `goal.clarification-timing` |
 | O7 | Durable workflows take the human out of the loop | Rung-3 loops are **proposed** as `routines/*.md` for the user to approve | Demiurge governance (human sign-off), README |
-| O8 | Do what the expert does, not how they talk | Unchanged, and the crew is chosen from **registry skills** where a measured one exists | Claim `eval.persona-prompting` |
+| O8 | Do what the expert does. Skip how they talk | Unchanged, and the crew is chosen from **registry skills** where a measured one exists | Claim `eval.persona-prompting` |
 | O9 | (none) | Progress is a **verified backlog**: a unit counts as done only when its check passes | Claim `pushbench.quant-goal-persistence` |

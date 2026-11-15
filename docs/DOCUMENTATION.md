@@ -38,7 +38,7 @@ canonical_path: docs/DOCUMENTATION.md
 Demiurge is a three-agent engineering system (the Pantheon) designed to research, synthesize, and maintain autonomous agents. The project separates **empirical observation** from **agent synthesis**.
 
 - **Marcus** is named for Marcus Aurelius (who wrote guidance, then adhered to it). Marcus designs and generates agents, emitting installable packages validated against deterministic quality gates.
-- **Niccolo** is named for Niccolo Machiavelli (who judged rulers by what they did, not by what they claimed). Niccolo monitors empirical research, benchmarks, and security vulnerabilities, proposing graded updates to the system knowledge base.
+- **Niccolo** is named for Niccolo Machiavelli (who judged rulers by what they did and by nothing they claimed). Niccolo monitors empirical research, benchmarks, and security vulnerabilities, proposing graded updates to the system knowledge base.
 - **Imhotep** is named for Imhotep (architect of the first stone pyramid). Imhotep builds the user's real deliverables and aims at the goal behind the request, following the vendored [be-ambitious](https://github.com/robonuggets/be-ambitious) procedure plus an evidence overlay ([OVERLAY.md](../skills/imhotep/references/OVERLAY.md)). It takes skills from Marcus's registry, writes held-out checks before it builds, and records outcomes in the run ledger. See [IMHOTEP_EVALUATION.md](IMHOTEP_EVALUATION.md).
 
 ---

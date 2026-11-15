@@ -1,0 +1,6 @@
+name: git-lifecycle-guard
+description: Blocking git branch/worktree audit — run `check` before pushing; stale state blocks progress.
+commands:
+  - name: git-lifecycle-guard-check
+    command: python skills/git-lifecycle-guard/scripts/git-lifecycle-guard.py check --repos .
+    description: Audit all repos for stale merged branches and worktrees; exit non-zero if any rule fails.

@@ -1,66 +1,53 @@
 #!/usr/bin/env python3
-"""Scan Markdown for negative parallelism - the "it is not X, it is Y" construction
-and its variants. Based on woerndl/unsloppify and tropes.fyi.
-Cross-platform python version that runs on Linux, macOS, and Windows.
+"""Scan Markdown for negative parallelism and the compressed contrast "X, not Y".
+
+Thin delegate. The patterns and scanner live in one place, the i-have-adhd
+skill's trope_gate.py, so this repo and the Stop/pre-save hooks cannot drift.
+Set TROPE_GATE to point at a different copy; the default is the user-level
+skill link.
 """
 from __future__ import annotations
 
-import re
+import os
 import subprocess
 import sys
 from pathlib import Path
 
-TROPE_PATTERN = re.compile(
-    r"(?:it is|it's) not .+(?:,|;|—|-) it(?: is|'s) "
-    r"|not because .+, but because"
-    r"|(?:the question|the problem) is not .+\. (?:the question|the problem) is "
-    r"|isn't just .+(?:,|;|—|-) it(?: is|'s) "
-    r"|(?:is|are) not just .+(?:,|;|—|-) (?:it is|it's|they are|they're)",
-    re.IGNORECASE,
-)
+DEFAULT = Path.home() / ".claude" / "skills" / "i-have-adhd" / "scripts" / "trope_gate.py"
 
 
-def get_markdown_files() -> list[str]:
-    res = subprocess.run(
-        ["git", "ls-files", "*.md"], capture_output=True, text=True, check=True
-    )
-    return [line.strip() for line in res.stdout.splitlines() if line.strip()]
+EXCLUDE = Path(__file__).resolve().parent / "trope_exclude.txt"
+
+
+def excluded() -> set[str]:
+    """Paths the gate skips. Each line is PATH<TAB>REASON; a reason is required."""
+    out = set()
+    for raw in EXCLUDE.read_text(encoding="utf-8").splitlines():
+        if not raw.strip() or raw.lstrip().startswith("#"):
+            continue
+        path, _, reason = raw.partition("\t")
+        if not reason.strip():
+            raise SystemExit(f"Error: exclusion without a reason: {path!r}")
+        out.add(path.strip().replace("\\", "/"))
+    return out
 
 
 def main() -> int:
-    print("Scanning for AI tropes (negative parallelism)...")
-    if len(sys.argv) > 1:
-        files = sys.argv[1:]
-    else:
-        files = get_markdown_files()
-
+    gate = Path(os.environ.get("TROPE_GATE", DEFAULT))
+    if not gate.is_file():
+        print(f"Error: trope gate not found at {gate}. Set TROPE_GATE.", file=sys.stderr)
+        return 2
+    skip = excluded()
+    args = sys.argv[1:]
+    if not args:
+        listing = subprocess.run(["git", "ls-files", "*.md"], capture_output=True, text=True)
+        args = [f for f in listing.stdout.splitlines() if f.strip()]
+    files = [f for f in args if f.replace("\\", "/") not in skip]
+    print("Scanning for AI tropes (negative parallelism, compressed contrast)...")
     if not files:
         print("No Markdown files to scan.")
         return 0
-
-    violations = []
-    for fpath in files:
-        p = Path(fpath)
-        if not p.is_file():
-            continue
-        try:
-            content = p.read_text(encoding="utf-8", errors="ignore")
-            for idx, line in enumerate(content.splitlines(), 1):
-                if TROPE_PATTERN.search(line):
-                    violations.append(f"{fpath}:{idx}:{line}")
-        except Exception as e:
-            print(f"Warning: could not read {fpath}: {e}", file=sys.stderr)
-
-    if violations:
-        print("\n".join(violations))
-        print("\nError: negative parallelism detected in the lines above.")
-        print(
-            "Rewrite them with plain constructions. State the thing you mean and stop."
-        )
-        return 1
-
-    print("No AI tropes detected.")
-    return 0
+    return subprocess.run([sys.executable, "-I", str(gate), *files]).returncode
 
 
 if __name__ == "__main__":

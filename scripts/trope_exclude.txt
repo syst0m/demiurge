@@ -1,0 +1,7 @@
+# Files the trope gate does not scan. Format: PATH<TAB>REASON
+# Each entry is text we do not own or must not rewrite by hand.
+research/RESEARCH.md	Synced from Niccolo's sweep. Marcus is a consumer and must not edit it.
+skills/marcus/references/RESEARCH.md	Synced copy of research/RESEARCH.md. Same rule.
+skills/imhotep/references/be-ambitious/SKILL.upstream.md	Vendored upstream text. Edits would be overwritten on the next vendor sync.
+skills/imhotep/PROVENANCE.md	Records upstream sources and quotes. Rewriting a quote falsifies it.
+CHANGELOG.md	Historical record. Past release notes are not rewritten.

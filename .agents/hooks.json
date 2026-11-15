@@ -1,0 +1,14 @@
+{
+  "PreToolUse": [
+    {
+      "matcher": "run_command|write_to_file",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "python skills/git-lifecycle-guard/scripts/git-lifecycle-guard.py check --repos .",
+          "timeout": 15
+        }
+      ]
+    }
+  ]
+}

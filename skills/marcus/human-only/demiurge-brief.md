@@ -50,11 +50,11 @@ Findings are graded using the standard taxonomy: `[SETTLED]` encodes as a defaul
 
 ### `[CONTESTED]` One-shot generated skills do not reliably help
 
-Across 56 tasks, 9 model configurations and 3 providers, no generated-skill variant beat plain prompting; every p-value was at least 0.396 and the entire spread was 1.2 percentage points. A token-matched control found full generated skills performed *similarly to task-irrelevant text wearing skill formatting*. The gain was format, not knowledge.
+Across 56 tasks, 9 model configurations and 3 providers, no generated-skill variant beat plain prompting; every p-value was at least 0.396 and the entire spread was 1.2 percentage points. A token-matched control found full generated skills performed *similarly to task-irrelevant text wearing skill formatting*. The gain came from format. It did not come from knowledge.
 
 *Citation:* [Preprint] Huang 2026, component ablation across data-science workflows — one domain, one study, but the only large controlled test that exists.
 
-### `[CONTESTED]` What works is rejection, not generation
+### `[CONTESTED]` What works is rejection. Generation does not
 
 Methods that report real gains all add the same thing: contrast successful against failed trajectories on the same task; replay each candidate patch on clones before merging; keep only patches that do not damage outcomes; load only task-relevant sub-skills. SkillCAT reports up to +49.69% over its initial skill on this pattern. Every step these methods add over naive generation is a way of throwing candidates away.
 
@@ -98,7 +98,7 @@ A three-stage loop — mine weaknesses from execution traces, propose diverse bu
 
 ### `[SETTLED]` Selection accuracy falls off a cliff as a library grows
 
-Skill selection shows *phase transitions* rather than gradual decay, and same-capability ambiguity is a documented failure mode with its own benchmark. The reviewed robotics result points the same way: retrieval must score constraint consistency, not text similarity. Writing a good description is necessary and not sufficient.
+Skill selection shows *phase transitions* rather than gradual decay, and same-capability ambiguity is a documented failure mode with its own benchmark. The reviewed robotics result points the same way: retrieval must score constraint consistency. Text similarity is not enough. Writing a good description is necessary and not sufficient.
 
 *Citation:* [Peer-reviewed] ISBDAS 2026; [Preprint] SkillResolve-Bench, *Skill Is Not Document*.
 
@@ -169,7 +169,7 @@ Skill selection shows *phase transitions* rather than gradual decay, and same-ca
 2. **Automated design is uneconomic at small scale.** Below a few thousand uses, hand-writing is cheaper. The factory's primary value at low volume lies in validating hand-written skills against deterministic quality gates.
 
 3. **The validator's recall is unmeasured.** It encodes published constraints and two published scans. It will miss novel attack vectors.
-4. **Judged evaluation has a ceiling.** LLM-judge agreement with humans tops out at moderate, not high; the runner therefore offers an explicit *unknown* verdict that never counts as a pass, and asks for a judge from a different model family.
+4. **Judged evaluation has a ceiling.** LLM-judge agreement with humans tops out at moderate. It does not reach high; the runner therefore offers an explicit *unknown* verdict that never counts as a pass, and asks for a judge from a different model family.
 5. **Nothing here is peer-reviewed on its own subject.** Every performance figure in this brief should be treated as a hypothesis to re-measure locally.
 
 ---

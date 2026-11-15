@@ -227,9 +227,9 @@ become a default rather than an opt-in tool.
   `scripts/self_harness/` with passing tests. `diagnose_failures.py` has been run against the real
   `eval_results/swebench/results.json` and produced a correct no-op brief (that results file
   currently records zero demiurge-arm failures).
-- **Phase B — not started.** Running the full loop against a live `swebench` or `cybergym` slice
+- **Phase B: not yet started.** Running the full loop against a live `swebench` or `cybergym` slice
   with a real failing task, so a real proposal is diagnosed, materialized, and gated end to end.
   Requires an operator-run benchmark slice with at least one demiurge-arm failure, and a supervised
   Marcus session to answer the proposer prompt.
-- **Phase C — not started.** Extend beyond `swebench`, `cybergym`, `exploitbench`, and `deepswe` to
+- **Phase C: not yet started.** Extend beyond `swebench`, `cybergym`, `exploitbench`, and `deepswe` to
   GAIA, Tau-bench, BIPIA, and BFCL, as their adapters land per the `docs/BENCHMARKS.md` §5 roadmap.
