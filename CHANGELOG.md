@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.1] - 2026-11-15
+
+### Added
+
+- **git-lifecycle-guard skill:** `skills/git-lifecycle-guard/` blocks stale git branches and worktrees (`check`) and removes them after operator sign-off (`cleanup`). Reads rules from `references/rules.md`, logs every deletion with tip SHA for restore, dumps dirty worktree content before destructive remove. Network-free, stdlib-only.
+- **Global harness wiring:** `check` wired into all three harnesses as a hard block — `.pre-commit-config.yaml` pre-push local hook, Claude Code `.claude/settings.json` PreToolUse, Antigravity `.agents/hooks.json` PreToolUse, Hermes plugin command + OPERATING_GUIDE docs. Escape hatch `GIT_LIFECYCLE_SKIP=1`; exclusions file `skills/git-lifecycle-guard/exclusions.json`.
+- **GLOSSARY.md** and **ADR-0001** documenting the global-wiring decision and domain terms.
+
+### Changed
+
+- **Override Rule G-13:** operator overrode Staging recommendation to Global for the T2 git-lifecycle-guard skill; decision recorded in ADR-0001 and PROVENANCE.md.
+
 ## [0.18.0] - 2026-11-12
 
 ### Added

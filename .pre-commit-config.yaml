@@ -75,3 +75,11 @@ repos:
         pass_filenames: false
         always_run: true
         stages: [pre-push]
+
+      - id: git-lifecycle-guard-check
+        name: Git lifecycle guard — stale branch/worktree audit
+        entry: python skills/git-lifecycle-guard/scripts/git-lifecycle-guard.py check --repos .
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]

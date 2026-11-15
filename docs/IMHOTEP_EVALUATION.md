@@ -41,7 +41,7 @@ should Imhotep reuse?
 4. **Appraisal.** The scientific-critical-thinking workflow: separate what each study measured from
    what the tenet asserts, and grade the transfer from humans to models separately.
 
-**Limit.** Every literature finding below comes from abstracts and metadata, not full texts.
+**Limit.** Every literature finding below comes from abstracts and metadata. None comes from full texts.
 Reception (citing support or contrast) was not checked. Niccolo's tri-source and reception
 rules apply before any of these findings reaches RESEARCH.md.
 
@@ -55,7 +55,7 @@ rules apply before any of these findings reaches RESEARCH.md.
 | Escalate instead of gaming | An escalation tool plus an anti-hacking policy cut reward hacking from 23.6 % to 5.3 % across 8 models, with no measured performance cost [9]. | Moderate, one preprint, factorial design |
 | Persist on hard quantitative goals | State-tracking controllers reach 69–78 % success where completion-gated controllers complete no task [10]. SWE-Marathon failures include false "infeasible" reports and early stops [7]. | Moderate |
 | Specific hard goals (Locke and Latham) | In humans, goal effects shrink on complex tasks [11]; learning goals beat outcome goals on a moderately complex task [12]. In LLMs, efficacy prompts give small, model-dependent gains [13], and goal-directedness is incomplete [14]. | Strong in humans; transfer untested |
-| Do what the expert does, not role-play | Persona and expert prompts do not reliably raise accuracy [15, 16, 17]. | Moderate to strong |
+| Do what the expert does. Do not role-play | Persona and expert prompts do not reliably raise accuracy [15, 16, 17]. | Moderate to strong |
 | Range through several agents | Debate does not reliably beat voting or budget-matched single-agent sampling [18, 19, 20, 21]. RESEARCH.md grades multi-agent value `[CONTESTED]`. | Contested |
 | Altitude: aim at the goal beyond the goal | No controlled study. Goal clarification loses nearly all value after about 10 % of execution [22]. | Practitioner evidence only |
 | Durable loops remove the human | Developers use test results as their main guarantee when they oversee agents [23]. No study measures unattended durable loops. | Weak |
@@ -100,7 +100,7 @@ instructions loaded into context. Check: tier T3 handling and an operator-signed
 ## 5. Critical appraisal
 
 **Strengths of the tenets.** The outside-judge rule matches the strongest evidence in the field.
-"Better, not bigger" and "do, don't play" match the persona-prompting results. The Depth prompt asks
+"Better over bigger" and "do, don't play" match the persona-prompting results. The Depth prompt asks
 for raw material and expert instruments, which a judge can check.
 
 **Critical issue.** "If the model balks, state that the goal is solvable and keep going" is pressure
@@ -112,7 +112,7 @@ on an outcome. For agents whose outcome signal is a test suite, that pressure pr
 - The goal-setting evidence is human, from tasks unlike software builds. The transfer to agents is an
   analogy that no study has tested. Remedy: learning goal first for novel work (O4), labelled as judgement.
 - The examples (crash-free apps, QBR redesign) are single-practitioner reports with no comparison.
-  They show possibility, not effect size.
+  They show possibility. They do not show effect size.
 - Range through multi-agent crews conflicts with budget-matched results. Remedy: read-only fan-out
   (O5).
 
@@ -161,7 +161,7 @@ invent the instruments, keep an outside check, ship.
 |---|---|---|---|
 | **Imhotep** (chosen) | Architect of Djoser's step pyramid, c. 2650 BC; first engineer known by name | Stacked six mastabas into the first monumental stone building: a new method at a new scale. Also physician and scribe (Range). | Popular-culture associations |
 | Filippo | Filippo Brunelleschi, Florence Cathedral dome | Built the dome experts called unbuildable after he measured the Roman Pantheon; invented his own hoists | Less known outside Europe |
-| Daedalus | Mythic master craftsman | Icarus is the persona's safety rule: ambition without a judge falls | Myth, not a record |
+| Daedalus | Mythic master craftsman | Icarus is the persona's safety rule: ambition without a judge falls | Myth only, no record |
 | Kelly | Kelly Johnson, Lockheed Skunk Works | Small team, 14 rules, audacious targets, flight test as the judge | Military context |
 | Brunel | Isambard Kingdom Brunel | Audacious engineering; his failures show why a held-out judge matters | Overreach is part of his record |
 | Tony | Tony Stark (fiction) | The build, test, fail, rebuild loop | Brand name |

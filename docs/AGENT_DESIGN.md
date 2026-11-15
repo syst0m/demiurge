@@ -152,8 +152,7 @@ Context is a budget and quality degrades as it fills. Three tiers:
 | **Lessons** | On demand | Corrections already made once |
 
 **Every reference needs an explicit "load before:" trigger.** Without one it either never loads —
-in which case it may as well not exist — or always loads, in which case it isn't a reference, it's
-instructions.
+in which case it may as well not exist — or always loads, in which case it works as instructions.
 
 **If the agent accumulates knowledge, make that file append-only and say so inside it.** Letting an
 agent rewrite its own notes has two measured failure modes: *brevity bias*, where summarising drops
@@ -209,7 +208,7 @@ Antigravity's `Stop` event fires exactly when a turn is about to end, before its
 user, and both platforms can block it (Claude Code: exit code 2, or top-level
 `{"decision": "block", "reason": "..."}`; Antigravity: `{"decision": "continue", "reason": "..."}`
 to stdout) and feed a reason back that forces a revision. A rule about *how the assistant writes*,
-not just what it edits or runs, can be a mechanical hook too — see `AGENT_ARCHITECTURE.md` Rule
+the chat response can be a mechanical hook too, along with what it edits or runs — see `AGENT_ARCHITECTURE.md` Rule
 V-4 and `references/EVIDENCE.md` §9 for the exact per-platform schemas.
 
 ### 8. Emit, then say what was lost

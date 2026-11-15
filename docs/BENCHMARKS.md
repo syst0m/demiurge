@@ -126,7 +126,7 @@ A row belongs in this table only when its `results.json` exists and records `"si
 | Run ID | Status | Reason |
 |---|---|---|
 | `v0.5.0-cybergym-001`, `v0.6.0-exploitbench-001` | Unverified | The local `results.json` is not tracked and has no `simulated` field. Both show 0 of 5 for each arm. The runners cannot write that field, and their live path falls back to a mock when an API call fails. These two suites cannot qualify until that is fixed. |
-| `v0.4.0-gemini-live` | Unverified | No `results.json`. The report was deleted. It counted diff structure, not resolved tasks. It showed that gate G0 refused to invent code. It did not show lift. |
+| `v0.4.0-gemini-live` | Unverified | No `results.json`. The report was deleted. It counted diff structure. It did not count resolved tasks. It showed that gate G0 refused to invent code. It did not show lift. |
 | `v0.2.0-swebench-001`, `v0.3.0-swebench-full`, `v0.8.0-deepswe-001` | Withdrawn | Produced by `--dry-run`. These figures were never measurements. The SWE-bench mock draws a resolve outcome from a hash of the task id, near 40% (bare) and 60% (Demiurge). The DeepSWE mock never resolves for bare and always resolves for Demiurge. |
 
 ## 5. Multi-Benchmark Architecture Roadmap

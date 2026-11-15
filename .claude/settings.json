@@ -5,6 +5,18 @@
     ]
   },
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "timeout": 15,
+            "command": "python skills/git-lifecycle-guard/scripts/git-lifecycle-guard.py check --repos ."
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Skill|Agent|Task",

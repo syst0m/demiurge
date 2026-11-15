@@ -173,7 +173,7 @@ def release_notes(version: str, changelog_path: Path = CHANGELOG_PATH) -> str:
 
 def design_gate() -> List[str]:
     """Fail when docs/AGENT_DESIGN.md lags the research snapshot (the sweep cannot edit docs/)."""
-    code, out, err = run_cmd([sys.executable, "skills/marcus/scripts/update_marcus.py", "--check", "--strict-design"])
+    code, out, err = run_cmd([sys.executable, "skills/marcus/scripts/update_marcus.py", "--check", "--strict-design", "--repo-root", "."])
     return [f"update_marcus.py --check --strict-design failed:\n{out or err}"] if code else []
 
 

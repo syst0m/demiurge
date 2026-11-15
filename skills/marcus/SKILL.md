@@ -149,6 +149,21 @@ python evals/run_gate_tests.py                                      # your own r
 `validate_skill.py` and `route_check.py` are offline and free. `eval_runner.py` spawns real model
 runs — it prints the case count and refuses to spend without `--yes`.
 
+### Pitfalls — running the pipeline
+
+**Frontmatter must close with `---`.** `validate_skill.py` G4 fails with `frontmatter-unclosed`
+if a SKILL.md opening `---` is never closed. Always write both markers when authoring SKILL.md;
+a missing closer blocks the build at G4 before any security check runs.
+
+**`eval_runner.py` exits 1 on dry run.** Without `--yes` it prints the case count and estimated
+calls, then exits 1 — that is the spend guard. It is not a script failure. Re-run with `--yes`
+(and `--runner-model`, `--judge-model`) to execute. Do not treat exit 1 as a crash.
+
+**`route_check.py` returns similarity scores. It does not return a pass/fail threshold.** Bag-of-words cosine
+similarity per installed skill. High overlap means the description collides with an existing
+skill — classify the build as a revision of that skill. Do not treat it as a new one. No published cutoff;
+use judgment on the scores.
+
 A security finding is suppressed only with a stated reason, inline (`# forge:allow <code> - reason`)
 or in the skill's `.forgeignore` (`path:code # reason`). Every suppression is printed. Silent
 exemptions are what make a supply chain unauditable, so there are none — including for your own

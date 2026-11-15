@@ -294,6 +294,10 @@ When `RESEARCH.md` receives an update, Marcus notifies the operator of schema dr
 
 A `PreToolUse` hook that guards MCP tools, Bash or PowerShell blocks that whole tool class in every session that loads it, including sessions that never use the skill. `install_skill.py` refuses a global install of such a skill, and refuses any global install below T1. Install it into the project that needs it instead.
 
+### Gotcha 9: Stale Branches and Worktrees Block Progress
+
+Merged branches and merged-branch worktrees accumulate across repos and silently rot the working tree (stale upstream copies, duplicate UI layers, stale deployed copies). Run `git-lifecycle-guard check` before pushing; it exits non-zero when any repo holds stale state. Wire it into pre-push via `.pre-commit-config.yaml` and into Claude Code / Antigravity via `PreToolUse` hooks. Use `GIT_LIFECYCLE_SKIP=1` as the escape hatch, and list active worktrees (e.g. `ds-audit`) in `skills/git-lifecycle-guard/exclusions.json` so they are never deleted.
+
 ---
 
 ## 5. Architectural Best Practices

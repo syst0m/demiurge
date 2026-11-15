@@ -17,7 +17,9 @@
 | [Run Ledger](RUN_LEDGER.md) | Failure intake from real skill runs. |
 | [Skill Registry](SKILL_REGISTRY.md) | Local inventory of skills. |
 | [Standing Orders](STANDING_ORDERS.md) | Rules for every agent session in this repository. |
+| [ADR-0001: global git-lifecycle-guard wiring](docs/adr/0001-global-git-lifecycle-guard-wiring.md) | Decision to wire `check` globally into Hermes, Claude Code, Antigravity, overriding Rule G-13 Staging for T2. |
 | [Skill Bundles](SKILL_BUNDLES.md) | Bundle format and per-harness wiring for the skill bundle materializer. |
+| [Output-Shaping Skills Analysis](output-rules-skill-analysis.md) | Overlap, conflict and competition among skills that shape output, with keep, remove and per-context recommendations. |
 | [Research Methodology](../skills/niccolo/references/RESEARCH_METHODOLOGY.md) | Tri-source verification protocols, search disciplines, and evidence grading. |
 | [Empirical Knowledge Base](../research/RESEARCH.md) | Canonical empirical research: benchmarks, failure modes, and primitives. |
 | [Agent Architecture Spec](../skills/marcus/AGENT_ARCHITECTURE.md) | Progressive disclosure specifications and mechanical gate enforcement (G0–G6). |

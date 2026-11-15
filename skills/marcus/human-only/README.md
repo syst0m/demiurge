@@ -1,7 +1,7 @@
 # human-only/
 
 **Nothing in this directory is for a model to read.** It holds finished, human-facing
-deliverables — rendered documents meant to be opened in a browser, not parsed, summarised or
+deliverables — rendered documents meant to be opened in a browser and not parsed, summarised or
 quoted by an agent.
 
 ## Contents
@@ -60,7 +60,7 @@ Stated plainly, because a control you misjudge is worse than one you know the ed
 - **Deny rules cover Claude's built-in file tools and the file commands Claude Code recognises in
   Bash** — `cat`, `head`, `tail`, `sed`. They do **not** cover arbitrary subprocesses. A Python or
   Node script that opens the file itself reads it fine. For OS-level enforcement across all
-  processes, the sandbox is the mechanism, not this rule.
+  processes, the sandbox is the mechanism. This rule is not.
 - **That gap is deliberate here.** `scripts/validate_skill.py` still scans this directory, because
   a security scanner that skips a folder on request is not a security scanner. *Not loaded into
   model context* and *not scanned by a deterministic script* are different guarantees, and only the

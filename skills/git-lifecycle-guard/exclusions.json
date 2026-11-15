@@ -1,0 +1,5 @@
+{
+  "branches": [],
+  "worktrees": [],
+  "note": "Never-delete list for cleanup. `check` still reports these; `cleanup` skips them. Add active worktrees here before running cleanup --apply."
+}

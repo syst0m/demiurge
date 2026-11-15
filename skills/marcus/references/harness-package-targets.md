@@ -1,6 +1,6 @@
 # Harness package targets: native plugin and hook shapes
 
-Verified against each harness's own loader or validator, not against its documentation. The docs
+Verified against each harness's own loader or validator. Do not verify against its documentation. The docs
 lag, and they often describe a *different scope* than the one you are writing for (user-level config
 vs plugin-level config, CLI vs gateway). Every shape below was confirmed by running the tool.
 
@@ -34,7 +34,7 @@ Global: `~/.gemini/config/plugins/<name>/`.
 
 `plugin.json` carries `name`, `version`, `description`. Nothing else is required.
 
-`hooks.json` is **named hook groups** at the top level, not bare events — a bare `{"Stop": [...]}`
+`hooks.json` is **named hook groups** at the top level. Bare events at the top level are wrong — a bare `{"Stop": [...]}`
 fails to unmarshal, and wrapping events in a `"hooks"` key loads them as one hook literally named
 `"hooks"`.
 
@@ -113,7 +113,7 @@ reloads.
   user-level `hooks.json`. When docs and validator disagree, the validator wins.
 - **A hook that only observes cannot gate.** `on_session_end` fires after the turn; registering a
   blocking check there looks correct and does nothing.
-- **Classify files by path segment, not substring.** `testing_matrix_gate.py` and `latest.py` both
+- **Classify files by path segment. Do not match substrings.** `testing_matrix_gate.py` and `latest.py` both
   contain `test`; a substring test passes every source-only diff. Match `test_*.py`, `*_test.py`,
   `*.test.*`, and directory names (`tests/`, `spec/`, `__tests__/`) as whole segments.
 - **Symlinked skills are flagged as `symlink_escape`** by `hermes plugins validate`. That is the
