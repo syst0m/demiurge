@@ -78,7 +78,7 @@ def generate_gist_markdown(html_content: str) -> str:
     lines.extend([
         "## Core Architectural Takeaways",
         "",
-        "- **Rejection Outweighs Generation:** Methods that achieve real performance lift (e.g., SkillCAT +49.7%) succeed by ruthlessly discarding candidates through contrastive test replay, not through speculative prompt generation.",
+        "- **Rejection Outweighs Generation:** Methods that achieve real performance lift (e.g., SkillCAT +49.7%) succeed by ruthlessly discarding candidates through contrastive test replay.",
         "- **The Harness Dominates the Model:** Model×harness pairing varies completion and efficiency dramatically across execution trajectories—enough to invert raw model leaderboard rankings.",
         "- **Capability and Safety Are Orthogonal:** Unsafe-action rates (7–33%) do not track task success rates (39–64%). Scaling capability without mechanical write-gates amplifies vulnerability.",
         "- **Four-Tier Trust Model (T1 to T4):** Each skill carries a provenance tier. T1 is user-written or factory-built and accepted at G5. T4 is third-party and unread, and is never installed.",
