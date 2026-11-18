@@ -10,7 +10,7 @@
 # Runs as a local pre-commit hook and in CI workflows.
 #
 # Scans the doubled form only (saying it twice: "not X, it is Y"). The
-# compressed form "X, not Y" is i-have-[REDACTED] rule 11's sanctioned replacement
+# compressed form "X, not Y" is i-have-adhd rule 11's sanctioned replacement
 # and passes.
 
 set -euo pipefail

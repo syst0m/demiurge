@@ -17,8 +17,8 @@ REG = {
     "token-optimizer": {"provides_skills": ["token-optimizer", "resume-checkpoint"],
                         "harness": {"claude-code": "token-optimizer@alexgreensh-token-optimizer",
                                     "hermes": "token-optimizer", "antigravity": None}},
-    "i-have-[REDACTED]": {"provides_skills": ["i-have-[REDACTED]"],
-                    "harness": {"claude-code": None, "hermes": None, "antigravity": "i-have-[REDACTED]"}},
+    "i-have-adhd": {"provides_skills": ["i-have-adhd"],
+                    "harness": {"claude-code": None, "hermes": None, "antigravity": "i-have-adhd"}},
 }
 
 
@@ -48,7 +48,7 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(pr.exclusions(rows, REG), set())
 
     def test_claude_only_plugin_is_unsupported_on_hermes(self):
-        rows = pr.plan("hermes", ["i-have-[REDACTED]"], REG, probe_all)
+        rows = pr.plan("hermes", ["i-have-adhd"], REG, probe_all)
         self.assertEqual(rows[0]["status"], "unsupported")
 
     def test_unknown_plugin_is_unsupported_not_an_error(self):
