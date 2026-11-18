@@ -127,7 +127,7 @@ claims:
     duplicates: []
     last_verified: '2026-11-01'
     verified_by: niccolo
-    notes: 'Sweep 2026-10-10: the prose figures (27.4 to 54.3 pp, 19.1% to 73.4%) were not found in s1 or s2. s1 HTML reports a largest fixed-model gap of 24.3 pp (Qwen 3.6-flash, 62.8% vs 38.5%). Owner to decide on the prose figures. s3 (Don''t Blame the Large Language Model) did not resolve by web search; Consensus returned HTTP 403. scite was not usable. Sweep 2026-11-01: s3 resolved through the arXiv API to arXiv:2607.03691 (Ben Sghaier, Li, Adams, Hassan, 2026). It holds the model fixed and varies only the harness over 35 Qwen Code releases. It shows harness changes alone shift quality, but it does not compare harness variance with model variance, so it is recorded as mentions, not confirms. The prose figures are still an owner decision. scite returned a paid-plan error, so reception stays unchecked.'
+    notes: 'Sweep 2026-10-10: the prose figures (27.4 to 54.3 pp, 19.1% to 73.4%) were not found in s1 or s2. s1 HTML reports a largest fixed-model gap of 24.3 pp (Qwen 3.6-flash, 62.8% vs 38.5%). Owner to decide on the prose figures. s3 (Don''t Blame the Large Language Model) did not resolve by web search; Consensus returned HTTP 403. scite was not usable. Sweep 2026-11-01: s3 resolved through the arXiv API to arXiv:2607.03691 (Ben Sghaier, Li, Adams, Hassan, 2026). It holds the model fixed and varies only the harness over 35 Qwen Code releases. It shows harness changes alone shift quality, but it does not compare harness variance with model variance, so it is recorded as mentions, not confirms. The prose figures are still an owner decision. scite returned a paid-plan error, so reception stays unchecked. Sweep 2026-11-14: scite returned a paid-plan error, so reception stays unchecked.'
   ctx.practices-table:
     section: 2
     kind: prose
@@ -291,7 +291,7 @@ claims:
     duplicates: []
     last_verified: '2026-11-07'
     verified_by: niccolo
-    notes: 'Sweep 2026-10-10: s1 returns HTTP 404 (after 301 to platform.claude.com), s2 returns HTTP 404, s3 redirects to the generic https://cursor.com/docs page with no caching statement. s1-s3 are left for the owner to remove or replace. s4 and s5 were retrieved this session. Sweep 2026-11-01: re-checked. s1 now redirects to https://platform.claude.com/docs/en/claude-code/rules, which returns HTTP 404. s2 still returns HTTP 404. s3 still redirects to the generic https://cursor.com/docs page. The owner decision on s1-s3 is still open. scite returned a paid-plan error, so s5 reception stays unchecked. Sweep 2026-11-07: re-checked. s1 now redirects to https://platform.claude.com/docs/en/claude-code/rules with HTTP 200, but the fetched HTML is a client-side shell with no caching statement. s2 still returns HTTP 404. s3 still redirects to the generic https://cursor.com/docs page. The owner decision on s1-s3 is still open. scite failed to connect (HTTP 502).'
+    notes: 'Sweep 2026-10-10: s1 returns HTTP 404 (after 301 to platform.claude.com), s2 returns HTTP 404, s3 redirects to the generic https://cursor.com/docs page with no caching statement. s1-s3 are left for the owner to remove or replace. s4 and s5 were retrieved this session. Sweep 2026-11-01: re-checked. s1 now redirects to https://platform.claude.com/docs/en/claude-code/rules, which returns HTTP 404. s2 still returns HTTP 404. s3 still redirects to the generic https://cursor.com/docs page. The owner decision on s1-s3 is still open. scite returned a paid-plan error, so s5 reception stays unchecked. Sweep 2026-11-07: re-checked. s1 now redirects to https://platform.claude.com/docs/en/claude-code/rules with HTTP 200, but the fetched HTML is a client-side shell with no caching statement. s2 still returns HTTP 404. s3 still redirects to the generic https://cursor.com/docs page. The owner decision on s1-s3 is still open. scite failed to connect (HTTP 502). Sweep 2026-11-14: re-checked. s1 still redirects to https://platform.claude.com/docs/en/claude-code/rules with HTTP 200. s2 still returns HTTP 404. s3 still redirects to the generic https://cursor.com/docs page. The owner decision on s1-s3 is still open. scite returned a paid-plan error, so s5 reception stays unchecked.'
   ctx.length-degradation:
     section: 2
     kind: prose
@@ -365,32 +365,48 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: EMERGING
+      cap: CONTESTED
       cap_evidence: SETTLED
       unverified: true
       cap_reasons:
-      - no_countable_sources
+      - lt3_independent
       - lt2_primary
+      - reception_unchecked
     sources:
     - id: s1
-      url: null
-      title: ACE
-      type: none
+      url: https://arxiv.org/abs/2510.04618
+      title: 'Agentic Context Engineering: Evolving Contexts for Self-Improving Language Models'
+      type: preprint
       resolves_to: null
       resolves_to_type: null
-      independence_group: null
+      independence_group: zhang-2025-ace
       supports: confirms
-      quote: null
-      accessed: null
+      quote: brevity bias, which drops domain insights for concise summaries, and from context collapse, where iterative rewriting erodes details over time
+      accessed: '2026-11-14'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s2
+      url: https://arxiv.org/abs/2603.11768
+      title: 'Governing Evolving Memory in LLM Agents: Risks, Mechanisms, and the Stability and Safety Governed Memory (SSGM) Framework'
+      type: preprint
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: lam-2026-ssgm
+      supports: mentions
+      quote: help prevent semantic drift where knowledge degrades through iterative summarization
+      accessed: '2026-11-14'
       reception:
         checked: false
         retracted: null
         scite_supporting: null
         scite_contrasting: null
     duplicates: []
-    last_verified: null
-    verified_by: null
-    notes: The +10.6% figure carries no source on its line; the change-log row for 1.0.0 names ACE.
+    last_verified: '2026-11-14'
+    verified_by: niccolo
+    notes: 'The +10.6% figure carries no source on its line; the change-log row for 1.0.0 names ACE. Sweep 2026-11-14: s1 (ACE, Zhang et al.) retrieved through the arXiv API. Its abstract names brevity bias and context collapse and reports "+10.6% on agents", so the prose figure matches s1. ACE proposes the fix, so s1 measures degradation only against its own baselines. s2 (SSGM, Lam et al.) is a conceptual framework with formal analysis and no measurement, so it is recorded as mentions. RaMem (arXiv:2606.22844) uses "context collapse" for a different failure (memories lose their situational context), so it was not added. scite returned a paid-plan error, so reception stays unchecked.'
   mem.simple-file:
     section: 3
     kind: prose
@@ -985,7 +1001,7 @@ claims:
     duplicates: []
     last_verified: '2026-11-01'
     verified_by: niccolo
-    notes: 'Sweep 2026-10-10: s4 (AgentForge) did not resolve to a paper by web search; Consensus returned HTTP 403. scite was not usable in this run, so reception stays unchecked. Sweep 2026-11-01: s4 resolved to arXiv:2601.13383 (Anbar Jafari, Ozcinar, Anbarjafari, 2026), a general framework for building LLM agents. Its abstract does not mention security, sandboxing, hooks or tool-call boundary enforcement, so s4 is recorded as mentions and is removed as support from the prose. scite returned a paid-plan error, so reception stays unchecked.'
+    notes: 'Sweep 2026-10-10: s4 (AgentForge) did not resolve to a paper by web search; Consensus returned HTTP 403. scite was not usable in this run, so reception stays unchecked. Sweep 2026-11-01: s4 resolved to arXiv:2601.13383 (Anbar Jafari, Ozcinar, Anbarjafari, 2026), a general framework for building LLM agents. Its abstract does not mention security, sandboxing, hooks or tool-call boundary enforcement, so s4 is recorded as mentions and is removed as support from the prose. scite returned a paid-plan error, so reception stays unchecked. Sweep 2026-11-14: scite returned a paid-plan error, so reception stays unchecked.'
   sec.payloadless-sch:
     section: 6
     kind: prose
@@ -1673,7 +1689,7 @@ claims:
     duplicates: []
     last_verified: '2026-11-07'
     verified_by: niccolo
-    notes: 'Sweep 2026-11-07: s1-s4 retrieved this session (arXiv API abstracts; s4 page text). s1-s3 support deterministic tool-call enforcement over model-dependent defenses. None of them measures the second sentence (prompts decay with session length); that part stays unsourced. AgentSpec (arXiv:2503.18666) was also read but shares an author (Jun Sun) with s1, so it was not added. scite failed to connect (HTTP 502), so reception stays unchecked.'
+    notes: 'Sweep 2026-11-07: s1-s4 retrieved this session (arXiv API abstracts; s4 page text). s1-s3 support deterministic tool-call enforcement over model-dependent defenses. None of them measures the second sentence (prompts decay with session length); that part stays unsourced. AgentSpec (arXiv:2503.18666) was also read but shares an author (Jun Sun) with s1, so it was not added. scite failed to connect (HTTP 502), so reception stays unchecked. Sweep 2026-11-14: scite returned a paid-plan error, so reception stays unchecked.'
   hooks.camel:
     section: 11
     kind: prose
@@ -1807,17 +1823,61 @@ claims:
     grades:
     - scope: null
       asserted: SETTLED
-      cap: EMERGING
+      cap: CONTESTED
       cap_evidence: SETTLED
       unverified: true
       cap_reasons:
-      - no_countable_sources
-      - lt2_primary
-    sources: []
+      - reception_unchecked
+    sources:
+    - id: s1
+      url: https://arxiv.org/abs/2505.03275
+      title: 'RAG-MCP: Mitigating Prompt Bloat in LLM Tool Selection via Retrieval-Augmented Generation'
+      type: preprint
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: gan-2025-rag-mcp
+      supports: confirms
+      quote: more than triples tool selection accuracy (43.13% vs 13.62% baseline) on benchmark tasks
+      accessed: '2026-11-14'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s2
+      url: https://arxiv.org/abs/2510.14537
+      title: 'JSPLIT: A Taxonomy-based Solution for Prompt Bloating in Model Context Protocol'
+      type: preprint
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: antonioni-2025-jsplit
+      supports: confirms
+      quote: As the number of available tools for the agent grows substantially, JSPLIT even improves the tool selection accuracy of the agent
+      accessed: '2026-11-14'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
+    - id: s3
+      url: https://arxiv.org/abs/2510.19286
+      title: 'TheMCPCompany: Creating General-purpose Agents with Task-specific Tools'
+      type: preprint
+      resolves_to: null
+      resolves_to_type: null
+      independence_group: esfandiarpoor-2025-themcpcompany
+      supports: confirms
+      quote: we use the ground truth tools to show the potential of tool-calling agents for both improving performance and reducing costs assuming perfect tool retrieval
+      accessed: '2026-11-14'
+      reception:
+        checked: false
+        retracted: null
+        scite_supporting: null
+        scite_contrasting: null
     duplicates: []
-    last_verified: null
-    verified_by: null
-    notes: ''
+    last_verified: '2026-11-14'
+    verified_by: niccolo
+    notes: 'Sweep 2026-11-14: s1-s3 retrieved through the arXiv API (abstracts). The three author lists do not overlap. All three measure tool selection or task success when the tool set given to the model is narrowed, so they contradict the prose phrase "no controlled benchmark measurement found". The prose is left for the owner to revise. They measure tool selection accuracy, not "reasoning focus". scite returned a paid-plan error, so reception stays unchecked.'
   ca.context-forking:
     section: 11
     kind: prose
