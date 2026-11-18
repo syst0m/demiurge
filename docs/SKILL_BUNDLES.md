@@ -12,7 +12,7 @@ Seven manifests live in `bundles/`:
 || `baseline-coding` | code-review-and-quality, concise-commit-gate, github-pr-workflow, github-issue-to-pr, requesting-code-review, test-driven-development, systematic-debugging, simplify-code, dead-code-removal, plan, spike, setup-pre-commit, changelog-automation, secret-scanning, handoff |
 | `infosec-governance` | secret-scanning, github-auth, fleet-auditor, analytical-method-validation, experimental-design |
 | `personal-writing` | my-writing-style, humanize, unsloppify |
-| `writing` | writing-for-agents, caveman, i-have-[REDACTED], writing-clearly-and-concisely |
+| `writing` | writing-for-agents, caveman, i-have-adhd, writing-clearly-and-concisely |
 | `research-writing` | arxiv, paper-lookup, literature-review, research-lookup, citation-management, grounded-citations, scientific-writing, venue-templates, markdown-mermaid-writing, baoyu-format-markdown |
 
 `baseline-coding` declares `"hooks": true`, so the materializer registers the testing-matrix gate with every harness it installs into.

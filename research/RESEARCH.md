@@ -56,7 +56,7 @@ Evidence reasons (a contrasting, retracted or second vendor source) lower a grad
 
 <!-- claim:ctx.length-degradation --> `[SETTLED]` `[UNVERIFIED]` **Context Length Degradation & Positional Bias.** Adherence to instructions and reasoning capability degrade measurably as input length increases (13.9%–85% drop across models even with perfect retrieval; [Context Length Alone Hurts LLM Performance](https://consensus.app/papers/details/1aecfc3c99265aeab55fa1d25acf1135/?utm_source=unknown)). This is driven by intrinsic U-shaped attention bias ([Found in the Middle](https://consensus.app/papers/details/694c246f6c4750f893e1b08a0ad3f62e/?utm_source=unknown), [Lost in the Middle at Birth](https://consensus.app/papers/details/bac6172df89c5adbbc84945f9a05cb52/?utm_source=unknown)). Workaround: session chunking every 30-45 minutes; progressive disclosure; stable instructions at top of cacheable prefix.
 
-<!-- claim:ctx.self-rewritten-memory --> `[SETTLED]` `[UNVERIFIED]` **Self-rewritten memory degrades.** Replacing memory causes brevity bias (losing detail) and context collapse (eroding to platitudes). Use structured, append-only updates. (+10.6% on benchmarks).
+<!-- claim:ctx.self-rewritten-memory --> `[SETTLED]` `[UNVERIFIED]` **Self-rewritten memory degrades.** Replacing memory causes brevity bias (losing detail) and context collapse (eroding to platitudes). Use structured, append-only updates. (+10.6% on benchmarks; [Agentic Context Engineering](https://arxiv.org/abs/2510.04618)). Related: [SSGM](https://arxiv.org/abs/2603.11768) describes the same drift without a measurement.
 <!-- rule:R-CTX-1 --> *Marcus Rule (R-CTX-1):* Agents accumulating state must use append-only files. Never regenerate wholesale.
 
 ---
@@ -326,7 +326,7 @@ V1.0 scope: packaging only. No installation protocol, sandboxing, or permission 
 - Claude Code: `.claude/agents/` (subagent definitions)
 - Microsoft Copilot: JSON manifests (up to 8,000-char instructions)
 
-<!-- claim:ca.scoped-tools --> `[SETTLED]` `[UNVERIFIED]` Scoped tool access reduces context noise and improves reasoning focus. Mechanistically well-supported; no controlled benchmark measurement found.
+<!-- claim:ca.scoped-tools --> `[SETTLED]` `[UNVERIFIED]` Scoped tool access reduces context noise and improves reasoning focus. Mechanistically well-supported; no controlled benchmark measurement found. Source: [RAG-MCP](https://arxiv.org/abs/2505.03275), [JSPLIT](https://arxiv.org/abs/2510.14537), [TheMCPCompany](https://arxiv.org/abs/2510.19286). *These sources measure tool selection accuracy when the tool set is narrowed; the phrase "no controlled benchmark measurement found" is open for owner review.*
 
 <!-- claim:ca.context-forking --> `[SETTLED]` `[UNVERIFIED]` Context forking: pass selective data subset to child agent, not full parent context. Prevents Lost-in-the-Middle degradation (see context dump fallacy, Section 2).
 
