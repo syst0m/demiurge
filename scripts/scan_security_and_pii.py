@@ -46,8 +46,14 @@ PERSONAL_PII_PATTERNS = [
 # Leave it empty or omit the file; the scanner degrades gracefully.
 LOCAL_PII_PATTERNS: list = []
 LOCAL_PATTERN_ERROR = None
+_ENV_PATTERNS = os.environ.get("DEMIURGE_PII_PATTERNS")
 try:
-    from local_pii_patterns import PATTERNS as LOCAL_PII_PATTERNS  # noqa: E402
+    if _ENV_PATTERNS:  # CI secret: the pattern module's source text
+        _ns = {}
+        exec(compile(_ENV_PATTERNS, "<DEMIURGE_PII_PATTERNS>", "exec"), _ns)
+        LOCAL_PII_PATTERNS = _ns["PATTERNS"]
+    else:
+        from local_pii_patterns import PATTERNS as LOCAL_PII_PATTERNS  # noqa: E402
 except Exception as e:  # recorded, never silently dropped; main() decides
     LOCAL_PII_PATTERNS = []
     LOCAL_PATTERN_ERROR = f"{type(e).__name__}: {e}"
@@ -141,7 +147,7 @@ def check_file(filepath: str) -> list:
 
 
 def main():
-    strict = "--strict" in sys.argv[1:]
+    strict = "--strict" in sys.argv[1:] or os.environ.get("CI") == "true"
     files = [a for a in sys.argv[1:] if a != "--strict"]
     if LOCAL_PATTERN_ERROR:
         if strict:
