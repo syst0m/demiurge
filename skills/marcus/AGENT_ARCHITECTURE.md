@@ -3,7 +3,7 @@
 ```yaml
 version: 2.0.0
 derived_from:
-  - RESEARCH.md v1.3.4 (2026-11-03) snapshot_sha256:24ea4a3b730e4867bc0df37b23ca82e98361f456d73ec8114f269f844f9fdacb  # agentic engineering generally
+  - RESEARCH.md v1.3.5 (2026-11-21) snapshot_sha256:665f359ffc5316f0b24728e77c05faed2e0ad52a060096cb76baf60c168517df  # agentic engineering generally
   - references/EVIDENCE.md v1.0.0 (2026-09-04)  # generating skills and harnesses
 maintained_by: marcus
 audience: machine — Marcus reads this to generate agents
