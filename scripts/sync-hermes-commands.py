@@ -332,15 +332,9 @@ def trope_gate_transform_llm_output(response_text=None, **kwargs):
         return None
     if not hits:
         return None
-    nl = chr(10)
-    lines = []
-    for _n, _name, snip in hits:
-        clean = re.sub(r"<[^>]+>", "", snip).strip()
-        lines.append(clean + "  ")
     return (
-        "This assistant reply was withheld: negative parallelism or compressed "
-        "contrast detected. Rewrite each flagged line as one plain statement "
-        "and resend:" + nl + nl.join(lines)
+        "This assistant reply was withheld: it contains negative parallelism "
+        "or compressed contrast. I'll restate it as one plain statement."
     )
 
 
