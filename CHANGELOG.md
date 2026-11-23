@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.3] - 2026-11-23
+
+### Added
+- **Scholarly connectors on CI:** scite, Undermind and Consensus MCP connectors run in GitHub Actions for research-sweep citation-reception verification (`scripts/research/mcp_client.py`, `scripts/research/reception.py`, `grade_cap.py --write` records reception into `sources.yaml`); degrades silently when no connector secret is present.
+- **Hermes chat trope gate:** `pre_llm_call` hook blocks negative parallelism / compressed contrast ("X, not Y") in user messages before inference (`scripts/sync-hermes-commands.py`, `demiurge-skills` Hermes plugin).
+- **PIO control docs:** `docs/PII_CONTROL_REDESIGN.md` and `docs/PII_MARCUS_HANDOFF.md` added; links removed from `docs/README.md`.
+
+### Fixed
+- **Research sweep publish:** `claims.json` `research_version` kept in sync with snapshot version after grade moves.
+
 ## [0.18.0] - 2026-11-12
 
 ### Added
