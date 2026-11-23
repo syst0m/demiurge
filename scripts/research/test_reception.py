@@ -5,7 +5,7 @@ import unittest
 
 from unittest.mock import MagicMock, patch
 
-from scripts.research import mcp_client, reception
+from scripts.research import reception
 
 
 class SciteReceptionTest(unittest.TestCase):
@@ -23,10 +23,10 @@ class SciteReceptionTest(unittest.TestCase):
 
         fake_proc = MagicMock()
         with (
-            patch.object(mcp_client, "start_server", return_value=fake_proc),
-            patch.object(mcp_client, "initialize", return_value={}),
-            patch.object(mcp_client, "tools_call", side_effect=fake_tools_call),
-            patch.object(mcp_client, "close"),
+            patch("mcp_client.start_server", return_value=fake_proc),
+            patch("mcp_client.initialize", return_value={}),
+            patch("mcp_client.tools_call", side_effect=fake_tools_call),
+            patch("mcp_client.close"),
         ):
             result = reception.scite_reception(
                 "https://arxiv.org/abs/2509.09677", "key"
