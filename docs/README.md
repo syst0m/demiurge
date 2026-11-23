@@ -12,11 +12,14 @@
 | [Imhotep Evaluation](IMHOTEP_EVALUATION.md) | Evidence review of the ambition tenets and the vendored be-ambitious procedure behind Imhotep. |
 | [Evidence & Confidence Taxonomy](EVIDENCE.md) | Tri-source rule, grounding gates, and the `[SETTLED]` / `[CONTESTED]` / `[VENDOR]` / `[EMERGING]` markers. |
 | [Executive Research Brief](BRIEF.md) | Four empirical constants, graded evidence base, and the gate pipeline. |
-| [Research Pipeline](RESEARCH_PIPELINE.md) | Sweep, verify, approve, merge: how a research finding reaches `RESEARCH.md`. |
-| [Claims Ledger](CLAIMS_LEDGER.md) | Claim anchors, sources, and the `grade_cap` rule. |
+|| [Research Pipeline](RESEARCH_PIPELINE.md) | Sweep, verify, approve, merge: how a research finding reaches `RESEARCH.md`. |
+|| [Scholarly Connectors on CI — Design](superpowers/specs/2026-11-23-scholarly-connectors-ci-design.md) | Full MCP (scite, Undermind, Consensus) in GitHub Actions for citation-reception verification; degrades gracefully when secrets are absent. |
+|| [Claims Ledger](CLAIMS_LEDGER.md) | Claim anchors, sources, and the `grade_cap` rule. |
 | [Run Ledger](RUN_LEDGER.md) | Failure intake from real skill runs. |
 | [Skill Registry](SKILL_REGISTRY.md) | Local inventory of skills. |
 | [Standing Orders](STANDING_ORDERS.md) | Rules for every agent session in this repository. |
+| [PII Control Redesign](PII_CONTROL_REDESIGN.md) | Draft for Marcus: root causes of repeated PII leaks and a surface-complete gate design. |
+| [PII Gate Handoff](PII_MARCUS_HANDOFF.md) | Handoff for Marcus: decisions, checked and unchecked facts, work order, acceptance numbers. |
 | [Skill Bundles](SKILL_BUNDLES.md) | Bundle format and per-harness wiring for the skill bundle materializer. |
 | [Research Methodology](../skills/niccolo/references/RESEARCH_METHODOLOGY.md) | Tri-source verification protocols, search disciplines, and evidence grading. |
 | [Empirical Knowledge Base](../research/RESEARCH.md) | Canonical empirical research: benchmarks, failure modes, and primitives. |

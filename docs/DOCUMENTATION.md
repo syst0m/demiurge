@@ -172,6 +172,7 @@ The Demiurge documentation suite is structured into focused guides addressing sp
   - The `research-approval` check runs the gate scripts from the base ref and classifies each diff as `upgrade` or `downgrade-or-sourcing`.
   - An upgrade needs verification records and an owner click on **Review deployments** (the `research-approval` environment); a new push needs a new click.
   - Bot versus owner-credential identity, and deny rules as defense in depth under a ruleset on `main`.
+  - Related design spec: [Scholarly Connectors on CI](superpowers/specs/2026-11-23-scholarly-connectors-ci-design.md) (full MCP on GitHub Actions for reception verification).
 
 ### 3.9 Run Ledger Summary
 
