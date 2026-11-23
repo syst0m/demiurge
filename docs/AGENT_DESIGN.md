@@ -2,7 +2,7 @@
 
 ```yaml
 version: 1.1.0
-derived_from: RESEARCH.md v1.3.4 · AGENT_ARCHITECTURE.md v2.0.0
+derived_from: RESEARCH.md v1.3.5 · AGENT_ARCHITECTURE.md v2.0.0
 audience: human
 maintained_by: marcus
 ```
