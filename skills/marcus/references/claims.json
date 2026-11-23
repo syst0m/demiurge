@@ -1,6 +1,6 @@
 {
   "schema": "demiurge.claims.compiled.v1",
-  "research_version": "1.3.4",
+  "research_version": "1.3.5",
   "sources_sha256": "ce00701345d634b0a209628699fe9be605503a7ee2e45d2ca49d2a78dd85bcaa",
   "research_sha256": "3ee29d62fa7827b7a85820a2494c998a61ed054d128d189ed0d93671fbb72963",
   "snapshot_sha256": "665f359ffc5316f0b24728e77c05faed2e0ad52a060096cb76baf60c168517df",
