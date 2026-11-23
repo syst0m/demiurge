@@ -41,6 +41,10 @@ jobs:
         run: python scripts/sync_brief_summary.py --check
       - name: Claims ledger caps
         run: python scripts/research/grade_cap.py --check
+        env:
+          SCITE_API_KEY: ${{ secrets.SCITE_API_KEY }}
+          UNDERMIND_API_KEY: ${{ secrets.UNDERMIND_API_KEY }}
+          CONSENSUS_API_KEY: ${{ secrets.CONSENSUS_API_KEY }}
       - name: Claims change log is append-only
         if: github.event_name == 'pull_request'
         env:
