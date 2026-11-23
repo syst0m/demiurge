@@ -12,8 +12,9 @@
 | [Imhotep Evaluation](IMHOTEP_EVALUATION.md) | Evidence review of the ambition tenets and the vendored be-ambitious procedure behind Imhotep. |
 | [Evidence & Confidence Taxonomy](EVIDENCE.md) | Tri-source rule, grounding gates, and the `[SETTLED]` / `[CONTESTED]` / `[VENDOR]` / `[EMERGING]` markers. |
 | [Executive Research Brief](BRIEF.md) | Four empirical constants, graded evidence base, and the gate pipeline. |
-| [Research Pipeline](RESEARCH_PIPELINE.md) | Sweep, verify, approve, merge: how a research finding reaches `RESEARCH.md`. |
-| [Claims Ledger](CLAIMS_LEDGER.md) | Claim anchors, sources, and the `grade_cap` rule. |
+|| [Research Pipeline](RESEARCH_PIPELINE.md) | Sweep, verify, approve, merge: how a research finding reaches `RESEARCH.md`. |
+|| [Scholarly Connectors on CI — Design](superpowers/specs/2026-11-23-scholarly-connectors-ci-design.md) | Full MCP (scite, Undermind, Consensus) in GitHub Actions for citation-reception verification; degrades gracefully when secrets are absent. |
+|| [Claims Ledger](CLAIMS_LEDGER.md) | Claim anchors, sources, and the `grade_cap` rule. |
 | [Run Ledger](RUN_LEDGER.md) | Failure intake from real skill runs. |
 | [Skill Registry](SKILL_REGISTRY.md) | Local inventory of skills. |
 | [Standing Orders](STANDING_ORDERS.md) | Rules for every agent session in this repository. |

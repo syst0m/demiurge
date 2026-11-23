@@ -244,10 +244,81 @@ def rewrite_gateway_command(event: Any = None, gateway: Any = None, **_: Any) ->
     return {"action": "rewrite", "text": _skill_prompt(command, rest)}
 
 
+
+_TROPE_PATTERNS = [
+    ("it is not X, it is Y", re.compile(r"(?:it is|it's) not .+(?:,|;|—|-) it(?: is|'s) ", re.IGNORECASE)),
+    ("not because X, but because Y", re.compile(r"not because .+, but because", re.IGNORECASE)),
+    ("question/problem is not... is", re.compile(r"(?:the question|the problem) is not .+\. (?:the question|the problem) is ", re.IGNORECASE)),
+    ("isn't just X, it is Y", re.compile(r"isn't just .+(?:,|;|—|-) it(?: is|'s) ", re.IGNORECASE)),
+    ("is/are not just X, ...", re.compile(r"(?:is|are) not just .+(?:,|;|—|-) (?:it is|it's|they are|they're)", re.IGNORECASE)),
+    ("X, not Y (compressed contrast)", re.compile(r"[,;—-]\s*not\s+\w+(?:\s+\w+){0,6}", re.IGNORECASE)),
+]
+
+
+def _trope_prose_lines(text: str):
+    """Yield (lineno, prose) with fenced code, block quotes and inline code blanked."""
+    in_fence = False
+    fence_re = re.compile(r"^\s*(```|~~~)")
+    inline_code_re = re.compile(r"`[^`]*`")
+    for n, line in enumerate(text.splitlines(), 1):
+        if fence_re.match(line):
+            in_fence = not in_fence
+            continue
+        if in_fence or line.lstrip().startswith(">"):
+            continue
+        yield n, inline_code_re.sub(" ", line)
+
+
+def _trope_hits(text: str) -> list[tuple[int, str, str]]:
+    hits = []
+    for n, prose in _trope_prose_lines(text):
+        for name, pat in _TROPE_PATTERNS:
+            if pat.search(prose):
+                hits.append((n, name, prose.strip()))
+                break
+    return hits
+
+
+def trope_gate_pre_llm_call(event=None, payload=None, **kwargs):
+    """Pre-llm_call gate: veto a turn whose user message uses negative parallelism
+    or compressed contrast (i-have-adhd rule 11). Fail-open: never raises."""
+    user_message = ""
+    try:
+        if isinstance(payload, dict):
+            user_message = str(payload.get("user_message", "") or "")
+    except Exception:
+        pass
+    if not user_message:
+        try:
+            user_message = str(kwargs.get("user_message", "") or "")
+        except Exception:
+            user_message = ""
+    if not user_message.strip():
+        return None
+    try:
+        hits = _trope_hits(user_message)
+    except Exception:
+        return None
+    if not hits:
+        return None
+    nl = chr(10)
+    lines = []
+    for _n, _name, snip in hits:
+        clean = re.sub(r"<[^>]+>", "", snip).strip()
+        lines.append(clean + "  ")
+    message = (
+        "Negative parallelism or compressed contrast detected in your message. "
+        "Rewrite each flagged line as one plain statement and resend:" + nl +
+        nl.join(lines)
+    )
+    return {"action": "block", "message": message}
+
+
 def register(ctx: Any) -> None:
     """Register the hooks that expose /niccolo, /marcus, /imhotep and ::help."""
     ctx.register_hook("pre_gateway_dispatch", rewrite_gateway_command)
     ctx.register_hook("pre_llm_call", block_help_prompt)
+    ctx.register_hook("pre_llm_call", trope_gate_pre_llm_call)
     try:
         ctx.register_hook("on_session_end", record_session_end)
     except Exception:
