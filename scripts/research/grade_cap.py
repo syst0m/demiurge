@@ -44,6 +44,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
 import research_lib as rl
+import reception
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_RESEARCH = "research/RESEARCH.md"
@@ -568,6 +569,17 @@ def cmd_write(paths: Paths) -> int:
         return 1
 
     results = evaluate(sources)
+    # Record citation reception for counted reception-type sources when the
+    # connector key is present; degraded silently (no reception recorded) when
+    # absent, so --write never fails for a missing optional connector.
+    scite_key = os.environ.get("SCITE_API_KEY")
+    if scite_key:
+        for claim in (sources.get("claims") or {}).values():
+            for source in counted_sources(claim.get("sources") or []):
+                if etype(source) in RECEPTION_TYPES and not _reception(source).get("checked"):
+                    url = source.get("url")
+                    if url and isinstance(source, dict):
+                        source["reception"] = reception.scite_reception(url, scite_key)
     before = {cid: [stored_fields(g) for g in (sources["claims"][cid].get("grades") or [])] for cid in results}
     apply_caps(sources, results)
 
