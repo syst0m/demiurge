@@ -61,7 +61,7 @@ def plugin_yaml(names: list[str]) -> str:
         f"name: demiurge-skills\n"
         f"version: 1.0.0\n"
         f"description: Hermes slash commands for demiurge skills ({', '.join(names)}). Synced from scripts/sync-hermes-commands.py — do not edit by hand.\n"
-        f"provides_hooks:\n  - pre_gateway_dispatch\n  - pre_llm_call\n  - on_session_end\n"
+        f"provides_hooks:\n  - pre_gateway_dispatch\n  - pre_llm_call\n  - transform_llm_output\n  - on_session_end\n"
         f"provides_commands:\n{commands}\n"
         f"provides_skills:\n{commands}\n"
     )
@@ -314,11 +314,42 @@ def trope_gate_pre_llm_call(event=None, payload=None, **kwargs):
     return {"action": "block", "message": message}
 
 
+def trope_gate_transform_llm_output(response_text=None, **kwargs):
+    """transform_llm_output gate: veto an assistant reply that uses negative
+    parallelism or compressed contrast (i-have-adhd rule 11) before it reaches
+    the user. Fail-open: never raises. Registered with hold_stream=True so the
+    user sees only the rewritten (or withheld) final."""
+    text = ""
+    try:
+        text = str(response_text or "")
+    except Exception:
+        return None
+    if not text.strip():
+        return None
+    try:
+        hits = _trope_hits(text)
+    except Exception:
+        return None
+    if not hits:
+        return None
+    nl = chr(10)
+    lines = []
+    for _n, _name, snip in hits:
+        clean = re.sub(r"<[^>]+>", "", snip).strip()
+        lines.append(clean + "  ")
+    return (
+        "This assistant reply was withheld: negative parallelism or compressed "
+        "contrast detected. Rewrite each flagged line as one plain statement "
+        "and resend:" + nl + nl.join(lines)
+    )
+
+
 def register(ctx: Any) -> None:
     """Register the hooks that expose /niccolo, /marcus, /imhotep and ::help."""
     ctx.register_hook("pre_gateway_dispatch", rewrite_gateway_command)
     ctx.register_hook("pre_llm_call", block_help_prompt)
     ctx.register_hook("pre_llm_call", trope_gate_pre_llm_call)
+    ctx.register_hook("transform_llm_output", trope_gate_transform_llm_output, hold_stream=True)
     try:
         ctx.register_hook("on_session_end", record_session_end)
     except Exception:
