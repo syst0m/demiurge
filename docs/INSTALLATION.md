@@ -121,6 +121,29 @@ Fresh clones operate out-of-the-box without external connectors. Connecting scho
 - **Graceful Degradation**: When connectors are unavailable in an agent runtime, Niccolo falls back to standard web search engines and open-access archives (arXiv, IETF, vendor engineering portals).
 - **Audit Requirement**: When connectors are absent, Niccolo explicitly notes in diff proposals that citation reception and retraction notices could not be validated via Smart Citations. Findings without reception verification cannot be promoted to `[SETTLED]`.
 
+### Continuous Integration
+
+GitHub Actions runs the research-sweep gates (`grade_cap.py --check`, `claims_diff.py`,
+`check_verifications.py`) on every research pull request. The three scholarly
+connectors can run on CI by configuring repository secrets:
+
+| Secret | Connector | Purpose |
+|---|---|---|
+| `SCITE_API_KEY` | scite | Smart Citation reception (retraction notices, supporting vs. contrasting counts) |
+| `UNDERMIND_API_KEY` | Undermind | Source discovery and systematic literature exploration |
+| `CONSENSUS_API_KEY` | Consensus | Structured paper search and consensus ratios |
+
+`grade_cap.py --write` records `reception.checked / retracted / supporting /
+contrasting` for each counted source when the matching secret is present in the
+environment. When no secret is present, CI degrades silently: reception stays
+unchecked, the disclaimer is printed in diff proposals, and no grade is promoted
+to `[SETTLED]` without verified reception. Missing connectors never break the
+build.
+
+Add secrets in GitHub at Settings → Secrets and variables → Actions. They are
+masked in logs and never written to `sources.yaml`, `claims.json`, or the
+worktree.
+
 ### Official Connector Documentation
 
 Refer to the official vendor documentation for setup instructions on your preferred agent platform:
