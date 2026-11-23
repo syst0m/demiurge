@@ -10,7 +10,7 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from scripts.research import mcp_client
+import mcp_client
 
 # Connector commands / tool names. Confirm exact values against each vendor's
 # MCP docs before enabling on CI.
