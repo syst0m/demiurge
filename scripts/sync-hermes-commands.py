@@ -318,6 +318,7 @@ def trope_gate_pre_llm_call(event=None, payload=None, **kwargs):
 
 TROPE_FLAG = "  [trope gate: could not rewrite]"
 MAX_TRIES = 3
+# shortcut: budget assumes the default 30 s hook timeout, upgrade when Hermes exposes the setting
 BUDGET_SECONDS = 25.0
 
 
