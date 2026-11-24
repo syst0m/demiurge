@@ -147,6 +147,23 @@ class TropeRewriteTest(unittest.TestCase):
             module = _load(_build_plugin(Path(tmp)))
             self.assertEqual(module._trope_hits("x" + module.TROPE_FLAG), [])
 
+    def test_slow_rewriter_hits_budget_and_flags(self):
+        import time
+
+        def slow(lines, n):
+            time.sleep(3)
+            return ["fixed"]
+
+        with tempfile.TemporaryDirectory() as tmp:
+            module = _load(_build_plugin(Path(tmp)))
+            module.BUDGET_SECONDS = 0.5
+            setattr(module, "_llm_rewrite", lambda lines: slow(lines, 1))
+            t0 = time.monotonic()
+            out = module.trope_gate_transform_llm_output(response_text=BAD)
+            self.assertLess(time.monotonic() - t0, 2)
+            self.assertEqual(out, BAD + module.TROPE_FLAG)
+            self.assertNotIn("withheld", out)
+
     def test_fenced_code_is_exempt(self):
         _, out, _ = self._hook(lambda lines, n: lines, "```\n" + BAD + "\n```")
         self.assertIsNone(out)

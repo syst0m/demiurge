@@ -108,6 +108,7 @@ import json
 import re
 import subprocess
 import sys
+import concurrent.futures
 import time
 from pathlib import Path
 from typing import Any
@@ -318,6 +319,7 @@ def trope_gate_pre_llm_call(event=None, payload=None, **kwargs):
 TROPE_FLAG = "  [trope gate: could not rewrite]"
 MAX_TRIES = 3
 BUDGET_SECONDS = 25.0
+_call_timeout = 8.0  # per-call cap, set by _rewrite_flagged from the remaining budget
 
 
 def _llm_rewrite(lines: list[str]) -> list[str]:
@@ -335,7 +337,7 @@ def _llm_rewrite(lines: list[str]) -> list[str]:
         task="trope_rewrite",
         messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
         temperature=0,
-        timeout=8,
+        timeout=_call_timeout,
     )
     content = resp.choices[0].message.content or ""
     out = [re.sub(r"^\s*\d+\s*[.):]\s*", "", ln).strip() for ln in content.splitlines() if ln.strip()]
@@ -356,12 +358,18 @@ def _rewrite_flagged(text: str) -> str:
             break
         lines = text.splitlines()
         idx = [n - 1 for n, _name, _snip in hits]
+        global _call_timeout
+        _call_timeout = max(1.0, min(8.0, deadline - time.monotonic()))
+        pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
         try:
-            fixed = _llm_rewrite([lines[i] for i in idx])
+            fut = pool.submit(_llm_rewrite, [lines[i] for i in idx])
+            fixed = fut.result(timeout=max(0.0, deadline - time.monotonic()))
         except ValueError:
             continue
         except Exception:
-            break
+            break  # includes the budget TimeoutError: keep the lines and flag them
+        finally:
+            pool.shutdown(wait=False)
         if len(fixed) != len(idx):
             continue
         for i, new in zip(idx, fixed):
