@@ -206,6 +206,18 @@ class TropeRewriteTest(unittest.TestCase):
             self.assertEqual(len(calls), 3)
             self.assertEqual(out, flagged + module.TROPE_FLAG + "\n\n```\ncode sample\n```\nEnd.")
 
+    def test_fence_result_fails_the_try(self):
+        module, out, calls = self._hook(lambda lines, n: ["```"], BAD)
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(out, BAD + module.TROPE_FLAG)
+
+    def test_fence_result_discards_the_good_lines_of_that_try(self):
+        other = "It is a rework, not a fix."
+        stub = lambda lines, n: ["Plain one.", "```"] if n == 1 else lines  # noqa: E731
+        module, out, calls = self._hook(stub, BAD + "\n" + other)
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(out, BAD + module.TROPE_FLAG + "\n" + other + module.TROPE_FLAG)
+
     def test_fenced_code_is_exempt(self):
         _, out, _ = self._hook(lambda lines, n: lines, "```\n" + BAD + "\n```")
         self.assertIsNone(out)

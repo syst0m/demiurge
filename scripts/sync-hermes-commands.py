@@ -392,11 +392,11 @@ def _rewrite_flagged(text: str) -> str:
             pool.shutdown(wait=False)
         if len(fixed) != len(idx):
             continue
-        for i, (prefix, _body), new in zip(idx, prefixes, fixed):
-            # strip an echoed marker only when the original line had one
-            new_body = _split_prefix(str(new))[1] if prefix.strip() else str(new)
-            if _FENCE_RE.match(new_body) or new_body.startswith(">"):
-                continue  # a fence or quote marker would hide the line from the gate
+        # strip an echoed marker only when the original line had one
+        bodies = [_split_prefix(str(n))[1] if p.strip() else str(n) for (p, _b), n in zip(prefixes, fixed)]
+        if any(_FENCE_RE.match(b) or b.startswith(">") for b in bodies):
+            continue  # a fence or quote marker would hide a line from the gate: fail the whole try
+        for i, (prefix, _body), new_body in zip(idx, prefixes, bodies):
             lines[i] = prefix + new_body
         text = "".join(b + e for b, e in zip(lines, ends))
     lines = text.splitlines()
