@@ -104,11 +104,11 @@ def main(argv: list[str] | None = None) -> int:
 
 from __future__ import annotations
 
+import concurrent.futures
 import json
 import re
 import subprocess
 import sys
-import concurrent.futures
 import time
 from pathlib import Path
 from typing import Any
@@ -319,10 +319,24 @@ def trope_gate_pre_llm_call(event=None, payload=None, **kwargs):
 TROPE_FLAG = "  [trope gate: could not rewrite]"
 MAX_TRIES = 3
 BUDGET_SECONDS = 25.0
-_call_timeout = 8.0  # per-call cap, set by _rewrite_flagged from the remaining budget
 
 
-def _llm_rewrite(lines: list[str]) -> list[str]:
+def _parse_numbered(content: str, count: int) -> list[str]:
+    """Parse a reply of exactly COUNT lines numbered 1..COUNT. Raises ValueError otherwise."""
+    out = []
+    for ln in (content or "").splitlines():
+        if not ln.strip():
+            continue
+        m = re.match(r"^\\s*(\\d+)[.):]\\s+(.*)$", ln)
+        if not m or int(m.group(1)) != len(out) + 1:
+            raise ValueError("rewriter line is not numbered in order: " + ln[:40])
+        out.append(m.group(2).strip())
+    if len(out) != count or not all(out):
+        raise ValueError("rewriter returned " + str(len(out)) + " lines for " + str(count))
+    return out
+
+
+def _llm_rewrite(lines: list[str], timeout: float = 8.0) -> list[str]:
     """Ask the auxiliary model to rewrite each line as a plain statement. Raises on any failure."""
     from agent.auxiliary_client import call_llm
 
@@ -337,13 +351,9 @@ def _llm_rewrite(lines: list[str]) -> list[str]:
         task="trope_rewrite",
         messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
         temperature=0,
-        timeout=_call_timeout,
+        timeout=timeout,
     )
-    content = resp.choices[0].message.content or ""
-    out = [re.sub(r"^\s*\d+\s*[.):]\s*", "", ln).strip() for ln in content.splitlines() if ln.strip()]
-    if len(out) != len(lines):
-        raise ValueError("rewriter returned " + str(len(out)) + " lines for " + str(len(lines)))
-    return out
+    return _parse_numbered(resp.choices[0].message.content or "", len(lines))
 
 
 _PREFIX_RE = re.compile(r"^(\s*(?:(?:[-*+]|\d+[.)])\s+)?)(.*)$")
@@ -368,12 +378,11 @@ def _rewrite_flagged(text: str) -> str:
             break
         lines = text.splitlines()
         idx = [n - 1 for n, _name, _snip in hits]
-        global _call_timeout
-        _call_timeout = max(1.0, min(8.0, deadline - time.monotonic()))
+        per_call = max(1.0, min(8.0, deadline - time.monotonic()))
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
         try:
             prefixes = [_split_prefix(lines[i]) for i in idx]
-            fut = pool.submit(_llm_rewrite, [body for _p, body in prefixes])
+            fut = pool.submit(_llm_rewrite, [body for _p, body in prefixes], per_call)
             fixed = fut.result(timeout=max(0.0, deadline - time.monotonic()))
         except ValueError:
             continue
@@ -384,7 +393,8 @@ def _rewrite_flagged(text: str) -> str:
         if len(fixed) != len(idx):
             continue
         for i, (prefix, _body), new in zip(idx, prefixes, fixed):
-            new_body = _split_prefix(str(new))[1]
+            # strip an echoed marker only when the original line had one
+            new_body = _split_prefix(str(new))[1] if prefix.strip() else str(new)
             if _FENCE_RE.match(new_body) or new_body.startswith(">"):
                 continue  # a fence or quote marker would hide the line from the gate
             lines[i] = prefix + new_body

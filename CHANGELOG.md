@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Hermes chat trope gate:** now rewrites flagged lines (3 tries) and keeps and flags a line it cannot fix, instead of withholding the reply.
+- **Hermes chat trope gate:** the rewriter now takes its timeout as an argument and parses the model reply strictly (numbered lines in order, exact count), keeping text that starts with a number.
 
 ## [0.18.5] - 2026-11-23
 

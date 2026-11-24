@@ -14,8 +14,10 @@ import os
 import subprocess
 import sys
 import tempfile
+import types
 import unittest
 from pathlib import Path
+from unittest import mock
 
 REPO = Path(__file__).resolve().parent.parent
 SCRIPT = REPO / "scripts" / "sync-hermes-commands.py"
@@ -91,7 +93,7 @@ class TropeRewriteTest(unittest.TestCase):
             module = _load(_build_plugin(Path(tmp)))
             calls = []
 
-            def wrapped(lines):
+            def wrapped(lines, timeout=8.0):
                 calls.append(list(lines))
                 return stub(lines, len(calls))
 
@@ -157,7 +159,7 @@ class TropeRewriteTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             module = _load(_build_plugin(Path(tmp)))
             module.BUDGET_SECONDS = 0.5
-            setattr(module, "_llm_rewrite", lambda lines: slow(lines, 1))
+            setattr(module, "_llm_rewrite", lambda lines, timeout=8.0: slow(lines, 1))
             t0 = time.monotonic()
             out = module.trope_gate_transform_llm_output(response_text=BAD)
             self.assertLess(time.monotonic() - t0, 2)
@@ -198,6 +200,90 @@ class TropeRewriteTest(unittest.TestCase):
     def test_fenced_code_is_exempt(self):
         _, out, _ = self._hook(lambda lines, n: lines, "```\n" + BAD + "\n```")
         self.assertIsNone(out)
+
+
+def _fake_hermes(reply, record=None):
+    """Patch a fake agent.auxiliary_client whose call_llm returns REPLY and records kwargs."""
+    fake = types.ModuleType("agent.auxiliary_client")
+
+    def call_llm(**kwargs):
+        if record is not None:
+            record.update(kwargs)
+        msg = types.SimpleNamespace(content=reply)
+        return types.SimpleNamespace(choices=[types.SimpleNamespace(message=msg)])
+
+    fake.call_llm = call_llm
+    return mock.patch.dict(sys.modules, {"agent": types.ModuleType("agent"), "agent.auxiliary_client": fake})
+
+
+class LlmRewriteBoundaryTest(unittest.TestCase):
+    def _module(self, tmp):
+        return _load(_build_plugin(Path(tmp)))
+
+    def test_parses_numbered_reply(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            module = self._module(tmp)
+            with _fake_hermes("1. First plain.\n2. Second plain."):
+                self.assertEqual(module._llm_rewrite(["a", "b"]), ["First plain.", "Second plain."])
+
+    def test_keeps_text_that_starts_with_a_number(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            module = self._module(tmp)
+            with _fake_hermes("1. 2.5x faster than before."):
+                self.assertEqual(module._llm_rewrite(["a"]), ["2.5x faster than before."])
+
+    def test_sends_task_temperature_and_timeout(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            module = self._module(tmp)
+            seen = {}
+            with _fake_hermes("1. ok.", seen):
+                module._llm_rewrite(["x"], 3.5)
+            self.assertEqual(seen["task"], "trope_rewrite")
+            self.assertEqual(seen["temperature"], 0)
+            self.assertEqual(seen["timeout"], 3.5)
+
+    def test_rejects_count_mismatch(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            module = self._module(tmp)
+            with _fake_hermes("1. only one."):
+                with self.assertRaises(ValueError):
+                    module._llm_rewrite(["a", "b"])
+
+    def test_rejects_empty_none_and_unnumbered_reply(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            module = self._module(tmp)
+            for reply in ("", None, "Plain line."):
+                with _fake_hermes(reply):
+                    with self.assertRaises(ValueError):
+                        module._llm_rewrite(["a"])
+
+    def test_missing_hermes_keeps_and_flags(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            module = self._module(tmp)
+            with mock.patch.dict(sys.modules, {"agent": types.ModuleType("agent"), "agent.auxiliary_client": None}):
+                out = module.trope_gate_transform_llm_output(response_text=BAD)
+            self.assertEqual(out, BAD + module.TROPE_FLAG)
+
+    def test_timeout_is_a_call_argument(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            module = self._module(tmp)
+            seen = []
+
+            def stub(lines, timeout=8.0):
+                seen.append(timeout)
+                return lines
+
+            setattr(module, "_llm_rewrite", stub)
+            module.trope_gate_transform_llm_output(response_text=BAD)
+            self.assertTrue(seen and all(1.0 <= t <= 8.0 for t in seen))
+            self.assertFalse(hasattr(module, "_call_timeout"))
+
+    def test_unmarked_line_keeps_a_leading_number_from_the_reply(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            module = self._module(tmp)
+            setattr(module, "_llm_rewrite", lambda lines, timeout=8.0: ["2024. was a year of change."])
+            out = module.trope_gate_transform_llm_output(response_text="It was a year, not a decade.")
+            self.assertEqual(out, "2024. was a year of change.")
 
 
 if __name__ == "__main__":
