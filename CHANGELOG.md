@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **Hermes chat trope gate:** invalid regex escapes in the plugin source are escaped, so the patterns no longer raise a SyntaxWarning.
+- **Hermes chat trope gate:** invalid regex escapes in the plugin source are escaped, so the plugin source no longer raises a SyntaxWarning.
 - **Hermes chat trope gate:** rewrites keep the original line endings (CRLF or LF).
-- **Hermes chat trope gate:** a fenced-code reply from the rewriter discards that whole try, so no fence text reaches the reply.
+- **Hermes chat trope gate:** a rewrite that returns fenced code or a block quote discards that whole try, so no fence or quote text reaches the reply.
 - **Hermes chat trope gate:** a retry names the expected line count, so the model can correct a wrong count.
 - **Hermes chat trope gate:** rewrite calls stop once the time budget is nearly spent, so a call never starts without time to finish.
 
