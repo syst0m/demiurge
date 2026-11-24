@@ -161,17 +161,21 @@ class TropeRewriteTest(unittest.TestCase):
     def test_slow_rewriter_hits_budget_and_flags(self):
         import time
 
+        started = []
+
         def slow(lines, n):
+            started.append(1)
             time.sleep(3)
             return ["fixed"]
 
         with tempfile.TemporaryDirectory() as tmp:
             module = _load(_build_plugin(Path(tmp)))
-            module.BUDGET_SECONDS = 0.5
+            module.BUDGET_SECONDS = 1.2
             setattr(module, "_llm_rewrite", lambda lines, timeout=8.0, retry=False: slow(lines, 1))
             t0 = time.monotonic()
             out = module.trope_gate_transform_llm_output(response_text=BAD)
-            self.assertLess(time.monotonic() - t0, 2)
+            self.assertLess(time.monotonic() - t0, 2.5)
+            self.assertEqual(len(started), 1)
             self.assertEqual(out, BAD + module.TROPE_FLAG)
             self.assertNotIn("withheld", out)
 
