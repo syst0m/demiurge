@@ -204,6 +204,14 @@ class TropeRewriteTest(unittest.TestCase):
         _, out, _ = self._hook(lambda lines, n: ["It is a rework."], "3. It is a rework, not a fix.")
         self.assertEqual(out, "3. It is a rework.")
 
+    def test_nested_list_indent_is_kept(self):
+        _, out, _ = self._hook(lambda lines, n: ["sub item."], "  - sub item, not a bug fix.")
+        self.assertEqual(out, "  - sub item.")
+
+    def test_leading_number_survives_marker_strip(self):
+        _, out, _ = self._hook(lambda lines, n: ["2.5x faster."], "- 2.5x faster, not slower.")
+        self.assertEqual(out, "- 2.5x faster.")
+
     def test_crlf_text_keeps_crlf(self):
         text = "a\r\nIt is a rework, not a fix.\r\nb\r\n"
         _, out, _ = self._hook(lambda lines, n: ["It is a rework."], text)
