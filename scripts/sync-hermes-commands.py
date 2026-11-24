@@ -346,9 +346,19 @@ def _llm_rewrite(lines: list[str]) -> list[str]:
     return out
 
 
+_PREFIX_RE = re.compile(r"^(\s*(?:(?:[-*+]|\d+[.)])\s+)?)(.*)$")
+_FENCE_RE = re.compile(r"^\s*(```|~~~)")
+
+
+def _split_prefix(line: str) -> tuple[str, str]:
+    """Split a line into its indent plus one list marker, and the body."""
+    m = _PREFIX_RE.match(line)
+    return (m.group(1), m.group(2)) if m else ("", line)
+
+
 def _rewrite_flagged(text: str) -> str:
     """Rewrite flagged lines up to MAX_TRIES times; keep and flag any line still failing."""
-    nl = chr(10)
+    nl = chr(13) + chr(10) if (chr(13) + chr(10)) in text else chr(10)
     deadline = time.monotonic() + BUDGET_SECONDS
     for _ in range(MAX_TRIES):
         if time.monotonic() >= deadline:
@@ -362,7 +372,8 @@ def _rewrite_flagged(text: str) -> str:
         _call_timeout = max(1.0, min(8.0, deadline - time.monotonic()))
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
         try:
-            fut = pool.submit(_llm_rewrite, [lines[i] for i in idx])
+            prefixes = [_split_prefix(lines[i]) for i in idx]
+            fut = pool.submit(_llm_rewrite, [body for _p, body in prefixes])
             fixed = fut.result(timeout=max(0.0, deadline - time.monotonic()))
         except ValueError:
             continue
@@ -372,8 +383,11 @@ def _rewrite_flagged(text: str) -> str:
             pool.shutdown(wait=False)
         if len(fixed) != len(idx):
             continue
-        for i, new in zip(idx, fixed):
-            lines[i] = str(new)
+        for i, (prefix, _body), new in zip(idx, prefixes, fixed):
+            new_body = _split_prefix(str(new))[1]
+            if _FENCE_RE.match(new_body) or new_body.startswith(">"):
+                continue  # a fence or quote marker would hide the line from the gate
+            lines[i] = prefix + new_body
         text = nl.join(lines) + (nl if text.endswith(nl) else "")
     lines = text.splitlines()
     for n, _name, _snip in _trope_hits(text):

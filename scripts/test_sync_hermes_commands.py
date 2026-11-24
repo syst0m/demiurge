@@ -164,6 +164,37 @@ class TropeRewriteTest(unittest.TestCase):
             self.assertEqual(out, BAD + module.TROPE_FLAG)
             self.assertNotIn("withheld", out)
 
+    def test_nested_list_item_keeps_indent_and_marker(self):
+        text = "- top\n    - It is a rework, not a fix.\n- end"
+        _, out, calls = self._hook(lambda lines, n: ["It is a rework."], text)
+        self.assertEqual(calls[0], ["It is a rework, not a fix."])
+        self.assertEqual(out, "- top\n    - It is a rework.\n- end")
+
+    def test_marker_echoed_by_model_gives_one_marker(self):
+        text = "- top\n    - It is a rework, not a fix.\n- end"
+        _, out, _ = self._hook(lambda lines, n: ["- It is a rework."], text)
+        self.assertEqual(out, "- top\n    - It is a rework.\n- end")
+
+    def test_numbered_list_prefix_is_kept(self):
+        _, out, _ = self._hook(lambda lines, n: ["It is a rework."], "3. It is a rework, not a fix.")
+        self.assertEqual(out, "3. It is a rework.")
+
+    def test_crlf_text_keeps_crlf(self):
+        text = "a\r\nIt is a rework, not a fix.\r\nb\r\n"
+        _, out, _ = self._hook(lambda lines, n: ["It is a rework."], text)
+        self.assertEqual(out, "a\r\nIt is a rework.\r\nb\r\n")
+        module, out, _ = self._hook(lambda lines, n: lines, text)
+        self.assertEqual(out, "a\r\nIt is a rework, not a fix." + module.TROPE_FLAG + "\r\nb\r\n")
+        self.assertNotIn("\n", out.replace("\r\n", ""))
+
+    def test_rewrite_that_is_a_fence_or_quote_marker_fails_the_try(self):
+        flagged = "It is a rework, not a fix."
+        text = flagged + "\n\n```\ncode sample\n```\nEnd."
+        for bad in ("```", "> It is a rework."):
+            module, out, calls = self._hook(lambda lines, n, bad=bad: [bad], text)
+            self.assertEqual(len(calls), 3)
+            self.assertEqual(out, flagged + module.TROPE_FLAG + "\n\n```\ncode sample\n```\nEnd.")
+
     def test_fenced_code_is_exempt(self):
         _, out, _ = self._hook(lambda lines, n: lines, "```\n" + BAD + "\n```")
         self.assertIsNone(out)
