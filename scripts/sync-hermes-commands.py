@@ -336,7 +336,7 @@ def _parse_numbered(content: str, count: int) -> list[str]:
     return out
 
 
-def _llm_rewrite(lines: list[str], timeout: float = 8.0) -> list[str]:
+def _llm_rewrite(lines: list[str], timeout: float = 8.0, retry: bool = False) -> list[str]:
     """Ask the auxiliary model to rewrite each line as a plain statement. Raises on any failure."""
     from agent.auxiliary_client import call_llm
 
@@ -347,6 +347,8 @@ def _llm_rewrite(lines: list[str], timeout: float = 8.0) -> list[str]:
         "exactly. Answer with exactly one line per input line, numbered the same, and nothing else."
     )
     user = nl.join(str(i) + ". " + line.strip() for i, line in enumerate(lines, 1))
+    if retry:
+        user = "Your last reply had the wrong count. Answer with exactly " + str(len(lines)) + " numbered lines." + nl + user
     resp = call_llm(
         task="trope_rewrite",
         messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
@@ -369,6 +371,7 @@ def _split_prefix(line: str) -> tuple[str, str]:
 def _rewrite_flagged(text: str) -> str:
     """Rewrite flagged lines up to MAX_TRIES times; keep and flag any line still failing."""
     deadline = time.monotonic() + BUDGET_SECONDS
+    retry = False
     for _ in range(MAX_TRIES):
         if time.monotonic() >= deadline:
             break
@@ -382,9 +385,10 @@ def _rewrite_flagged(text: str) -> str:
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
         try:
             prefixes = [_split_prefix(lines[i]) for i in idx]
-            fut = pool.submit(_llm_rewrite, [body for _p, body in prefixes], per_call)
+            fut = pool.submit(_llm_rewrite, [body for _p, body in prefixes], per_call, retry)
             fixed = fut.result(timeout=max(0.0, deadline - time.monotonic()))
         except ValueError:
+            retry = True
             continue
         except Exception:
             break  # includes the budget TimeoutError: keep the lines and flag them

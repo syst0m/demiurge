@@ -93,7 +93,7 @@ class TropeRewriteTest(unittest.TestCase):
             module = _load(_build_plugin(Path(tmp)))
             calls = []
 
-            def wrapped(lines, timeout=8.0):
+            def wrapped(lines, timeout=8.0, retry=False):
                 calls.append(list(lines))
                 return stub(lines, len(calls))
 
@@ -168,7 +168,7 @@ class TropeRewriteTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             module = _load(_build_plugin(Path(tmp)))
             module.BUDGET_SECONDS = 0.5
-            setattr(module, "_llm_rewrite", lambda lines, timeout=8.0: slow(lines, 1))
+            setattr(module, "_llm_rewrite", lambda lines, timeout=8.0, retry=False: slow(lines, 1))
             t0 = time.monotonic()
             out = module.trope_gate_transform_llm_output(response_text=BAD)
             self.assertLess(time.monotonic() - t0, 2)
@@ -217,6 +217,26 @@ class TropeRewriteTest(unittest.TestCase):
         module, out, calls = self._hook(stub, BAD + "\n" + other)
         self.assertEqual(len(calls), 3)
         self.assertEqual(out, BAD + module.TROPE_FLAG + "\n" + other + module.TROPE_FLAG)
+
+    def test_retry_names_the_count(self):
+        replies = iter(["1. Only one.", "1. Plain one.\n2. Plain two."])
+        users = []
+        fake = types.ModuleType("agent.auxiliary_client")
+
+        def call_llm(**kwargs):
+            users.append(kwargs["messages"][1]["content"])
+            msg = types.SimpleNamespace(content=next(replies))
+            return types.SimpleNamespace(choices=[types.SimpleNamespace(message=msg)])
+
+        fake.call_llm = call_llm
+        with tempfile.TemporaryDirectory() as tmp:
+            module = _load(_build_plugin(Path(tmp)))
+            with mock.patch.dict(sys.modules, {"agent": types.ModuleType("agent"), "agent.auxiliary_client": fake}):
+                out = module.trope_gate_transform_llm_output(response_text=BAD + "\n" + BAD)
+        self.assertEqual(out, "Plain one.\nPlain two.")
+        self.assertEqual(len(users), 2)
+        self.assertNotIn("exactly", users[0])
+        self.assertTrue(users[1].startswith("Your last reply had the wrong count. Answer with exactly 2 numbered lines."))
 
     def test_fenced_code_is_exempt(self):
         _, out, _ = self._hook(lambda lines, n: lines, "```\n" + BAD + "\n```")
@@ -290,7 +310,7 @@ class LlmRewriteBoundaryTest(unittest.TestCase):
             module = self._module(tmp)
             seen = []
 
-            def stub(lines, timeout=8.0):
+            def stub(lines, timeout=8.0, retry=False):
                 seen.append(timeout)
                 return lines
 
@@ -302,7 +322,7 @@ class LlmRewriteBoundaryTest(unittest.TestCase):
     def test_unmarked_line_keeps_a_leading_number_from_the_reply(self):
         with tempfile.TemporaryDirectory() as tmp:
             module = self._module(tmp)
-            setattr(module, "_llm_rewrite", lambda lines, timeout=8.0: ["2024. was a year of change."])
+            setattr(module, "_llm_rewrite", lambda lines, timeout=8.0, retry=False: ["2024. was a year of change."])
             out = module.trope_gate_transform_llm_output(response_text="It was a year, not a decade.")
             self.assertEqual(out, "2024. was a year of change.")
 
