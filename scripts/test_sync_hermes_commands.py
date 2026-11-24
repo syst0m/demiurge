@@ -82,5 +82,75 @@ class HelpPromptTest(unittest.TestCase):
             self.assertIn("pre_llm_call", manifest)
 
 
+BAD = "This is a pipeline rework, not a bug fix."
+
+
+class TropeRewriteTest(unittest.TestCase):
+    def _hook(self, stub, text):
+        with tempfile.TemporaryDirectory() as tmp:
+            module = _load(_build_plugin(Path(tmp)))
+            calls = []
+
+            def wrapped(lines):
+                calls.append(list(lines))
+                return stub(lines, len(calls))
+
+            setattr(module, "_llm_rewrite", wrapped)
+            return module, module.trope_gate_transform_llm_output(response_text=text), calls
+
+    def test_clean_reply_returns_none(self):
+        _, out, calls = self._hook(lambda lines, n: lines, "All plain.")
+        self.assertIsNone(out)
+        self.assertEqual(calls, [])
+
+    def test_flagged_line_is_rewritten_and_others_untouched(self):
+        _, out, calls = self._hook(
+            lambda lines, n: ["This is a pipeline rework."], "Intro.\n" + BAD + "\nEnd."
+        )
+        self.assertEqual(out, "Intro.\nThis is a pipeline rework.\nEnd.")
+        self.assertEqual(calls[0], [BAD])
+
+    def test_still_flagged_after_three_tries_is_kept_and_flagged(self):
+        module, out, calls = self._hook(lambda lines, n: lines, "Intro.\n" + BAD)
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(out, "Intro.\n" + BAD + module.TROPE_FLAG)
+        self.assertNotIn("withheld", out)
+
+    def test_second_try_succeeds_stops_early(self):
+        module, out, calls = self._hook(
+            lambda lines, n: lines if n == 1 else ["This is a pipeline rework."], BAD
+        )
+        self.assertEqual(len(calls), 2)
+        self.assertNotIn(module.TROPE_FLAG, out)
+
+    def test_rewriter_exception_keeps_and_flags(self):
+        def boom(lines, n):
+            raise RuntimeError("down")
+
+        module, out, calls = self._hook(boom, BAD)
+        self.assertEqual(out, BAD + module.TROPE_FLAG)
+        self.assertEqual(len(calls), 1)
+
+    def test_wrong_line_count_counts_as_failed_try(self):
+        module, out, calls = self._hook(lambda lines, n: ["x"], BAD + "\n" + BAD)
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(out, "\n".join([BAD + module.TROPE_FLAG] * 2))
+
+    def test_inline_code_line_splices_original_text(self):
+        line = "Use `foo(a, not b)` here, not there."
+        fixed = "Use `foo(a, not b)` here."
+        _, out, _ = self._hook(lambda lines, n: [fixed], line)
+        self.assertEqual(out, fixed)
+
+    def test_flag_suffix_does_not_trip_the_gate(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            module = _load(_build_plugin(Path(tmp)))
+            self.assertEqual(module._trope_hits("x" + module.TROPE_FLAG), [])
+
+    def test_fenced_code_is_exempt(self):
+        _, out, _ = self._hook(lambda lines, n: lines, "```\n" + BAD + "\n```")
+        self.assertIsNone(out)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -108,6 +108,7 @@ import json
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -314,11 +315,69 @@ def trope_gate_pre_llm_call(event=None, payload=None, **kwargs):
     return {"action": "block", "message": message}
 
 
+TROPE_FLAG = "  [trope gate: could not rewrite]"
+MAX_TRIES = 3
+BUDGET_SECONDS = 25.0
+
+
+def _llm_rewrite(lines: list[str]) -> list[str]:
+    """Ask the auxiliary model to rewrite each line as a plain statement. Raises on any failure."""
+    from agent.auxiliary_client import call_llm
+
+    nl = chr(10)
+    system = (
+        "Rewrite each numbered line as one plain statement of the point meant, with no negated "
+        "contrast (no 'not X, but Y' and no 'X, not Y'). Keep the meaning and keep any inline code "
+        "exactly. Answer with exactly one line per input line, numbered the same, and nothing else."
+    )
+    user = nl.join(str(i) + ". " + line.strip() for i, line in enumerate(lines, 1))
+    resp = call_llm(
+        task="trope_rewrite",
+        messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
+        temperature=0,
+        timeout=8,
+    )
+    content = resp.choices[0].message.content or ""
+    out = [re.sub(r"^\s*\d+\s*[.):]\s*", "", ln).strip() for ln in content.splitlines() if ln.strip()]
+    if len(out) != len(lines):
+        raise ValueError("rewriter returned " + str(len(out)) + " lines for " + str(len(lines)))
+    return out
+
+
+def _rewrite_flagged(text: str) -> str:
+    """Rewrite flagged lines up to MAX_TRIES times; keep and flag any line still failing."""
+    nl = chr(10)
+    deadline = time.monotonic() + BUDGET_SECONDS
+    for _ in range(MAX_TRIES):
+        if time.monotonic() >= deadline:
+            break
+        hits = _trope_hits(text)
+        if not hits:
+            break
+        lines = text.splitlines()
+        idx = [n - 1 for n, _name, _snip in hits]
+        try:
+            fixed = _llm_rewrite([lines[i] for i in idx])
+        except ValueError:
+            continue
+        except Exception:
+            break
+        if len(fixed) != len(idx):
+            continue
+        for i, new in zip(idx, fixed):
+            lines[i] = str(new)
+        text = nl.join(lines) + (nl if text.endswith(nl) else "")
+    lines = text.splitlines()
+    for n, _name, _snip in _trope_hits(text):
+        lines[n - 1] += TROPE_FLAG
+    return nl.join(lines) + (nl if text.endswith(nl) else "")
+
+
 def trope_gate_transform_llm_output(response_text=None, **kwargs):
-    """transform_llm_output gate: veto an assistant reply that uses negative
-    parallelism or compressed contrast (i-have-adhd rule 11) before it reaches
-    the user. Fail-open: never raises. Registered with hold_stream=True so the
-    user sees only the rewritten (or withheld) final."""
+    """transform_llm_output gate: rewrite assistant-reply lines that use negative
+    parallelism or compressed contrast (i-have-adhd rule 11). Never withholds the
+    reply: a line that still fails after MAX_TRIES is kept and flagged. Fail-open:
+    never raises. Registered with hold_stream=True so the user sees only the final."""
     text = ""
     try:
         text = str(response_text or "")
@@ -327,15 +386,11 @@ def trope_gate_transform_llm_output(response_text=None, **kwargs):
     if not text.strip():
         return None
     try:
-        hits = _trope_hits(text)
+        if not _trope_hits(text):
+            return None
+        return _rewrite_flagged(text)
     except Exception:
         return None
-    if not hits:
-        return None
-    return (
-        "This assistant reply was withheld: it contains negative parallelism "
-        "or compressed contrast. I'll restate it as one plain statement."
-    )
 
 
 def register(ctx: Any) -> None:

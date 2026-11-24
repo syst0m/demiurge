@@ -14,6 +14,7 @@
 | [Executive Research Brief](BRIEF.md) | Four empirical constants, graded evidence base, and the gate pipeline. |
 || [Research Pipeline](RESEARCH_PIPELINE.md) | Sweep, verify, approve, merge: how a research finding reaches `RESEARCH.md`. |
 || [Scholarly Connectors on CI — Design](superpowers/specs/2026-11-23-scholarly-connectors-ci-design.md) | Full MCP (scite, Undermind, Consensus) in GitHub Actions for citation-reception verification; degrades gracefully when secrets are absent. |
+|| [Hermes Trope Gate Rewrite — Plan](superpowers/plans/2026-11-24-hermes-trope-gate-rewrite.md) | Rewrite flagged assistant-reply lines (3 tries) instead of withholding the reply; keep and flag lines that stay flagged. |
 || [Claims Ledger](CLAIMS_LEDGER.md) | Claim anchors, sources, and the `grade_cap` rule. |
 | [Run Ledger](RUN_LEDGER.md) | Failure intake from real skill runs. |
 | [Skill Registry](SKILL_REGISTRY.md) | Local inventory of skills. |

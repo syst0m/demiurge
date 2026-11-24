@@ -5,14 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.6] - 2026-11-24
+
+### Changed
+
+- **Hermes chat trope gate:** now rewrites flagged lines (3 tries) and keeps and flags a line it cannot fix, instead of withholding the reply.
+
 ## [0.18.5] - 2026-11-23
 
 ### Fixed
+
 - **Hermes chat trope gate:** assistant-output block message now addresses the user correctly ("this reply was withheld, I'll restate it plainly") instead of asking them to rewrite lines they can't edit.
 
 ## [0.18.4] - 2026-11-23
 
 ### Fixed
+
 - **Hermes chat trope gate:** `transform_llm_output` hook (hold_stream=True) now blocks assistant replies containing negative parallelism or compressed contrast ("X, not Y") before they reach the user; the earlier `pre_llm_call` gate only scanned user input.
 
 ## [0.18.3] - 2026-11-23
