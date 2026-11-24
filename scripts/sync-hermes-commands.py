@@ -368,7 +368,6 @@ def _split_prefix(line: str) -> tuple[str, str]:
 
 def _rewrite_flagged(text: str) -> str:
     """Rewrite flagged lines up to MAX_TRIES times; keep and flag any line still failing."""
-    nl = chr(13) + chr(10) if (chr(13) + chr(10)) in text else chr(10)
     deadline = time.monotonic() + BUDGET_SECONDS
     for _ in range(MAX_TRIES):
         if time.monotonic() >= deadline:
@@ -377,6 +376,7 @@ def _rewrite_flagged(text: str) -> str:
         if not hits:
             break
         lines = text.splitlines()
+        ends = [k[len(b):] for k, b in zip(text.splitlines(True), lines)]
         idx = [n - 1 for n, _name, _snip in hits]
         per_call = max(1.0, min(8.0, deadline - time.monotonic()))
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
@@ -398,11 +398,12 @@ def _rewrite_flagged(text: str) -> str:
             if _FENCE_RE.match(new_body) or new_body.startswith(">"):
                 continue  # a fence or quote marker would hide the line from the gate
             lines[i] = prefix + new_body
-        text = nl.join(lines) + (nl if text.endswith(nl) else "")
+        text = "".join(b + e for b, e in zip(lines, ends))
     lines = text.splitlines()
+    ends = [k[len(b):] for k, b in zip(text.splitlines(True), lines)]
     for n, _name, _snip in _trope_hits(text):
         lines[n - 1] += TROPE_FLAG
-    return nl.join(lines) + (nl if text.endswith(nl) else "")
+    return "".join(b + e for b, e in zip(lines, ends))
 
 
 def trope_gate_transform_llm_output(response_text=None, **kwargs):

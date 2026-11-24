@@ -144,6 +144,15 @@ class TropeRewriteTest(unittest.TestCase):
         _, out, _ = self._hook(lambda lines, n: [fixed], line)
         self.assertEqual(out, fixed)
 
+    def test_mixed_line_endings_are_kept(self):
+        text = "Intro.\r\n" + BAD + "\nEnd.\r\n"
+        _, out, _ = self._hook(lambda lines, n: ["This is a pipeline rework."], text)
+        self.assertEqual(out, "Intro.\r\nThis is a pipeline rework.\nEnd.\r\n")
+
+    def test_final_newline_is_kept_for_lf_text(self):
+        _, out, _ = self._hook(lambda lines, n: ["This is a pipeline rework."], "Intro.\n" + BAD + "\n")
+        self.assertTrue(out.endswith("\n"))
+
     def test_flag_suffix_does_not_trip_the_gate(self):
         with tempfile.TemporaryDirectory() as tmp:
             module = _load(_build_plugin(Path(tmp)))
