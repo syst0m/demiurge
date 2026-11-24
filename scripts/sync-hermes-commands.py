@@ -381,7 +381,10 @@ def _rewrite_flagged(text: str) -> str:
         lines = text.splitlines()
         ends = [k[len(b):] for k, b in zip(text.splitlines(True), lines)]
         idx = [n - 1 for n, _name, _snip in hits]
-        per_call = max(1.0, min(8.0, deadline - time.monotonic()))
+        remaining = deadline - time.monotonic()
+        if remaining < 1.0:
+            break  # too little budget to start a call: keep the lines and flag them
+        per_call = min(8.0, remaining)
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
         try:
             prefixes = [_split_prefix(lines[i]) for i in idx]

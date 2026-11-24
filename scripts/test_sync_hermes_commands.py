@@ -175,6 +175,16 @@ class TropeRewriteTest(unittest.TestCase):
             self.assertEqual(out, BAD + module.TROPE_FLAG)
             self.assertNotIn("withheld", out)
 
+    def test_no_call_when_budget_is_nearly_spent(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            module = _load(_build_plugin(Path(tmp)))
+            module.BUDGET_SECONDS = 0.5
+            calls = []
+            setattr(module, "_llm_rewrite", lambda lines, timeout=8.0, retry=False: calls.append(lines) or lines)
+            out = module.trope_gate_transform_llm_output(response_text=BAD)
+            self.assertEqual(calls, [])
+            self.assertEqual(out, BAD + module.TROPE_FLAG)
+
     def test_nested_list_item_keeps_indent_and_marker(self):
         text = "- top\n    - It is a rework, not a fix.\n- end"
         _, out, calls = self._hook(lambda lines, n: ["It is a rework."], text)
