@@ -250,17 +250,17 @@ def rewrite_gateway_command(event: Any = None, gateway: Any = None, **_: Any) ->
 _TROPE_PATTERNS = [
     ("it is not X, it is Y", re.compile(r"(?:it is|it's) not .+(?:,|;|—|-) it(?: is|'s) ", re.IGNORECASE)),
     ("not because X, but because Y", re.compile(r"not because .+, but because", re.IGNORECASE)),
-    ("question/problem is not... is", re.compile(r"(?:the question|the problem) is not .+\. (?:the question|the problem) is ", re.IGNORECASE)),
+    ("question/problem is not... is", re.compile(r"(?:the question|the problem) is not .+\\. (?:the question|the problem) is ", re.IGNORECASE)),
     ("isn't just X, it is Y", re.compile(r"isn't just .+(?:,|;|—|-) it(?: is|'s) ", re.IGNORECASE)),
     ("is/are not just X, ...", re.compile(r"(?:is|are) not just .+(?:,|;|—|-) (?:it is|it's|they are|they're)", re.IGNORECASE)),
-    ("X, not Y (compressed contrast)", re.compile(r"[,;—-]\s*not\s+\w+(?:\s+\w+){0,6}", re.IGNORECASE)),
+    ("X, not Y (compressed contrast)", re.compile(r"[,;—-]\\s*not\\s+\\w+(?:\\s+\\w+){0,6}", re.IGNORECASE)),
 ]
 
 
 def _trope_prose_lines(text: str):
     """Yield (lineno, prose) with fenced code, block quotes and inline code blanked."""
     in_fence = False
-    fence_re = re.compile(r"^\s*(```|~~~)")
+    fence_re = re.compile(r"^\\s*(```|~~~)")
     inline_code_re = re.compile(r"`[^`]*`")
     for n, line in enumerate(text.splitlines(), 1):
         if fence_re.match(line):
@@ -356,8 +356,8 @@ def _llm_rewrite(lines: list[str], timeout: float = 8.0) -> list[str]:
     return _parse_numbered(resp.choices[0].message.content or "", len(lines))
 
 
-_PREFIX_RE = re.compile(r"^(\s*(?:(?:[-*+]|\d+[.)])\s+)?)(.*)$")
-_FENCE_RE = re.compile(r"^\s*(```|~~~)")
+_PREFIX_RE = re.compile(r"^(\\s*(?:(?:[-*+]|\\d+[.)])\\s+)?)(.*)$")
+_FENCE_RE = re.compile(r"^\\s*(```|~~~)")
 
 
 def _split_prefix(line: str) -> tuple[str, str]:

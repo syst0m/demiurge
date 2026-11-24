@@ -286,5 +286,14 @@ class LlmRewriteBoundaryTest(unittest.TestCase):
             self.assertEqual(out, "2024. was a year of change.")
 
 
+class TropeOpenItemsTest(unittest.TestCase):
+    def test_outer_source_has_no_invalid_escape_warning(self):
+        import warnings
+        src = (Path(__file__).parent / "sync-hermes-commands.py").read_text(encoding="utf-8")
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", SyntaxWarning)
+            compile(src, "sync-hermes-commands.py", "exec")  # must not raise
+
+
 if __name__ == "__main__":
     unittest.main()
