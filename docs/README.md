@@ -16,6 +16,7 @@
 || [Scholarly Connectors on CI — Design](superpowers/specs/2026-11-23-scholarly-connectors-ci-design.md) | Full MCP (scite, Undermind, Consensus) in GitHub Actions for citation-reception verification; degrades gracefully when secrets are absent. |
 | [Hermes Trope Gate Rewrite — Plan](superpowers/plans/2026-11-24-hermes-trope-gate-rewrite.md) | Rewrite flagged assistant-reply lines (3 tries) instead of withholding the reply; keep and flag lines that stay flagged. |
 | [Trope Gate Rewrite Hardening — Plan](superpowers/plans/2026-11-24-trope-gate-rewrite-hardening.md) | Keep list markers, indent and line endings in rewrites; strict reply parsing and a per-call timeout; finish steps for the branch. |
+| [Trope Gate Open Items — Plan](superpowers/plans/2026-11-24-trope-gate-open-items.md) | Close the parked trope gate items: regex escapes, line endings, fence retries, budget floor, and list and number pins. |
 || [Claims Ledger](CLAIMS_LEDGER.md) | Claim anchors, sources, and the `grade_cap` rule. |
 | [Run Ledger](RUN_LEDGER.md) | Failure intake from real skill runs. |
 | [Skill Registry](SKILL_REGISTRY.md) | Local inventory of skills. |

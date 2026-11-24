@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.7] - 2026-11-24
+
+### Fixed
+
+- **Hermes chat trope gate:** invalid regex escapes in the plugin source are escaped, so the plugin source no longer raises a SyntaxWarning.
+- **Hermes chat trope gate:** rewrites keep the original line endings (CRLF or LF).
+- **Hermes chat trope gate:** a rewrite that returns fenced code or a block quote discards that whole try, so no fence or quote text reaches the reply.
+- **Hermes chat trope gate:** a retry names the expected line count, so the model can correct a wrong count.
+- **Hermes chat trope gate:** rewrite calls stop once the time budget is nearly spent, so a call never starts without time to finish.
+
 ## [0.18.6] - 2026-11-24
 
 ### Changed

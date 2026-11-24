@@ -250,17 +250,17 @@ def rewrite_gateway_command(event: Any = None, gateway: Any = None, **_: Any) ->
 _TROPE_PATTERNS = [
     ("it is not X, it is Y", re.compile(r"(?:it is|it's) not .+(?:,|;|—|-) it(?: is|'s) ", re.IGNORECASE)),
     ("not because X, but because Y", re.compile(r"not because .+, but because", re.IGNORECASE)),
-    ("question/problem is not... is", re.compile(r"(?:the question|the problem) is not .+\. (?:the question|the problem) is ", re.IGNORECASE)),
+    ("question/problem is not... is", re.compile(r"(?:the question|the problem) is not .+\\. (?:the question|the problem) is ", re.IGNORECASE)),
     ("isn't just X, it is Y", re.compile(r"isn't just .+(?:,|;|—|-) it(?: is|'s) ", re.IGNORECASE)),
     ("is/are not just X, ...", re.compile(r"(?:is|are) not just .+(?:,|;|—|-) (?:it is|it's|they are|they're)", re.IGNORECASE)),
-    ("X, not Y (compressed contrast)", re.compile(r"[,;—-]\s*not\s+\w+(?:\s+\w+){0,6}", re.IGNORECASE)),
+    ("X, not Y (compressed contrast)", re.compile(r"[,;—-]\\s*not\\s+\\w+(?:\\s+\\w+){0,6}", re.IGNORECASE)),
 ]
 
 
 def _trope_prose_lines(text: str):
     """Yield (lineno, prose) with fenced code, block quotes and inline code blanked."""
     in_fence = False
-    fence_re = re.compile(r"^\s*(```|~~~)")
+    fence_re = re.compile(r"^\\s*(```|~~~)")
     inline_code_re = re.compile(r"`[^`]*`")
     for n, line in enumerate(text.splitlines(), 1):
         if fence_re.match(line):
@@ -318,6 +318,7 @@ def trope_gate_pre_llm_call(event=None, payload=None, **kwargs):
 
 TROPE_FLAG = "  [trope gate: could not rewrite]"
 MAX_TRIES = 3
+# shortcut: budget assumes the default 30 s hook timeout, upgrade when Hermes exposes the setting
 BUDGET_SECONDS = 25.0
 
 
@@ -336,7 +337,7 @@ def _parse_numbered(content: str, count: int) -> list[str]:
     return out
 
 
-def _llm_rewrite(lines: list[str], timeout: float = 8.0) -> list[str]:
+def _llm_rewrite(lines: list[str], timeout: float = 8.0, retry: bool = False) -> list[str]:
     """Ask the auxiliary model to rewrite each line as a plain statement. Raises on any failure."""
     from agent.auxiliary_client import call_llm
 
@@ -347,6 +348,8 @@ def _llm_rewrite(lines: list[str], timeout: float = 8.0) -> list[str]:
         "exactly. Answer with exactly one line per input line, numbered the same, and nothing else."
     )
     user = nl.join(str(i) + ". " + line.strip() for i, line in enumerate(lines, 1))
+    if retry:
+        user = "Your last reply had the wrong count. Answer with exactly " + str(len(lines)) + " numbered lines." + nl + user
     resp = call_llm(
         task="trope_rewrite",
         messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
@@ -356,8 +359,8 @@ def _llm_rewrite(lines: list[str], timeout: float = 8.0) -> list[str]:
     return _parse_numbered(resp.choices[0].message.content or "", len(lines))
 
 
-_PREFIX_RE = re.compile(r"^(\s*(?:(?:[-*+]|\d+[.)])\s+)?)(.*)$")
-_FENCE_RE = re.compile(r"^\s*(```|~~~)")
+_PREFIX_RE = re.compile(r"^(\\s*(?:(?:[-*+]|\\d+[.)])\\s+)?)(.*)$")
+_FENCE_RE = re.compile(r"^\\s*(```|~~~)")
 
 
 def _split_prefix(line: str) -> tuple[str, str]:
@@ -368,8 +371,8 @@ def _split_prefix(line: str) -> tuple[str, str]:
 
 def _rewrite_flagged(text: str) -> str:
     """Rewrite flagged lines up to MAX_TRIES times; keep and flag any line still failing."""
-    nl = chr(13) + chr(10) if (chr(13) + chr(10)) in text else chr(10)
     deadline = time.monotonic() + BUDGET_SECONDS
+    retry = False
     for _ in range(MAX_TRIES):
         if time.monotonic() >= deadline:
             break
@@ -377,14 +380,19 @@ def _rewrite_flagged(text: str) -> str:
         if not hits:
             break
         lines = text.splitlines()
+        ends = [k[len(b):] for k, b in zip(text.splitlines(True), lines)]
         idx = [n - 1 for n, _name, _snip in hits]
-        per_call = max(1.0, min(8.0, deadline - time.monotonic()))
+        remaining = deadline - time.monotonic()
+        if remaining < 1.0:
+            break  # too little budget to start a call: keep the lines and flag them
+        per_call = min(8.0, remaining)
         pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
         try:
             prefixes = [_split_prefix(lines[i]) for i in idx]
-            fut = pool.submit(_llm_rewrite, [body for _p, body in prefixes], per_call)
+            fut = pool.submit(_llm_rewrite, [body for _p, body in prefixes], per_call, retry)
             fixed = fut.result(timeout=max(0.0, deadline - time.monotonic()))
         except ValueError:
+            retry = True
             continue
         except Exception:
             break  # includes the budget TimeoutError: keep the lines and flag them
@@ -392,17 +400,18 @@ def _rewrite_flagged(text: str) -> str:
             pool.shutdown(wait=False)
         if len(fixed) != len(idx):
             continue
-        for i, (prefix, _body), new in zip(idx, prefixes, fixed):
-            # strip an echoed marker only when the original line had one
-            new_body = _split_prefix(str(new))[1] if prefix.strip() else str(new)
-            if _FENCE_RE.match(new_body) or new_body.startswith(">"):
-                continue  # a fence or quote marker would hide the line from the gate
+        # strip an echoed marker only when the original line had one
+        bodies = [_split_prefix(str(n))[1] if p.strip() else str(n) for (p, _b), n in zip(prefixes, fixed)]
+        if any(_FENCE_RE.match(b) or b.startswith(">") for b in bodies):
+            continue  # a fence or quote marker would hide a line from the gate: fail the whole try
+        for i, (prefix, _body), new_body in zip(idx, prefixes, bodies):
             lines[i] = prefix + new_body
-        text = nl.join(lines) + (nl if text.endswith(nl) else "")
+        text = "".join(b + e for b, e in zip(lines, ends))
     lines = text.splitlines()
+    ends = [k[len(b):] for k, b in zip(text.splitlines(True), lines)]
     for n, _name, _snip in _trope_hits(text):
         lines[n - 1] += TROPE_FLAG
-    return nl.join(lines) + (nl if text.endswith(nl) else "")
+    return "".join(b + e for b, e in zip(lines, ends))
 
 
 def trope_gate_transform_llm_output(response_text=None, **kwargs):
