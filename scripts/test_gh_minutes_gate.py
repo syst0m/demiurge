@@ -145,6 +145,20 @@ class GateTest(unittest.TestCase):
         self.assertFalse(gate.blocked_command("git status"))
         self.assertFalse(gate.blocked_command("gh pr list && echo create"))
 
+    def test_quoted_text_is_not_a_command(self):
+        # A commit message that names a blocked command must not block the commit.
+        msg = 'git commit -m "Deny gh pr create while quota is depleted"'
+        self.assertFalse(gate.blocked_command(msg))
+        multi = 'git commit -m "Title\n\nDeny gh pr create when quota is gone.\nSecond line."'
+        self.assertFalse(gate.blocked_command(multi))
+        single = "git commit -m 'Note: gh pr merge is blocked'"
+        self.assertFalse(gate.blocked_command(single))
+        # Real blocked commands still block, quoted arguments or not.
+        self.assertTrue(gate.blocked_command('gh pr create --title "x" --body "y"'))
+        self.assertTrue(gate.blocked_command('git status; gh pr create --fill'))
+        # An unclosed quote fails closed: the text after it is still checked.
+        self.assertTrue(gate.blocked_command('echo "oops; gh pr create --fill'))
+
     def test_hook_antigravity_protocol(self):
         payload = json.dumps({
             "toolCall": {"name": "run_command", "args": {"CommandLine": "gh pr create --fill"}},
