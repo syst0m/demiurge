@@ -115,7 +115,7 @@ line. It is now `scripts/validate_skill.py`. Run it; do not perform it from memo
 
 **G5 cannot be waived.** Say the number, or say it was not measured.
 
-**Never say fixed without observed verification.** Syntax checks, gateway reloads, `__pycache__` clears, `py_compile` passes, and `reloaded: True` are NOT evidence of a fix — they prove the code loads, not that it works. Before claiming completion, one of the following must be true:
+**Never say fixed without observed verification.** Syntax checks, gateway reloads, `__pycache__` clears, `py_compile` passes and `reloaded: True` show that code loads. They are not evidence of a fix. Before claiming completion, one of the following must be true:
 
 - User confirms seeing the expected behavior in the target UI (e.g. an inline banner appears after a commit), or
 - Logs show the expected dispatch (e.g. `agent.log` contains injector entries proving the banner was scheduled), or
@@ -154,6 +154,36 @@ python evals/run_gate_tests.py                                      # your own r
 
 `validate_skill.py` and `route_check.py` are offline and free. `eval_runner.py` spawns real model
 runs — it prints the case count and refuses to spend without `--yes`.
+
+### Pitfalls — running the pipeline
+
+**Frontmatter must close with `---`.** `validate_skill.py` G4 fails with `frontmatter-unclosed`
+if a SKILL.md opening `---` is never closed. Always write both markers when authoring SKILL.md;
+a missing closer blocks the build at G4 before any security check runs.
+
+**`eval_runner.py` exits 1 on dry run.** Without `--yes` it prints the case count and estimated
+calls, then exits 1 — that is the spend guard. It is not a script failure. Re-run with `--yes`
+(and `--runner-model`, `--judge-model`) to execute. Do not treat exit 1 as a crash.
+
+**`route_check.py` returns similarity scores. It does not return a pass/fail threshold.** Bag-of-words cosine
+similarity per installed skill. High overlap means the description collides with an existing
+skill — classify the build as a revision of that skill. Do not treat it as a new one. No published cutoff;
+use judgment on the scores.
+
+**`update_marcus.py --check` fails when `skills/marcus` is a symlink.** `repo_root` derives from
+`Path(__file__).resolve()`, which follows the symlink into `agent-skills/` where `research/RESEARCH.md`
+does not exist. Error: `Canonical research file not found`. `design_gate` in `verify_release.py` passes `--repo-root` itself. Elsewhere, pass `--repo-root .` so `repo_root` is
+the working checkout:
+`python scripts/update_marcus.py --check --strict-design --repo-root .`
+
+**Windows command-line length limit breaks eval runner subprocesses.** `eval_runner.run()` passes
+the full prompt as a command-line argument to the runner subprocess. On Windows, `CreateProcess`
+fails with `WinError 206 (filename or extension is too long)` once the combined command line
+exceeds ~32,767 characters — a SKILL.md of any size easily blows past this when prepended to the
+runner template. `python` by name may also fail to resolve from a temp/stage_dir `cwd` even when
+the venv Scripts dir is on PATH. Workaround: write the prompt to a temp file, then pass
+`@<tempfile_path>` instead of the raw prompt text, and set `PATH` to include the venv Scripts dir
+before spawning. `hermes_eval_runner.py` reads the file when its argument starts with `@`.
 
 A security finding is suppressed only with a stated reason, inline (`# forge:allow <code> - reason`)
 or in the skill's `.forgeignore` (`path:code # reason`). Every suppression is printed. Silent

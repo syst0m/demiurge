@@ -320,7 +320,10 @@ def run(command_template: str, prompt: str, settings: Path | None = None,
     try:
         # stdin closed explicitly: the nested CLI waits on stdin for a few seconds
         # otherwise, which across a few hundred calls is dead time, and can hang.
+        # encoding is explicit: on Windows the default is cp1252, which cannot decode the
+        # UTF-8 a nested CLI prints, and the reader thread dies with an empty transcript.
         result = subprocess.run(command, capture_output=True, text=True,
+                                encoding="utf-8", errors="replace",
                                 stdin=subprocess.DEVNULL, cwd=cwd,
                                 timeout=TIMEOUT_SECONDS, check=False)
     except FileNotFoundError:
