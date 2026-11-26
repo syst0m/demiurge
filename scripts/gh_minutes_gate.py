@@ -40,6 +40,8 @@ BLOCKED = (
     re.compile(r"\bgh(?:\.exe)?\b.*?\bpr\b.*?\b(create|merge)\b", re.I),
     re.compile(r"\bgh(?:\.exe)?\b.*?\bworkflow\b.*?\brun\b", re.I),
     re.compile(r"\bgh(?:\.exe)?\b.*?\brun\b.*?\b(watch|rerun)\b", re.I),
+    # Raw API calls that open or merge a PR, e.g. gh api repos/o/r/pulls -f title=x.
+    re.compile(r"\bgh(?:\.exe)?\b(?=.*\bapi\b)(?=.*\bpulls\b).*?\s(?:-[fF]|--(?:field|raw-field|input)|-X|--method)(?:\s|=|$)", re.I),
 )
 BILLING_TEXT = re.compile(r"payments have failed|spending limit|minutes? (have been )?(used|exhausted)", re.I)
 
@@ -94,7 +96,10 @@ def write_cache(key: str, mode: str, reason: str, now: float) -> None:
     data[key] = {"mode": mode, "reason": reason, "at": now}
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+        # Write beside the file, then rename, so a concurrent reader never sees half a file.
+        tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")
+        tmp.write_text(json.dumps(data, indent=2), encoding="utf-8")
+        os.replace(tmp, path)
     except OSError:
         pass
 
@@ -157,15 +162,12 @@ def detect(refresh: bool = False, now: Optional[float] = None, cwd: Optional[Pat
     return {"mode": mode, "reason": reason, "source": "live"}
 
 
-QUOTED = re.compile(r'"(?:\\.|[^"\\])*"|\'[^\']*\'', re.S)
-
-
 def blocked_command(command: str) -> bool:
     if not command:
         return False
-    # Quoted text is data (commit messages, PR bodies), not a command to run.
-    # An unclosed quote is left in place, so the rest of the command is still checked.
-    command = QUOTED.sub(" ", command)
+    # Remove only the quote marks: `bash -c "gh pr create"` and `gh "pr" create` must still match.
+    # shortcut: a commit message that names a blocked command is blocked too, in LOCAL mode only; match quoted text only in shell-argument position to lift this.
+    command = command.replace('"', " ").replace("'", " ")
     for part in re.split(r"&&|\|\||[;\n|]", command):
         if any(p.search(part) for p in BLOCKED):
             return True
@@ -234,9 +236,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             if ws_paths:
                 cwd = ws_paths[0]
         except ValueError:
-            if is_antigravity:
-                print(json.dumps({"decision": "allow"}))
-            return 0
+            # Unreadable payload: check the raw text, so a changed hook format cannot switch the gate off.
+            command = raw
     code, message = decide(command, cwd=cwd)
     if is_antigravity:
         if code != 0:

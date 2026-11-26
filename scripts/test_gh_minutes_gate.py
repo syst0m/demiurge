@@ -145,19 +145,37 @@ class GateTest(unittest.TestCase):
         self.assertFalse(gate.blocked_command("git status"))
         self.assertFalse(gate.blocked_command("gh pr list && echo create"))
 
-    def test_quoted_text_is_not_a_command(self):
-        # A commit message that names a blocked command must not block the commit.
-        msg = 'git commit -m "Deny gh pr create while quota is depleted"'
-        self.assertFalse(gate.blocked_command(msg))
-        multi = 'git commit -m "Title\n\nDeny gh pr create when quota is gone.\nSecond line."'
-        self.assertFalse(gate.blocked_command(multi))
-        single = "git commit -m 'Note: gh pr merge is blocked'"
-        self.assertFalse(gate.blocked_command(single))
-        # Real blocked commands still block, quoted arguments or not.
+    def test_quoted_forms_of_a_blocked_command_still_block(self):
+        # Quote marks must not hide a command from the matcher.
+        self.assertTrue(gate.blocked_command('bash -c "gh pr create --fill"'))
+        self.assertTrue(gate.blocked_command('gh "pr" create --fill'))
+        self.assertTrue(gate.blocked_command("sh -c 'gh workflow run ci.yml'"))
         self.assertTrue(gate.blocked_command('gh pr create --title "x" --body "y"'))
         self.assertTrue(gate.blocked_command('git status; gh pr create --fill'))
         # An unclosed quote fails closed: the text after it is still checked.
         self.assertTrue(gate.blocked_command('echo "oops; gh pr create --fill'))
+
+    def test_commit_message_naming_a_command_is_a_known_false_positive(self):
+        # shortcut: documented trade-off. Quote text is not exempt, so this blocks in LOCAL mode.
+        self.assertTrue(gate.blocked_command('git commit -m "Deny gh pr create while quota is depleted"'))
+
+    def test_raw_gh_api_pr_writes_are_blocked(self):
+        self.assertTrue(gate.blocked_command("gh api repos/o/r/pulls -f title=x"))
+        self.assertTrue(gate.blocked_command("gh api repos/o/r/pulls -F head=b"))
+        self.assertTrue(gate.blocked_command("gh api repos/o/r/pulls/3/merge -X PUT"))
+        self.assertTrue(gate.blocked_command("gh api --method POST repos/o/r/pulls"))
+        self.assertFalse(gate.blocked_command("gh api repos/o/r/pulls"))
+        self.assertFalse(gate.blocked_command("gh api repos/o/r/issues -f title=x"))
+
+    def test_unreadable_hook_payload_checks_the_raw_text(self):
+        with mock.patch.dict(os.environ, {"GH_MINUTES_MODE": "local"}):
+            with mock.patch("sys.stdin", io.StringIO("{not json gh pr create")), redirect_stderr(io.StringIO()):
+                self.assertEqual(gate.main(["--hook"]), 2)
+
+    def test_write_cache_leaves_no_temp_file(self):
+        gate.write_cache("o/r", "github", "test", 1.0)
+        self.assertEqual(json.loads(gate.cache_path().read_text(encoding="utf-8"))["o/r"]["mode"], "github")
+        self.assertEqual([p.name for p in gate.cache_path().parent.iterdir()], ["state.json"])
 
     def test_hook_antigravity_protocol(self):
         payload = json.dumps({

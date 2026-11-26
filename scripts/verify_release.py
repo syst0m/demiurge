@@ -179,13 +179,22 @@ def design_gate() -> List[str]:
     return [f"update_marcus.py --check --strict-design failed:\n{out or err}"] if code else []
 
 
+def tree_findings() -> List[str]:
+    """Blocks the cut when uncommitted changes would ship outside the tagged commit."""
+    code, out, err = run_cmd(["git", "status", "--porcelain"])
+    if code:
+        return [f"git status failed: {err}"]
+    return ["Working tree has uncommitted changes; commit or stash them before --cut, the tag points at HEAD."] if out else []
+
+
 def cut_release(tag: str) -> List[str]:
     """Tags HEAD, pushes the tag and creates the GitHub Release, skipping steps already done.
 
     The LOCAL-mode release path (AGENTS.md order 1). In GITHUB mode a merge to main does this
     through .github/workflows/release.yml.
     """
-    if findings := design_gate():
+    findings = tree_findings() or design_gate()
+    if findings:
         return findings
     if tag not in get_local_tags():
         code, _, err = run_cmd(["git", "tag", "-a", tag, "-m", tag])
@@ -197,9 +206,11 @@ def cut_release(tag: str) -> List[str]:
             return [f"git push origin {tag} failed: {err}"]
     if run_cmd(["gh", "release", "view", tag])[0]:
         notes = Path(".release_notes.md")
-        notes.write_text(release_notes(tag.lstrip("v")), encoding="utf-8")
-        code, _, err = run_cmd(["gh", "release", "create", tag, "--title", tag, "--verify-tag", "-F", str(notes)])
-        notes.unlink()
+        try:
+            notes.write_text(release_notes(tag.lstrip("v")), encoding="utf-8")
+            code, _, err = run_cmd(["gh", "release", "create", tag, "--title", tag, "--verify-tag", "-F", str(notes)])
+        finally:
+            notes.unlink(missing_ok=True)
         # The tag push also starts release.yml, which can create the release first.
         if code and run_cmd(["gh", "release", "view", tag])[0]:
             return [f"gh release create {tag} failed: {err}"]

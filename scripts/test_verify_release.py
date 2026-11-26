@@ -161,12 +161,22 @@ class TestCutRelease(unittest.TestCase):
         gate = patch("scripts.verify_release.design_gate", return_value=[])
         self.gate = gate.start()
         self.addCleanup(gate.stop)
+        tree = patch("scripts.verify_release.tree_findings", return_value=[])
+        self.tree = tree.start()
+        self.addCleanup(tree.stop)
 
     def test_design_drift_blocks_the_cut(self):
         self.gate.return_value = ["drift"]
         with patch("scripts.verify_release.run_cmd") as run_cmd:
             self.assertEqual(vr.cut_release("v1.0.0"), ["drift"])
             run_cmd.assert_not_called()
+
+    def test_dirty_tree_blocks_the_cut_before_any_tag(self):
+        self.tree.return_value = ["Working tree has uncommitted changes"]
+        with patch("scripts.verify_release.run_cmd") as run_cmd:
+            self.assertEqual(vr.cut_release("v1.0.0"), ["Working tree has uncommitted changes"])
+            run_cmd.assert_not_called()
+
 
     @patch("scripts.verify_release.get_remote_tags", return_value=["v1.0.0"])
     @patch("scripts.verify_release.get_local_tags", return_value=["v1.0.0"])
@@ -198,6 +208,20 @@ class TestCutRelease(unittest.TestCase):
     def test_failed_create_with_no_release_fails(self, run_cmd, _local, _remote):
         with patch("scripts.verify_release.release_notes", return_value="notes"):
             self.assertEqual(vr.cut_release("v1.2.0"), ["gh release create v1.2.0 failed: denied"])
+
+class TestTreeFindings(unittest.TestCase):
+    @patch("scripts.verify_release.run_cmd", return_value=(0, " M CHANGELOG.md", ""))
+    def test_dirty_tree_is_a_finding(self, _run):
+        self.assertEqual(len(vr.tree_findings()), 1)
+
+    @patch("scripts.verify_release.run_cmd", return_value=(0, "", ""))
+    def test_clean_tree_passes(self, _run):
+        self.assertEqual(vr.tree_findings(), [])
+
+    @patch("scripts.verify_release.run_cmd", return_value=(1, "", "not a repo"))
+    def test_git_failure_fails_closed(self, _run):
+        self.assertEqual(vr.tree_findings(), ["git status failed: not a repo"])
+
 
 class TestDesignGate(unittest.TestCase):
     @patch("scripts.verify_release.run_cmd", return_value=(0, "", ""))
