@@ -115,6 +115,12 @@ line. It is now `scripts/validate_skill.py`. Run it; do not perform it from memo
 
 **G5 cannot be waived.** Say the number, or say it was not measured.
 
+**Never say fixed without observed verification.** Syntax checks, gateway reloads, `__pycache__` clears, `py_compile` passes, and `reloaded: True` are NOT evidence of a fix — they prove the code loads, not that it works. Before claiming completion, one of the following must be true:
+
+- User confirms seeing the expected behavior in the target UI (e.g. an inline banner appears after a commit), or
+- Logs show the expected dispatch (e.g. `agent.log` contains injector entries proving the banner was scheduled), or
+- Both.
+
 **G6 ends with the install-scope question.** Run `python scripts/install_skill.py <skill> --describe`,
 list each hook and what it blocks in plain words, then ask with `ask_question`: *"Where should
 `<skill>` and its hooks live?"* with the options Project (choose folder), Global and Staging, the

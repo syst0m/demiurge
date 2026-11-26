@@ -157,9 +157,15 @@ def detect(refresh: bool = False, now: Optional[float] = None, cwd: Optional[Pat
     return {"mode": mode, "reason": reason, "source": "live"}
 
 
+QUOTED = re.compile(r'"(?:\\.|[^"\\])*"|\'[^\']*\'', re.S)
+
+
 def blocked_command(command: str) -> bool:
     if not command:
         return False
+    # Quoted text is data (commit messages, PR bodies), not a command to run.
+    # An unclosed quote is left in place, so the rest of the command is still checked.
+    command = QUOTED.sub(" ", command)
     for part in re.split(r"&&|\|\||[;\n|]", command):
         if any(p.search(part) for p in BLOCKED):
             return True
