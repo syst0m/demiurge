@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.0] - 2026-11-26
+
+### Changed
+
+- **Hermes chat trope gate:** the rewrite step is removed. Flagged lines are no longer rewritten or withheld, so each reply is one model output.
+- **Hermes chat trope gate:** `pre_llm_call` adds rule 11 as turn context and never vetoes a user turn.
+- **Hermes chat trope gate:** `transform_llm_output` logs flagged lines and returns the reply unchanged.
+- **Claude Code Stop hook:** logs flagged lines and never blocks the stop.
+- **Minutes gate:** quoted text is ignored by the matcher.
+
+### Added
+
+- ADR 0001 (single-output trope gate) and ADR 0002 (global Stop-hook block cap of 3), indexed in `docs/adr/README.md`.
+- Trope gate single-output design spec, with known limits.
+
+### Fixed
+
+- Benchmark test modules no longer collide on `metrics` imports. Each benchmark folder has its own `conftest.py`.
+- `pytest.ini` excludes `scratch`, `.git` and `.claude` from collection.
+- Standing orders: a fix is not claimed without observed proof.
+
 ## [0.18.7] - 2026-11-24
 
 ### Fixed
