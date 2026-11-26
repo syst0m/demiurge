@@ -102,7 +102,10 @@ Lock the demiurge-owned skills (Q4). Re-check the locks in each batch run, becau
 
 - Built: `scripts/hermes_lesson_commit.py` and `scripts/test_hermes_lesson_commit.py` in `agent-skills`. 13 tests pass. `ci_local.py` passes.
 - Dry run on the real ledger: 10 queued files. 1 safe. 9 held: 6 in `marcus`, 1 in `imhotep` (both gitignored in `agent-skills`, so they count as new skills), 1 Python script in `dark-strategist-efficacy-audit`, and 1 in `marcus` that is not markdown. Nothing was written.
-- Not built: the `no_agent` cron registration (it changes Hermes config and waits for the user), and the GITHUB pull-request step. Merge in `GITHUB` mode stays with a person.
+- Registered: Hermes cron job `hermes-lesson-commit` (id `ecd8717f76dd`), daily at 08:30, `--no-agent`, through `~/.hermes/scripts/hermes_lesson_commit_run.py`. It runs with `--apply`.
+- Live run 2026-11-26: queued 10 files. 1 safe file already matched `origin/main`, so nothing was committed. 9 held files stay queued.
+- Fixed on 2026-11-26 (agent-skills `d5e2c64`): held files stay queued when nothing is committed.
+- Not built: the GITHUB pull-request step. Merge in `GITHUB` mode stays with a person.
 - Ruling: R2-1 uses 24 hours. An earlier draft of the job used 7 days. The job follows this spec.
 
 ## 8. Out of scope
