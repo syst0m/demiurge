@@ -1,7 +1,7 @@
 # Remaining Work After 0.19.0: Plan
 
 **Date:** 2026-11-26
-**Status:** Phases 1 to 3 done. v0.19.1 and agent-skills 1.69.1 are released. Phase 4 is done except the parity check, which shows one STALE line until the user deploys. Decision A: demiurge owns. Decision B: open, see its row. Decision C: accepted. Decision D: done. Phase 5 is unblocked. Phase 6 is open.
+**Status:** Closed on 2026-11-26. Phases 1 to 4 are done. Phase 6 passed as a headless check. Decisions A to D are done. Phase 5 and the interactive check moved to the [open items spec](../specs/2026-11-26-open-items-after-0.19.2-design.md).
 **Repos:** `demiurge`, `agent-skills`
 
 ## 1. Measured state
@@ -43,7 +43,7 @@ The live skills lack the Pitfalls section and the encoding fix. Without the fix,
 | ID | Question | Recommendation |
 |---|---|---|
 | A | Does `demiurge` own `imhotep`, `marcus` and `niccolo`? | Yes. `release.yml` reads these files on a CI checkout that has no `agent-skills`, so `demiurge` must track them. `agent-skills` stops tracking them and keeps the files on disk. |
-| B | Remove the `GH_MINUTES_MODE=local` override? | Yes, if Actions minutes are available. **Outcome 2026-11-26:** minutes are available (`env -u GH_MINUTES_MODE python scripts/gh_minutes_gate.py --status --refresh` returns GITHUB). The variable is absent from the Windows user and machine levels. It sits in the environment of the app that started the agent shell, so removing it needs that app to be restarted without it. Not removed in this session. |
+| B | Remove the `GH_MINUTES_MODE=local` override? | Yes, if Actions minutes are available. **Done 2026-11-26:** the user restarted the app. The variable is unset, and the gate reports `GITHUB`. |
 | C | Accept the three goal loop answers below? | **Accepted 2026-11-26:** C1 yes, C2 yes, C3 yes. The `grill-with-docs` and `grilling` skill text holds no stop rule, so there is nothing to drop. |
 | D | Delete the merged local branches `feat/hermes-trope-rewrite-impl`, `feat/trope-gate-open-items` and `fix/gh-gate-quoted-text`? | **Done 2026-11-26** with `git branch -d`, which refuses unmerged branches. The remote branches `origin/feat/hermes-trope-rewrite-impl` and `origin/feat/trope-gate-open-items` are untouched. |
 

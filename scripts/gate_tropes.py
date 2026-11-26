@@ -11,10 +11,10 @@ import sys
 from pathlib import Path
 
 TROPE_PATTERN = re.compile(
-    r"(?:it is|it's) not .+(?:,|;|—|-) it(?: is|'s) "
+    r"(?:(?:it is|it['’]s) not|it isn['’]t) .+(?:,|;|—|-) it(?: is|['’]s) "
     r"|not because .+, but because"
-    r"|(?:the question|the problem) is not .+\. (?:the question|the problem) is "
-    r"|isn't just .+(?:,|;|—|-) it(?: is|'s) "
+    r"|(?:the question|the problem) (?:is not|isn['’]t) .+\. (?:the question|the problem) is "
+    r"|isn['’]t just .+(?:,|;|—|-) it(?: is|['’]s) "
     r"|(?:is|are) not just .+(?:,|;|—|-) (?:it is|it's|they are|they're)",
     re.IGNORECASE,
 )

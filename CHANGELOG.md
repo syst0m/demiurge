@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.3] - 2026-11-26
+
+### Fixed
+
+- **Trope gates:** the three negative parallelism gates also match the contracted `isn't` forms and the curly apostrophe.
+
+### Changed
+
+- **Docs:** a new open items spec records the results of the leftover work and the items that stay open. The remaining work plan and the single-output spec status lines are updated.
+
 ## [0.19.2] - 2026-11-26
 
 ### Fixed
