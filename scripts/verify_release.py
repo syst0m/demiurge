@@ -14,7 +14,9 @@ Conforms to Marcus Rule V-4: Invariants become hooks because models forget and h
 from __future__ import annotations
 
 import argparse
+import os
 import re
+import tempfile
 import subprocess
 import sys
 from pathlib import Path
@@ -208,7 +210,9 @@ def cut_release(tag: str) -> List[str]:
         if code:
             return [f"git push origin {tag} failed: {err}"]
     if run_cmd(["gh", "release", "view", tag])[0]:
-        notes = Path(".release_notes.md")
+        fd, name = tempfile.mkstemp(suffix=".md")
+        os.close(fd)
+        notes = Path(name)
         try:
             notes.write_text(release_notes(tag.lstrip("v")), encoding="utf-8")
             code, _, err = run_cmd(["gh", "release", "create", tag, "--title", tag, "--verify-tag", "-F", str(notes)])

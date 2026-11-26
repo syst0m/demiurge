@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.2] - 2026-11-26
+
+### Fixed
+
+- **Release gate:** `--cut` refuses a dirty working tree, untracked files included, before it tags. A tag push starts `release.yml`, so the tag must point at committed work.
+- **Release gate:** the temporary release notes file has a unique name and is removed even when `gh` fails. A failed push stops the cut before the release.
+- **Minutes gate:** quote marks are deleted, not replaced, so quote-joined PR commands are still blocked.
+- **Minutes gate:** raw API calls that write to `pulls` (POST, PUT or PATCH), and PR GraphQL mutations, are blocked.
+- **Minutes gate:** a hook payload that is not a JSON object is checked as raw text, not allowed.
+- **Minutes gate:** the status cache is written to a temporary file and renamed. The temporary file is removed when the write fails.
+
+### Changed
+
+- **Commit messages:** a commit message that quotes a blocked command is blocked in LOCAL mode. This is a known false positive. Reword the message.
+- **Standing orders:** `docs/STANDING_ORDERS.md` lists the new blocked commands.
+
+### Removed
+
+- `scripts/bundle_picker.py`. The copy in agent-skills is the one that is maintained.
+
+### Tests
+
+- Added tests for `check_links.py`, `scan_superfluous.py`, `validate_skill.py`, `gate_tropes.py`, `route_check.py`, `resolve_config.py` and `modify_skill.py`.
+
 ## [0.19.1] - 2026-11-26
 
 ### Fixed

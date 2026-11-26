@@ -193,6 +193,13 @@ class TestCutRelease(unittest.TestCase):
         self.assertEqual(run_cmd.call_count, 1)
 
 
+    @patch("scripts.verify_release.get_remote_tags", return_value=[])
+    @patch("scripts.verify_release.get_local_tags", return_value=["v1.3.0"])
+    @patch("scripts.verify_release.run_cmd", return_value=(1, "", "denied"))
+    def test_failed_push_stops_before_release(self, run_cmd, _local, _remote):
+        self.assertEqual(vr.cut_release("v1.3.0"), ["git push origin v1.3.0 failed: denied"])
+        self.assertEqual(run_cmd.call_count, 1)
+
     @patch("scripts.verify_release.get_remote_tags", return_value=["v1.2.0"])
     @patch("scripts.verify_release.get_local_tags", return_value=["v1.2.0"])
     @patch("scripts.verify_release.run_cmd")
