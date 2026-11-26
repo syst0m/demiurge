@@ -1,7 +1,7 @@
 # Remaining Work After 0.19.0: Plan
 
 **Date:** 2026-11-26
-**Status:** Phases 1 to 3 done. v0.19.1 and agent-skills 1.69.1 are released. Phase 4 is done except the parity check, which shows one STALE line until the user deploys. Decision A: demiurge owns. Decisions B to D and Phases 5 and 6 are open.
+**Status:** Phases 1 to 3 done. v0.19.1 and agent-skills 1.69.1 are released. Phase 4 is done except the parity check, which shows one STALE line until the user deploys. Decision A: demiurge owns. Decision B: open, see its row. Decision C: accepted. Decision D: done. Phase 5 is unblocked. Phase 6 is open.
 **Repos:** `demiurge`, `agent-skills`
 
 ## 1. Measured state
@@ -43,11 +43,11 @@ The live skills lack the Pitfalls section and the encoding fix. Without the fix,
 | ID | Question | Recommendation |
 |---|---|---|
 | A | Does `demiurge` own `imhotep`, `marcus` and `niccolo`? | Yes. `release.yml` reads these files on a CI checkout that has no `agent-skills`, so `demiurge` must track them. `agent-skills` stops tracking them and keeps the files on disk. |
-| B | Remove the `GH_MINUTES_MODE=local` override? | Yes, if Actions minutes are available. The agent shell has the variable. The Windows user and machine levels do not. Its source is not found. |
-| C | Accept the three goal loop answers below? | Yes to all three. |
-| D | Delete the merged local branches `feat/hermes-trope-rewrite-impl`, `feat/trope-gate-open-items` and `fix/gh-gate-quoted-text`? | Yes. |
+| B | Remove the `GH_MINUTES_MODE=local` override? | Yes, if Actions minutes are available. **Outcome 2026-11-26:** minutes are available (`env -u GH_MINUTES_MODE python scripts/gh_minutes_gate.py --status --refresh` returns GITHUB). The variable is absent from the Windows user and machine levels. It sits in the environment of the app that started the agent shell, so removing it needs that app to be restarted without it. Not removed in this session. |
+| C | Accept the three goal loop answers below? | **Accepted 2026-11-26:** C1 yes, C2 yes, C3 yes. The `grill-with-docs` and `grilling` skill text holds no stop rule, so there is nothing to drop. |
+| D | Delete the merged local branches `feat/hermes-trope-rewrite-impl`, `feat/trope-gate-open-items` and `fix/gh-gate-quoted-text`? | **Done 2026-11-26** with `git branch -d`, which refuses unmerged branches. The remote branches `origin/feat/hermes-trope-rewrite-impl` and `origin/feat/trope-gate-open-items` are untouched. |
 
-Decision C holds these three questions. The user did not answer the first version of them.
+Decision C holds these three questions. The user accepted all three on 2026-11-26.
 
 1. Write the respec as a new file in `docs/superpowers/specs/` and leave ADR 0002 unchanged?
 2. Treat the four decisions in ADR 0002 as settled?
@@ -105,6 +105,8 @@ A separate, older plugin copy is in `~/.gemini/config/plugins/i-have-adhd`. It h
 **Done when:** both documents list the same exemptions as the code, and parity passes.
 
 ### Phase 5: Respec the goal loop (needs C, about 30 minutes plus waiting time)
+
+Status 2026-11-26: unblocked by C. Step 1 needs sessions that start after today, so it cannot finish in this session.
 
 1. Repeat the ADR 0002 transcript count on sessions that start after 2026-11-26. Record the number of loops and their length.
 2. Run `/grill-with-docs` with that result. Settle the problem that remains and the test plan.
