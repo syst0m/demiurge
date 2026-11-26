@@ -1,6 +1,6 @@
 # Trope Gate: Single-Output Design
 
-**Status:** Accepted. Decisions D1 to D4 taken as recommended (section 7). Implemented in demiurge and agent-skills. Open: the live output-count check (section 6), and deployment by the user via `scripts/sync-skills.sh`. Until that deploy runs, `check_harness_parity.py` reports one `STALE` line for `claude-code` `marcus`.
+**Status:** Done. Decisions D1 to D4 taken as recommended (section 7). The headless output count passed on 2026-11-26, and parity passes. The interactive check is open in the [open items spec](2026-11-26-open-items-after-0.19.2-design.md). Antigravity also has a log-only Stop hook, which section 2 and decision D4 do not list.
 **Date:** 2026-11-25
 **Branch:** main (merged from fix/gh-gate-quoted-text, 2026-11-26)
 

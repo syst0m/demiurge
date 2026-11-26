@@ -3,4 +3,4 @@ message: "Negative parallelism: '%s'. State the thing you mean and stop."
 level: error
 ignorecase: true
 raw:
-  - '((it is|it''s) not [^.,;]{1,60}[,;—-] it( is|''s) |not because [^.]{1,60}, but because|(the question|the problem) is not [^.]{1,60}\. (the question|the problem) is |isn''t just [^.,;]{1,60}[,;—-] it( is|''s) |(is|are) not just [^.,;]{1,60}[,;—-] (it is|it''s|they are|they''re)|\b(is|are|was|were) [^.,;]{1,60}, not (a|an|the)\b|, not (a|an|the) [^.,;]{1,30}\.)'
+  - '(((it is|it[''’]s) not|it isn[''’]t) [^.,;]{1,60}[,;—-] it( is|[''’]s) |not because [^.]{1,60}, but because|(the question|the problem) (is not|isn[''’]t) [^.]{1,60}\. (the question|the problem) is |isn[''’]t just [^.,;]{1,60}[,;—-] it( is|[''’]s) |(is|are) not just [^.,;]{1,60}[,;—-] (it is|it''s|they are|they''re)|\b(is|are|was|were) [^.,;]{1,60}, not (a|an|the)\b|, not (a|an|the) [^.,;]{1,30}\.)'
