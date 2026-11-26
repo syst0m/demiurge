@@ -14,7 +14,9 @@ Conforms to Marcus Rule V-4: Invariants become hooks because models forget and h
 from __future__ import annotations
 
 import argparse
+import os
 import re
+import tempfile
 import subprocess
 import sys
 from pathlib import Path
@@ -179,14 +181,26 @@ def design_gate() -> List[str]:
     return [f"update_marcus.py --check --strict-design failed:\n{out or err}"] if code else []
 
 
+def tree_findings() -> List[str]:
+    """Blocks the cut when uncommitted changes would ship outside the tagged commit."""
+    code, out, err = run_cmd(["git", "status", "--porcelain"])
+    if code:
+        return [f"git status failed: {err}"]
+    return ["Working tree has uncommitted changes; commit or stash them before --cut, the tag points at HEAD."] if out else []
+
+
 def cut_release(tag: str) -> List[str]:
     """Tags HEAD, pushes the tag and creates the GitHub Release, skipping steps already done.
 
     The LOCAL-mode release path (AGENTS.md order 1). In GITHUB mode a merge to main does this
     through .github/workflows/release.yml.
     """
-    if findings := design_gate():
-        return findings
+    # Untracked files count as dirty too: a stray file must not ride into the release.
+    dirty = tree_findings()
+    if dirty:
+        return dirty
+    if drift := design_gate():
+        return drift
     if tag not in get_local_tags():
         code, _, err = run_cmd(["git", "tag", "-a", tag, "-m", tag])
         if code:
@@ -196,10 +210,14 @@ def cut_release(tag: str) -> List[str]:
         if code:
             return [f"git push origin {tag} failed: {err}"]
     if run_cmd(["gh", "release", "view", tag])[0]:
-        notes = Path(".release_notes.md")
-        notes.write_text(release_notes(tag.lstrip("v")), encoding="utf-8")
-        code, _, err = run_cmd(["gh", "release", "create", tag, "--title", tag, "--verify-tag", "-F", str(notes)])
-        notes.unlink()
+        fd, name = tempfile.mkstemp(suffix=".md")
+        os.close(fd)
+        notes = Path(name)
+        try:
+            notes.write_text(release_notes(tag.lstrip("v")), encoding="utf-8")
+            code, _, err = run_cmd(["gh", "release", "create", tag, "--title", tag, "--verify-tag", "-F", str(notes)])
+        finally:
+            notes.unlink(missing_ok=True)
         # The tag push also starts release.yml, which can create the release first.
         if code and run_cmd(["gh", "release", "view", tag])[0]:
             return [f"gh release create {tag} failed: {err}"]
