@@ -23,10 +23,11 @@ class ResolveTest(unittest.TestCase):
             root = Path(tmp)
             skill_dir = root / "skill"
             skill_dir.mkdir()
-            (skill_dir / "config.default.yaml").write_text("mode: default\nlimit: 3\n", encoding="utf-8")
+            # JSON is valid YAML, so the fixtures parse with or without PyYAML.
+            (skill_dir / "config.default.yaml").write_text('{"mode": "default", "limit": 3}', encoding="utf-8")
             project = root / "project"
             (project / ".agents").mkdir(parents=True)
-            (project / ".agents" / "skills.config.yaml").write_text("marcus:\n  mode: project\n", encoding="utf-8")
+            (project / ".agents" / "skills.config.yaml").write_text('{"marcus": {"mode": "project"}}', encoding="utf-8")
             result = rcfg.resolve("marcus", skill_dir, project)
             self.assertEqual(result, {"mode": "project", "limit": 3})
 

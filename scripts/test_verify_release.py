@@ -217,6 +217,24 @@ class TestCutRelease(unittest.TestCase):
             self.assertEqual(vr.cut_release("v1.2.0"), ["gh release create v1.2.0 failed: denied"])
 
 
+    @patch("scripts.verify_release.get_remote_tags", return_value=["v1.4.0"])
+    @patch("scripts.verify_release.get_local_tags", return_value=["v1.4.0"])
+    @patch("scripts.verify_release.run_cmd")
+    def test_notes_file_is_removed_when_gh_fails(self, run_cmd, _local, _remote):
+        seen = {}
+
+        def fake(cmd):
+            if "create" in cmd:
+                seen["notes"] = Path(cmd[cmd.index("-F") + 1])
+                return (1, "", "denied")
+            return (1, "", "not found")
+
+        run_cmd.side_effect = fake
+        with patch("scripts.verify_release.release_notes", return_value="notes"):
+            self.assertEqual(vr.cut_release("v1.4.0"), ["gh release create v1.4.0 failed: denied"])
+        self.assertFalse(seen["notes"].exists())
+
+
 class TestTreeFindings(unittest.TestCase):
     @patch("scripts.verify_release.run_cmd", return_value=(0, " M CHANGELOG.md", ""))
     def test_dirty_tree_is_a_finding(self, _run):
