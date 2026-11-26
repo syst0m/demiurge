@@ -17,7 +17,7 @@
 | [Hermes Trope Gate Rewrite — Plan](superpowers/plans/2026-11-24-hermes-trope-gate-rewrite.md) | Rewrite flagged assistant-reply lines (3 tries) instead of withholding the reply; keep and flag lines that stay flagged. |
 | [Trope Gate Rewrite Hardening — Plan](superpowers/plans/2026-11-24-trope-gate-rewrite-hardening.md) | Keep list markers, indent and line endings in rewrites; strict reply parsing and a per-call timeout; finish steps for the branch. |
 | [Trope Gate Open Items — Plan](superpowers/plans/2026-11-24-trope-gate-open-items.md) | Close the parked trope gate items: regex escapes, line endings, fence retries, budget floor, and list and number pins. |
-| [Trope Gate Single-Output — Design](superpowers/specs/2026-11-25-trope-gate-single-output-design.md) | Draft: enforce rule 11 through the model's own output in Hermes, Claude Code and Antigravity, with no second reply. Four decisions open. |
+| [Trope Gate Single-Output — Design](superpowers/specs/2026-11-25-trope-gate-single-output-design.md) | Accepted: enforce rule 11 through the model's own output in Hermes, Claude Code and Antigravity, with no second reply. D1 to D4 decided; live check and parity still open. |
 | [ADR index](adr/README.md) | Architecture decision records, including [0001: single-output trope gate](adr/0001-trope-gate-single-output.md) and [0002: global Stop-hook block cap](adr/0002-global-stop-hook-block-cap.md). |
 || [Claims Ledger](CLAIMS_LEDGER.md) | Claim anchors, sources, and the `grade_cap` rule. |
 | [Run Ledger](RUN_LEDGER.md) | Failure intake from real skill runs. |
