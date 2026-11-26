@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.1] - 2026-11-26
+
+### Fixed
+
+- **Release gate:** the design check gets the repo root explicitly. `skills/marcus` is a link into agent-skills, which has no `research/` tree, so the gate failed on the wrong root.
+
+### Changed
+
+- **Shared skills:** `skills/imhotep`, `skills/marcus` and `skills/niccolo` are owned by this repo. The Pitfalls section, the UTF-8 read in `eval_runner.py` and the rule 11 wording are restored. The observed-proof rule keeps its wording without a contrast.
+- agent-skills no longer tracks these three folders. Their files stay on disk as deployed copies.
+
 ## [0.19.0] - 2026-11-26
 
 ### Changed
@@ -24,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Benchmark test modules no longer collide on `metrics` imports. Each benchmark folder has its own `conftest.py`.
 - `pytest.ini` excludes `scratch`, `.git` and `.claude` from collection.
-- Standing orders: a fix is not claimed without observed proof.
+- Marcus skill: a fix is not claimed without observed proof (`skills/marcus/SKILL.md`).
 
 ## [0.18.7] - 2026-11-24
 

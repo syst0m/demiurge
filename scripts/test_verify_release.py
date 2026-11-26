@@ -201,3 +201,13 @@ class TestCutRelease(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestDesignGate(unittest.TestCase):
+    @patch("scripts.verify_release.run_cmd", return_value=(0, "", ""))
+    def test_passes_explicit_repo_root(self, run_cmd):
+        self.assertEqual(vr.design_gate(), [])
+        cmd = run_cmd.call_args[0][0]
+        self.assertIn("--repo-root", cmd)
+        root = cmd[cmd.index("--repo-root") + 1]
+        self.assertEqual(Path(root), Path(vr.__file__).resolve().parent.parent)
