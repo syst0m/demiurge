@@ -1,6 +1,6 @@
 # Trope Gate: Single-Output Design
 
-**Status:** Accepted. Decisions D1 to D4 taken as recommended (section 7). Implemented in demiurge and agent-skills. Not yet deployed: the user runs `scripts/sync-skills.sh`.
+**Status:** Accepted. Decisions D1 to D4 taken as recommended (section 7). Implemented in demiurge and agent-skills. Open: the live output-count check (section 6), deployment by the user via `scripts/sync-skills.sh`, and `check_harness_parity.py`. The parity check reports one `MISSING` line for `git-lifecycle-guard`. That line is outside this change.
 **Date:** 2026-11-25
 **Branch:** feat/trope-gate-open-items
 
