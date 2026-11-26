@@ -143,6 +143,15 @@ USERPROFILE and the sidecar redirected, the junction path forced by failing `os.
 change adds a script and a G6 question, and the deterministic cases are the applicable proof, as
 for regression-13 to regression-16.
 
+## 2026-11-26 — Shared Content Reconciled, demiurge Owns the Folder
+
+Revision of the shared skill content after `imhotep`, `marcus` and `niccolo` moved from a link into agent-skills to real folders owned by this repo.
+
+- **G0 evidence:** `eval_runner.py` lost its explicit UTF-8 read. On Windows the default codec is cp1252, and the reader thread dies with an empty transcript. The Pitfalls section and the `--repo-root` workaround had also been dropped from `SKILL.md`.
+- **Change:** Restores the Pitfalls section, the `encoding` and `errors` arguments in `eval_runner.py`, and the agent-skills wording. Keeps the v1.3.5 research sync, `derived_from` bumped to v1.3.5, and the observed-verification paragraph. Notes that `design_gate` passes `--repo-root`.
+- **Verification:** `update_marcus.py --check --strict-design --repo-root .` passes. The deterministic gate suite passes 35/35. `pytest` passes 624.
+- **Not run:** No G1 baseline and no model-based G5 run. The change is text and one encoding argument, so the deterministic checks are the applicable proof.
+
 ## Open Validation Scope
 
 - **Self-Referential Gate G5 Evaluation:** End-to-end G5 execution on Marcus's full skill factory workflow requires isolated execution environments to prevent nested agents from inheriting the installed skill library.

@@ -199,10 +199,6 @@ class TestCutRelease(unittest.TestCase):
         with patch("scripts.verify_release.release_notes", return_value="notes"):
             self.assertEqual(vr.cut_release("v1.2.0"), ["gh release create v1.2.0 failed: denied"])
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class TestDesignGate(unittest.TestCase):
     @patch("scripts.verify_release.run_cmd", return_value=(0, "", ""))
     def test_passes_explicit_repo_root(self, run_cmd):
@@ -211,3 +207,7 @@ class TestDesignGate(unittest.TestCase):
         self.assertIn("--repo-root", cmd)
         root = cmd[cmd.index("--repo-root") + 1]
         self.assertEqual(Path(root), Path(vr.__file__).resolve().parent.parent)
+
+
+if __name__ == "__main__":
+    unittest.main()
