@@ -87,266 +87,58 @@ class HelpPromptTest(unittest.TestCase):
 BAD = "This is a pipeline rework, not a bug fix."
 
 
-class TropeRewriteTest(unittest.TestCase):
-    def _hook(self, stub, text):
-        with tempfile.TemporaryDirectory() as tmp:
-            module = _load(_build_plugin(Path(tmp)))
-            calls = []
+class TropeHooksTest(unittest.TestCase):
+    """Single-output design: the rule rides in as context, the reply is never rewritten."""
 
-            def wrapped(lines, timeout=8.0, retry=False):
-                calls.append(list(lines))
-                return stub(lines, len(calls))
-
-            setattr(module, "_llm_rewrite", wrapped)
-            return module, module.trope_gate_transform_llm_output(response_text=text), calls
-
-    def test_clean_reply_returns_none(self):
-        _, out, calls = self._hook(lambda lines, n: lines, "All plain.")
-        self.assertIsNone(out)
-        self.assertEqual(calls, [])
-
-    def test_flagged_line_is_rewritten_and_others_untouched(self):
-        _, out, calls = self._hook(
-            lambda lines, n: ["This is a pipeline rework."], "Intro.\n" + BAD + "\nEnd."
-        )
-        self.assertEqual(out, "Intro.\nThis is a pipeline rework.\nEnd.")
-        self.assertEqual(calls[0], [BAD])
-
-    def test_still_flagged_after_three_tries_is_kept_and_flagged(self):
-        module, out, calls = self._hook(lambda lines, n: lines, "Intro.\n" + BAD)
-        self.assertEqual(len(calls), 3)
-        self.assertEqual(out, "Intro.\n" + BAD + module.TROPE_FLAG)
-        self.assertNotIn("withheld", out)
-
-    def test_second_try_succeeds_stops_early(self):
-        module, out, calls = self._hook(
-            lambda lines, n: lines if n == 1 else ["This is a pipeline rework."], BAD
-        )
-        self.assertEqual(len(calls), 2)
-        self.assertNotIn(module.TROPE_FLAG, out)
-
-    def test_rewriter_exception_keeps_and_flags(self):
-        def boom(lines, n):
-            raise RuntimeError("down")
-
-        module, out, calls = self._hook(boom, BAD)
-        self.assertEqual(out, BAD + module.TROPE_FLAG)
-        self.assertEqual(len(calls), 1)
-
-    def test_wrong_line_count_counts_as_failed_try(self):
-        module, out, calls = self._hook(lambda lines, n: ["x"], BAD + "\n" + BAD)
-        self.assertEqual(len(calls), 3)
-        self.assertEqual(out, "\n".join([BAD + module.TROPE_FLAG] * 2))
-
-    def test_inline_code_line_splices_original_text(self):
-        line = "Use `foo(a, not b)` here, not there."
-        fixed = "Use `foo(a, not b)` here."
-        _, out, _ = self._hook(lambda lines, n: [fixed], line)
-        self.assertEqual(out, fixed)
-
-    def test_mixed_line_endings_are_kept(self):
-        text = "Intro.\r\n" + BAD + "\nEnd.\r\n"
-        _, out, _ = self._hook(lambda lines, n: ["This is a pipeline rework."], text)
-        self.assertEqual(out, "Intro.\r\nThis is a pipeline rework.\nEnd.\r\n")
-
-    def test_final_newline_is_kept_for_lf_text(self):
-        _, out, _ = self._hook(lambda lines, n: ["This is a pipeline rework."], "Intro.\n" + BAD + "\n")
-        self.assertTrue(out.endswith("\n"))
-
-    def test_flag_suffix_does_not_trip_the_gate(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            module = _load(_build_plugin(Path(tmp)))
-            self.assertEqual(module._trope_hits("x" + module.TROPE_FLAG), [])
-
-    def test_slow_rewriter_hits_budget_and_flags(self):
-        import time
-
-        started = []
-
-        def slow(lines, n):
-            started.append(1)
-            time.sleep(3)
-            return ["fixed"]
-
-        with tempfile.TemporaryDirectory() as tmp:
-            module = _load(_build_plugin(Path(tmp)))
-            module.BUDGET_SECONDS = 1.2
-            setattr(module, "_llm_rewrite", lambda lines, timeout=8.0, retry=False: slow(lines, 1))
-            t0 = time.monotonic()
-            out = module.trope_gate_transform_llm_output(response_text=BAD)
-            self.assertLess(time.monotonic() - t0, 2.5)
-            self.assertEqual(len(started), 1)
-            self.assertEqual(out, BAD + module.TROPE_FLAG)
-            self.assertNotIn("withheld", out)
-
-    def test_no_call_when_budget_is_nearly_spent(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            module = _load(_build_plugin(Path(tmp)))
-            module.BUDGET_SECONDS = 0.5
-            calls = []
-            setattr(module, "_llm_rewrite", lambda lines, timeout=8.0, retry=False: calls.append(lines) or lines)
-            out = module.trope_gate_transform_llm_output(response_text=BAD)
-            self.assertEqual(calls, [])
-            self.assertEqual(out, BAD + module.TROPE_FLAG)
-
-    def test_nested_list_item_keeps_indent_and_marker(self):
-        text = "- top\n    - It is a rework, not a fix.\n- end"
-        _, out, calls = self._hook(lambda lines, n: ["It is a rework."], text)
-        self.assertEqual(calls[0], ["It is a rework, not a fix."])
-        self.assertEqual(out, "- top\n    - It is a rework.\n- end")
-
-    def test_marker_echoed_by_model_gives_one_marker(self):
-        text = "- top\n    - It is a rework, not a fix.\n- end"
-        _, out, _ = self._hook(lambda lines, n: ["- It is a rework."], text)
-        self.assertEqual(out, "- top\n    - It is a rework.\n- end")
-
-    def test_numbered_list_prefix_is_kept(self):
-        _, out, _ = self._hook(lambda lines, n: ["It is a rework."], "3. It is a rework, not a fix.")
-        self.assertEqual(out, "3. It is a rework.")
-
-    def test_nested_list_indent_is_kept(self):
-        _, out, _ = self._hook(lambda lines, n: ["sub item."], "  - sub item, not a bug fix.")
-        self.assertEqual(out, "  - sub item.")
-
-    def test_leading_number_survives_marker_strip(self):
-        _, out, _ = self._hook(lambda lines, n: ["2.5x faster."], "- 2.5x faster, not slower.")
-        self.assertEqual(out, "- 2.5x faster.")
-
-    def test_crlf_text_keeps_crlf(self):
-        text = "a\r\nIt is a rework, not a fix.\r\nb\r\n"
-        _, out, _ = self._hook(lambda lines, n: ["It is a rework."], text)
-        self.assertEqual(out, "a\r\nIt is a rework.\r\nb\r\n")
-        module, out, _ = self._hook(lambda lines, n: lines, text)
-        self.assertEqual(out, "a\r\nIt is a rework, not a fix." + module.TROPE_FLAG + "\r\nb\r\n")
-        self.assertNotIn("\n", out.replace("\r\n", ""))
-
-    def test_rewrite_that_is_a_fence_or_quote_marker_fails_the_try(self):
-        flagged = "It is a rework, not a fix."
-        text = flagged + "\n\n```\ncode sample\n```\nEnd."
-        for bad in ("```", "> It is a rework."):
-            module, out, calls = self._hook(lambda lines, n, bad=bad: [bad], text)
-            self.assertEqual(len(calls), 3)
-            self.assertEqual(out, flagged + module.TROPE_FLAG + "\n\n```\ncode sample\n```\nEnd.")
-
-    def test_fence_result_fails_the_try(self):
-        module, out, calls = self._hook(lambda lines, n: ["```"], BAD)
-        self.assertEqual(len(calls), 3)
-        self.assertEqual(out, BAD + module.TROPE_FLAG)
-
-    def test_fence_result_discards_the_good_lines_of_that_try(self):
-        other = "It is a rework, not a fix."
-        stub = lambda lines, n: ["Plain one.", "```"] if n == 1 else lines  # noqa: E731
-        module, out, calls = self._hook(stub, BAD + "\n" + other)
-        self.assertEqual(len(calls), 3)
-        self.assertEqual(out, BAD + module.TROPE_FLAG + "\n" + other + module.TROPE_FLAG)
-
-    def test_retry_names_the_count(self):
-        replies = iter(["1. Only one.", "1. Plain one.\n2. Plain two."])
-        users = []
-        fake = types.ModuleType("agent.auxiliary_client")
-
-        def call_llm(**kwargs):
-            users.append(kwargs["messages"][1]["content"])
-            msg = types.SimpleNamespace(content=next(replies))
-            return types.SimpleNamespace(choices=[types.SimpleNamespace(message=msg)])
-
-        fake.call_llm = call_llm
-        with tempfile.TemporaryDirectory() as tmp:
-            module = _load(_build_plugin(Path(tmp)))
-            with mock.patch.dict(sys.modules, {"agent": types.ModuleType("agent"), "agent.auxiliary_client": fake}):
-                out = module.trope_gate_transform_llm_output(response_text=BAD + "\n" + BAD)
-        self.assertEqual(out, "Plain one.\nPlain two.")
-        self.assertEqual(len(users), 2)
-        self.assertNotIn("exactly", users[0])
-        self.assertTrue(users[1].startswith("Your last reply had the wrong count. Answer with exactly 2 numbered lines."))
-
-    def test_fenced_code_is_exempt(self):
-        _, out, _ = self._hook(lambda lines, n: lines, "```\n" + BAD + "\n```")
-        self.assertIsNone(out)
-
-
-def _fake_hermes(reply, record=None):
-    """Patch a fake agent.auxiliary_client whose call_llm returns REPLY and records kwargs."""
-    fake = types.ModuleType("agent.auxiliary_client")
-
-    def call_llm(**kwargs):
-        if record is not None:
-            record.update(kwargs)
-        msg = types.SimpleNamespace(content=reply)
-        return types.SimpleNamespace(choices=[types.SimpleNamespace(message=msg)])
-
-    fake.call_llm = call_llm
-    return mock.patch.dict(sys.modules, {"agent": types.ModuleType("agent"), "agent.auxiliary_client": fake})
-
-
-class LlmRewriteBoundaryTest(unittest.TestCase):
     def _module(self, tmp):
         return _load(_build_plugin(Path(tmp)))
 
-    def test_parses_numbered_reply(self):
+    def test_pre_llm_call_adds_rule_as_context_and_never_vetoes(self):
         with tempfile.TemporaryDirectory() as tmp:
             module = self._module(tmp)
-            with _fake_hermes("1. First plain.\n2. Second plain."):
-                self.assertEqual(module._llm_rewrite(["a", "b"]), ["First plain.", "Second plain."])
+            out = module.trope_gate_pre_llm_call(payload={"user_message": BAD})
+            self.assertIn("context", out)
+            self.assertNotIn("action", out)
+            self.assertIn("negative parallelism", out["context"])
 
-    def test_keeps_text_that_starts_with_a_number(self):
+    def test_reply_is_never_changed(self):
         with tempfile.TemporaryDirectory() as tmp:
             module = self._module(tmp)
-            with _fake_hermes("1. 2.5x faster than before."):
-                self.assertEqual(module._llm_rewrite(["a"]), ["2.5x faster than before."])
+            self.assertIsNone(module.trope_gate_log_llm_output(response_text=BAD))
+            self.assertIsNone(module.trope_gate_log_llm_output(response_text="Plain line."))
 
-    def test_sends_task_temperature_and_timeout(self):
+    def test_each_flagged_line_is_logged(self):
         with tempfile.TemporaryDirectory() as tmp:
             module = self._module(tmp)
-            seen = {}
-            with _fake_hermes("1. ok.", seen):
-                module._llm_rewrite(["x"], 3.5)
-            self.assertEqual(seen["task"], "trope_rewrite")
-            self.assertEqual(seen["temperature"], 0)
-            self.assertEqual(seen["timeout"], 3.5)
+            module.trope_gate_log_llm_output(response_text="Plain.\n" + BAD + "\n")
+            log = Path(tmp) / "logs" / "trope-gate-hits.log"
+            lines = log.read_text(encoding="utf-8").splitlines()
+            self.assertEqual(len(lines), 1)
+            self.assertIn("line 2", lines[0])
 
-    def test_rejects_count_mismatch(self):
+    def test_quoted_example_writes_no_log(self):
         with tempfile.TemporaryDirectory() as tmp:
             module = self._module(tmp)
-            with _fake_hermes("1. only one."):
-                with self.assertRaises(ValueError):
-                    module._llm_rewrite(["a", "b"])
+            module.trope_gate_log_llm_output(response_text='The rule bans "' + BAD + '" here.')
+            self.assertFalse((Path(tmp) / "logs" / "trope-gate-hits.log").exists())
 
-    def test_rejects_empty_none_and_unnumbered_reply(self):
+    def test_clean_reply_writes_no_log(self):
         with tempfile.TemporaryDirectory() as tmp:
             module = self._module(tmp)
-            for reply in ("", None, "Plain line."):
-                with _fake_hermes(reply):
-                    with self.assertRaises(ValueError):
-                        module._llm_rewrite(["a"])
+            module.trope_gate_log_llm_output(response_text="Plain statement.")
+            self.assertFalse((Path(tmp) / "logs" / "trope-gate-hits.log").exists())
 
-    def test_missing_hermes_keeps_and_flags(self):
+    def test_rewrite_machinery_is_gone(self):
         with tempfile.TemporaryDirectory() as tmp:
             module = self._module(tmp)
-            with mock.patch.dict(sys.modules, {"agent": types.ModuleType("agent"), "agent.auxiliary_client": None}):
-                out = module.trope_gate_transform_llm_output(response_text=BAD)
-            self.assertEqual(out, BAD + module.TROPE_FLAG)
+            for name in ("_llm_rewrite", "_rewrite_flagged", "trope_gate_transform_llm_output"):
+                self.assertFalse(hasattr(module, name), name)
 
-    def test_timeout_is_a_call_argument(self):
+    def test_logging_failure_fails_open(self):
         with tempfile.TemporaryDirectory() as tmp:
             module = self._module(tmp)
-            seen = []
-
-            def stub(lines, timeout=8.0, retry=False):
-                seen.append(timeout)
-                return lines
-
-            setattr(module, "_llm_rewrite", stub)
-            module.trope_gate_transform_llm_output(response_text=BAD)
-            self.assertTrue(seen and all(1.0 <= t <= 8.0 for t in seen))
-            self.assertFalse(hasattr(module, "_call_timeout"))
-
-    def test_unmarked_line_keeps_a_leading_number_from_the_reply(self):
-        with tempfile.TemporaryDirectory() as tmp:
-            module = self._module(tmp)
-            setattr(module, "_llm_rewrite", lambda lines, timeout=8.0, retry=False: ["2024. was a year of change."])
-            out = module.trope_gate_transform_llm_output(response_text="It was a year, not a decade.")
-            self.assertEqual(out, "2024. was a year of change.")
+            with mock.patch.object(module, "_trope_hits", side_effect=RuntimeError("boom")):
+                self.assertIsNone(module.trope_gate_log_llm_output(response_text=BAD))
 
 
 class TropeOpenItemsTest(unittest.TestCase):

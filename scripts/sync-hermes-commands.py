@@ -104,8 +104,8 @@ def main(argv: list[str] | None = None) -> int:
 
 from __future__ import annotations
 
-import concurrent.futures
 import json
+import os
 import re
 import subprocess
 import sys
@@ -258,17 +258,18 @@ _TROPE_PATTERNS = [
 
 
 def _trope_prose_lines(text: str):
-    """Yield (lineno, prose) with fenced code, block quotes and inline code blanked."""
+    """Yield (lineno, prose) with fenced code, block quotes, inline code and quoted text blanked."""
     in_fence = False
     fence_re = re.compile(r"^\\s*(```|~~~)")
     inline_code_re = re.compile(r"`[^`]*`")
+    quote_re = re.compile(r"\\"[^\\"\\n]*\\"|\\u201c[^\\u201d\\n]*\\u201d")
     for n, line in enumerate(text.splitlines(), 1):
         if fence_re.match(line):
             in_fence = not in_fence
             continue
         if in_fence or line.lstrip().startswith(">"):
             continue
-        yield n, inline_code_re.sub(" ", line)
+        yield n, quote_re.sub(" ", inline_code_re.sub(" ", line))
 
 
 def _trope_hits(text: str) -> list[tuple[int, str, str]]:
@@ -281,157 +282,40 @@ def _trope_hits(text: str) -> list[tuple[int, str, str]]:
     return hits
 
 
+TROPE_CONTEXT = (
+    "Output rule: state each point as one plain statement. "
+    "Do not write negative parallelism, and do not write a contrast of the form X, not Y."
+)
+
+
 def trope_gate_pre_llm_call(event=None, payload=None, **kwargs):
-    """Pre-llm_call gate: veto a turn whose user message uses negative parallelism
-    or compressed contrast (i-have-adhd rule 11). Fail-open: never raises."""
-    user_message = ""
+    """pre_llm_call hook: add the rule 11 text as turn context. Never vetoes the turn."""
+    return {"context": TROPE_CONTEXT}
+
+
+def _log_trope_hits(hits) -> None:
+    """Append one line per flagged reply line to logs/trope-gate-hits.log under the Hermes home. Fail-open."""
     try:
-        if isinstance(payload, dict):
-            user_message = str(payload.get("user_message", "") or "")
+        here = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.normpath(os.path.join(here, "..", "..", "logs", "trope-gate-hits.log"))
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        stamp = time.strftime("%Y-%m-%dT%H:%M:%S")
+        with open(path, "a", encoding="utf-8") as fh:
+            for n, name, snip in hits:
+                fh.write(stamp + " | line " + str(n) + " | " + name + " | " + snip[:200] + "\\n")
     except Exception:
         pass
-    if not user_message:
-        try:
-            user_message = str(kwargs.get("user_message", "") or "")
-        except Exception:
-            user_message = ""
-    if not user_message.strip():
-        return None
+
+
+def trope_gate_log_llm_output(response_text=None, **kwargs):
+    """transform_llm_output hook: log flagged reply lines. Never changes the reply. Fail-open."""
     try:
-        hits = _trope_hits(user_message)
+        hits = _trope_hits(str(response_text or ""))
+        if hits:
+            _log_trope_hits(hits)
     except Exception:
-        return None
-    if not hits:
-        return None
-    nl = chr(10)
-    lines = []
-    for _n, _name, snip in hits:
-        clean = re.sub(r"<[^>]+>", "", snip).strip()
-        lines.append(clean + "  ")
-    message = (
-        "Negative parallelism or compressed contrast detected in your message. "
-        "Rewrite each flagged line as one plain statement and resend:" + nl +
-        nl.join(lines)
-    )
-    return {"action": "block", "message": message}
-
-
-TROPE_FLAG = "  [trope gate: could not rewrite]"
-MAX_TRIES = 3
-# shortcut: budget assumes the default 30 s hook timeout, upgrade when Hermes exposes the setting
-BUDGET_SECONDS = 25.0
-
-
-def _parse_numbered(content: str, count: int) -> list[str]:
-    """Parse a reply of exactly COUNT lines numbered 1..COUNT. Raises ValueError otherwise."""
-    out = []
-    for ln in (content or "").splitlines():
-        if not ln.strip():
-            continue
-        m = re.match(r"^\\s*(\\d+)[.):]\\s+(.*)$", ln)
-        if not m or int(m.group(1)) != len(out) + 1:
-            raise ValueError("rewriter line is not numbered in order: " + ln[:40])
-        out.append(m.group(2).strip())
-    if len(out) != count or not all(out):
-        raise ValueError("rewriter returned " + str(len(out)) + " lines for " + str(count))
-    return out
-
-
-def _llm_rewrite(lines: list[str], timeout: float = 8.0, retry: bool = False) -> list[str]:
-    """Ask the auxiliary model to rewrite each line as a plain statement. Raises on any failure."""
-    from agent.auxiliary_client import call_llm
-
-    nl = chr(10)
-    system = (
-        "Rewrite each numbered line as one plain statement of the point meant, with no negated "
-        "contrast (no 'not X, but Y' and no 'X, not Y'). Keep the meaning and keep any inline code "
-        "exactly. Answer with exactly one line per input line, numbered the same, and nothing else."
-    )
-    user = nl.join(str(i) + ". " + line.strip() for i, line in enumerate(lines, 1))
-    if retry:
-        user = "Your last reply had the wrong count. Answer with exactly " + str(len(lines)) + " numbered lines." + nl + user
-    resp = call_llm(
-        task="trope_rewrite",
-        messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
-        temperature=0,
-        timeout=timeout,
-    )
-    return _parse_numbered(resp.choices[0].message.content or "", len(lines))
-
-
-_PREFIX_RE = re.compile(r"^(\\s*(?:(?:[-*+]|\\d+[.)])\\s+)?)(.*)$")
-_FENCE_RE = re.compile(r"^\\s*(```|~~~)")
-
-
-def _split_prefix(line: str) -> tuple[str, str]:
-    """Split a line into its indent plus one list marker, and the body."""
-    m = _PREFIX_RE.match(line)
-    return (m.group(1), m.group(2)) if m else ("", line)
-
-
-def _rewrite_flagged(text: str) -> str:
-    """Rewrite flagged lines up to MAX_TRIES times; keep and flag any line still failing."""
-    deadline = time.monotonic() + BUDGET_SECONDS
-    retry = False
-    for _ in range(MAX_TRIES):
-        if time.monotonic() >= deadline:
-            break
-        hits = _trope_hits(text)
-        if not hits:
-            break
-        lines = text.splitlines()
-        ends = [k[len(b):] for k, b in zip(text.splitlines(True), lines)]
-        idx = [n - 1 for n, _name, _snip in hits]
-        remaining = deadline - time.monotonic()
-        if remaining < 1.0:
-            break  # too little budget to start a call: keep the lines and flag them
-        per_call = min(8.0, remaining)
-        pool = concurrent.futures.ThreadPoolExecutor(max_workers=1)
-        try:
-            prefixes = [_split_prefix(lines[i]) for i in idx]
-            fut = pool.submit(_llm_rewrite, [body for _p, body in prefixes], per_call, retry)
-            fixed = fut.result(timeout=max(0.0, deadline - time.monotonic()))
-        except ValueError:
-            retry = True
-            continue
-        except Exception:
-            break  # includes the budget TimeoutError: keep the lines and flag them
-        finally:
-            pool.shutdown(wait=False)
-        if len(fixed) != len(idx):
-            continue
-        # strip an echoed marker only when the original line had one
-        bodies = [_split_prefix(str(n))[1] if p.strip() else str(n) for (p, _b), n in zip(prefixes, fixed)]
-        if any(_FENCE_RE.match(b) or b.startswith(">") for b in bodies):
-            continue  # a fence or quote marker would hide a line from the gate: fail the whole try
-        for i, (prefix, _body), new_body in zip(idx, prefixes, bodies):
-            lines[i] = prefix + new_body
-        text = "".join(b + e for b, e in zip(lines, ends))
-    lines = text.splitlines()
-    ends = [k[len(b):] for k, b in zip(text.splitlines(True), lines)]
-    for n, _name, _snip in _trope_hits(text):
-        lines[n - 1] += TROPE_FLAG
-    return "".join(b + e for b, e in zip(lines, ends))
-
-
-def trope_gate_transform_llm_output(response_text=None, **kwargs):
-    """transform_llm_output gate: rewrite assistant-reply lines that use negative
-    parallelism or compressed contrast (i-have-adhd rule 11). Never withholds the
-    reply: a line that still fails after MAX_TRIES is kept and flagged. Fail-open:
-    never raises. Registered with hold_stream=True so the user sees only the final."""
-    text = ""
-    try:
-        text = str(response_text or "")
-    except Exception:
-        return None
-    if not text.strip():
-        return None
-    try:
-        if not _trope_hits(text):
-            return None
-        return _rewrite_flagged(text)
-    except Exception:
-        return None
+        pass
+    return None
 
 
 def register(ctx: Any) -> None:
@@ -439,7 +323,7 @@ def register(ctx: Any) -> None:
     ctx.register_hook("pre_gateway_dispatch", rewrite_gateway_command)
     ctx.register_hook("pre_llm_call", block_help_prompt)
     ctx.register_hook("pre_llm_call", trope_gate_pre_llm_call)
-    ctx.register_hook("transform_llm_output", trope_gate_transform_llm_output, hold_stream=True)
+    ctx.register_hook("transform_llm_output", trope_gate_log_llm_output)
     try:
         ctx.register_hook("on_session_end", record_session_end)
     except Exception:
