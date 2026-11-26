@@ -36,12 +36,15 @@ GH_TIMEOUT_SECONDS = 15
 RECENT_SUCCESS_SECONDS = 48 * 3600
 MODES = ("github", "local")
 
+GH = r"\bgh(?:\.exe)?\b"
 BLOCKED = (
-    re.compile(r"\bgh(?:\.exe)?\b.*?\bpr\b.*?\b(create|merge)\b", re.I),
-    re.compile(r"\bgh(?:\.exe)?\b.*?\bworkflow\b.*?\brun\b", re.I),
-    re.compile(r"\bgh(?:\.exe)?\b.*?\brun\b.*?\b(watch|rerun)\b", re.I),
+    re.compile(rf"{GH}.*?\bpr\b.*?\b(create|merge)\b", re.I),
+    re.compile(rf"{GH}.*?\bworkflow\b.*?\brun\b", re.I),
+    re.compile(rf"{GH}.*?\brun\b.*?\b(watch|rerun)\b", re.I),
     # Raw API calls that open or merge a PR, e.g. gh api repos/o/r/pulls -f title=x.
-    re.compile(r"\bgh(?:\.exe)?\b(?=.*\bapi\b)(?=.*\bpulls\b).*?\s(?:-[fF]|--(?:field|raw-field|input)|-X|--method)(?:\s|=|$)", re.I),
+    re.compile(rf"{GH}(?=.*\bapi\b)(?=.*\bpulls\b).*?(?:\s-[fF]\s|\s--(?:field|raw-field|input)[\s=]"
+               rf"|\s-X\s*(?:POST|PUT|PATCH)\b|\s--method[\s=]+(?:POST|PUT|PATCH)\b)", re.I),
+    re.compile(rf"{GH}(?=.*\bgraphql\b).*(?:createPullRequest|mergePullRequest)", re.I),
 )
 BILLING_TEXT = re.compile(r"payments have failed|spending limit|minutes? (have been )?(used|exhausted)", re.I)
 
@@ -98,8 +101,11 @@ def write_cache(key: str, mode: str, reason: str, now: float) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         # Write beside the file, then rename, so a concurrent reader never sees half a file.
         tmp = path.with_name(f"{path.name}.{os.getpid()}.tmp")
-        tmp.write_text(json.dumps(data, indent=2), encoding="utf-8")
-        os.replace(tmp, path)
+        try:
+            tmp.write_text(json.dumps(data, indent=2), encoding="utf-8")
+            os.replace(tmp, path)
+        finally:
+            tmp.unlink(missing_ok=True)
     except OSError:
         pass
 
@@ -165,9 +171,9 @@ def detect(refresh: bool = False, now: Optional[float] = None, cwd: Optional[Pat
 def blocked_command(command: str) -> bool:
     if not command:
         return False
-    # Remove only the quote marks: `bash -c "gh pr create"` and `gh "pr" create` must still match.
+    # Delete quote marks, as the shell does: `gh pr cre""ate` runs create, and `bash -c "gh pr create"` must match.
     # shortcut: a commit message that names a blocked command is blocked too, in LOCAL mode only; match quoted text only in shell-argument position to lift this.
-    command = command.replace('"', " ").replace("'", " ")
+    command = command.replace('"', "").replace("'", "")
     for part in re.split(r"&&|\|\||[;\n|]", command):
         if any(p.search(part) for p in BLOCKED):
             return True
@@ -230,6 +236,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             else:
                 raw = sys.stdin.read().lstrip("\ufeff")
             payload = json.loads(raw or "{}")
+            if not isinstance(payload, dict):
+                raise ValueError("hook payload is not a JSON object")
             is_antigravity = bool(payload.get("toolCall") or payload.get("conversationId"))
             command = command_from_hook(payload)
             ws_paths = payload.get("workspacePaths") or []

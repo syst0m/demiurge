@@ -155,6 +155,25 @@ class GateTest(unittest.TestCase):
         # An unclosed quote fails closed: the text after it is still checked.
         self.assertTrue(gate.blocked_command('echo "oops; gh pr create --fill'))
 
+    def test_quote_joined_words_still_block(self):
+        # The shell joins adjacent quoted pieces: these run create and merge.
+        self.assertTrue(gate.blocked_command('gh pr cre""ate --fill'))
+        self.assertTrue(gate.blocked_command("gh pr mer''ge 1"))
+
+    def test_raw_api_rules_match_the_named_methods_only(self):
+        self.assertTrue(gate.blocked_command("gh api repos/o/r/pulls/1/merge -X PUT"))
+        self.assertTrue(gate.blocked_command("gh api repos/o/r/pulls -XPOST -f title=x"))
+        self.assertFalse(gate.blocked_command("gh api repos/o/r/pulls/1/merge -X GET"))
+        self.assertTrue(gate.blocked_command('gh api graphql -f query="mutation{createPullRequest(input:{})}"'))
+
+    def test_non_object_payload_checks_raw_text(self):
+        with mock.patch.dict(os.environ, {"GH_MINUTES_MODE": "local"}):
+            with mock.patch("sys.stdin", io.StringIO('"gh pr create"')), redirect_stderr(io.StringIO()):
+                self.assertEqual(gate.main(["--hook"]), 2)
+            for raw in ("[]", "null"):
+                with mock.patch("sys.stdin", io.StringIO(raw)), redirect_stderr(io.StringIO()):
+                    self.assertEqual(gate.main(["--hook"]), 0, raw)
+
     def test_commit_message_naming_a_command_is_a_known_false_positive(self):
         # shortcut: documented trade-off. Quote text is not exempt, so this blocks in LOCAL mode.
         self.assertTrue(gate.blocked_command('git commit -m "Deny gh pr create while quota is depleted"'))

@@ -193,9 +193,12 @@ def cut_release(tag: str) -> List[str]:
     The LOCAL-mode release path (AGENTS.md order 1). In GITHUB mode a merge to main does this
     through .github/workflows/release.yml.
     """
-    findings = tree_findings() or design_gate()
-    if findings:
-        return findings
+    # Untracked files count as dirty too: a stray file must not ride into the release.
+    dirty = tree_findings()
+    if dirty:
+        return dirty
+    if drift := design_gate():
+        return drift
     if tag not in get_local_tags():
         code, _, err = run_cmd(["git", "tag", "-a", tag, "-m", tag])
         if code:

@@ -209,6 +209,7 @@ class TestCutRelease(unittest.TestCase):
         with patch("scripts.verify_release.release_notes", return_value="notes"):
             self.assertEqual(vr.cut_release("v1.2.0"), ["gh release create v1.2.0 failed: denied"])
 
+
 class TestTreeFindings(unittest.TestCase):
     @patch("scripts.verify_release.run_cmd", return_value=(0, " M CHANGELOG.md", ""))
     def test_dirty_tree_is_a_finding(self, _run):

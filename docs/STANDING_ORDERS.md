@@ -21,7 +21,7 @@ means `GITHUB`. The billing usage-summary endpoint needs the `user` token scope 
 remaining quota, so the gate does not call it. An undetermined state is `LOCAL`.
 
 In `LOCAL` mode the hook blocks `gh pr create`, `gh pr merge`, `gh workflow run`, `gh run watch` and
-`gh run rerun` with exit code 2 and prints the local flow. Reads such as `gh pr view`, plus `git push`
+`gh run rerun`, and raw `gh api` calls that write to a `pulls` endpoint or run a PR GraphQL mutation, with exit code 2 and prints the local flow. A commit message that quotes one of these commands is also blocked (a known false positive). Reads such as `gh pr view`, plus `git push`
 and `gh release create`, stay open. A repo can name its local commands in `.agents/local-ci.json`
 (`{"test": "...", "release": "..."}`); the block message prints them.
 
