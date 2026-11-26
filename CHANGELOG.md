@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Shared skills:** `skills/imhotep`, `skills/marcus` and `skills/niccolo` are owned by this repo. The Pitfalls section, the UTF-8 read in `eval_runner.py` and the rule 11 wording are restored. The observed-proof rule keeps its wording without a contrast.
+- **Shared skills:** `skills/imhotep`, `skills/marcus` and `skills/niccolo` are owned by this repo. The Pitfalls section, the UTF-8 read in `eval_runner.py` and the rule 11 wording are restored. The observed-proof rule is reworded so it has no contrast form.
 - agent-skills no longer tracks these three folders. Their files stay on disk as deployed copies.
 
 ## [0.19.0] - 2026-11-26

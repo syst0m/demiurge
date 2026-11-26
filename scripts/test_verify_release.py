@@ -205,8 +205,9 @@ class TestDesignGate(unittest.TestCase):
         self.assertEqual(vr.design_gate(), [])
         cmd = run_cmd.call_args[0][0]
         self.assertIn("--repo-root", cmd)
-        root = cmd[cmd.index("--repo-root") + 1]
-        self.assertEqual(Path(root), Path(vr.__file__).resolve().parent.parent)
+        root = Path(cmd[cmd.index("--repo-root") + 1])
+        self.assertTrue((root / "research" / "RESEARCH.md").is_file())
+        self.assertTrue((root / "scripts" / "verify_release.py").is_file())
 
 
 if __name__ == "__main__":

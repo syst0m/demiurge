@@ -170,7 +170,7 @@ similarity per installed skill. High overlap means the description collides with
 skill — classify the build as a revision of that skill. Do not treat it as a new one. No published cutoff;
 use judgment on the scores.
 
-**`update_marcus.py --check` fails when `skills/marcus` is a symlink.** `repo_root` derives from
+**`update_marcus.py --check` fails when `skills/marcus` is a symlink into another checkout.** `repo_root` derives from
 `Path(__file__).resolve()`, which follows the symlink into `agent-skills/` where `research/RESEARCH.md`
 does not exist. Error: `Canonical research file not found`. `design_gate` in `verify_release.py` passes `--repo-root` itself. Elsewhere, pass `--repo-root .` so `repo_root` is
 the working checkout:
@@ -181,9 +181,8 @@ the full prompt as a command-line argument to the runner subprocess. On Windows,
 fails with `WinError 206 (filename or extension is too long)` once the combined command line
 exceeds ~32,767 characters — a SKILL.md of any size easily blows past this when prepended to the
 runner template. `python` by name may also fail to resolve from a temp/stage_dir `cwd` even when
-the venv Scripts dir is on PATH. Workaround: write the prompt to a temp file, then pass
-`@<tempfile_path>` instead of the raw prompt text, and set `PATH` to include the venv Scripts dir
-before spawning. `hermes_eval_runner.py` reads the file when its argument starts with `@`.
+the venv Scripts dir is on PATH. Workaround: write the prompt to a temp file, and set `PATH` to include the venv Scripts dir
+before spawning. The `@<tempfile_path>` reader is not in this repo, so confirm it in the runner before relying on it.
 
 A security finding is suppressed only with a stated reason, inline (`# forge:allow <code> - reason`)
 or in the skill's `.forgeignore` (`path:code # reason`). Every suppression is printed. Silent

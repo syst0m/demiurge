@@ -1,7 +1,7 @@
 # Remaining Work After 0.19.0: Plan
 
 **Date:** 2026-11-26
-**Status:** Phases 1 to 4 done (decision A: demiurge owns). Decisions B to D and Phases 5 and 6 are open.
+**Status:** Phases 1 to 3 done. v0.19.1 and agent-skills 1.69.1 are released. Phase 4 is done except the parity check, which shows one STALE line until the user deploys. Decision A: demiurge owns. Decisions B to D and Phases 5 and 6 are open.
 **Repos:** `demiurge`, `agent-skills`
 
 ## 1. Measured state
