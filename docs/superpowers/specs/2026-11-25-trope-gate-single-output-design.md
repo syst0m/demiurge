@@ -16,7 +16,7 @@ The user reads one reply per turn. A flagged line causes no second model output.
 | Hermes | `pre_llm_call` gate `trope_gate_pre_llm_call`. It vetoes a user message that contains a trope. | No. It blocks the user's own turn. |
 | Claude Code | Stop hook `i-have-adhd/scripts/stop-hook-trope-gate.sh`. It blocks the stop until the reply changes. | Yes. The user sees the first reply, then a second turn. |
 | Claude Code | `PreToolUse` hook `trope_gate.py --pretool` on Write and Edit for `.md` files. | No. It blocks a file write. |
-| Antigravity | No gate found. The global `GEMINI.md` has no rule 11 text. | No. Nothing enforces rule 11. |
+| Antigravity | Rule 11 text is in the global `GEMINI.md` (line 26). No hook. | No. The model applies the text. |
 
 ## 3. How caveman and i-have-adhd stay transparent
 
@@ -44,6 +44,7 @@ Caveman uses an always-on activation rule, dropped into each repository by its `
 ### 4.3 Keep the scanner as a signal
 
 - The scanner (`trope_gate.py`) runs on the Stop hook in log-only mode.
+- Fenced code, inline code, block quotes and double-quoted text are exempt before matching.
 - Each hit appends one line to a local ledger file.
 - The hit rate per 100 replies measures how often the prompt rule fails.
 - The file-save gate keeps its block.
@@ -61,7 +62,7 @@ Caveman uses an always-on activation rule, dropped into each repository by its `
 
 ## 6. Test plan
 
-- Hermes unit tests: `trope_gate_transform_llm_output` is absent. `pre_llm_call` returns context and never a veto. A hit writes one ledger line.
+- Hermes unit tests: `trope_gate_log_llm_output` never rewrites a reply. `trope_gate_pre_llm_call` returns context and never vetoes a turn. Each flagged line writes one ledger line. The `::help` block hook on `pre_llm_call` is a separate hook and keeps its own behaviour.
 - Claude Code: the Stop hook exits 0 on a hit and writes one ledger line.
 - Parity: `scripts/check_harness_parity.py` passes.
 - Live: send a plain-facts prompt in Hermes, Claude Code and Antigravity. Count the output messages per turn. The count must be one.
@@ -74,3 +75,8 @@ Caveman uses an always-on activation rule, dropped into each repository by its `
 - **D4.** Add rule 11 to the Antigravity global file, with no hook? Decided: yes. The rule text is already in the global `GEMINI.md`.
 
 If D1 and D2 pass, record the decision as an ADR. The alternatives were a rewrite hook and a stop block. Both produce a second output.
+
+## 8. Known limits
+
+- The scanner exempts double-quoted text. Spec sections 2 and 3 name only fenced code, inline code and block quotes. A flagged phrase in quotes is not logged. Accepted by decision Q1.
+- Two copies of the scanner logic exist: `scripts/sync-hermes-commands.py` and agent-skills `trope_gate.py`. They write the same hit log in different formats. The rule 11 text appears in three places. A shared module would couple the two repos, so these stay until a need appears. Accepted by decision Q2.
