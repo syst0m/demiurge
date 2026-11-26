@@ -21,4 +21,4 @@ Enforce rule 11 through the rule text in each harness's context. The model self-
 
 - A flagged phrase can reach the chat. Enforcement now depends on the model.
 - The hit log measures how often the rule fails.
-- `auxiliary.trope_rewrite` is unused. Removing it needs the user's approval.
+- No `trope_rewrite` entry exists in the Hermes `config.yaml` files (checked 2026-11-26), so no `auxiliary.*` change is needed.

@@ -1,8 +1,8 @@
 # Trope Gate: Single-Output Design
 
-**Status:** Accepted. Decisions D1 to D4 taken as recommended (section 7). Implemented in demiurge and agent-skills. Open: the live output-count check (section 6), deployment by the user via `scripts/sync-skills.sh`, and `check_harness_parity.py`. The parity check reports one `MISSING` line for `git-lifecycle-guard`. That line is outside this change.
+**Status:** Accepted. Decisions D1 to D4 taken as recommended (section 7). Implemented in demiurge and agent-skills. Open: the live output-count check (section 6), and deployment by the user via `scripts/sync-skills.sh`. Until that deploy runs, `check_harness_parity.py` reports one `STALE` line for `claude-code` `marcus`.
 **Date:** 2026-11-25
-**Branch:** feat/trope-gate-open-items
+**Branch:** main (merged from fix/gh-gate-quoted-text, 2026-11-26)
 
 ## 1. Goal
 
