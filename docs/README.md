@@ -12,16 +12,20 @@
 | [Imhotep Evaluation](IMHOTEP_EVALUATION.md) | Evidence review of the ambition tenets and the vendored be-ambitious procedure behind Imhotep. |
 | [Evidence & Confidence Taxonomy](EVIDENCE.md) | Tri-source rule, grounding gates, and the `[SETTLED]` / `[CONTESTED]` / `[VENDOR]` / `[EMERGING]` markers. |
 | [Executive Research Brief](BRIEF.md) | Four empirical constants, graded evidence base, and the gate pipeline. |
-|| [Research Pipeline](RESEARCH_PIPELINE.md) | Sweep, verify, approve, merge: how a research finding reaches `RESEARCH.md`. |
-|| [Scholarly Connectors on CI — Design](superpowers/specs/2026-11-23-scholarly-connectors-ci-design.md) | Full MCP (scite, Undermind, Consensus) in GitHub Actions for citation-reception verification; degrades gracefully when secrets are absent. |
+| [Research Pipeline](RESEARCH_PIPELINE.md) | Sweep, verify, approve, merge: how a research finding reaches `RESEARCH.md`. |
+| [Scholarly Connectors on CI — Design](superpowers/specs/2026-11-23-scholarly-connectors-ci-design.md) | Full MCP (scite, Undermind, Consensus) in GitHub Actions for citation-reception verification; degrades gracefully when secrets are absent. |
 | [Hermes Trope Gate Rewrite — Plan](superpowers/plans/2026-11-24-hermes-trope-gate-rewrite.md) | Rewrite flagged assistant-reply lines (3 tries) instead of withholding the reply; keep and flag lines that stay flagged. |
 | [Trope Gate Rewrite Hardening — Plan](superpowers/plans/2026-11-24-trope-gate-rewrite-hardening.md) | Keep list markers, indent and line endings in rewrites; strict reply parsing and a per-call timeout; finish steps for the branch. |
 | [Trope Gate Open Items — Plan](superpowers/plans/2026-11-24-trope-gate-open-items.md) | Close the parked trope gate items: regex escapes, line endings, fence retries, budget floor, and list and number pins. |
 | [Trope Gate Single-Output — Design](superpowers/specs/2026-11-25-trope-gate-single-output-design.md) | Done: enforce rule 11 through the model's own output in Hermes, Claude Code and Antigravity, with no second reply. D1 to D4 decided; headless check passed. |
 | [Remaining Work After 0.19.0 — Plan](superpowers/plans/2026-11-26-remaining-work.md) | Closed: shared skill folders, releases 0.19.1 and 1.69.1, and the trope gate documents. |
 | [Open Items After 0.19.2 — Design](superpowers/specs/2026-11-26-open-items-after-0.19.2-design.md) | Results of the leftover work, the decisions taken for the user, and the items that stay open with their triggers. |
+| [Hermes Skill Commit and Merge — Design](superpowers/specs/2026-11-26-hermes-skill-commit-design.md) | Draft: a daily Hermes batch job commits skill lessons to a branch and merges by the minutes gate; repairs the upstream sync (PR 67). Round 2 values are rulings until the user answers. |
+| [PII Control Redesign — Draft](PII_CONTROL_REDESIGN.md) | Draft design for the PII gate. Marcus evaluates and implements it; nothing is measured yet. |
+| [PII Gate Handoff for Marcus](PII_MARCUS_HANDOFF.md) | Draft handoff of the PII gate work to Marcus, dated 2026-11-18. |
+| [Scholarly Connectors on CI — Plan](superpowers/plans/2026-11-23-scholarly-connectors-ci.md) | Steps to run the scite, Undermind and Consensus MCP connectors in GitHub Actions. |
 | [ADR index](adr/README.md) | Architecture decision records, including [0001: single-output trope gate](adr/0001-trope-gate-single-output.md) and [0002: global Stop-hook block cap](adr/0002-global-stop-hook-block-cap.md). |
-|| [Claims Ledger](CLAIMS_LEDGER.md) | Claim anchors, sources, and the `grade_cap` rule. |
+| [Claims Ledger](CLAIMS_LEDGER.md) | Claim anchors, sources, and the `grade_cap` rule. |
 | [Run Ledger](RUN_LEDGER.md) | Failure intake from real skill runs. |
 | [Skill Registry](SKILL_REGISTRY.md) | Local inventory of skills. |
 | [Standing Orders](STANDING_ORDERS.md) | Rules for every agent session in this repository. |

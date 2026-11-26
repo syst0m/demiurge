@@ -67,13 +67,32 @@ Limits:
 
 ### O1 method
 
-1. Read the session transcripts that start after 2026-11-26.
-2. Count each run of repeated Stop-hook blocks under a `/goal` command as one loop.
-3. Record the number of loops and the length of each loop.
-4. Compare the result with the ADR 0002 figures of 75 loops and 89% blocked replies with no tool call.
+1. Read the session transcripts. Keep each Stop-hook block at or after 2026-11-26 07:44:42 UTC, the time the cap was set. The session start date does not matter.
+2. Count the blocked replies until the harness override or the next user message as one run.
+3. Record the number of runs, the capped runs and the replies with no tool call.
+4. Compare the result with the baseline in the table below.
 5. Run `/grill-with-docs` on the problem that remains, then write the spec.
 
 ADR 0002 treats its four decisions as settled. The new spec leaves ADR 0002 unchanged and drops the stop rule in the `grill-with-docs` skill text. The user accepted these three points on 2026-11-26.
+
+### O1 snapshot on 2026-11-26
+
+The same replay script as for ADR 0002 produced both columns. The sample after the cap is one session with one goal, so the result is provisional. O1 stays open, and the rerun on or after 2026-12-10 stays.
+
+| Measure | Before the cap | After the cap |
+|---|---|---|
+| Runs | 276 | 11 |
+| Capped runs | 74 | 7 |
+| Blocked replies in capped runs | 842 | 37 |
+| Replies per capped run | 11.4 | 5.3 |
+| Replies with no tool call in capped runs | 745 (88%) | 29 (78%) |
+
+- The cap is live. The override message names 4 consecutive blocks, which matches a cap of 3.
+- The one session started on 2026-11-22 and still received the new cap.
+- The goal stayed set after each override. The session had 11 runs in about 5 hours.
+- 4 of the 7 capped runs held a reply with a tool call. Nobody judged whether those 4 stops were false.
+- 78 sessions started after the cap. None of them used `/goal`.
+- The replay script sits in a temporary folder (`replay.py` in the session scratchpad), so a cleanup can delete it.
 
 ## 7. Closed with no change
 
